@@ -1,8 +1,8 @@
 #include<stdio.h>
 int getDays(int y,int m) {
-    if(((m&1)&&m<8)||((m&0)&&m>7)) return 31;
+    if((m%2==1&&m<8)||(m%2==0&&m>7)) return 31;
     else if(m==2) {
-        if((y%4==0&&(y%100!=0))||y%400==0) return 29;
+        if(y%4==0&&(y%100!=0)||y%400==0) return 29;
         else return 28;
     }
     else return 30;
