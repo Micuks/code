@@ -13,7 +13,7 @@ import sys
 
 # # solve the problem of AttributeError: module 'tensorflow' has no attribute 'placeholder'
 # import tensorflow.compat.v1 as tf
-# tf.disable_v2_behavior() 
+# tf.disable_v2_behavior()
 
 from tensorflow.examples.tutorials.mnist import input_data
 import matplotlib.pyplot as plt
@@ -45,6 +45,19 @@ y_ = tf.compat.v1.placeholder(tf.float32, [None, 10])
 # outputs of 'y', and then average across the batch.
 cross_entropy = tf.reduce_mean(input_tensor=tf.nn.softmax_cross_entropy_with_logits(labels=tf.stop_gradient(y_), logits=y))
 # 注意learning_rate
+# Optimizer that implements the gradient descent algorithm.
+
+# Inherits From: Optimizer
+
+# tf.compat.v1.train.GradientDescentOptimizer(
+#     learning_rate, use_locking=False, name='GradientDescent'
+# )
+
+# Args
+# learning_rate	A Tensor or a floating point value. The learning rate to use.
+# use_locking	If True use locks for update operations.
+# name	Optional name prefix for the operations created when applying gradients. Defaults to "GradientDescent".
+
 train_step = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=0.1).minimize(cross_entropy)
 
 sess = tf.compat.v1.InteractiveSession()

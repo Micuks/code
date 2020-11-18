@@ -1,5 +1,5 @@
 print(__doc__)
-
+import pandas
 from time import time
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,7 +11,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import scale
 
 # 设定随机数种子
-np.random.seed(42)
+np.random.seed(time().astype(int64))
 
 # 加载数据集
 digits = load_digits()
