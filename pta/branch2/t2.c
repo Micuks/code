@@ -10,7 +10,8 @@ int con1vert(int n) {
 }
 int convert(int n) {
     if(!(n/10)) return n;
-    return convert(n/10)<<1+n%10;
+    // printf("n = %d\t",n);
+    return (convert(n/10)<<1)+n%10;
 }
 /* int convert(int n) {
     if(n/10) return n;
