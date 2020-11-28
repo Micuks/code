@@ -15,7 +15,7 @@ int getVowel(char str[],char vowel[]) {
         len=getVowel(str1,vowel);
     }
     for(int i=0;i<5;i++) {
-        if(*(str+n-1-1)==ini[i]&&n-2>-1) {
+        if(*(str+n-1)==ini[i]) {
             vowel[len++]=ini[i];
             vowel[len]='\0';
             // printf("str[] = %s, n = %d, str[n-2] = %c, vowel[%d] = %c, ini[i] = %c\n",str,n,str[n-2],len-1,vowel[len-1],ini[i]);
