@@ -9,11 +9,10 @@ int solveKS(int books[],int index,int capacity) {
 }
 int main() {
     int n;
-    int books[105],isuntoken[105];
+    int books[105];
     scanf("%d",&n);
     for(int i=0;i<n;i++) {
-        isuntoken[i]=1;
-        scanf("%d",books+);
+        scanf("%d",books+i);
     }
-    printf("%d\n",solveKS(books,n,1000));
+    printf("%d\n",solveKS(books,n-1,1000));
 }   
