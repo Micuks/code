@@ -3,7 +3,7 @@ int main() {
     int n,mt,nt;
     double temp;
     scanf("%d",&n);
-    double matrix[6][5];
+    float matrix[6][5];
     for(int i=0;i<6;i++) 
         for(int j=0;j<5;j++) matrix[i][j]=0;
     while(n--) {
@@ -16,6 +16,7 @@ int main() {
     for(int i=0;i<6;i++) {
         for(int j=0;j<5;j++) {
             printf("%.1f\t"/* +!j */,matrix[i][j]);
+            // printf("\t%.1f"+!j,matrix[i][j]);
         }
         putchar('\n');
     }
