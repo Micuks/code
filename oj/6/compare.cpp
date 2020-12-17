@@ -13,10 +13,10 @@ int main(int argc,char* argv[]) {
         ss>>seed;
     }
     srand(seed);
-    int n=random(0,105);
+    int n=random(0,100);
     printf("%d\n",n);
     while(n--) {
-        printf("%d%d%lf\n",random(1,4),random(1,5),(double)random(0,100000)/100);
+        printf("%d %d %.1lf\n",random(1,4),random(1,5),(double)random(0,100000)/100);
 
     }
 }
