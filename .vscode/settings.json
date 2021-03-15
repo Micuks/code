@@ -1,6 +1,11 @@
 {
     "files.associations": {
         "random": "c",
-        "functional": "c"
+        "functional": "c",
+        "*.tcc": "c",
+        "complex": "c",
+        "numeric": "c",
+        "limits": "c",
+        "vector": "c"
     }
 }
