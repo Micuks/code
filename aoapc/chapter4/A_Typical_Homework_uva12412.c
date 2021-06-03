@@ -38,19 +38,23 @@ void add() {
 
 void addstd() {
     for(;;) {
+        int flag=1;
         printf("Please enter the SID, CID, name and four scores. Enter 0 to finish.\n");
         scanf("%s",stu[n].sid);
         if(strcmp(stu[n].sid,"0")==0) return;
-        scanf("%d%s",&stu[n].cid,stu[n].nam);
+        scanf("%s%s",stu[n].cid,stu[n].nam);
         for(int i=0;i<4;i++)
-            scanf("%d",&stu[n].s[i]),stu[n].s[4]+=stu[n].s[i];
+            {
+                scanf("%d",&stu[n].s[i]),stu[n].s[4]+=stu[n].s[i];
+                if(stu[n].s[i]>=60) stu[n].passed++;
+            }
         for(int i=0;i<n;i++)
             if(removed[i]==0&&(strcmp(stu[i].sid,stu[n].sid)==0)) {
                 printf("Duplicated SID.\n");
-                stu[n].s[4]=stu[n].cid=0;
+                stu[n].s[4]=flag=stu[n].passed=0;
                 break;
             }
-        if(removed[n]==0) n++;
+        if(flag==1) n++;
     }
 }
 int rank(int score) {
@@ -63,55 +67,125 @@ int rank(int score) {
     }
     return result+1;
 }
-// void DQ(int isq) {
-//     char s[MAXN];
-//     for(;;) {
-//         printf("Please enter SID or name.Enter 0 to finish.\n");
-//         scanf("%s",s);
-//         if(strcmp(s,"0")==0) break;
-//         int r=0;
-//         for(int i=0;i<n;i++) if(!removed[i]) {
-
-//         }
-//     }
-// }
+int rankstd(int x) {
+    int sum=0;
+    for(int i=0;i<n;i++) 
+        if(removed[i]==0&&stu[i].s[4]>stu[x].s[4]) sum++;
+    return sum+1;
+}
+void rq(int cmd) {
+    char id[15];
+    for(;;) {
+        printf("Please enter SID or name. Enter 0 to finish.\n");
+        scanf("%s",id);
+        if(strcmp(id,"0")==0) return;
+        int cnt=0;
+        for(int i=0;i<n;i++) {
+            if(!removed[i]&&(strcmp(id,stu[i].sid)==0||strcmp(id,stu[i].nam)==0)) {
+                if(cmd==0) removed[i]=1,cnt++;
+                else {
+                    printf("%d %s %s %s",rankstd(i),stu[i].sid,stu[i].cid,stu[i].nam);
+                    for(int j=0;j<4;j++) printf(" %d",stu[i].s[j]);
+                    printf(" %d %.2lf\n",stu[i].s[4],stu[i].s[4]/4.0+EPS);
+                }
+                if(id>="0"&&id<="9") break;
+            }
+        }
+        if(cmd==0) printf("%d student(s) removed.\n",cnt);
+    }
+}
 void rem(int type) {
     int cnt;
+    char stringid[15]={};
     for(;;) {
         cnt=0;
         // printf("type = %d\n",type);
         printf("Please enter SID or name. Enter 0 to finish.\n");
-        scanf("%s",stu[n].sid);
-        if(strcmp(stu[n].sid,"0")==0) break;
-        else if(stu[n].sid[0]<='9'&&stu[n].sid[0]>='0') {
-            for(int i=0;i<n;i++) {
-                if(strcmp(stu[i].sid,stu[n].sid)==0) {
-                    if(type==0) {
-                        removed[i]=1;
-                        cnt++;
-                    }
-                    else if(type==1) printf("%d %s %s %s %d %d %d %d %d %.2f\n",rank(stu[i].s[4]),stu[i].sid,stu[i].cid,stu[i].nam,stu[i].s[0],stu[i].s[1],stu[i].s[2],stu[i].s[3],stu[i].s[4],stu[i].s[4]/4.0+EPS);
+        scanf("%s",stringid);
+        if(!strcmp(stringid,"0")) return;
+        for(int i=0;i<n;i++) {
+            if(!removed[i]&&(!strcmp(stu[i].sid,stringid)||!strcmp(stu[i].nam,stringid))) {
+                if(!type) {
+                    cnt++;
+                    removed[i]=1;
                 }
+                else {
+                    printf("%d %s %s %s",rankstd(i),stu[i].sid,stu[i].cid,stu[i].nam);
+                    for(int j=0;j<4;j++) printf(" %d",stu[i].s[j]);
+                    printf(" %d %.2lf\n",stu[i].s[4],stu[i].s[4]/4.0+EPS);
+                }
+                if(*stringid>='0'&&*stringid<='9') break;
             }
-            if(type==0) printf("%d student(s) removed.\n",cnt);
         }
-        else {
-            for(int i=0;i<n;i++) {
-                if(strcmp(stu[i].nam,stu[n].sid)==0) {
-                    if(type==0) {
-                        removed[i]=1;
-                        cnt++;
-                    }
-                    else if(type==1) {
-                        printf("%d %s %s %s %d %d %d %d %d %.2f\n",rank(stu[i].s[4]),stu[i].sid,stu[i].cid,stu[i].nam,stu[i].s[0],stu[i].s[1],stu[i].s[2],stu[i].s[3],stu[i].s[4],stu[i].s[4]/4.0+EPS);
-                    }
-                }
-            }
-            if(type==0) {
-                printf("%d student(s) removed.\n",cnt);
+        if(!type) printf("%d student(s) removed.\n",cnt);
+    }
+}
+char* itoa(int num,char* str,int radix)
+{
+    char index[]="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    unsigned unum;
+    int i=0,j,k;
+
+    if(radix==10&&num<0)
+    {
+        unum=(unsigned)-num;
+        str[i++]='-';
+    }
+    else unum=(unsigned)num;
+ 
+    do
+    {
+        str[i++]=index[unum%(unsigned)radix];
+        unum/=radix;
+    }while(unum);
+ 
+    str[i]='\0';
+ 
+    if(str[0]=='-') k=1;
+    else k=0;
+ 
+    char temp;
+    for(j=k;j<=(i-1)/2;j++)
+    {
+        temp=str[j];
+        str[j]=str[i-1+k-j];
+        str[i-1+k-j]=temp;
+    }
+ 
+    return str;
+ 
+}
+void show_statistics() {
+    printf("Please enter class ID, 0 for the whole statistics.\n");
+    int pass[5]={},sum[5]={},num=0;
+    int total[5]={};
+    int id;
+    scanf("%d",&id);
+    char stringid[15]={};
+    itoa(id,stringid,10);
+    for(int i=0;i<n;i++) {
+        if(removed[i]==0&&(!id||strcmp(stu[i].cid,stringid)==0)) {
+            num++;
+            int cnt=0;
+            for(int j=0;j<4;j++) {
+                total[j]+=stu[i].s[j];
+                if(stu[i].s[j]>=60) pass[j]++,sum[++cnt]++;
             }
         }
     }
+    for(int i=0;i<4;i++) {
+        printf("%s\n"
+		"Average Score: %.2lf\n"
+		"Number of passed students: %d\n"
+		"Number of failed students: %d\n\n",
+        subject[i],(double)total[i]/(double)num+EPS,pass[i],num-pass[i]);
+    }
+    printf("Overall:\n"
+	"Number of students who passed all subjects: %d\n",sum[4]);
+	for(int i=3;i;i--)
+		printf("Number of students who passed %d or more subjects: %d\n",i,sum[i]);
+	printf("Number of students who failed all subjects: %d\n\n",num-sum[1]);//一科都没有通过的人,利用容斥原理 
+
 }
 void whole() {
     int ssum[MAXN],spas[MAXN],sfai[MAXN],p[MAXN];
@@ -155,11 +229,7 @@ void part(char* cid) {
     memset(sfai,0,sizeof(sfai));
     memset(p,0,sizeof(p));
     for(int i=0;i<n;i++) {
-        flag=1;
-        for(int k=0;k<u;k++) {
-            if(removed[k]==i) flag=0;
-        }
-        if(strcmp(stu[i].cid,cid)==0&&flag) {
+        if(strcmp(stu[i].cid,cid)==0&&!removed[i]) {
             for(int j=0;j<4;j++) {
                 ssum[j]+=stu[i].s[j];
                 if(stu[i].s[j]>=60) spas[j]++;
@@ -185,12 +255,15 @@ void part(char* cid) {
 }
 void sta() {
     printf("Please enter class ID, 0 for the whole statistics.\n");
-    scanf("%s",stu[n].sid);
-    if(strcmp(stu[n].sid,"0")==0){
+    int id;
+    char stringid[5]={};
+    scanf("%d",&id);
+    itoa(id,stringid,10);
+    if(id==0){
         whole();
     }
     else {
-        part(stu[n].sid);
+        part(stringid);
     }
 }
 void printmenu() {
