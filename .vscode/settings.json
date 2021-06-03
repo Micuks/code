@@ -6,6 +6,8 @@
         "complex": "c",
         "numeric": "c",
         "limits": "c",
-        "vector": "c"
+        "vector": "c",
+        "regex": "c",
+        "type_traits": "c"
     }
 }
