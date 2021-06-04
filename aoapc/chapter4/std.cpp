@@ -1,114 +1,39 @@
 #include<cstdio>
+#include<iostream>
+#include<algorithm>
 #include<cstring>
-const char sub[5][20]={"","Chinese","Mathematics","English","Programming"};
-const double eps=1e-5;//eps是double类型 
-int cmd;
-int sco[200][5],cid[200],n;//cid只是不超过20这个正整数,不是20位cid 
-char sid[200][15],name[200][15];
-void add()
-{
-	for(;;)
-	{
-		printf("Please enter the SID, CID, name and four scores. Enter 0 to finish.\n");
-		scanf("%s",sid[n]);
-		if(!strcmp(sid[n],"0"))return ;//单个0的第二个字符是'\0' (前提:sid保证是10位数)
-		scanf("%d%s",&cid[n],name[n]);
-		for(int i=1;i<=4;i++)
-			scanf("%d",&sco[n][i]),sco[n][0]+=sco[n][i];
-		for(int i=0;i<n;i++)
-			if(cid[i]&&(!strcmp(sid[i],sid[n]))){printf("Duplicated SID.\n");sco[n][0]=cid[n]=0;break;}
-		//cid清零是为了后面用来判断学生是否已被删除 
-		//注意这里也要判断cid[i]是否为0(该学生是否被删除),我因为这个地方被卡了很久 
-		if(cid[n])n++;
-	}
+using namespace std;
+int n,m,mapp[1600];
+int sum;		//在check函数中进行计算，表示淹没mid个格子需要的水量
+int check(int mid){
+    sum=0;
+    for(int i=1;i<=mid;i++)
+        sum+=(mapp[mid]-mapp[i])*100;
+    return sum;
 }
-int rank(int x)
-{
-	int sum=0;
-	for(int i=0;i<n;i++)
-		if(cid[i]&&sco[i][0]>sco[x][0])sum++;
-	return sum+1;//sum是分数比他高的人,要加1 
-}
-void rq(int cmd)
-{
-	char id[15];
-	for(;;)
-	{
-		printf("Please enter SID or name. Enter 0 to finish.\n");
-		scanf("%s",id);
-		if(!strcmp(id,"0"))return ;
-		int cnt=0;
-		for(int i=0;i<n;i++)
-		{
-			if(cid[i]&&(!strcmp(id,sid[i])||!strcmp(id,name[i])))
-			{
-				if(cmd==2)cid[i]=0,cnt++;
-				else
-				{
-					printf("%d %s %d %s ",rank(i),sid[i],cid[i],name[i]);
-					for(int j=1;j<=4;j++)printf("%d ",sco[i][j]);
-					printf("%d %.2lf\n",sco[i][0],sco[i][0]/4.0+eps);//注意是4.0，并且要加一个eps 
-				}
-				if(id[0]>='0'&&id[0]<='9')break;//sid第一个字符一定是数字,而名字第一个字符一定是大写字母 
-				//输入的是sid且已找到，直接退出 
-			}
-		}
-		if(cmd==2)printf("%d student(s) removed.\n",cnt);
-	}
-}
-void show_statistics()
-{
-	printf("Please enter class ID, 0 for the whole statistics.\n");
-	int pass[5]={},sum[5]={},num=0;//sum[i]:通过i科的人数;num:统计的总人数;pass[i]通过科目i的人数 
-	int tot[5]={};//单科所有学生的总分 
-	int id;
-	scanf("%d",&id);
-	for(int i=0;i<n;i++)
-	{
-		if(cid[i]&&(!id||cid[i]==id))
-		{
-			num++;
-			int cnt=0;
-			for(int j=1;j<=4;j++)
-			{
-				tot[j]+=sco[i][j];
-				if(sco[i][j]>=60)pass[j]++,sum[++cnt]++;//提前累加好，不用再做前缀和处理 
-			}
-		}
-	}
-	for(int i=1;i<=4;i++)
-	{
-		printf("%s\n"
-		"Average Score: %.2lf\n"
-		"Number of passed students: %d\n"
-		"Number of failed students: %d\n\n",sub[i],(double)tot[i]/(double)num+eps,pass[i],num-pass[i]);
-	}
-	printf("Overall:\n"
-	"Number of students who passed all subjects: %d\n",sum[4]);
-	for(int i=3;i;i--)
-		printf("Number of students who passed %d or more subjects: %d\n",i,sum[i]);
-	printf("Number of students who failed all subjects: %d\n\n",num-sum[1]);//一科都没有通过的人,利用容斥原理 
-}
-int main()
-{
-	//freopen("output.out","w",stdout);//一定要删文件读写! 
-	for(;;)
-	{
-		printf("Welcome to Student Performance Management System (SPMS).\n\n"
-		"1 - Add\n"
-		"2 - Remove\n"
-		"3 - Query\n"
-		"4 - Show ranking\n"
-		"5 - Show Statistics\n"
-		"0 - Exit\n\n");
-		scanf("%d",&cmd);
-		switch (cmd)
-		{
-			case 0:return 0;
-			case 1:add();break;
-			case 2:case 3:rq(cmd);break;
-			case 4:printf("Showing the ranklist hurts students' self-esteem. Don't do that.\n");break; 
-			case 5:show_statistics();break;
-		}
-	}
+int main(){
+    int region=0;
+    while(scanf("%d%d",&n,&m)==2){
+        int v;				//总降水量
+        if(n==0&&m==0)return 0;
+        region++;
+        for(int i=1;i<=n*m;i++)scanf("%d",&mapp[i]);//读入每个格子的高度。因为相当于连通器，格子的位置其实并不重要
+        sort(mapp+1,mapp+1+n*m);	//由于格子的位置不重要，所以可以按高矮排序啦
+        scanf("%d",&v);			//读入总降水量
+        int l=0,r=n*m,ans;		//l表示mid的下界，r表示mid的上界
+        double h;			//水位高度
+        while(l<=r){			//开始二分
+            int mid=l+((r-l)>>1);	//(r-l)>>1就相当于(r-l)/2。只不过前者更快
+            if(check(mid)<=v){		//check计算淹没mid个格子需要多少水。如果淹没mid个格子需要的水小于等于总降水量，说明还可以再多淹几格，那么mid的下界l就应该提高
+                ans=mid;		//存储答案。每一次二分的答案一定比之前的答案更优
+                h=(1.0*v-sum)/(ans*100)+mapp[ans]*1.0;//水位的高度=能够淹没的最高的格子的高度(mapp[ans])+冒出去的水的高度即(总水量-淹没mid个格子需要的水量)/被淹没的格子的面积和
+                l=mid+1;		//提高mid的下界
+            }
+            else r=mid-1;		//否则说明水不够，mid需要减小，即mid的上界r需要减小
+        }
+        printf("Region %d\n",region);
+        printf("Water level is %.2lf meters.\n",h);//输出水位高度
+        printf("%.2lf percent of the region is under water.\n\n",ans/(1.0*n*m)*100);//这个地方是整道题最毒瘤的地方！注意看有两个换行符！！！
+    }
+    return 0;
 }
