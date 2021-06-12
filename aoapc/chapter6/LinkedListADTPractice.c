@@ -43,14 +43,14 @@ bool AddItem(Item item,List* plist) {
     Node* pnode=*plist;
 
     if(pnode==NULL)
-        pnode=pnew;
+        *plist=pnew;//Fuck!!!!!!!
     else {
         while(pnode->next != NULL)
             pnode=pnode->next;
         pnode->next=pnew;
     }
     // printf("*plist = %p, (*plist)->next = %p\n",*plist,(*plist)->next);
-    printf("pnew = %p, pnode = %p, pnode->next = %p\n",pnew,pnode,pnode->next);
+    // printf("pnew = %p, pnode = %p, pnode->next = %p\n",pnew,pnode,pnode->next);
 
     return true;
 }

@@ -31,7 +31,7 @@ int main() {
         puts("Enter next movie title(empty line to stop):");
     }
 
-    printf("movies = %p\n",movies);
+    // printf("movies = %p\n",movies);
     
     if(ListIsEmpty(&movies)==true)
         printf("No data entered. ");
@@ -57,10 +57,9 @@ char* s_gets(char* s,int n) {
         find=strchr(s,'\n');
         if(find!=NULL)
             *find='\0';
-        else {
+        else 
             while(getchar()!='\n')
                 ;
-        }
     }
     return ret_val;
 }
