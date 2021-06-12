@@ -8,6 +8,7 @@
         "limits": "c",
         "vector": "c",
         "regex": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "iostream": "cpp"
     }
 }
