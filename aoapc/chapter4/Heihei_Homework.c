@@ -206,7 +206,7 @@ int main() {
         stu[i].passed=0;
     }
     for(;;) {
-        printmenu();
+        printmenu();//啊
         char choice = 0;
         scanf("%c",&choice);
         while(!IsChoiceValid(choice)) {
