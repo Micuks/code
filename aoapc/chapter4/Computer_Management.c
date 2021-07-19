@@ -2,8 +2,6 @@
 #include<string.h>
 #include <stdlib.h>
 #define MAXN 200
-#define EPS 1e-5
-const char* subject[]={"Chinese","Mathematics","English","Computerming","ALL"};
 
 #define bool int
 #define true 1
@@ -44,8 +42,6 @@ void EmptyTheQueue(Queue* pq);
 
 int n=0,u=0;
 Queue list;
-
-
 int removed[MAXN];
 
 void InitializeQueue(Queue* pq) {
@@ -65,6 +61,7 @@ bool IsQueueFull(const Queue* pq) {
 int QueueItemCount(const Queue* pq) {
 	return pq->computers;
 }
+
 bool EnQueue(int type,Computer pro,Queue* pq) {
 	Node* pnode = (Node*)malloc(sizeof(Node));
 	if(pnode == NULL)
@@ -143,9 +140,6 @@ void add(int type) {
         Node* pnode = list.front;
         for(int i=0;i<n;i++) {
             if(strcmp(temp.no,pnode->computer.no) == 0) {
-
-                // printf("temp.no = %s, pnode->computer.no = %s, n = %d\n",temp.no,pnode->computer.no,n);
-                
                 flag=0;
                 if(removed[i]==1) flag=1;
                 if(type == 1 && flag == 0) printf("Duplicated 编号.\n");
@@ -165,55 +159,17 @@ void add(int type) {
     }
 }
 
-char* itoa(int num,char* str,int radix)
-{
-    char index[]="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    unsigned unum;
-    int i=0,j,k;
-
-    if(radix==10&&num<0)
-    {
-        unum=(unsigned)-num;
-        str[i++]='-';
-    }
-    else unum=(unsigned)num;
- 
-    do
-    {
-        str[i++]=index[unum%(unsigned)radix];
-        unum/=radix;
-    }while(unum);
- 
-    str[i]='\0';
- 
-    if(str[0]=='-') k=1;
-    else k=0;
- 
-    char temp;
-    for(j=k;j<=(i-1)/2;j++)
-    {
-        temp=str[j];
-        str[j]=str[i-1+k-j];
-        str[i-1+k-j]=temp;
-    }
- 
-    return str;
- 
-}
-
 void rem(int type) {
-    int cnt;
+    int cnt,i = 0;
     char stringid[15]={};
     for(;;) {
         cnt=0;
         printf("Please enter 编号 or name. Enter 0 to finish.\n");
-        int id;
-        scanf("%d",&id);
-        if(id == 0) return;
+        scanf("%s",stringid);
+        if(!strcmp(stringid,"0")) return;
         Node* pnode;
-        itoa(id,stringid,10);
         pnode = list.front;
-        for(int i=0;i<n;i++) {
+        for(i=0;i<n;i++) {
             if(!removed[i]&&(!strcmp(pnode->computer.no,stringid)||!strcmp(pnode->computer.name,stringid))) {
                 if(!type) {
                     cnt++;
@@ -224,13 +180,15 @@ void rem(int type) {
                     list.computers--;
                 }
                 else {
-                    printf("%s %s %f %d %f\n",pnode->computer.no,pnode->computer.name,pnode->computer.dj,pnode->computer.num,pnode->computer.jine);
+                    printf("%s %s %.2f %d %.2f\n",pnode->computer.no,pnode->computer.name,pnode->computer.dj,pnode->computer.num,pnode->computer.jine);
+                    cnt++;
                 }
                 if(*stringid>='0'&&*stringid<='9') break;
             }
             pnode = pnode->next;
         }
         if(!type) printf("%d computers(s) removed.\n",cnt);
+        if(i == n && !cnt ) printf("No computer found!\n"); 
     }
 }
 
@@ -246,7 +204,7 @@ void show_statistics() {
         pnode = pnode->next;
     }
     printf("Number of computers: %d\n"
-        "Total cost of computers: %f\n",
+        "Total cost of computers: %.2f\n",
         num,total);
 }
 
@@ -285,5 +243,6 @@ int main() {
         else if(choice == 'E') show_statistics();
         else if(choice == 'Q') break;
     }
+    EmptyTheQueue(&list);
     return 0;
 }
