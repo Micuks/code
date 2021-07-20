@@ -1,0 +1,318 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<OpenDRIVE>
+  <header revMajor="1" revMinor="4" name="" version="1.00" date="2020-03-05T14:03:34" north="115.87500016813588" west="-108.02876458619018" east="412.12500063813582" south="-133.60160278743393" vendor="">
+    <geoReference />
+    <userData code="originLat" value="0" />
+    <userData code="originLong" value="0" />
+    <userData code="originAlt" value="0" />
+    <userData code="originHdg" value="0" />
+    <userData code="RnkMajorVersion" value="1" />
+    <userData code="RnkMinorVersion" value="1" />
+    <userData code="localEnuExt" value="6378137,0,0;0,1,0;0,0,1;1,0,0" />
+  </header>
+  <road id="1" junction="-1" length="475.34334122484194" name="Road(1)">
+    <type s="0" type="town">
+      <speed max="undefined" unit="km/h" />
+    </type>
+    <planView>
+      <geometry hdg="0.66150763700122028" length="140.1736112587827" s="0" x="-102.5" y="-126.5">
+        <paramPoly3 aU="0" aV="0" bU="140.14728131463772" bV="0" cU="-0.12772736597412404" cV="15.305349238706796" dU="0.0714611816565025" dV="-11.334462733073835" pRange="normalized" />
+      </geometry>
+      <geometry hdg="0.63729724100669016" length="48.932544897521517" s="140.1736112587827" x="5.60184965064478" y="-37.307788669673727">
+        <paramPoly3 aU="0" aV="0" bU="48.90108623902286" bV="-7.1054273576010019E-15" cU="0.1370588973191218" cV="-2.3170765790791172" dU="-0.21670449392946978" dV="-0.47275656212164563" pRange="normalized" />
+      </geometry>
+      <geometry hdg="0.51321036808150355" length="61.778241720401276" s="189.10615615630422" x="46.5" y="-10.500000000000014">
+        <paramPoly3 aU="0" aV="0" bU="61.748371466687949" bV="7.1054273576010019E-15" cU="0.053964372423685347" cV="-3.9655133788476498" dU="-0.15515159335389939" dV="0.43195237644803086" pRange="normalized" />
+      </geometry>
+      <geometry hdg="0.40554752310765951" length="191.22817436752183" s="250.88439787670549" x="101.94024475631069" y="16.68898012335967">
+        <paramPoly3 aU="0" aV="0" bU="191.16969927400211" bV="7.1054273576010019E-15" cU="-0.84739706053861141" cV="-25.446538401823652" dU="0.41371855699361504" dV="12.577027876393331" pRange="normalized" />
+      </geometry>
+      <geometry hdg="0.33664322453530948" length="33.230768980614663" s="442.11257224422729" x="282.282308225794" y="80.11290355987741">
+        <paramPoly3 aU="0" aV="0" bU="33.229659117210048" bV="7.1054273576010019E-15" cU="0.0046929952615712978" cV="0.36896139070905143" dU="-0.0075544807557648141" dV="0.067116798358080487" pRange="normalized" />
+      </geometry>
+    </planView>
+    <elevationProfile>
+      <elevation a="0" b="0" c="0" d="0" s="0" />
+    </elevationProfile>
+    <lateralProfile>
+      <superelevation a="0" b="0" c="0" d="0" s="0" />
+      <crossfall a="0" b="0" c="0" d="0" s="0" side="left" />
+      <crossfall a="0" b="0" c="0" d="0" s="0" side="right" />
+    </lateralProfile>
+    <lanes>
+      <laneOffset a="0" b="0" c="0" d="0" s="0" />
+      <laneSection s="0" singleSide="false">
+        <left>
+          <lane id="3" level="false" type="shoulder">
+            <width a="2" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="solid" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="475.34294291276865" />
+          </lane>
+          <lane id="2" level="false" type="driving">
+            <width a="3.5" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="broken" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="475.34294291276865" />
+          </lane>
+          <lane id="1" level="false" type="driving">
+            <width a="3.5" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="broken" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="475.34294291276865" />
+          </lane>
+        </left>
+        <center>
+          <lane id="0" level="false" type="none">
+            <roadMark color="yellow" height="0" laneChange="both" material="" type="solid" weight="standard" width="0.15" sOffset="0" />
+          </lane>
+        </center>
+        <right>
+          <lane id="-1" level="false" type="driving">
+            <width a="3.5" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="broken" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="475.34294291276865" />
+          </lane>
+          <lane id="-2" level="false" type="driving">
+            <width a="3.5" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="broken" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="475.34294291276865" />
+          </lane>
+          <lane id="-3" level="false" type="shoulder">
+            <width a="2" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="solid" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="475.34294291276865" />
+          </lane>
+        </right>
+      </laneSection>
+    </lanes>
+    <objects>
+      <object type="ParkingSpace" name="Parking Space" id="19" s="454.29336373621931" t="-16.273690307984189" zOffset="0.01" validLength="0" orientation="none" length="14.499999991747774" width="20.249999978869397" radius="12.453036767239709" height="14.499999991747774" hdg="0" pitch="0" roll="0">
+        <outline>
+          <cornerLocal height="0" u="-3.617072871281366" v="-7.0941374119351162" z="0.0099999999999999967" />
+          <cornerLocal height="0" u="-3.7386180727847678" v="11.017950411826158" z="0.0099999999999999967" />
+          <cornerLocal height="0" u="6.0654255490891238" v="10.942262526727845" z="0.0099999999999999967" />
+          <cornerLocal height="0" u="4.907338266258586" v="-7.7719388267147043" z="0.0099999999999999967" />
+          <cornerLocal height="0" u="-3.617072871281366" v="-7.0941374119351162" z="0.0099999999999999967" />
+        </outline>
+        <parkingSpace access="all" restrictions="">
+          <marking color="standard" side="front" type="broken" width="0.13" />
+          <marking color="yellow" side="rear" type="curb" width="0.13" />
+          <marking color="yellow" side="left" type="curb" width="0.13" />
+          <marking color="yellow" side="right" type="curb" width="0.13" />
+        </parkingSpace>
+        <userData code="Type" value="Indoor" />
+        <userData code="ServiceCondition" value="Free" />
+        <userData code="AssetId" value="" />
+      </object>
+      <object type="ParkingSpace" name="Parking Space" id="20" s="456.746512954862" t="24.202674764010581" zOffset="0.01" validLength="0" orientation="none" length="19.49999999142516" width="15.499999984890282" radius="12.454918699023892" height="19.49999999142516" hdg="0" pitch="0" roll="0">
+        <outline>
+          <cornerLocal height="0" u="-7.3770547846898671" v="-3.9216143884520571" z="0.01" />
+          <cornerLocal height="0" u="10.053959218489714" v="-5.7166772828168142" z="0.01" />
+          <cornerLocal height="0" u="10.595485338893221" v="6.052742789389713" z="0.01" />
+          <cornerLocal height="0" u="-5.89533498800227" v="7.5071653302385029" z="0.01" />
+          <cornerLocal height="0" u="-7.3770547846898671" v="-3.9216143884520571" z="0.01" />
+        </outline>
+        <parkingSpace access="all" restrictions="">
+          <marking color="standard" side="front" type="broken" width="0.13" />
+          <marking color="yellow" side="rear" type="curb" width="0.13" />
+          <marking color="yellow" side="left" type="curb" width="0.13" />
+          <marking color="yellow" side="right" type="curb" width="0.13" />
+        </parkingSpace>
+        <userData code="Type" value="Indoor" />
+        <userData code="ServiceCondition" value="Free" />
+        <userData code="AssetId" value="" />
+      </object>
+      <object type="ParkingSpace" name="Parking Space" id="21" s="441.46795167259717" t="24.549273562963325" zOffset="0.01" validLength="0" orientation="none" length="19.249999992792322" width="15.249999986600342" radius="12.279301683257632" height="19.249999992792322" hdg="0" pitch="0" roll="0">
+        <outline>
+          <cornerLocal height="0" u="-6.8127315923121259" v="-4.18678758954252" z="0.01" />
+          <cornerLocal height="0" u="9.6225314491219649" v="-4.8989173176509" z="0.01" />
+          <cornerLocal height="0" u="10.490622212735945" v="5.9204596492640285" z="0.01" />
+          <cornerLocal height="0" u="-6.4876904772332589" v="7.3520315758553192" z="0.01" />
+          <cornerLocal height="0" u="-6.8127315923121259" v="-4.18678758954252" z="0.01" />
+        </outline>
+        <parkingSpace access="all" restrictions="">
+          <marking color="standard" side="front" type="broken" width="0.13" />
+          <marking color="yellow" side="rear" type="curb" width="0.13" />
+          <marking color="yellow" side="left" type="curb" width="0.13" />
+          <marking color="yellow" side="right" type="curb" width="0.13" />
+        </parkingSpace>
+        <userData code="Type" value="Indoor" />
+        <userData code="ServiceCondition" value="Free" />
+        <userData code="AssetId" value="" />
+      </object>
+      <object type="ParkingSpace" name="Parking Space" id="22" s="423.124278775278" t="24.20610582420521" zOffset="0.01" validLength="0" orientation="none" length="19.499999993593782" width="15.749999987864859" radius="12.533081218996992" height="19.499999993593782" hdg="0" pitch="0" roll="0">
+        <outline>
+          <cornerLocal height="0" u="-6.7218182746260817" v="-4.2728395828170083" z="0.010000000000000002" />
+          <cornerLocal height="0" u="9.87671572039598" v="-5.1322982517726548" z="0.010000000000000002" />
+          <cornerLocal height="0" u="10.162767902222434" v="6.6461003513572221" z="0.010000000000000002" />
+          <cornerLocal height="0" u="-6.5958470733661567" v="7.0318776095625894" z="0.010000000000000002" />
+          <cornerLocal height="0" u="-6.7218182746260817" v="-4.2728395828170083" z="0.010000000000000002" />
+        </outline>
+        <parkingSpace access="all" restrictions="">
+          <marking color="standard" side="front" type="broken" width="0.13" />
+          <marking color="yellow" side="rear" type="curb" width="0.13" />
+          <marking color="yellow" side="left" type="curb" width="0.13" />
+          <marking color="yellow" side="right" type="curb" width="0.13" />
+        </parkingSpace>
+        <userData code="Type" value="Indoor" />
+        <userData code="ServiceCondition" value="Free" />
+        <userData code="AssetId" value="" />
+      </object>
+      <object type="ParkingSpace" name="Parking Space" id="25" s="426.52504190937537" t="-23.403635245606871" zOffset="0.01" validLength="0" orientation="none" length="27.74999999409517" width="23.499999979620757" radius="18.181807519567858" height="27.74999999409517" hdg="0" pitch="0" roll="0">
+        <outline>
+          <cornerLocal height="0" u="-10.378175568497364" v="-6.4543374447066881" z="0.010000000000000002" />
+          <cornerLocal height="0" u="14.74961492260107" v="-8.6552792964795611" z="0.010000000000000002" />
+          <cornerLocal height="0" u="13.751729353238844" v="10.166363116586146" z="0.010000000000000002" />
+          <cornerLocal height="0" u="-7.7449931388451088" v="11.397590997510076" z="0.010000000000000002" />
+          <cornerLocal height="0" u="-10.378175568497364" v="-6.4543374447066881" z="0.010000000000000002" />
+        </outline>
+        <parkingSpace access="all" restrictions="">
+          <marking color="standard" side="front" type="broken" width="0.13" />
+          <marking color="yellow" side="rear" type="curb" width="0.13" />
+          <marking color="yellow" side="left" type="curb" width="0.13" />
+          <marking color="yellow" side="right" type="curb" width="0.13" />
+        </parkingSpace>
+        <userData code="Type" value="Indoor" />
+        <userData code="ServiceCondition" value="Free" />
+        <userData code="AssetId" value="" />
+      </object>
+      <object type="ParkingSpace" name="Parking Space" id="26" s="397.70364312503665" t="24.270388415511473" zOffset="0.01" validLength="0" orientation="none" length="21.74999999149858" width="19.49999998785313" radius="14.605756563393594" height="21.74999999149858" hdg="0" pitch="0" roll="0">
+        <outline>
+          <cornerLocal height="0" u="-8.4220336786248655" v="-5.126338806147916" z="0.010000000000000002" />
+          <cornerLocal height="0" u="11.355182718246231" v="-8.2063893781496411" z="0.010000000000000002" />
+          <cornerLocal height="0" u="11.204777095576519" v="8.9484897321354815" z="0.010000000000000002" />
+          <cornerLocal height="0" u="-5.71589245657275" v="9.51057682113326" z="0.010000000000000002" />
+          <cornerLocal height="0" u="-8.4220336786248655" v="-5.126338806147916" z="0.010000000000000002" />
+        </outline>
+        <parkingSpace access="all" restrictions="">
+          <marking color="standard" side="front" type="broken" width="0.13" />
+          <marking color="yellow" side="rear" type="curb" width="0.13" />
+          <marking color="yellow" side="left" type="curb" width="0.13" />
+          <marking color="yellow" side="right" type="curb" width="0.13" />
+        </parkingSpace>
+        <userData code="Type" value="Indoor" />
+        <userData code="ServiceCondition" value="Free" />
+        <userData code="AssetId" value="" />
+      </object>
+    </objects>
+  </road>
+  <road id="10" junction="-1" length="134.72910065739154" name="Road(10)">
+    <type s="0" type="town">
+      <speed max="undefined" unit="km/h" />
+    </type>
+    <planView>
+      <geometry hdg="5.1143619191504879" length="38.069579804950429" s="0" x="371.625" y="89.875">
+        <paramPoly3 aU="0" aV="0" bU="38.064634214513646" bV="8.8817841970012523E-15" cU="-0.068751514948097281" cV="4.0630074458686352" dU="0.045792773387560715" dV="-2.7411507610327952" pRange="normalized" />
+      </geometry>
+      <geometry hdg="5.1118021284213171" length="18.257302237410791" s="38.069579804950429" x="387.72471922345869" y="55.3827484235877">
+        <paramPoly3 aU="0" aV="0" bU="18.238508543569743" bV="-3.1086244689504383E-15" cU="0.089987294796809891" cV="-0.97676138273642277" dU="-0.13462782351858849" dV="-0.29852703646823242" pRange="normalized" />
+      </geometry>
+      <geometry hdg="4.9549460657117814" length="77.002031616718511" s="56.32688204236122" x="393.625" y="38.125">
+        <paramPoly3 aU="0" aV="0" bU="76.870185083445122" bV="0" cU="-1.8789854868929581" cV="-23.974404273931107" dU="0.90490490028714987" dV="11.775770048414032" pRange="normalized" />
+      </geometry>
+      <geometry hdg="4.7900068449678219" length="1.4001869983118185" s="133.32891365907972" x="400.01261119468558" y="-38.47933263196434">
+        <paramPoly3 aU="0" aV="0" bU="1.4001852183763268" bV="-2.2197521598599224E-14" cU="5.63977317691311E-06" cV="0.0037576470821924363" dU="-1.0879209280112434E-05" dV="7.2801256384459612E-05" pRange="normalized" />
+      </geometry>
+    </planView>
+    <elevationProfile>
+      <elevation a="0" b="0" c="0" d="0" s="0" />
+    </elevationProfile>
+    <lateralProfile>
+      <superelevation a="0" b="0" c="0" d="0" s="0" />
+      <crossfall a="0" b="0" c="0" d="0" s="0" side="left" />
+      <crossfall a="0" b="0" c="0" d="0" s="0" side="right" />
+    </lateralProfile>
+    <lanes>
+      <laneOffset a="0" b="0" c="0" d="0" s="0" />
+      <laneSection s="0" singleSide="false">
+        <left>
+          <lane id="3" level="false" type="shoulder">
+            <width a="2" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="solid" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="134.72915921305386" />
+          </lane>
+          <lane id="2" level="false" type="driving">
+            <width a="3.5" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="broken" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="134.72915921305386" />
+          </lane>
+          <lane id="1" level="false" type="driving">
+            <width a="3.5" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="broken" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="134.72915921305386" />
+          </lane>
+        </left>
+        <center>
+          <lane id="0" level="false" type="none">
+            <roadMark color="yellow" height="0" laneChange="both" material="" type="solid" weight="standard" width="0.15" sOffset="0" />
+          </lane>
+        </center>
+        <right>
+          <lane id="-1" level="false" type="driving">
+            <width a="3.5" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="broken" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="134.72915921305386" />
+          </lane>
+          <lane id="-2" level="false" type="driving">
+            <width a="3.5" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="broken" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="134.72915921305386" />
+          </lane>
+          <lane id="-3" level="false" type="shoulder">
+            <width a="2" b="0" c="0" d="0" sOffset="0" />
+            <roadMark color="white" height="0" laneChange="both" material="" type="solid" weight="standard" width="0.15" sOffset="0" />
+            <height inner="0" outer="0" sOffset="0" />
+            <height inner="0" outer="0" sOffset="134.72915921305386" />
+          </lane>
+        </right>
+      </laneSection>
+    </lanes>
+    <objects>
+      <object type="ParkingSpace" name="Parking Space" id="23" s="8.7808300978648184" t="-25.587306442148872" zOffset="0.01" validLength="0" orientation="none" length="19.249999988687836" width="23.999999962273257" radius="15.383127914647252" height="19.249999988687836" hdg="0" pitch="0" roll="0">
+        <outline>
+          <cornerLocal height="0" u="-8.2786829402536455" v="-4.5594310867343051" z="0.010000000000000002" />
+          <cornerLocal height="0" u="12.412397602432982" v="-4.624109434244561" z="0.010000000000000002" />
+          <cornerLocal height="0" u="12.810560219854665" v="6.7926092931257784" z="0.010000000000000002" />
+          <cornerLocal height="0" u="-8.66559194178017" v="6.9503604564726942" z="0.010000000000000002" />
+          <cornerLocal height="0" u="-8.2786829402536455" v="-4.5594310867343051" z="0.010000000000000002" />
+        </outline>
+        <parkingSpace access="all" restrictions="">
+          <marking color="standard" side="front" type="broken" width="0.13" />
+          <marking color="yellow" side="rear" type="curb" width="0.13" />
+          <marking color="yellow" side="left" type="curb" width="0.13" />
+          <marking color="yellow" side="right" type="curb" width="0.13" />
+        </parkingSpace>
+        <userData code="Type" value="Indoor" />
+        <userData code="ServiceCondition" value="Free" />
+        <userData code="AssetId" value="" />
+      </object>
+      <object type="ParkingSpace" name="Parking Space" id="24" s="12.317921976400639" t="28.604291626143006" zOffset="0.01" validLength="0" orientation="none" length="18.999999981816536" width="22.24999995428135" radius="14.629272856797671" height="18.999999981816536" hdg="0" pitch="0" roll="0">
+        <outline>
+          <cornerLocal height="0" u="-9.1037337317056988" v="-4.2760400972858443" z="0.01" />
+          <cornerLocal height="0" u="12.136442174191375" v="-3.9521207268024683" z="0.01" />
+          <cornerLocal height="0" u="13.551481971692455" v="5.9093022114671223" z="0.01" />
+          <cornerLocal height="0" u="-7.4804566824689367" v="6.5949061180749977" z="0.01" />
+          <cornerLocal height="0" u="-9.1037337317056988" v="-4.2760400972858443" z="0.01" />
+        </outline>
+        <parkingSpace access="all" restrictions="">
+          <marking color="standard" side="front" type="broken" width="0.13" />
+          <marking color="yellow" side="rear" type="curb" width="0.13" />
+          <marking color="yellow" side="left" type="curb" width="0.13" />
+          <marking color="yellow" side="right" type="curb" width="0.13" />
+        </parkingSpace>
+        <userData code="Type" value="Indoor" />
+        <userData code="ServiceCondition" value="Free" />
+        <userData code="AssetId" value="" />
+      </object>
+    </objects>
+  </road>
+</OpenDRIVE>
