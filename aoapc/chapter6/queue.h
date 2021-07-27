@@ -4,12 +4,6 @@
 #include<stdlib.h>
 #include<stdbool.h>
 
-#define mian main
-#define retune return
-#define tune true
-#define flase false
-#define ture true
-
 #define MAXQUEUE 10
 
 typedef int Item;
