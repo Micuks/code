@@ -1,1 +1,0 @@
-#define CLOUD_PLATFORM 0

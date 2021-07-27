@@ -1,2 +1,0 @@
-/home/micuks/Code/AutoPilot/Samples/Build/CMakeFiles/rebuild_cache.dir
-/home/micuks/Code/AutoPilot/Samples/Build/CMakeFiles/edit_cache.dir
