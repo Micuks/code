@@ -3,23 +3,34 @@
       "Launch": {
         "adapter": "vscode-cpptools",
         "configuration": {
-          "request": "launch",
-          "program": "<path to binary>",
-          "args": [ ... ],
-          "cwd": "<working directory>",
-          "environment": [ ... ],
+            "name": "g++ - Build and debug active file",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${fileDirname}",
+//            "cwd": "${workspaceFolder}",
+            "environment": [],
           "externalConsole": true,
-          "MIMode": "<lldb or gdb>"
+          "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "C/C++: g++ build active file",
+            "miDebuggerPath": "/bin/gdb"
         }
       },
-      "Attach": {
-        "adapter": "vscode-cpptools",
-        "configuration": {
-          "request": "attach",
-          "program": "<path to binary>",
-          "MIMode": "<lldb or gdb>"
-        }
-      }
-      ...
+      {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "externalConsole"
+        },
     }
   }
