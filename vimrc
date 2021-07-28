@@ -17,19 +17,30 @@ Plugin 'gmarik/Vundle.vim'
 " ...
 " SimpyFold
 Plugin 'tmhedberg/SimpylFold'
+"Debug: VimSpector
+Plugin 'puremourning/vimspector'
 
 "indentpython
-Plugin 'vim-scripts/indentpython.vim'
+"Plugin 'vim-scripts/indentpython.vim'
 
 "Color Schemes
+Plugin 'sainnhe/sonokai'
+Plugin 'sainnhe/everforest'
+Plugin 'sonph/onehalf', {'rtp': 'vim'}
 Plugin 'jnurmine/Zenburn'
 Plugin 'altercation/vim-colors-solarized'
+Plugin 'joshdick/onedark.vim'
+"Polyglot: A collection of language packs for Vim -- used for syntax
+Plugin 'sheerun/vim-polyglot'
 
 "Perform basic git commands without leaving the VIM environment
 Plugin 'tpope/vim-fugitive'
 
 "Powerline: status bar
-Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+"Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+"Airline: status bar with multi themes
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 
 "Let VIM check your syntax on each save
 Plugin 'vim-syntastic/syntastic'
@@ -41,9 +52,7 @@ Plugin 'nvie/vim-flake8'
 Plugin 'scrooloose/nerdtree'
 "Tabs
 Plugin 'jistr/vim-nerdtree-tabs'
-"hide .pyc files
-"let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
-
+"hide .pyc files"let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
 "Search basically anything by pressing ^P
 Plugin 'kien/ctrlp.vim'
 
@@ -51,7 +60,10 @@ Plugin 'kien/ctrlp.vim'
 Plugin 'jiangmiao/auto-pairs'
 
 "cpp-enhanced-highlight
-Plugin 'octol/vim-cpp-enhanced-highlight'
+"Plugin 'octol/vim-cpp-enhanced-highlight'
+
+"Auto completion for python
+"Plugin 'davidhalter/jedi-vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -116,8 +128,69 @@ if has('gui_running')
   colorscheme solarized
   "Press F5 can switch between dark and light theme
 else
-  colorscheme zenburn
+  set t_Co=256
+  set background=light
+  set cursorline
+"  colorscheme everforest
+  colorscheme sonokai
+  let g:everforest_background = 'hard'
+  let g:airline_theme='sonokai'
+" lightline
+" let g:lightline = { 'colorscheme' : 'onehalfdark' }
 endif
+" TrueColor
+if exists('+termguicolors')
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
+endif
+"Airline Statusbar Setting
+"       96%   1165 
+if !exists('g:airline_symbols')
+let g:airline_symbols = {}
+endif
+let g:airline_left_sep=''
+let g:airline_right_sep=''
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#show_splits = 0
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#show_tab_count = 0
+let g:airline#extensions#tabline#exclude_preview = 0
+let g:airline#extensions#tabline#tab_nr_type = 1
+let g:airline#extensions#tabline#show_tab_nr = 1
+let g:airline#extensions#tabline#left_sep = ''
+"let g:airline#extensions#tabline#left_alt_sep = ''
+let g:airline#extensions#tabline#left_alt_sep = ''
+let g:airlint_powerline_fonts = 0
+let g:airline_symbols.linenr = ' '
+let g:airline_symbols.maxlinenr = ' '
+let g:airline_symbols.colnr = ': '
+let g:airline_symbols.branch = ''
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+ nmap <leader>1 <Plug>AirlineSelectTab1
+ nmap <leader>2 <Plug>AirlineSelectTab2
+ nmap <leader>3 <Plug>AirlineSelectTab3
+ nmap <leader>4 <Plug>AirlineSelectTab4
+ nmap <leader>5 <Plug>AirlineSelectTab5
+ nmap <leader>6 <Plug>AirlineSelectTab6
+ nmap <leader>7 <Plug>AirlineSelectTab7
+ nmap <leader>8 <Plug>AirlineSelectTab8
+ nmap <leader>9 <Plug>AirlineSelectTab9
+ nmap <leader>0 <Plug>AirlineSelectTab0
+ nmap <leader>- <Plug>AirlineSelectPrevTab
+ nmap <leader>+ <Plug>AirlineSelectNextTab
+let g:airline#extensions#tabline#keymap_ignored_filetypes =
+        \ ['vimfiler', 'nerdtree']
+let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+let g:airline#extensions#tabline#buffer_min_count = 2
+let g:airline#extensions#tabline#show_close_button = 0
+let g:airline#extensions#tabline#close_symbol = 'X'
+let airline#extensions#tabline#ignore_bufadd_pat =
+             \ '\c\vgundo|undotree|vimfiler|tagbar|nerd_tree'
+let g:airline#extensions#ycm#enabled = 1
+let g:airline#extensions#ycm#error_symbol = 'E:'
+let g:airline#extensions#ycm#warning_symbol = 'W:'
 
 "Line Numbering
 set nu
@@ -155,3 +228,18 @@ nnoremap <C-l> <C-w><C-l>
 set tabstop=4
 set shiftwidth=4
 set expandtab
+
+"Newline in INSERT mode
+"nnoremap <M-o> $<CR>
+"nnoremap <M-e> $
+"7.15. YouCompleteMe                                            syntastic-ycm
+"
+"Syntastic can be used together with the "YouCompleteMe" Vim plugin (see
+"https://github.com/ycm-core/YouCompleteMe). However, by default "YouCompleteMe"
+"disables syntastic's checkers for the "c", "cpp", "objc", and "objcpp"
+"filetypes, in order to allow its own checkers to run. If you want to use YCM's
+"identifier completer but still run syntastic's checkers for those filetypes you
+"have to set g:ycm_show_diagnostics_ui to 0. E.g.:
+let g:ycm_show_diagnostics_ui = 0
+
+let g:vimspector_enable_mapping = 'HUMAN'
