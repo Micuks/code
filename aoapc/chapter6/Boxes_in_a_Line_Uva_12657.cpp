@@ -61,14 +61,25 @@ void link(int& a, int& b) {
 }
 
 void swap2(int&a, int&b) {
-    int leftb = Left[b], rightb = Right[b];
-    link(Left[a], b);
-    link(b, Right[a]);
+    int lefta = Left[a], righta = Right[a], leftb = Left[b], rightb = Right[b];
+    if(Right[a] == b) {
+        link(lefta, b);
+        link(b, a);
+        link(a, rightb);
+    }
+    else if(Left[a] == b) {
+        link(leftb, a);
+        link(a, b);
+        link(b, righta);
+    }
+    else {
+        link(Left[a], b);
+        link(b, Right[a]);
 
-    link(leftb, a);
-    link(a, rightb);
-    //    debug();
-
+        link(leftb, a);
+        link(a, rightb);
+        //    debug();
+    }
 }
 long long output(int n, int inv) {
     long long result = 0;
