@@ -10,17 +10,20 @@ int main() {
         memset(tree, 0, sizeof(tree));
         int ptr = 1;
         for(int i = 0; i < n; i++) {
+            ptr = 1;
             while(ptr < 1<<(d-1)) {
-                if(tree[ptr] == 0) {
+                //printf("tree[%d] = %d,\n", ptr, tree[ptr]);
+                tree[ptr] = !tree[ptr];
+                if(tree[ptr]) {
                     ptr = ptr<<1;
                 }
                 else {
-                    ptr = ptr<<1+1;
+                    ptr = (ptr<<1)+1;
                 }
-                printf("level: %d, ptr: %d\n",i, ptr);
+                //printf("i: %d, ptr: %d\n",i, ptr);
             }
         }
-        printf("%d\n",tree[ptr]);
+        printf("%d\n", ptr);
     }
     return 0;
 }
