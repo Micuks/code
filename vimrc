@@ -18,7 +18,7 @@ Plugin 'gmarik/Vundle.vim'
 " SimpyFold
 Plugin 'tmhedberg/SimpylFold'
 "Debug: VimSpector
-Plugin 'puremourning/vimspector'
+"Plugin 'puremourning/vimspector'
 
 "indentpython
 "Plugin 'vim-scripts/indentpython.vim'
