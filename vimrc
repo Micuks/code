@@ -87,7 +87,9 @@ Plug 'skywind3000/asyncrun.vim'
 Plug 'dense-analysis/ale'
 
 "Ycm
-Plug 'ycm-core/YouCompleteMe'
+"Plug 'ycm-core/YouCompleteMe'
+"Coc autocompile
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 call plug#end()            " required
 filetype plugin indent on    " required
@@ -205,9 +207,9 @@ let g:airline#extensions#tabline#show_close_button = 0
 let g:airline#extensions#tabline#close_symbol = 'X'
 let airline#extensions#tabline#ignore_bufadd_pat =
              \ '\c\vgundo|undotree|vimfiler|tagbar|nerd_tree'
-let g:airline#extensions#ycm#enabled = 1
-let g:airline#extensions#ycm#error_symbol = 'E:'
-let g:airline#extensions#ycm#warning_symbol = 'W:'
+"let g:airline#extensions#ycm#enabled = 1
+"let g:airline#extensions#ycm#error_symbol = 'E:'
+"let g:airline#extensions#ycm#warning_symbol = 'W:'
 
 "Line Numbering
 set nu
@@ -253,29 +255,53 @@ set expandtab
 "nnoremap <M-e> $
 "7.15. YouCompleteMe                                            syntastic-ycm
 "
-"Syntastic can be used together with the "YouCompleteMe" Vim plugin (see
-"https://github.com/ycm-core/YouCompleteMe). However, by default "YouCompleteMe"
-"disables syntastic's checkers for the "c", "cpp", "objc", and "objcpp"
-"filetypes, in order to allow its own checkers to run. If you want to use YCM's
-"identifier completer but still run syntastic's checkers for those filetypes you
-"have to set g:ycm_show_diagnostics_ui to 0. E.g.:
-let g:ycm_autoclose_preview_window_after_completion=1
-let g:ycm_show_diagnostics_ui = 0
-let g:ycm_add_preview_to_completeopt = 0
-let g:ycm_show_diagnostics_ui = 0
-let g:ycm_server_log_level = 'info'
-let g:ycm_min_num_identifier_candidate_chars = 2
-let g:ycm_collect_identifiers_from_comments_and_strings = 1
-let g:ycm_complete_in_strings=1
-let g:ycm_key_invoke_completion = '<c-x>'
-set completeopt=menu,menuone
-
-noremap <c-x> <NOP>
-
-let g:ycm_semantic_triggers =  {
-           \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
-           \ 'cs,lua,javascript': ['re!\w{2}'],
-           \ }
+""Syntastic can be used together with the "YouCompleteMe" Vim plugin (see
+""https://github.com/ycm-core/YouCompleteMe). However, by default "YouCompleteMe"
+""disables syntastic's checkers for the "c", "cpp", "objc", and "objcpp"
+""filetypes, in order to allow its own checkers to run. If you want to use YCM's
+""identifier completer but still run syntastic's checkers for those filetypes you
+""have to set g:ycm_show_diagnostics_ui to 0. E.g.:
+"let g:ycm_autoclose_preview_window_after_completion=1
+"let g:ycm_show_diagnostics_ui = 0
+"let g:ycm_add_preview_to_completeopt = 0
+"let g:ycm_show_diagnostics_ui = 0
+"let g:ycm_server_log_level = 'info'
+"let g:ycm_min_num_identifier_candidate_chars = 2
+"let g:ycm_collect_identifiers_from_comments_and_strings = 1
+"let g:ycm_complete_in_strings=1
+"let g:ycm_key_invoke_completion = '<c-x>'
+""let g:ycm_extra_conf_globlist = [
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/examples/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/cs/testdata/testy-multiple-solutions/solution-not-named-like-folder/extra-conf-rel/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/cs/testdata/testy-multiple-solutions/solution-not-named-like-folder/extra-conf-bad/testy/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/cs/testdata/testy-multiple-solutions/solution-not-named-like-folder/extra-conf-abs/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/clang/testdata/test-include/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/clang/testdata/noflags/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/clang/testdata/general_fallback/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/clang/testdata/get_doc/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/clang/testdata/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/clang/testdata/client_data/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/clang/testdata/driver_mode_cl/flag/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/clang/testdata/driver_mode_cl/executable/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/clangd/testdata/extra_conf/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/language_server/testdata/project/settings_extra_conf/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/java/testdata/lombok_project/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/java/testdata/extra_confs/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/java/testdata/multiple_projects/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/testdata/extra_conf/project/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/ycmd/tests/testdata/client/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py',
+""            \'/home/micuks/.vim/plugged/YouCompleteMe/python/ycm/tests/testdata/.ycm_extra_conf.py',
+""            \]
+"set completeopt=menu,menuone
+"
+"noremap <c-x> <NOP>
+"
+"let g:ycm_semantic_triggers =  {
+"           \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+"           \ 'cs,lua,javascript': ['re!\w{2}'],
+"           \ }
 
 let g:vimspector_enable_mapping = 'HUMAN'
 
@@ -315,8 +341,10 @@ let g:asyncrun_bell = 1
 nnoremap <F10> :call asyncrun#quickfix_toggle(6)<cr>
 "F9 compile single file
 nnoremap <silent> <F9> :AsyncRun gcc -Wall -g "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" -lstdc++ <cr>
+"nnoremap <silent> <F9> :AsyncRun clangd --log=info "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
 "F5 Run single file
-nnoremap <silent> <F5> :AsyncRun -raw -cwd="$(VIM_FILEDIR)" "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
+nnoremap <silent> <F5> :AsyncRun -mode=term -pos=bottom -rows=10 -raw -cwd="$(VIM_FILEDIR)" "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
+"nnoremap <silent> <F5> :AsyncRun gdb "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
 "search for project root dir
 let g:asyncrun_rootmarks = ['.svn', '.git', '.root', '_darcs', 'build.xml'] 
 "compile the project

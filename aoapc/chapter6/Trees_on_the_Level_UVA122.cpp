@@ -32,7 +32,8 @@ void deletetree(Node* proot) {
 
 bool input(void) {
     char str[maxn];
-    //deletetree(proot);
+    failed = false;
+    deletetree(proot);
     proot = newnode();
     while(scanf("%s", str) == 1) {
         if(strcmp(str, "()") == 0)
@@ -40,7 +41,8 @@ bool input(void) {
         int v;
         Node* pnode = proot;
         sscanf(str+1, "%d", &v);
-        for(int i = strchr(str, ',') + 1 - str; str[i] != '\0'; i++) {
+        int len = strlen(str);
+        for(int i = strchr(str, ',') + 1 - str; i < len; i++) {
             if(str[i] == 'L') {
                 if(pnode->left == NULL) pnode->left = newnode();
                 pnode = pnode->left;
@@ -69,13 +71,13 @@ bool bfs(vector<int>& ans) {
         Node* pnode = q.front();
         q.pop();
         ans.push_back(pnode->value);
-        if(pnode->left) {
+        if(pnode->left != NULL) {
             q.push(pnode->left);
         }
-        if(pnode->right) {
+        if(pnode->right != NULL) {
             q.push(pnode->right);
         }
-        if((pnode->left || pnode->right) && pnode->isvalued == false) {
+        if((pnode->left != NULL|| pnode->right != NULL) && pnode->isvalued == false) {
             failed = true;
         }
     }
@@ -96,14 +98,10 @@ bool print(vector<int> ans) {
 }
 
 int main() {
-    char flag; 
-    while((flag = getchar()) == '(') {
+    while(input()) {
         vector<int> ans;
-        ungetc(flag, stdin);
-        input();
         bfs(ans);
         print(ans);
-        deletetree(proot);
         getchar();
     }
     return 0;
