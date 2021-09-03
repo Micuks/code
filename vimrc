@@ -10,6 +10,9 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
 endif
 
 call plug#begin()
+"IndentLine
+Plug 'Yggdroot/indentLine'
+
 "Display function signatures from completions in the command line
 Plug 'Shougo/echodoc.vim'
 
@@ -23,7 +26,7 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'tpope/vim-unimpaired'
 
 "New objects
-"di 或 ci, 一次性删除/改写当前参数
+"di, 或 ci, 一次性删除/改写当前参数
 "ii 和 ai ：缩进对象，同一个缩进层次的代码，可以用 vii 选中，dii / cii 删除或改写
 "if 和 af ：函数对象，可以用 vif / dif / cif 来选中/删除/改写函数的内容
 Plug 'kana/vim-textobj-user'
@@ -210,6 +213,7 @@ let airline#extensions#tabline#ignore_bufadd_pat =
 "let g:airline#extensions#ycm#enabled = 1
 "let g:airline#extensions#ycm#error_symbol = 'E:'
 "let g:airline#extensions#ycm#warning_symbol = 'W:'
+let g:airline#extensions#coc#enabled = 1
 
 "Line Numbering
 set nu

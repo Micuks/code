@@ -2,62 +2,51 @@
 #include<cstring>
 #include<vector>
 #include<queue>
-
 using namespace std;
 
 const int maxn = 1000;
-bool failed = false;
+int root, cnt;
+int left[maxn], right[maxn], value[maxn];
+bool isvalued[maxn], failed = false;
 
-struct Node {
-    int value;
-    bool isvalued;
-    Node* left;
-    Node* right;
-    Node():value(0), isvalued(false), left(NULL), right(NULL){};
-};
-
-Node* proot;
-
-Node* newnode() {
-    return new Node();
-}
-
-void deletetree(Node* proot) {
-    if(proot == NULL)
-        return; 
-    deletetree(proot->left);
-    deletetree(proot->right);
-    delete proot;
+int newnode() {
+    int node = ++cnt;
+    left[node] = right[node] = value[node] = 0;
+    isvalued[node] = false;
+    return node;
 }
 
 bool input(void) {
     char str[maxn];
+    cnt = 0;
+    root = 1;
+    memset(left,0,sizeof(left));
+    memset(right, 0, sizeof(right));
     failed = false;
-    deletetree(proot);
-    proot = newnode();
+    root = newnode();
     while(scanf("%s", str) == 1) {
         if(strcmp(str, "()") == 0)
             return true;
         int v;
-        Node* pnode = proot;
+        int node = root;
         sscanf(str+1, "%d", &v);
         int len = strlen(str);
         for(int i = strchr(str, ',') + 1 - str; i < len; i++) {
             if(str[i] == 'L') {
-                if(pnode->left == NULL) pnode->left = newnode();
-                pnode = pnode->left;
+                if(!left[node]) left[node] = newnode();
+                node = left[node];
             }
             else if(str[i] == 'R') {
-                if(pnode->right == NULL) pnode->right = newnode();
-                pnode = pnode->right;
+                if(!right[node]) right[node] = newnode();
+                node = right[node];
             }
         }
-        if(pnode->isvalued == true) {
+        if(isvalued[node]) {
             failed = true;
         }
         else {
-            pnode->isvalued = true;
-            pnode->value = v;
+            isvalued[node] = true;
+            value[node] = v;
         }
     }
     return false;
@@ -65,19 +54,19 @@ bool input(void) {
 
 bool bfs(vector<int>& ans) {
     ans.clear();
-    queue<Node*> q;
-    q.push(proot);
+    queue<int> q;
+    q.push(root);
     while(q.empty() == false) {
-        Node* pnode = q.front();
+        int node = q.front();
         q.pop();
-        ans.push_back(pnode->value);
-        if(pnode->left != NULL) {
-            q.push(pnode->left);
+        ans.push_back(value[node]);
+        if(!left[node]) {
+            q.push(left[node]);
         }
-        if(pnode->right != NULL) {
-            q.push(pnode->right);
+        if(right[node]) {
+            q.push(right[node]);
         }
-        if((pnode->left != NULL|| pnode->right != NULL) && pnode->isvalued == false) {
+        if(!isvalued[node]) {
             failed = true;
         }
     }
@@ -88,10 +77,10 @@ bool print(vector<int> ans) {
     if(failed) {
         printf("not complete\n");
         return false;
-    }   
+    }
     int len = ans.size();
     for(int i = 0; i < len; i++) {
-        printf(" %d" + !i, ans[i]);
+        printf(&" %d" [ !i], ans[i]);
     }
     putchar('\n');
     return true;
