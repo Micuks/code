@@ -1,76 +1,91 @@
 set nocompatible              " required
+set noshowmode
 filetype off                  " required
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" set the runtime path to include vim-plug and initialize
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
 
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
+call plug#begin()
+"Display function signatures from completions in the command line
+Plug 'Shougo/echodoc.vim'
 
-" let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
+"LeaderF
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 
-" add all your plugins here (note older versions of Vundle
-" used Bundle instead of Plugin)
+"Enhanced highlight
+Plug 'octol/vim-cpp-enhanced-highlight'
 
-" ...
-" SimpyFold
-Plugin 'tmhedberg/SimpylFold'
-"Debug: VimSpector
-"Plugin 'puremourning/vimspector'
+"Enhanced keybinds
+Plug 'tpope/vim-unimpaired'
 
-"indentpython
-"Plugin 'vim-scripts/indentpython.vim'
+"New objects
+"di 或 ci, 一次性删除/改写当前参数
+"ii 和 ai ：缩进对象，同一个缩进层次的代码，可以用 vii 选中，dii / cii 删除或改写
+"if 和 af ：函数对象，可以用 vif / dif / cif 来选中/删除/改写函数的内容
+Plug 'kana/vim-textobj-user'
+Plug 'kana/vim-textobj-indent'
+Plug 'kana/vim-textobj-syntax'
+Plug 'kana/vim-textobj-function', { 'for':['c', 'cpp', 'vim', 'java'] }
+Plug 'sgur/vim-textobj-parameter'
+
+"Vim-Signify
+":SignifyDiff compare previous and current code splitly
+Plug 'mhinz/vim-signify'
+
+"SimpyFold
+Plug 'tmhedberg/SimpylFold'
 
 "Color Schemes
-Plugin 'sainnhe/sonokai'
-Plugin 'sainnhe/everforest'
-Plugin 'sonph/onehalf', {'rtp': 'vim'}
-Plugin 'jnurmine/Zenburn'
-Plugin 'altercation/vim-colors-solarized'
-Plugin 'joshdick/onedark.vim'
+Plug 'sainnhe/sonokai'
+Plug 'sainnhe/everforest'
+Plug 'sonph/onehalf', {'rtp': 'vim'}
+Plug 'jnurmine/Zenburn'
+Plug 'altercation/vim-colors-solarized'
+Plug 'joshdick/onedark.vim'
 "Polyglot: A collection of language packs for Vim -- used for syntax
-Plugin 'sheerun/vim-polyglot'
+Plug 'sheerun/vim-polyglot'
 
-"Perform basic git commands without leaving the VIM environment
-Plugin 'tpope/vim-fugitive'
-
-"Powerline: status bar
-"Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
 "Airline: status bar with multi themes
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 "Let VIM check your syntax on each save
-Plugin 'vim-syntastic/syntastic'
+Plug 'vim-syntastic/syntastic'
 
 "PEP 8 checking
-Plugin 'nvie/vim-flake8'
+Plug 'nvie/vim-flake8'
 
 "File Tree
-Plugin 'scrooloose/nerdtree'
+Plug 'preservim/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'ryanoasis/vim-devicons'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'PhilRunninger/nerdtree-buffer-ops'
+Plug 'PhilRunninger/nerdtree-visual-selection'
 "Tabs
-Plugin 'jistr/vim-nerdtree-tabs'
+Plug 'jistr/vim-nerdtree-tabs'
 "hide .pyc files"let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
 "Search basically anything by pressing ^P
-Plugin 'kien/ctrlp.vim'
 
-"AutoPairs
-Plugin 'jiangmiao/auto-pairs'
+"ctags and gutentags
+"^] open definition in current tab
+"^W ] open definition in new tab
+"^W } open definition in preview split
+Plug 'universal-ctags/ctags'
+Plug 'ludovicchabant/vim-gutentags'
 
-"cpp-enhanced-highlight
-"Plugin 'octol/vim-cpp-enhanced-highlight'
+"AsyncRun 
+Plug 'skywind3000/asyncrun.vim'
 
-"Auto completion for python
-"Plugin 'davidhalter/jedi-vim'
+"CodeAnalysis
+Plug 'dense-analysis/ale'
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
+call plug#end()            " required
 filetype plugin indent on    " required
-
-"AutoComplete
-Bundle 'Valloric/YouCompleteMe'
 
 " Enable folding
 set foldmethod=indent
@@ -105,9 +120,6 @@ au BufNewFile,BufRead *.js, *.html, *.css
 "au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
 set encoding=utf-8
-
-let g:ycm_autoclose_preview_window_after_completion=1
-map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 "python with virtualenv support
 "py << EOF
@@ -240,6 +252,122 @@ set expandtab
 "filetypes, in order to allow its own checkers to run. If you want to use YCM's
 "identifier completer but still run syntastic's checkers for those filetypes you
 "have to set g:ycm_show_diagnostics_ui to 0. E.g.:
+let g:ycm_autoclose_preview_window_after_completion=1
 let g:ycm_show_diagnostics_ui = 0
+let g:ycm_add_preview_to_completeopt = 0
+let g:ycm_show_diagnostics_ui = 0
+let g:ycm_server_log_level = 'info'
+let g:ycm_min_num_identifier_candidate_chars = 2
+let g:ycm_collect_identifiers_from_comments_and_strings = 1
+let g:ycm_complete_in_strings=1
+let g:ycm_key_invoke_completion = '<c-z>'
+set completeopt=menu,menuone
+
+noremap <c-z> <NOP>
+
+let g:ycm_semantic_triggers =  {
+           \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+           \ 'cs,lua,javascript': ['re!\w{2}'],
+           \ }
 
 let g:vimspector_enable_mapping = 'HUMAN'
+
+set autochdir
+
+set clipboard=unnamed
+
+"configure ctags
+set tags=./.tags;,.tags
+
+" gutentags 搜索工程目录的标志，碰到这些文件/目录名就停止向上一级目录递归
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']
+
+" 所生成的数据文件的名称
+let g:gutentags_ctags_tagfile = '.tags'
+
+" 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
+let s:vim_tags = expand('~/.cache/tags')
+let g:gutentags_cache_dir = s:vim_tags
+
+" 配置 ctags 的参数
+let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
+" 检测 ~/.cache/tags 不存在就新建
+if !isdirectory(s:vim_tags)
+   silent! call mkdir(s:vim_tags, 'p')
+endif
+
+"configure AsyncRun
+" 自动打开 quickfix window ，高度为 6
+let g:asyncrun_open = 6
+" 任务结束时候响铃提醒
+let g:asyncrun_bell = 1
+" 设置 F10 打开/关闭 Quickfix 窗口
+nnoremap <F10> :call asyncrun#quickfix_toggle(6)<cr>
+"F9 compile single file
+nnoremap <silent> <F9> :AsyncRun gcc -Wall -g "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
+"F5 Run single file
+nnoremap <silent> <F5> :AsyncRun -raw -cwd="$(VIM_FILEDIR)" "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
+"search for project root dir
+let g:asyncrun_rootmarks = ['.svn', '.git', '.root', '_darcs', 'build.xml'] 
+"compile the project
+nnoremap <silent> <F7> :AsyncRun -cwd=<root> make <cr>
+"run the project
+nnoremap <silent> <F8> :AsyncRun -cwd=<root> -raw make run <cr>
+"test the project
+nnoremap <silent> <F6> :AsyncRun -cwd=<root> -raw make test <cr>
+"CMAKE update Makefile
+nnoremap <silent> <F4> :AsyncRun -cwd=<root> cmake . <cr>
+
+"Code Analysis
+let g:ale_linters_explicit = 1
+let g:ale_completion_delay = 500
+let g:ale_echo_delay = 20
+let g:ale_lint_delay = 500
+let g:ale_echo_msg_format = '[%linter%] %code: %%s'
+let g:ale_lint_on_text_changed = 'normal'
+let g:ale_lint_on_insert_leave = 1
+let g:airline#extensions#ale#enabled = 1
+
+let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
+let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
+let g:ale_c_cppcheck_options = ''
+let g:ale_cpp_cppcheck_options = ''
+
+let g:ale_sign_error = "\ue009\ue009"
+hi! clear SpellBad
+hi! clear SpellCap
+hi! clear SpellRare
+hi! SpellBad gui=undercurl guisp=red
+hi! SpellCap gui=undercurl guisp=blue
+hi! SpellRare gui=undercurl guisp=magenta
+
+"LeaderF
+let g:Lf_ShortcutF = '<c-p>'
+let g:Lf_ShortcutB = '<m-n>'
+noremap <c-n> :LeaderfMru<cr>
+noremap <m-p> :LeaderfFunction!<cr>
+noremap <m-n> :LeaderfBuffer<cr>
+noremap <m-m> :LeaderfTag<cr>
+let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
+
+let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git']
+let g:Lf_WorkingDirectoryMode = 'Ac'
+let g:Lf_WindowHeight = 0.30
+let g:Lf_CacheDirectory = expand('~/.vim/cache')
+let g:Lf_ShowRelativePath = 0
+let g:Lf_HideHelp = 1
+let g:Lf_StlColorscheme = 'powerline'
+let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
+
+"enable <m-
+let c='a'
+while c <= 'z'
+  exec "set <A-".c.">=\e".c
+  exec "imap \e".c." <A-".c.">"
+  let c = nr2char(1+char2nr(c))
+endw
+
+set timeout ttimeoutlen=50
