@@ -22,13 +22,13 @@ Node* newnode() {
     return new Node();
 }
 
-//void deletetree(Node* proot) {
-//    if(proot == NULL)
-//        return; 
-//    deletetree(proot->left);
-//    deletetree(proot->right);
-//    delete proot;
-//}
+void deletetree(Node* proot) {
+    if(proot == NULL)
+        return; 
+    deletetree(proot->left);
+    deletetree(proot->right);
+    delete proot;
+}
 
 bool input(void) {
     char str[maxn];
@@ -84,10 +84,11 @@ bool bfs(vector<int>& ans) {
 
 bool print(vector<int> ans) {
     if(failed) {
-        printf("-1\n");
+        printf("not complete\n");
         return false;
     }   
-    for(int i = 0; i < ans.size(); i++) {
+    int len = ans.size();
+    for(int i = 0; i < len; i++) {
         printf(" %d" + !i, ans[i]);
     }
     putchar('\n');
@@ -102,6 +103,7 @@ int main() {
         input();
         bfs(ans);
         print(ans);
+        deletetree(proot);
         getchar();
     }
     return 0;

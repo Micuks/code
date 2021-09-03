@@ -68,7 +68,9 @@ Plug 'PhilRunninger/nerdtree-buffer-ops'
 Plug 'PhilRunninger/nerdtree-visual-selection'
 "Tabs
 Plug 'jistr/vim-nerdtree-tabs'
-"hide .pyc files"let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
+"hide .pyc files"
+let NERDTreeIgnore=['\.pyc$', '\~$'] 
+"ignore files in NERDTree
 "Search basically anything by pressing ^P
 
 "ctags and gutentags
@@ -83,6 +85,9 @@ Plug 'skywind3000/asyncrun.vim'
 
 "CodeAnalysis
 Plug 'dense-analysis/ale'
+
+"Ycm
+Plug 'ycm-core/YouCompleteMe'
 
 call plug#end()            " required
 filetype plugin indent on    " required
@@ -227,6 +232,8 @@ autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTr
 autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
     \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 
+let NERDTreeHijackNetrw=1
+
 "open split below and on right
 set splitbelow
 set splitright
@@ -260,10 +267,10 @@ let g:ycm_server_log_level = 'info'
 let g:ycm_min_num_identifier_candidate_chars = 2
 let g:ycm_collect_identifiers_from_comments_and_strings = 1
 let g:ycm_complete_in_strings=1
-let g:ycm_key_invoke_completion = '<c-z>'
+let g:ycm_key_invoke_completion = '<c-x>'
 set completeopt=menu,menuone
 
-noremap <c-z> <NOP>
+noremap <c-x> <NOP>
 
 let g:ycm_semantic_triggers =  {
            \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
@@ -301,13 +308,13 @@ endif
 
 "configure AsyncRun
 " 自动打开 quickfix window ，高度为 6
-let g:asyncrun_open = 6
+let g:asyncrun_open = 12
 " 任务结束时候响铃提醒
 let g:asyncrun_bell = 1
 " 设置 F10 打开/关闭 Quickfix 窗口
 nnoremap <F10> :call asyncrun#quickfix_toggle(6)<cr>
 "F9 compile single file
-nnoremap <silent> <F9> :AsyncRun gcc -Wall -g "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
+nnoremap <silent> <F9> :AsyncRun gcc -Wall -g "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" -lstdc++ <cr>
 "F5 Run single file
 nnoremap <silent> <F5> :AsyncRun -raw -cwd="$(VIM_FILEDIR)" "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
 "search for project root dir
