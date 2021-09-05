@@ -112,11 +112,76 @@ void debugtree(void) {
     cout << endl;
 }
 
-void output(void) {
-    int ndmin = maxn;
-    for(int i = 1; i <= cnt; i++) {
-        
+void swap(int& a, int& b) {
+    int tmp = a;
+    a = b;
+    b = tmp;
+}
+
+void sort_unit(vector<int>& leaflist, vector<int>& valuelist, int begin, int end) {
+    int dad = begin;
+    int son = tleft[dad];
+    while(son) {
+        if(tright[dad] && son < tright[dad])
+            son = tright[dad];
+        if(valuelist[dad] >= valuelist[son])
+            return;
+        else {
+            swap(leaflist[dad], leaflist[son]);
+            swap(valuelist[dad], valuelist[son]);
+            dad = son;
+            son = tleft[son];
+        }
     }
+}
+void heap_sort(vector<int>& leaflist, vector<int>& valuelist) {
+    for(int i = root; i > 0; i--) {
+        sort_unit(leaflist, valuelist, i, cnt);
+    }
+    for(int i = cnt; i > 0; i--) {
+        swap(leaflist.front(), valuelist.end());
+        swap(valuelist.front(), valuelist.end());
+        sort_unit(leaflist, valuelist, 0, i);
+    }
+}
+
+void addlist(vector<int>& leaflist, vector<int>& valuelist) {
+    int node = root;
+    queue<int> q;
+    q.push(root);
+    while(!q.empty()) {
+        node = q.front();
+        q.pop();
+        if(tleft(node)) q.push(tleft(node));
+        else if(!tright(node)) {
+            leaflist.push_back(node);
+            valuelist.push_back(sum(node));
+        }
+        if(tright(node)) q.push(tright(node));
+        else if(!tleft(node)) {
+            leaflist.push_back(node);
+            valuelist.push_back(sum(node));
+        }
+    }
+}
+
+int minleaf(vector<int> leaflist, vector<int> valuelist) {
+    int vsum = valuelist.front();
+    int res = leaflist.front();
+    while(valuelist.front() == vsum) {
+        valuelist.erase(valuelist.begin());
+        leaflist.erase(leaflist.begin());
+        if(value[leaflist.front()] < value[res])
+            res = leaflist.front();
+    }
+    return res;
+}
+void output(void) {
+    vector<int> leaflist, valuelist;
+    addlist(leaflist, valuelist);
+
+    heap_sort(leaflist, valuelist);
+    cout << valuelist[minleaf(leaflist, valuelist)] << endl;
 }
 int main() {
     queue<int> inorder, postorder;
