@@ -1,3 +1,4 @@
+int q = (p + r) / 2;
 set nocompatible              " required
 set noshowmode
 filetype off                  " required
@@ -147,7 +148,7 @@ syntax on
 
 if has('gui_running')
   set background=dark
-  colorscheme solarized
+  colorscheme sonokai
   "Press F5 can switch between dark and light theme
 else
   set t_Co=256
