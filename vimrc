@@ -348,17 +348,18 @@ nnoremap <silent> <F9> :AsyncRun gcc -Wall -g "$(VIM_FILEPATH)" -o "$(VIM_FILEDI
 "nnoremap <silent> <F9> :AsyncRun clangd --log=info "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
 "F5 Run single file
 nnoremap <silent> <F5> :AsyncRun -mode=term -pos=bottom -rows=10 -raw -cwd="$(VIM_FILEDIR)" "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
+nnoremap <silent> <F6> :AsyncRun -pos=bottom -rows=10 -raw -cwd="$(VIM_FILEDIR)" "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" < "$(VIM_FILEDIR)/data.in" <cr>
 "nnoremap <silent> <F5> :AsyncRun gdb "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
 "search for project root dir
 let g:asyncrun_rootmarks = ['.svn', '.git', '.root', '_darcs', 'build.xml'] 
 "compile the project
-nnoremap <silent> <F7> :AsyncRun -cwd=<root> make <cr>
+"nnoremap <silent> <F7> :AsyncRun -cwd=<root> make <cr>
 "run the project
-nnoremap <silent> <F8> :AsyncRun -cwd=<root> -raw make run <cr>
+"nnoremap <silent> <F8> :AsyncRun -cwd=<root> -raw make run <cr>
 "test the project
-nnoremap <silent> <F6> :AsyncRun -cwd=<root> -raw make test <cr>
+"nnoremap <silent> <F6> :AsyncRun -cwd=<root> -raw make test <cr>
 "CMAKE update Makefile
-nnoremap <silent> <F4> :AsyncRun -cwd=<root> cmake . <cr>
+"nnoremap <silent> <F4> :AsyncRun -cwd=<root> cmake . <cr>
 
 "Code Analysis
 let g:ale_linters_explicit = 1
