@@ -9,7 +9,7 @@ void process(int* num, int len, int& anssum, int& ansid, int& anscnt) {
     //cout << "num[i]\tsum\tcnt\n";
     //cout << *num << '\t'<< sum <<'\t'<< cnt << endl;
     for(int i = 1; i < len; i++) {
-        if(sum + num[i] > num[i]) {
+        if(sum > 0) {
             sum += num[i];
             cnt++;
         }
