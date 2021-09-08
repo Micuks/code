@@ -1,23 +1,32 @@
 #include<cstdio>
-const int maxn = 1e4 + 10;
-int c[maxn][maxn];
+const int maxn = 1e5 + 10;
+int c[2][maxn];
 int x[maxn], y[maxn];
-int lcs(int* x, int* y, int m, int n) {
+int lcs(int m, int n) {
     int i, j;
-    c[0][0] = 0;
-    for(i = 1; i <= m; i++) c[i][0] = 0;
-    for(j = 1; j <= n; j++) c[0][j] = 0;
-    for(j = 1; j <= n; j++) {
-        for(i = 1; i <= m; i++) {
+    for(i = 0; i <= n; i++) c[0][i] = 0;
+    for(i = 0; i <= n; i++) c[1][i] = 0;
+    int rev = 1;
+    for(i = 1; i <= m; i++) {
+        for(j = 1; j <= n; j++) {
             if(x[i] == y[j])
-                c[i][j] = c[i-1][j-1] + 1;
-            else if(c[i-1][j] >= c[i][j-1])
-                c[i][j] = c[i-1][j];
+                c[rev][j] = c[!rev][j-1] + 1;
+            else if(c[rev][j-1] > c[!rev][j])
+                c[rev][j] = c[rev][j-1];
             else
-                c[i][j] = c[i][j-1];
+                c[rev][j] = c[!rev][j];
+
         }
+        rev = !rev;
     }
-    return c[m][n];
+    return c[!rev][n];
+}
+void print(int m) {
+    for(int k = 0; k <= 1; k++) {
+        for(int l = 0; l <= m; l++)
+            printf("%d ", c[k][l]);
+        putchar('\n');
+    }
 }
 int main() {
     int n;
@@ -26,6 +35,6 @@ int main() {
         scanf("%d", &x[j]);
     for(int j = 1; j <= n; j++)
         scanf("%d", &y[j]);
-    printf("%d\n", lcs(x, y, n, n));
+    printf("%d\n", lcs(n, n));
     return 0;
 }
