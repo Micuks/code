@@ -1,37 +1,23 @@
 #include <cstdio>
-#include <cstring>
 
 const int maxn = 1e5 + 10;
-
 void getmax(int* a, int n, int& f, int& r, int& maxsum) {
-    int c[n+1], d[n+1];
-    memset(c, 0, sizeof(c));
-    memset(d, 0, sizeof(d));
-
-    c[n-1] = a[n-1];
-    d[n-1] = n - 1;
-    for(int i = n - 2; i >= 0; i--) {
-        if(c[i+1] > 0) {
-            c[i] = c[i+1] + a[i];
-            d[i] = d[i+1];
+    maxsum = -1001;
+    int max = 0, tmp;
+    for(int i = n - 1; i >= 0; i--) {
+        if(max > 0) {
+            max += a[i];
         }
         else {
-            c[i] = a[i];
-            d[i] = i;
+            max = a[i];
+            tmp = i;
         }
-        if(maxsum <= c[i]) {
-        maxsum = c[i];
+        if(maxsum <= max) {
+        maxsum = max;
         f = i;
+        r = tmp;
         }
     }
-    //for(int i = n-1; i >= 0; i--) {
-        //if(c[i] >= maxsum) {
-            //maxsum = c[i];
-            //f = i;
-            //r = d[i];
-        //}
-    //}
-    r = d[f];
 }
 
 int main() {
@@ -43,10 +29,10 @@ int main() {
         for(int i = 0; i < n; i++) {
             scanf("%d", num + i);
         }
-        int f, r, maxsum = 0;
+        int f, r, maxsum;
         getmax(num, n, f, r, maxsum);
         printf(&"\nCase %d:\n" [ !(k-1)], k);
-        printf("%d %d %d\n", maxsum, f, r);
+        printf("%d %d %d\n", maxsum, f + 1, r + 1);
     }
     return 0;
 }
