@@ -6,6 +6,7 @@ int max(int a, int b) {
     return a > b ? a : b;
 }
 void maxpack(int n, int c) {
+    int i, j;
     for(i = 0; i <= c; i++) m[i] = 0;
     for(i = 1; i <= n; i++) {
         for(j = c; j >= 0; j--) {
