@@ -10,7 +10,9 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
 endif
 
 call plug#begin()
+Plug 'wakatime/vim-wakatime'
 "IndentLine
+Plug 'severij/vadelma'
 Plug 'Yggdroot/indentLine'
 
 "Display function signatures from completions in the command line
@@ -146,7 +148,7 @@ let python_highlight_all=1
 syntax on
 
 if has('gui_running')
-  set background=dark
+  set background=light
   colorscheme sonokai
   set guifont="JetBrains Mono NL Medium":h13
   "Press F5 can switch between dark and light theme
@@ -155,11 +157,12 @@ else
   set background=light
   set cursorline
 "  colorscheme everforest
-  colorscheme sonokai
+  colorscheme onehalfdark
+
   let g:everforest_background = 'hard'
   let g:airline_theme='sonokai'
 " lightline
-" let g:lightline = { 'colorscheme' : 'onehalfdark' }
+" let g:lightline = { 'colorscheme' : 'onedark' }
 endif
 " TrueColor
 if exists('+termguicolors')
@@ -290,7 +293,7 @@ let g:asyncrun_bell = 1
 " 设置 F10 打开/关闭 Quickfix 窗口
 nnoremap <F6> :call asyncrun#quickfix_toggle(6)<cr>
 "F9 compile single file
-nnoremap <silent> <F9> :AsyncRun gcc -Wall -g "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" -lstdc++ -lm <cr>
+nnoremap <silent> <F9> :AsyncRun gcc -Wall -g "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" -lstdc++ -lm -DDEBUG <cr>
 "nnoremap <silent> <F9> :AsyncRun clangd --log=info "$(VIM_FILEPATH)" -o "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
 "F5 Run single file
 nnoremap <silent> <F5> :AsyncRun -mode=term -pos=bottom -rows=10 -raw -cwd="$(VIM_FILEDIR)" "$(VIM_FILEDIR)/$(VIM_FILENOEXT)" <cr>
