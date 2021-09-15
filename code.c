@@ -1,12 +1,15 @@
 #include<stdio.h>
+#include <stdarg.h>
+void print(const char * format, ...) {
+    va_list(args);
+    va_start(args, format);
+    printf(format, args);
+    va_end(args);
+}
 int main() {
-    int a[100];
-    a[0]=0+0+0+1;
-    a[1]=1+0+0+1;
-    a[2]=1+1+0+1;
-    a[3]=1+0+1+0;
-    for(int i=0;i<4;i++) {
-        if(a[i]==3) printf("The eater is %d\n",i+1);
-    }
+    int a = 10;
+    char c = 'c';
+    printf("%d a %c\n", a, c);
+    print("%d a %c\n", a, c);
     return 0;
 }
