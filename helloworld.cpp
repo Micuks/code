@@ -1,16 +1,18 @@
-#include <iostream>
-#include <vector>
-#include <string>
+#include <stdio.h>
+#include <math.h>
 
-using namespace std;
-
-int main()
-{
-    vector<string> msg {"Hello", "C++", "World", "from", "VS Code", "and the C++ extension!"};
-    
-    for (const string& word : msg)
-    {
-        cout << word << " ";
+int main() {
+    int max(int a, int b);
+    int a, b, c, d;
+    scanf("%d%d%d", &a, &b, &c);
+    if(a >= b && a >= c)
+        d = max(a, b);
+    else {
+        if(b >= a && b >= c)
+            d = max(a, b);
+        else {
+        d = max(a, b);
+        }
     }
-    cout << endl;
+    printf("%d", d);
 }
