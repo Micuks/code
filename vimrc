@@ -106,29 +106,6 @@ set foldlevel=99
 " Enable folding with the spacebar
 nnoremap <space> za
 
-au BufNewFile,BufRead *.py
-    \ set tabstop=4|
-    \ set softtabstop=4|
-    \ set shiftwidth=4|
-    \ set textwidth=79|
-    \ set expandtab|
-    \ set autoindent|
-    \ set fileformat=unix
-
-au BufNewFile,BufRead *.c, *.cpp
-    \ set tabstop=4|
-    \ set softtabstop=4|
-    \ set shiftwidth=4|
-    \ set textwidth=256|
-    \ set expandtab|
-    \ set autoindent|
-    \ set fileformat=unix
-
-au BufNewFile,BufRead *.js, *.html, *.css
-    \ set tabstop=2|
-    \ set softtabstop=2|
-    \ set shiftwidth=2
-
 "au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
 set encoding=utf-8
@@ -360,3 +337,27 @@ let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
 "endw
 
 set timeout ttimeoutlen=50
+
+au BufNewFile,BufRead *.py
+    \ set tabstop=4|
+    \ set softtabstop=4|
+    \ set shiftwidth=4|
+    \ set textwidth=79|
+    \ set expandtab|
+    \ set autoindent|
+    \ set fileformat=unix
+
+au BufNewFile,BufRead *.c, *.cpp
+    \ set tabstop=4|
+    \ set softtabstop=4|
+    \ set shiftwidth=4|
+    \ set textwidth=128|
+    \ set expandtab|
+    \ set autoindent|
+    \ set fileformat=unix
+
+au BufNewFile,BufRead *.js, *.html, *.css
+    \ set tabstop=2|
+    \ set softtabstop=2|
+    \ set shiftwidth=2
+
