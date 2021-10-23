@@ -16,7 +16,7 @@ typedef struct node {
 
 typedef LinkList Polynomial;
 
-Status AllocateNode(LNode* s);
+Status AddElem_L(LinkList &L, ElemType e);
 
 Status InitList_L(LinkList &L);
 
