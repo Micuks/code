@@ -6,6 +6,22 @@ Status InitList_L(LinkList &L) {
     L = (LinkList)malloc(sizeof(LNode));
     if(L == NULL)
         return FALSE;
+    L->data.expn = -1;
+    return TRUE;
+}
+
+Status AddElem_L(LinkList &L, ElemType e) {
+    LNode* pnew = (LNode*)malloc(sizeof(LNode));
+    if(pnew == NULL) {
+        printf("Failed to allocate space! --AddElem_L\n");
+        return FALSE;
+    }
+    LNode* pnode = L;
+    while(pnode->next != NULL)
+        pnode = pnode->next;
+    pnew->next = NULL;
+    pnew->prior = pnode;
+    pnode->next = pnew;
     return TRUE;
 }
 
@@ -16,11 +32,12 @@ Status ListInsertNext_L(LinkList &L, int i, ElemType e) {
     if(L == NULL)
         return FALSE;
     int ind = 0;
-    while(ind != i-1 && pnode->next != NULL) {
+    while(ind != i && pnode->next != NULL) {
         pnode = pnode->next;
+        ind++;
     }
     LNode* pn2 = pnode->next;
-    if(ind != i-1)
+    if(ind != i)
         return FALSE;
     LNode* ps;
     ps = (LNode*)malloc(sizeof(LNode));
@@ -40,10 +57,11 @@ Status ListInsertPrior_L(LinkList &L, int i, ElemType e) {
     if(L == NULL)
         return FALSE;
     int ind = 0;
-    while(ind != i-1) {
+    while(ind != i) {
         pnode = pnode->next;
+        ind++;
     }
-    if(ind != i-1)
+    if(ind != i)
         return FALSE;
     LNode* pn2 = pnode->prior;
     LNode* ps;
@@ -63,9 +81,9 @@ Status ListDeleteNext_L(LinkList &L, int i, ElemType &e) {
     if(L == NULL)
         return FALSE;
     int ind = 0;
-    while(ind != i-1 && pnode->next != NULL)
+    while(ind != i && pnode->next != NULL)
         pnode = pnode->next;
-    if(ind != i-1 || pnode->next == NULL)
+    if(ind != i || pnode->next == NULL)
         return FALSE;
     LNode *ptmp = pnode->next;
     pnode->next = pnode->next->next;
@@ -82,9 +100,9 @@ Status ListDeletePrior_L(LinkList &L, int i, ElemType &e) {
     if(L == NULL)
         return FALSE;
     int ind = 0;
-    while(ind != i-1 && pnode->next != NULL)
+    while(ind != i && pnode->next != NULL)
         pnode = pnode->next;
-    if(ind != i-1)
+    if(ind != i)
         return FALSE;
     LNode *ptmp = pnode->prior;
     pnode->prior = pnode->prior->prior;
@@ -99,23 +117,23 @@ Status ListDeleteFront_L(LinkList &L, int i, ElemType &e) {
     if(L == NULL)
         return FALSE;
     int ind = 0;
-    while(ind != i-1 && pnode->next != NULL)
+    while(ind != i && pnode->next != NULL)
         pnode = pnode->next;
-    if(ind != i-1)
+    if(ind != i)
         return FALSE;
     e = pnode->data;
     free(pnode);
     return OK;
 }
 
-//T6.无头结点单链表
+//T6.有头结点单链表
 Status ListDeleteRear_L(LinkList &L, int k, ElemType &e) {
-    LNode* pnode = L;
+    LNode* pnode = L->next;
     if(L == NULL)
         return FALSE;
     if(k<=0 || k>=ListLength_L(L)+1)
         return FALSE;
-    for(int j = 1; j < ListLength_L(L)-k-2; j++) {
+    for(int j = 1; j < ListLength_L(L)-k-1; j++) {
         pnode = pnode->next;
     }
     LNode *ptmp = pnode->next;

@@ -74,7 +74,6 @@ Plug 'PhilRunninger/nerdtree-visual-selection'
 "Tabs
 Plug 'jistr/vim-nerdtree-tabs'
 "hide .pyc files"
-let NERDTreeIgnore=['\.pyc$', '\~$'] 
 "ignore files in NERDTree
 "Search basically anything by pressing ^P
 
@@ -97,8 +96,35 @@ Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 call plug#end()            " required
+
+set timeout ttimeoutlen=50
+
+au BufNewFile,BufRead *.py
+    \ set tabstop=4|
+    \ set softtabstop=4|
+    \ set shiftwidth=4|
+    \ set textwidth=79|
+    \ set expandtab|
+    \ set autoindent|
+    \ set fileformat=unix
+
+au BufNewFile,BufRead *.c, *.cpp
+    \ set tabstop=4|
+    \ set softtabstop=4|
+    \ set shiftwidth=4|
+    \ set textwidth=128|
+    \ set expandtab|
+    \ set autoindent|
+    \ set fileformat=unix
+
+au BufNewFile,BufRead *.js, *.html, *.css
+    \ set tabstop=2|
+    \ set softtabstop=2|
+    \ set shiftwidth=2
+
 filetype plugin indent on    " required
 
+let NERDTreeIgnore=['\.pyc$', '\~$'] 
 " Enable folding
 set foldmethod=indent
 set foldlevel=99
@@ -335,29 +361,3 @@ let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
 "  exec "imap \e".c." <A-".c.">"
 "  let c = nr2char(1+char2nr(c))
 "endw
-
-set timeout ttimeoutlen=50
-
-au BufNewFile,BufRead *.py
-    \ set tabstop=4|
-    \ set softtabstop=4|
-    \ set shiftwidth=4|
-    \ set textwidth=79|
-    \ set expandtab|
-    \ set autoindent|
-    \ set fileformat=unix
-
-au BufNewFile,BufRead *.c, *.cpp
-    \ set tabstop=4|
-    \ set softtabstop=4|
-    \ set shiftwidth=4|
-    \ set textwidth=128|
-    \ set expandtab|
-    \ set autoindent|
-    \ set fileformat=unix
-
-au BufNewFile,BufRead *.js, *.html, *.css
-    \ set tabstop=2|
-    \ set softtabstop=2|
-    \ set shiftwidth=2
-
