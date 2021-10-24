@@ -53,7 +53,7 @@ CMAKE_BINARY_DIR = /home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/bPolynomial.dir/all
+all: CMakeFiles/polynomial.dir/all
 
 .PHONY : all
 
@@ -63,36 +63,36 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/bPolynomial.dir/clean
+clean: CMakeFiles/polynomial.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/bPolynomial.dir
+# Target rules for target CMakeFiles/polynomial.dir
 
 # All Build rule for target.
-CMakeFiles/bPolynomial.dir/all:
-	$(MAKE) -f CMakeFiles/bPolynomial.dir/build.make CMakeFiles/bPolynomial.dir/depend
-	$(MAKE) -f CMakeFiles/bPolynomial.dir/build.make CMakeFiles/bPolynomial.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/build/CMakeFiles --progress-num=1,2,3 "Built target bPolynomial"
-.PHONY : CMakeFiles/bPolynomial.dir/all
+CMakeFiles/polynomial.dir/all:
+	$(MAKE) -f CMakeFiles/polynomial.dir/build.make CMakeFiles/polynomial.dir/depend
+	$(MAKE) -f CMakeFiles/polynomial.dir/build.make CMakeFiles/polynomial.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/build/CMakeFiles --progress-num=1,2,3 "Built target polynomial"
+.PHONY : CMakeFiles/polynomial.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/bPolynomial.dir/rule: cmake_check_build_system
+CMakeFiles/polynomial.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/build/CMakeFiles 3
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/bPolynomial.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/polynomial.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/build/CMakeFiles 0
-.PHONY : CMakeFiles/bPolynomial.dir/rule
+.PHONY : CMakeFiles/polynomial.dir/rule
 
 # Convenience name for target.
-bPolynomial: CMakeFiles/bPolynomial.dir/rule
+polynomial: CMakeFiles/polynomial.dir/rule
 
-.PHONY : bPolynomial
+.PHONY : polynomial
 
 # clean rule for target.
-CMakeFiles/bPolynomial.dir/clean:
-	$(MAKE) -f CMakeFiles/bPolynomial.dir/build.make CMakeFiles/bPolynomial.dir/clean
-.PHONY : CMakeFiles/bPolynomial.dir/clean
+CMakeFiles/polynomial.dir/clean:
+	$(MAKE) -f CMakeFiles/polynomial.dir/build.make CMakeFiles/polynomial.dir/clean
+.PHONY : CMakeFiles/polynomial.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

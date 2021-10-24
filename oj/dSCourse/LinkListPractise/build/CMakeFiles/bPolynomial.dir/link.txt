@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/bPolynomial.dir/LinkList.cpp.o CMakeFiles/bPolynomial.dir/Polynomial.cpp.o  -o bPolynomial 
