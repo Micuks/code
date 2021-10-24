@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/include/LinkList.hpp
+common.h
+/home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/include/common.h
+
+/home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/include/common.h
+stdio.h
+-
+stdlib.h
+-
+
+/home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/src/LinkList.cpp
+stdlib.h
+-
+stdio.h
+-
+../include/LinkList.hpp
+/home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/include/LinkList.hpp
+
+/home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/src/Polynomial.cpp
+stdio.h
+-
+stdlib.h
+-
+../include/LinkList.hpp
+/home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/include/LinkList.hpp
+

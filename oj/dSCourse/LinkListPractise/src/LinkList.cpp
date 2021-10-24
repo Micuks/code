@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "LinkList.hpp"
+#include "../include/LinkList.hpp"
 
+//初始化带头结点链表
 Status InitList_L(LinkList &L) {
     L = (LinkList)malloc(sizeof(LNode));
     if(L == NULL)
@@ -10,6 +11,7 @@ Status InitList_L(LinkList &L) {
     return TRUE;
 }
 
+//在链表中添加一个结点
 Status AddElem_L(LinkList &L, ElemType e) {
     LNode* pnew = (LNode*)malloc(sizeof(LNode));
     if(pnew == NULL) {
@@ -95,6 +97,7 @@ Status ListDeleteNext_L(LinkList &L, int i, ElemType &e) {
     return OK;
 }
 
+//在链表中删除第i个结点的前驱
 Status ListDeletePrior_L(LinkList &L, int i, ElemType &e) {
     LNode *pnode = L;
     if(L == NULL)
@@ -112,6 +115,7 @@ Status ListDeletePrior_L(LinkList &L, int i, ElemType &e) {
     return OK;
 }
 
+//在链表中删除第i个结点
 Status ListDeleteFront_L(LinkList &L, int i, ElemType &e) {
     LNode *pnode = L;
     if(L == NULL)
@@ -124,6 +128,21 @@ Status ListDeleteFront_L(LinkList &L, int i, ElemType &e) {
     e = pnode->data;
     free(pnode);
     return OK;
+}
+
+//返回链表中结点个数
+int ListLength_L(LinkList L) {
+    if(L == NULL) {
+        printf("LinkList is Empty\n");
+        exit(OVERFLOW);
+    }
+    LNode* pnode = L->next;
+    int cnt = 0;
+    while(pnode != NULL) {
+        cnt++;
+        pnode = pnode->next;
+    }
+    return cnt;
 }
 
 //T6.有头结点单链表

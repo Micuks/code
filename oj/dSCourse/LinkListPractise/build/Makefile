@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /home/micuks/Code/ubuntu/oj/dSCourse/LinkListPractise/build
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -77,6 +66,17 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,71 +111,71 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named bPolynomial
+# Target rules for targets named polynomial
 
 # Build rule for target.
-bPolynomial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 bPolynomial
-.PHONY : bPolynomial
+polynomial: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 polynomial
+.PHONY : polynomial
 
 # fast build rule for target.
-bPolynomial/fast:
-	$(MAKE) -f CMakeFiles/bPolynomial.dir/build.make CMakeFiles/bPolynomial.dir/build
-.PHONY : bPolynomial/fast
+polynomial/fast:
+	$(MAKE) -f CMakeFiles/polynomial.dir/build.make CMakeFiles/polynomial.dir/build
+.PHONY : polynomial/fast
 
-LinkList.o: LinkList.cpp.o
+src/LinkList.o: src/LinkList.cpp.o
 
-.PHONY : LinkList.o
-
-# target to build an object file
-LinkList.cpp.o:
-	$(MAKE) -f CMakeFiles/bPolynomial.dir/build.make CMakeFiles/bPolynomial.dir/LinkList.cpp.o
-.PHONY : LinkList.cpp.o
-
-LinkList.i: LinkList.cpp.i
-
-.PHONY : LinkList.i
-
-# target to preprocess a source file
-LinkList.cpp.i:
-	$(MAKE) -f CMakeFiles/bPolynomial.dir/build.make CMakeFiles/bPolynomial.dir/LinkList.cpp.i
-.PHONY : LinkList.cpp.i
-
-LinkList.s: LinkList.cpp.s
-
-.PHONY : LinkList.s
-
-# target to generate assembly for a file
-LinkList.cpp.s:
-	$(MAKE) -f CMakeFiles/bPolynomial.dir/build.make CMakeFiles/bPolynomial.dir/LinkList.cpp.s
-.PHONY : LinkList.cpp.s
-
-Polynomial.o: Polynomial.cpp.o
-
-.PHONY : Polynomial.o
+.PHONY : src/LinkList.o
 
 # target to build an object file
-Polynomial.cpp.o:
-	$(MAKE) -f CMakeFiles/bPolynomial.dir/build.make CMakeFiles/bPolynomial.dir/Polynomial.cpp.o
-.PHONY : Polynomial.cpp.o
+src/LinkList.cpp.o:
+	$(MAKE) -f CMakeFiles/polynomial.dir/build.make CMakeFiles/polynomial.dir/src/LinkList.cpp.o
+.PHONY : src/LinkList.cpp.o
 
-Polynomial.i: Polynomial.cpp.i
+src/LinkList.i: src/LinkList.cpp.i
 
-.PHONY : Polynomial.i
+.PHONY : src/LinkList.i
 
 # target to preprocess a source file
-Polynomial.cpp.i:
-	$(MAKE) -f CMakeFiles/bPolynomial.dir/build.make CMakeFiles/bPolynomial.dir/Polynomial.cpp.i
-.PHONY : Polynomial.cpp.i
+src/LinkList.cpp.i:
+	$(MAKE) -f CMakeFiles/polynomial.dir/build.make CMakeFiles/polynomial.dir/src/LinkList.cpp.i
+.PHONY : src/LinkList.cpp.i
 
-Polynomial.s: Polynomial.cpp.s
+src/LinkList.s: src/LinkList.cpp.s
 
-.PHONY : Polynomial.s
+.PHONY : src/LinkList.s
 
 # target to generate assembly for a file
-Polynomial.cpp.s:
-	$(MAKE) -f CMakeFiles/bPolynomial.dir/build.make CMakeFiles/bPolynomial.dir/Polynomial.cpp.s
-.PHONY : Polynomial.cpp.s
+src/LinkList.cpp.s:
+	$(MAKE) -f CMakeFiles/polynomial.dir/build.make CMakeFiles/polynomial.dir/src/LinkList.cpp.s
+.PHONY : src/LinkList.cpp.s
+
+src/Polynomial.o: src/Polynomial.cpp.o
+
+.PHONY : src/Polynomial.o
+
+# target to build an object file
+src/Polynomial.cpp.o:
+	$(MAKE) -f CMakeFiles/polynomial.dir/build.make CMakeFiles/polynomial.dir/src/Polynomial.cpp.o
+.PHONY : src/Polynomial.cpp.o
+
+src/Polynomial.i: src/Polynomial.cpp.i
+
+.PHONY : src/Polynomial.i
+
+# target to preprocess a source file
+src/Polynomial.cpp.i:
+	$(MAKE) -f CMakeFiles/polynomial.dir/build.make CMakeFiles/polynomial.dir/src/Polynomial.cpp.i
+.PHONY : src/Polynomial.cpp.i
+
+src/Polynomial.s: src/Polynomial.cpp.s
+
+.PHONY : src/Polynomial.s
+
+# target to generate assembly for a file
+src/Polynomial.cpp.s:
+	$(MAKE) -f CMakeFiles/polynomial.dir/build.make CMakeFiles/polynomial.dir/src/Polynomial.cpp.s
+.PHONY : src/Polynomial.cpp.s
 
 # Help Target
 help:
@@ -183,15 +183,15 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... bPolynomial"
-	@echo "... LinkList.o"
-	@echo "... LinkList.i"
-	@echo "... LinkList.s"
-	@echo "... Polynomial.o"
-	@echo "... Polynomial.i"
-	@echo "... Polynomial.s"
+	@echo "... edit_cache"
+	@echo "... polynomial"
+	@echo "... src/LinkList.o"
+	@echo "... src/LinkList.i"
+	@echo "... src/LinkList.s"
+	@echo "... src/Polynomial.o"
+	@echo "... src/Polynomial.i"
+	@echo "... src/Polynomial.s"
 .PHONY : help
 
 

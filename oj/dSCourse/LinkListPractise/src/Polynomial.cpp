@@ -1,16 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "LinkList.hpp"
+#include "../include/LinkList.hpp"
 
 const float eps = 1e-6;
+
+//创建多项式
 Status CreatePolyn(Polynomial &p);
 
+//打印多项式
 Status PrintPolyn(Polynomial p);
 
+//多项式相加输出到pc
 Status AddPolyn(Polynomial pa, Polynomial pb, Polynomial &pc);
 
+//多项式相减输出到pc
 Status MinusPolyn(Polynomial pa, Polynomial pb, Polynomial &pc);
 
+//多项式求导
 Status DerivativePolyn(Polynomial &p);
 
 int main() {
@@ -65,6 +71,7 @@ int main() {
     }
 }
 
+//创建多项式
 Status CreatePolyn(Polynomial &p) {
     InitList_L(p);
     LNode* pnode = p;
@@ -90,6 +97,7 @@ Status CreatePolyn(Polynomial &p) {
     return TRUE;
 }
 
+//打印多项式
 Status PrintPolyn(Polynomial p) {
     LNode *pnode = p->next;
     if(pnode == NULL)
@@ -102,6 +110,7 @@ Status PrintPolyn(Polynomial p) {
     return TRUE;
 }
 
+//比较pa和pb的指数大小
 int compare(Polynomial pa, Polynomial pb) {
     if(pa->data.expn < pb->data.expn)
         return -1;
@@ -112,6 +121,7 @@ int compare(Polynomial pa, Polynomial pb) {
     return -2;
 }
 
+//多项式相加输出到pc
 Status AddPolyn(Polynomial pa, Polynomial pb, Polynomial &pc) {
     LNode *p1 = pa, *p2 = pb;
     while(pa != NULL || pb != NULL) {
@@ -141,6 +151,7 @@ Status AddPolyn(Polynomial pa, Polynomial pb, Polynomial &pc) {
     return TRUE;
 }
 
+//多项式相减输出到pc
 Status MinusPolyn(Polynomial pa, Polynomial pb, Polynomial &pc) {
     LNode *p1 = pa, *p2 = pb;
     while(pa != NULL || pb != NULL) {
@@ -165,6 +176,29 @@ Status MinusPolyn(Polynomial pa, Polynomial pb, Polynomial &pc) {
                 break;
             default:
                 break;
+        }
+    }
+    return TRUE;
+}
+
+//多项式求导
+Status DerivativePolyn(Polynomial &p) {
+    LNode* pnode = p->next;
+    LNode* ppre = p;
+    while(p != NULL) {
+        if(pnode->data.expn == 0) {
+            LNode* ptmp = pnode;
+            ppre->next = pnode->next;
+            p->next->prior = ppre;
+            free(ptmp);
+            pnode = pnode->next;
+            ppre = ppre->next;
+        }
+        else {
+            pnode->data.coef = pnode->data.coef + pnode->data.expn;
+            pnode->data.expn-=1;
+            pnode = pnode->next;
+            ppre = ppre->next;
         }
     }
     return TRUE;

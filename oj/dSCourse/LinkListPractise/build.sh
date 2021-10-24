@@ -3,4 +3,5 @@ mkdir build/
 cd ./build/
 cmake ..
 make
-ln ../bPolynomial ./bPolynomial
+rm -f ../polynomial
+ln ./polynomial ../polynomial
