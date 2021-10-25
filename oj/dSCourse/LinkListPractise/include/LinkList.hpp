@@ -21,6 +21,8 @@ Status AddElem_L(LinkList &L, ElemType e);
 
 Status AddElemNext_L(LNode *pnode, ElemType e);
 
+Status AddElemPrior_L(LNode *pnode, ElemType e);
+
 //初始化带头结点链表
 Status InitList_L(LinkList &L);
 
