@@ -19,6 +19,8 @@ typedef LinkList Polynomial;
 //在链表中添加一个结点
 Status AddElem_L(LinkList &L, ElemType e);
 
+Status AddElemNext_L(LNode *pnode, ElemType e);
+
 //初始化带头结点链表
 Status InitList_L(LinkList &L);
 

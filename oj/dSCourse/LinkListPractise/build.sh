@@ -5,3 +5,4 @@ cmake ..
 make
 rm -f ../polynomial
 ln ./polynomial ../polynomial
+./polynomial < ../data.in

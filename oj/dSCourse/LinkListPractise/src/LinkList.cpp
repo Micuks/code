@@ -21,12 +21,27 @@ Status AddElem_L(LinkList &L, ElemType e) {
     LNode* pnode = L;
     while(pnode->next != NULL)
         pnode = pnode->next;
+    pnew->data = e;
     pnew->next = NULL;
     pnew->prior = pnode;
     pnode->next = pnew;
     return TRUE;
 }
 
+Status AddElemNext_L(LNode *pnode, ElemType e) {
+    LNode* pnew = (LNode*)malloc(sizeof(LNode));
+    if(pnew == NULL) {
+        printf("Failed to allocate space! --AddElemNext_L\n");
+        return FALSE;
+    }
+    pnew->data = e;
+    LNode* ptmp = pnode->next;
+    pnode->next = pnew;
+    pnew->prior = pnew;
+    pnew->next = ptmp;
+    ptmp->prior = pnew;
+    return TRUE;
+}
 //在p结点后插入s结点
 Status ListInsertNext_L(LinkList &L, int i, ElemType e) {
     //长为n的链表的下标范围为0到n-1
@@ -45,6 +60,7 @@ Status ListInsertNext_L(LinkList &L, int i, ElemType e) {
     ps = (LNode*)malloc(sizeof(LNode));
     if(ps == NULL)
         return FALSE;
+    ps->data = e;
     pnode->next = ps;
     ps->prior = pnode;
     ps->next = pn2;
@@ -70,6 +86,7 @@ Status ListInsertPrior_L(LinkList &L, int i, ElemType e) {
     ps = (LNode*)malloc(sizeof(LNode));
     if(ps == NULL)
         return FALSE;
+    ps->data = e;
     pn2->next = ps;
     ps->prior = pn2;
     ps->next = pnode;
