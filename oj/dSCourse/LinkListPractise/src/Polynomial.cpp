@@ -77,11 +77,13 @@ int mian() {
 
 int main() {
     Polynomial pa, pb, pc;
-    printf("CreatePolyn-a---%d\n", CreatePolyn(pa));
-    printf("CreatePolyn-b---%d\n", CreatePolyn(pb));
-    printf("InitList_L-c---%d\n", InitList_L(pc));
-    printf("MultiplyPolyn---%d\n", MultiplyPolyn(pa, pb, pc));
-    printf("PrintPolyn---%d\n", PrintPolyn(pc));
+    CreatePolyn(pa);
+    CreatePolyn(pb);
+    InitList_L(pc);
+    PrintPolyn(pa);
+    PrintPolyn(pb);
+    MultiplyPolyn(pa, pb, pc);
+    PrintPolyn(pc);
     return 0;
 }
 
@@ -129,7 +131,7 @@ Status PrintPolyn(Polynomial p) {
     if(pnode == NULL)
         return FALSE;
     int sum = ListLength_L(p);
-    printf("%d ", sum);
+    //printf("len = %d\n", sum);
     for(int i = 0; i < sum; i++) {
         printf("%d: (%.2f, %d), ", i, pnode->data.coef, pnode->data.expn);
         pnode = pnode->next;
@@ -236,26 +238,31 @@ Status MultiplyPolyn(Polynomial pa, Polynomial pb, Polynomial &pc) {
     InitList_L(pc);
     if(pa->next == NULL || pb->next == NULL)
         return FALSE;
-    LNode* p1 = pa->next, *p2 = pb, *p3 = pc;
-    printf("Length of a: %d, b: %d\n", ListLength_L(pa), ListLength_L(pb));
+    LNode* p1 = pa->next, *p2 = pb->next, *p3 = pc;
     while(p1 != NULL) {
-        p2 = pb;
+        p2 = pb->next;
         while(p2 != NULL) {
             ElemType e;
             e.coef = p1->data.coef * p2->data.coef;
             e.expn = p1->data.expn + p2->data.expn;
             p3 = pc;
-            while(p3->next != NULL && p3->next->data.expn < e.expn) {
-                printf("- ");
+            while(p3->next != NULL && p3->next->data.expn > e.expn) {
                 p3 = p3->next;
             }
-            printf("p3->next = %p\n", p3->next);
-            printf("AddElemNext_L---%d\n", AddElemNext_L(p3, e));
-            //AddElemNext_L(p3, e);
-            printf("(%.2f, %d)\n", p3->next->data.coef, p3->next->data.expn);
+            if(p3->next != NULL && p3->next->data.expn == e.expn) {
+                p3->next->data.coef += e.coef;
+            }
+            else {
+                AddElemNext_L(p3, e);
+            }
+            //printf("(%.2f, %d)\n", p3->next->data.coef, p3->next->data.expn);
             p2 = p2->next;
         }
         p1 = p1->next;
     }
+    ElemType e;
+    e.coef = 0;
+    e.expn = -1;
+    AddElemPrior_L(pc, e);
     return TRUE;
 }

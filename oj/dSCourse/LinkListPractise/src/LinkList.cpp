@@ -35,11 +35,40 @@ Status AddElemNext_L(LNode *pnode, ElemType e) {
         return FALSE;
     }
     pnew->data = e;
-    LNode* ptmp = pnode->next;
-    pnode->next = pnew;
-    pnew->prior = pnew;
-    pnew->next = ptmp;
-    ptmp->prior = pnew;
+    if(pnode->next == NULL) {
+        pnode->next = pnew;
+        pnew->next = NULL;
+        pnew->prior = pnode;
+    }
+    else {
+        LNode* ptmp = pnode->next;
+        pnode->next = pnew;
+        pnew->prior = pnode;
+        pnew->next = ptmp;
+        ptmp->prior = pnew;
+    }
+    return TRUE;
+}
+
+Status AddElemPrior_L(LNode *pnode, ElemType e) {
+    LNode *pnew = (LNode*)malloc(sizeof(LNode));
+    if(pnew == NULL) {
+        printf("Failed to allocate space! --AddElemPrior_L\n");
+        return FALSE;
+    }
+    pnew->data = e;
+    if(pnode->prior == NULL) {
+        pnode->prior = pnew;
+        pnew->next = pnode;
+        pnew->prior = NULL;
+    }
+    else {
+        LNode *ptmp = pnode->prior;
+        pnode->prior = pnew;
+        pnew->next = pnode;
+        pnew->prior = ptmp;
+        ptmp->next = pnew;
+    }
     return TRUE;
 }
 //在p结点后插入s结点
