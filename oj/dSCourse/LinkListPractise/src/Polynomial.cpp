@@ -260,9 +260,9 @@ Status MultiplyPolyn(Polynomial pa, Polynomial pb, Polynomial &pc) {
         }
         p1 = p1->next;
     }
-    ElemType e;
-    e.coef = 0;
-    e.expn = -1;
-    AddElemPrior_L(pc, e);
+    //ElemType e;
+    //e.coef = 0;
+    //e.expn = -1;
+    //AddElemPrior_L(pc, e);
     return TRUE;
 }
