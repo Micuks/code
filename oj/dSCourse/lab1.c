@@ -3,6 +3,7 @@
 #include <string.h>
 
 #define OVERFLOW -2
+#define INT_MIN -2147483648
 
 typedef struct node{
    int coef, exp;
@@ -20,7 +21,7 @@ poly CreatPoly(char* str)
        exit(OVERFLOW);
    }
    head->next = NULL;
-   head->exp = -1;
+   head->exp = INT_MIN;
    int status = 0, tmp;
    node* s, *ppre = head;
    s = (node*)malloc(sizeof(node));
@@ -124,7 +125,7 @@ poly AddPoly(poly a,poly b)
 poly MulPoly(poly a,poly b)
 {
     poly head = (poly)malloc(sizeof(node));
-    head->exp = -1;
+    head->exp = INT_MIN;
     head->next = NULL;
     if(a->next == NULL || b->next == NULL) {
         printf("a == NULL || b == NULL!!\n");
