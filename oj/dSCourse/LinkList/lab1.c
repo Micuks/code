@@ -22,30 +22,37 @@ poly CreatPoly(char* str)
    }
    head->next = NULL;
    head->exp = INT_MIN;
-   int status = 0, tmp;
+   int tmp;
    node* s, *ppre = head;
    s = (node*)malloc(sizeof(node));
    s->next = NULL;
    for(int i = 0; i < strlen(str); i++) {
        if(i == 0) {
            sscanf(str, "%d", &tmp);
-           status = 1;
+           //printf(" coef = %d\n", tmp);
            s->coef = tmp;
        }
-        if(str[i] == 'x' || str[i] == '+') {
-            sscanf(str+i+1, "%d", &tmp);
-            status = !status;
-            if(status) {
-                s->coef = tmp;
-            }
-            else {
-                s->exp = tmp;
-                ppre->next = s;
-                ppre = s;
-                s = (node*)malloc(sizeof(node));
-                s->next = NULL;
-            }
-        }
+       else if(str[i] == 'x') {
+           //printf(" x %s\n", str+i);
+           sscanf(str+i+1, "%d", &tmp);
+           //printf("exp = %d\n", tmp);
+           s->exp = tmp;
+           ppre->next = s;
+           ppre = s;
+           s = (node*)malloc(sizeof(node));
+           s->next = NULL;
+       }
+       else if(str[i-1] != 'x' && (str[i] == '+' || str[i] == '-')) {
+           //printf(" %s\n", str+i);
+           if(str[i] == '+') {
+               sscanf(str+i+1, "%d", &tmp);
+           }
+           else {
+               sscanf(str+i, "%d", &tmp);
+           }
+           //printf(" coef = %d\n", tmp);
+           s->coef = tmp;
+       }
    }
    // Your code here
 
@@ -165,12 +172,18 @@ void Output(poly c)
    // Your code here
    poly p;
    p=c->next;
+   printf("%dx%d", p->coef, p->exp);
    while(p->next!=NULL)
    {
-   	printf("%dx%d+",p->coef,p->exp);
-   	p = p->next;
+       p = p->next;
+       if(p->coef >= 0) {
+           printf("+%dx%d",p->coef,p->exp);
+       }
+       else {
+           printf("%dx%d",p->coef,p->exp);
+       }
    }
-   printf("%dx%d\n", p->coef, p->exp);
+   putchar('\n');
 }
 
 int main()
@@ -187,8 +200,8 @@ int main()
    a = CreatPoly(str1);
    b = CreatPoly(str2);
 
-   //Output(a);
-   //Output(b);
+   Output(a);
+   Output(b);
 
    c = MulPoly(a,b);
    //printf("The result of A times B is: ");
