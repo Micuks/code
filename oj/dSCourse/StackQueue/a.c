@@ -16,7 +16,6 @@ void Error(char *str) {
 
 void InitQueue(CirQueue *Q) {
     Q->front = Q->rear = 0;
-    Q->front = 5;
     Q->count = 0;
 }
 
