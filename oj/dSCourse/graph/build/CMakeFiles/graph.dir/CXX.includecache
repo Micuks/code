@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/micuks/Code/ubuntu/oj/dSCourse/graph/include/graph.h
+cstdio
+-
+cstdlib
+-
+climits
+-
+
+/home/micuks/Code/ubuntu/oj/dSCourse/graph/include/stack.h
+cstring
+-
+cstdio
+-
+cstdlib
+-
+
+/home/micuks/Code/ubuntu/oj/dSCourse/graph/src/graph.cpp
+../include/graph.h
+/home/micuks/Code/ubuntu/oj/dSCourse/graph/include/graph.h
+../include/stack.h
+/home/micuks/Code/ubuntu/oj/dSCourse/graph/include/stack.h
+
+/home/micuks/Code/ubuntu/oj/dSCourse/graph/src/main.cpp
+../include/stack.h
+/home/micuks/Code/ubuntu/oj/dSCourse/graph/include/stack.h
+../include/graph.h
+/home/micuks/Code/ubuntu/oj/dSCourse/graph/include/graph.h
+
+/home/micuks/Code/ubuntu/oj/dSCourse/graph/src/stack.cpp
+../include/stack.h
+/home/micuks/Code/ubuntu/oj/dSCourse/graph/include/stack.h
+

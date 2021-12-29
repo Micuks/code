@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11 -g -Wall -g   CMakeFiles/graph.dir/src/graph.cpp.o CMakeFiles/graph.dir/src/main.cpp.o CMakeFiles/graph.dir/src/stack.cpp.o  -o graph 
