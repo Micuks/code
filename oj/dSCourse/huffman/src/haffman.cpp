@@ -14,7 +14,7 @@ void select(HuffmanTree &HT, int n, int &s1, int &s2) {
     }
 }
 
-void BuildHT(HuffmanTree &HT, unsigned int *w, int n) {
+void BuildHT(HuffmanTree &HT, int *w, int n) {
     if(n <= 1) {
         HT = NULL;
         return;
@@ -51,6 +51,77 @@ void HuffmanCoding(HuffmanTree HT, int n, HuffmanCode &HC) {
     free(cd);
 }
 
-void HuffManEncoding(HuffmanCode HC, char *ch);
+void HuffManEncoding(HuffmanCode HC, char *src, char** dest) {
+    int i = 0;
+    while(src[i] != '\0') {
+        if(src[i] == ' ') {
+            strcpy(dest[i], *(HC+1));
+        }
+        else {
+            strcpy(dest[i], *(HC+src[i]-'A'+1));
+        }
+        i++;
+    }
+    strcpy(dest[i], "\0");
+}
 
-void HuffmanDecoding(HuffmanCode HC, char *ch);
+void HuffmanDecoding(HuffmanCode HC, char **src, char* dest) {
+    int i = 0;
+    while(strcmp(src[i], "\0")) {
+        if(!strcmp(src[i], HC[1])) {
+            dest[i] = ' ';
+        }
+        else for(int j = 2; j <= 27; j++) {
+            if(!strcmp(src[i], HC[j])) {
+                dest[i] = 'A' + j-2;
+            }
+        }
+        i++;
+    }
+    dest[i] = '\0';
+}
+
+int main() {
+    FILE* fp;
+    fp = fopen("Conf", "r");
+    int n = 0;
+    int w[maxn];
+    char c[maxn];
+    fscanf(fp, "%d", &n);
+    for(int i = 1; i <= n; i++) {
+        fscanf(fp, "%c %d", &c[i], &w[i]);
+    }
+    HuffmanTree HT;
+    BuildHT(HT, w, n);
+    fclose(fp);
+
+    fp = fopen("ToBeTran", "r");
+    HuffmanCode HC;
+    HuffmanCoding(HT, n, HC);
+    char src[maxn];
+    fscanf(fp, "%s", src);
+    char** dest;
+    dest = (char**)malloc(maxn*sizeof(char*));
+    for(int i = 0; i < maxn; i++)
+        dest[i] = (char*)malloc(sizeof(char));
+    HuffManEncoding(HC, src, dest);
+    fclose(fp);
+
+    fp = fopen("CodeFile", "w");
+    for(int i = 0; strcmp(dest[i], "\0"); i++) {
+        fprintf(fp, "%s", dest[i]);
+    }
+    fclose(fp);
+
+    fp = fopen("CodeFile", "r");
+    for(int i = 0; fscanf(fp, "%s", dest[i]) == 1; i++) {
+        ;
+    }
+    HuffmanDecoding(HC, dest, src);
+    fclose(fp);
+
+    fopen("TextFile", "w");
+    fprintf(fp, "%s", src);
+    fclose(fp);
+    return 0;
+}

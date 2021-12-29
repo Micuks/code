@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/micuks/Code/ubuntu/oj/dSCourse/huffman/include/haffman.h
+cstdio
+-
+cstring
+-
+cstdlib
+-
+
+/home/micuks/Code/ubuntu/oj/dSCourse/huffman/src/haffman.cpp
+../include/haffman.h
+/home/micuks/Code/ubuntu/oj/dSCourse/huffman/include/haffman.h
+cstring
+-
+
