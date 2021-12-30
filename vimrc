@@ -94,6 +94,7 @@ Plug 'dense-analysis/ale'
 "Plug 'ycm-core/YouCompleteMe'
 "Coc autocompile
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'puremourning/vimspector'
 
 call plug#end()            " required
 

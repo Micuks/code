@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11 -g -Wall -g   CMakeFiles/tree.dir/src/main.cpp.o CMakeFiles/tree.dir/src/stack.cpp.o CMakeFiles/tree.dir/src/tree.cpp.o  -o tree 
