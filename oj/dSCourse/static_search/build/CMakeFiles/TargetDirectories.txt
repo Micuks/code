@@ -1,0 +1,3 @@
+/home/micuks/Code/ubuntu/oj/dSCourse/static_search/build/CMakeFiles/rebuild_cache.dir
+/home/micuks/Code/ubuntu/oj/dSCourse/static_search/build/CMakeFiles/edit_cache.dir
+/home/micuks/Code/ubuntu/oj/dSCourse/static_search/build/CMakeFiles/search.dir
