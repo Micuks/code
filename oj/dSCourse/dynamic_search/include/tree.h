@@ -11,3 +11,5 @@ Status SearchBST(BiTree T, ElemType key, BiTree f, BiTree &p);
 void visit(BiTNode *T);
 
 void InOrderVisit(BiTNode *T, void(*visit)(BiTNode *pn));
+
+void T4TraverseBST(BiTree T, ElemType key);

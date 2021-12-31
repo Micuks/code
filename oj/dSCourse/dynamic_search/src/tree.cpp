@@ -47,15 +47,17 @@ Status InsertBST(BiTree &T, ElemType key) {
         pnew->data = key;
         pnew->lchild = NULL;
         pnew->rchild = NULL;
-        if(!T)
+        if(!T) {
             T = pnew;
+            //printf("T = %d\n", T->data);
+        }
         else if(pnode->data > key) {
-            printf("%d->lchild = %d\n", pnode->data, pnew->lchild->data);
             pnode->lchild = pnew;
+            //printf("%d->lchild = %d\n", pnode->data, pnode->lchild->data);
         }
         else {
-            pnew->rchild = pnew;
-            printf("%d->rchild = %d\n", pnode->data, pnew->rchild->data);
+            pnode->rchild = pnew;
+            //printf("%d->rchild = %d\n", pnode->data, pnode->rchild->data);
         }
         return true;
     }
@@ -64,14 +66,13 @@ Status InsertBST(BiTree &T, ElemType key) {
 }
 
 void visit(BiTNode *T) {
-    printf("%d ", T->data);
+    printf("%d\t", T->data);
 }
 
 void InOrderVisit(BiTree T, void(*visit)(BiTNode *pn)) {
     BiTNode *pnode = T;
     SqStack s;
     InitStack(s);
-    printf("StackLength = %ld\n", s.top - s.base);
     while(pnode || !StackEmpty(s)) {
         if(pnode) {
             push(pnode, s);
@@ -83,4 +84,14 @@ void InOrderVisit(BiTree T, void(*visit)(BiTNode *pn)) {
             pnode = pnode->rchild;
         }
     }
+}
+
+void T4TraverseBST(BiTree T, ElemType key) {
+    if(!T) {
+        return;
+    }
+    T4TraverseBST(T->rchild, key);
+    if(T->data >= key)
+        printf("%d\t", T->data);
+    T4TraverseBST(T->lchild, key);
 }
