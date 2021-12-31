@@ -36,7 +36,7 @@ Status SearchBST(BiTree T, ElemType key, BiTree f, BiTree &p) {
     }
 }
 
-Status InsertBST(BiTree &T, ElemType &key) {
+Status InsertBST(BiTree &T, ElemType key) {
     BiTNode *pnode = NULL;
     if(!SearchBST(T, key, NULL, pnode)) {
         BiTNode *pnew = (BiTNode*)malloc(sizeof(BiTNode));
@@ -49,9 +49,14 @@ Status InsertBST(BiTree &T, ElemType &key) {
         pnew->rchild = NULL;
         if(!T)
             T = pnew;
-        else if(pnode->data > key)
+        else if(pnode->data > key) {
+            printf("%d->lchild = %d\n", pnode->data, pnew->lchild->data);
             pnode->lchild = pnew;
-        else pnew->rchild = pnew;
+        }
+        else {
+            pnew->rchild = pnew;
+            printf("%d->rchild = %d\n", pnode->data, pnew->rchild->data);
+        }
         return true;
     }
     printf("There exists an %d already!\n", key);
@@ -63,20 +68,19 @@ void visit(BiTNode *T) {
 }
 
 void InOrderVisit(BiTree T, void(*visit)(BiTNode *pn)) {
-    printf("test\n");
     BiTNode *pnode = T;
-    Stack *ps = NULL;
-    InitStack(ps);
-    push(T, ps);
-    while(!StackEmpty(ps)) {
-        top(pnode, ps);
-        if(pnode->lchild)
-            push(pnode->lchild, ps);
+    SqStack s;
+    InitStack(s);
+    printf("StackLength = %ld\n", s.top - s.base);
+    while(pnode || !StackEmpty(s)) {
+        if(pnode) {
+            push(pnode, s);
+            pnode = pnode->lchild;
+        }
         else {
-            pop(pnode, ps);
+            pop(pnode, s);
             visit(pnode);
-            if(pnode->rchild)
-                push(pnode->rchild, ps);
+            pnode = pnode->rchild;
         }
     }
 }

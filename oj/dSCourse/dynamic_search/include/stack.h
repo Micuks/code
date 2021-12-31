@@ -1,32 +1,26 @@
 #include "common.h"
 
-const int MAXN = 1000;
+const int STACK_INIT_SIZE = 1024;
+const int STACKINCREMENT = 256;
 
-typedef struct node {
-    BiTNode elem;
-    struct node* previous;
-} Node;
+typedef BiTNode* SElemType;
 
-typedef struct list {
-    Node* front;
-    Node* rear;
-    int num;
-} List;
+typedef struct {
+    SElemType *base;
+    SElemType *top;
+    int stacksize;
+} SqStack;
 
-typedef List Stack;
+bool InitStack(SqStack &S);
 
-bool InitStack(Stack* ps);
+bool push(SElemType e, SqStack &S);
 
-bool push(BiTNode* pelem, Stack* pstack);
+bool pop(SElemType &e, SqStack &S);
 
-bool pop(BiTNode* pelem, Stack* pstack);
+bool top(SElemType &e, SqStack &S);
 
-bool top(BiTNode* pelem, Stack* pstack);
+int StackLength(SqStack S);
 
-int HowManyNodesInTheStack(Stack* pstack);
+void DestroyStack(SqStack &S);
 
-bool ReleaseStack(Stack* pstack);
-
-//int GetNum(char* str);
-
-bool StackEmpty(Stack* ps);
+bool StackEmpty(SqStack S);

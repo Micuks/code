@@ -2,90 +2,57 @@
 #include <cstdlib>
 #include <cstdio>
 
-bool InitStack(Stack* pstack) {
-    pstack = (Stack*)malloc(sizeof(Stack));
-    pstack->front = NULL;
-    pstack->num = 0;
-    pstack->rear = NULL;
-    return 1;
+bool InitStack(SqStack &S) {
+    S.base = (SElemType*)malloc(STACK_INIT_SIZE * sizeof(SElemType));
+    if(!S.base) {
+        printf("failed to allocate memory\n");
+        return false;
+    }
+    S.top = S.base;
+    S.stacksize = STACK_INIT_SIZE;
+    return true;
 }
 
-bool push(BiTNode* pelem, Stack* pstack) {
-    Node* pnode = (Node*)malloc(sizeof(Node));
-    if(pnode == NULL) {
-        printf("!! Failed to malloc a memory for new node !!\n");
-        return FALSE;
+bool push(SElemType e, SqStack &S) {
+    if(S.top - S.base >= S.stacksize) {
+        S.base = (SElemType*)realloc(S.base, (S.stacksize + STACKINCREMENT) * sizeof(SElemType));
+        if(!S.base) {
+            printf("failed to allocate memory\n");
+            return false;
+        }
+        S.top = S.base + S.stacksize;
+        S.stacksize += STACKINCREMENT;
     }
-    pnode->elem = *pelem;
-    if(pstack->num == 0) {
-        pnode->previous = NULL;
-        pstack->front = pnode;
-    }
-    else {
-        pnode->previous = pstack->rear;
-        pstack->rear = pnode;
-    }
-    pstack->num++;
-    return TRUE;
+    *S.top++ = e;
+    return true;
 }
 
-bool pop(BiTNode* pelem, Stack* pstack) {
-    if(pstack->num == 0) {
-        printf("!! There's no nodes in stack !!\n");
-        return FALSE;
+bool pop(SElemType &e, SqStack &S) {
+    if(S.top == S.base) {
+        printf("stack is empty\n");
+        return false;
     }
-    *pelem = pstack->rear->elem;
-    if(pstack->num == 1) {
-        free(pstack->front);
-        pstack->front = NULL;
-        pstack->rear = NULL;
-    }
-    else {
-        Node* pnode = pstack->rear;
-        pstack->rear = pstack->rear->previous;
-        free(pnode);
-    }
-    pstack->num--;
-    return TRUE;
+    e = * --(S.top);
+    return true;
 }
 
-bool top(BiTNode *pelem, Stack *pstack) {
-    if(pstack->rear == NULL) {
-        printf("!! There's no nodes in stack !!\n");
-        return FALSE;
+bool top(SElemType &e, SqStack &S) {
+    if(S.top == S.base) {
+        printf("stack is empty\n");
+        return false;
     }
-    *pelem = pstack->rear->elem;
-    return TRUE;
+    e = *(S.top-1);
+    return true;
 }
 
-int HowManyNodesInTheStack(Stack* pstack) {
-    return pstack->num;
+int StackLength(SqStack &S) {
+    return S.top - S.base;
 }
 
-bool ReleaseStack(Stack* pstack) {
-    while(pstack->num) {
-        BiTNode tmp;
-        pop(&tmp, pstack);
-    }
-    free(pstack);
-    return 0;
+void DestroyStack(SqStack &S) {
+    free(S.base);
 }
 
-//int GetNum(char* str) {
-//    int len=strlen(str);
-//    int result = 0;
-//    for(int i=0;i<len;i++) {
-//        if((str[i] - '0') >= 0 && ('9' - str[i]) >= 0) {
-//            result *= 10;
-//            result += str[i] - '0';
-//        }
-//    }
-////    printf("result = %d\n",result);
-//    return result;
-//}
-
-bool StackEmpty(Stack *ps) {
-    if(ps->num == 0)
-        return TRUE;
-    else return FALSE;
+bool StackEmpty(SqStack S) {
+    return S.base == S.top;
 }
