@@ -22,7 +22,6 @@ int main() {
         printf("%d\t", array[i]);
     }
     putchar('\n');
-    printf("initialized  tree\n");
     InOrderVisit(T, visit);
     putchar('\n');
     DestroyTree(T);
