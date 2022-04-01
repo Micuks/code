@@ -1,0 +1,89 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int MAXN = 10005;
+const int MAXM = 20005;
+
+class Edge {
+    public:
+        int len;
+        int to;
+        int next;
+};
+
+class Node {
+    public:
+        int mNode;
+        int mDis;
+        Node(int node, int dis): mNode(node), mDis(dis) { };
+        bool operator <(const Node& y) const
+        {
+            return mDis < y.mDis;
+        }
+};
+
+int n, m, s;
+int head[MAXN];
+Edge edge[MAXM];
+int cnt;
+int dis[MAXN];
+
+void store_edges() {
+    for(int i = 0; i < n; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        dis[u] = 0x7fffffff;
+
+        edge[++cnt].len = w;
+        edge[cnt].to = v;
+        edge[cnt].next = head[u];
+        head[u] = cnt;
+    }
+}
+
+priority_queue<Node> pq;
+int visited[MAXN];
+
+void dijkstra() {
+    dis[s] = 0;
+    pq.push(Node(s, dis[s]));
+
+    while(!pq.empty()) {
+        Node tmp = pq.top();
+        pq.pop();
+        int x = tmp.mNode;
+        //int d = tmp.mDis;
+
+        if(visited[x]) {
+            continue;
+        }
+
+        visited[x] = 1;
+
+        for(int i = head[x]; i; i = edge[i].next) {
+            int next_node = edge[i].to;
+            if(dis[next_node] > dis[x] + edge[i].len) {
+                dis[next_node] = dis[x] + edge[i].len;
+            }
+
+            if(!visited[next_node]) {
+                pq.push(Node{next_node, dis[next_node]});
+            }
+        }
+    }
+}
+
+int main() {
+  cin >> n >> m >> s;
+  store_edges();
+  for(int i = 1; i <= n; i++) {
+      cout << dis[i] << ' ';
+  }
+  cout << endl;
+  dijkstra();
+  for(int i = 1; i <= n; i++) {
+      cout << dis[i] << ' ';
+  }
+  cout << endl;
+}
