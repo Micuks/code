@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/micuks/code/OOP_Practise/practice5.2/build/src",
+  "command": "/usr/bin/c++   -I/home/micuks/code/OOP_Practise/practice5.2/src/Point    -std=gnu++11 -o CMakeFiles/practice5.2.dir/main.cpp.o -c /home/micuks/code/OOP_Practise/practice5.2/src/main.cpp",
+  "file": "/home/micuks/code/OOP_Practise/practice5.2/src/main.cpp"
+},
+{
+  "directory": "/home/micuks/code/OOP_Practise/practice5.2/build/src/Point",
+  "command": "/usr/bin/c++   -I/home/micuks/code/OOP_Practise/practice5.2/src/Point    -std=gnu++11 -o CMakeFiles/Point.dir/Point.cpp.o -c /home/micuks/code/OOP_Practise/practice5.2/src/Point/Point.cpp",
+  "file": "/home/micuks/code/OOP_Practise/practice5.2/src/Point/Point.cpp"
+}
+]

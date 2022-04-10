@@ -1,0 +1,8 @@
+/home/micuks/code/OOP_Practise/practice5.2/build/CMakeFiles/rebuild_cache.dir
+/home/micuks/code/OOP_Practise/practice5.2/build/CMakeFiles/edit_cache.dir
+/home/micuks/code/OOP_Practise/practice5.2/build/src/CMakeFiles/edit_cache.dir
+/home/micuks/code/OOP_Practise/practice5.2/build/src/CMakeFiles/rebuild_cache.dir
+/home/micuks/code/OOP_Practise/practice5.2/build/src/CMakeFiles/practice5.2.dir
+/home/micuks/code/OOP_Practise/practice5.2/build/src/Point/CMakeFiles/rebuild_cache.dir
+/home/micuks/code/OOP_Practise/practice5.2/build/src/Point/CMakeFiles/edit_cache.dir
+/home/micuks/code/OOP_Practise/practice5.2/build/src/Point/CMakeFiles/Point.dir

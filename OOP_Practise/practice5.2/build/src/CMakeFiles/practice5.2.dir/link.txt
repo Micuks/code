@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/practice5.2.dir/main.cpp.o  -o practice5.2  Point/libPoint.a 
