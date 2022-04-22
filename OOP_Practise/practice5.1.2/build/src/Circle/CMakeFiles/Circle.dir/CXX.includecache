@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/Shape/Shape.h
+
+/home/micuks/code/OOP_Practise/practice5.1.2/src/Circle/Circle.cpp
+iostream
+-
+Circle.h
+/home/micuks/code/OOP_Practise/practice5.1.2/src/Circle/Circle.h
+
+/home/micuks/code/OOP_Practise/practice5.1.2/src/Circle/Circle.h
+Shape.h
+/home/micuks/code/OOP_Practise/practice5.1.2/src/Circle/Shape.h
+

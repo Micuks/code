@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/Rectangle/Rectangle.h
+iostream
+-
+Shape.h
+../src/Rectangle/Shape.h
+
+../src/Shape/Shape.h
+
+/home/micuks/code/OOP_Practise/practice3/src/Cube/Cube.cpp
+Cube.h
+/home/micuks/code/OOP_Practise/practice3/src/Cube/Cube.h
+
+/home/micuks/code/OOP_Practise/practice3/src/Cube/Cube.h
+Rectangle.h
+/home/micuks/code/OOP_Practise/practice3/src/Cube/Rectangle.h
+

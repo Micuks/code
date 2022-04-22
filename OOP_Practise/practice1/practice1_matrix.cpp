@@ -31,7 +31,8 @@ void free_matrix_space(int** &pm)
         delete pm[i];
     }
     delete pm;
-    cout << "Successfully freed memory space.\n";
+    if(pm == NULL)
+        cout << "Successfully freed memory space.\n";
 }
 
 void input_matrix(int** &pMatrix)
@@ -45,6 +46,8 @@ void input_matrix(int** &pMatrix)
         cout << "Failed to allocate memory space." << endl;
         abort();
     }
+
+    cout << "Input matrix\n";
 
     for(int i = 0; i < 4; i++) {
         for(int j = 0; j < 5; j++) {
@@ -121,6 +124,7 @@ void matrix_subtracting(int** const &pMatrix1, int** const &pMatrix2, int** &pMa
     }
 
     matrix_summing(pMatrix1, pMinusMatrix2, pMatrixOutput);
+    free_matrix_space(pMinusMatrix2);
 
     cout << "Subtraction completed.\n\n";
 }
@@ -134,8 +138,8 @@ int main() {
 
     int** pMatrix3 = nullptr;
 
-    input_matrix(pMatrix1);
-    input_matrix(pMatrix2);
+    // input_matrix(pMatrix1);
+    // input_matrix(pMatrix2);
 
     print_matrix(pMatrix1);
     print_matrix(pMatrix2);
