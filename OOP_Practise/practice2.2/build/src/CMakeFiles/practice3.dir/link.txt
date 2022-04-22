@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/practice3.dir/main.cpp.o  -o practice3  Matrix/libMatrix.a 

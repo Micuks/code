@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/Circle/Circle.h
+Shape.h
+../src/Circle/Shape.h
+
+../src/Cube/Cube.h
+Rectangle.h
+../src/Cube/Rectangle.h
+
+../src/Rectangle/Rectangle.h
+iostream
+-
+Shape.h
+../src/Rectangle/Shape.h
+
+../src/Shape/Shape.h
+
+/home/micuks/code/OOP_Practise/practice3/src/main.cpp
+Shape.h
+/home/micuks/code/OOP_Practise/practice3/src/Shape.h
+Rectangle.h
+/home/micuks/code/OOP_Practise/practice3/src/Rectangle.h
+Cube.h
+/home/micuks/code/OOP_Practise/practice3/src/Cube.h
+Circle.h
+/home/micuks/code/OOP_Practise/practice3/src/Circle.h
+

@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/practice3.dir/main.cpp.o  -o practice3  Shape/libShape.a Rectangle/libRectangle.a Cube/libCube.a Circle/libCircle.a Rectangle/libRectangle.a Shape/libShape.a 

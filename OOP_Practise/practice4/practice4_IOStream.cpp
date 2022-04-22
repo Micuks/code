@@ -12,7 +12,7 @@ int generate_random_number() {
 
     int roll = distribution(generator);
 
-    cout << "The answer is " << roll << ".\n";
+    // cout << "The answer is " << roll << ".\n";
     return roll;
 }
 
@@ -22,6 +22,10 @@ int get_number() {
     cin >> n;
 
     while (n < 1 || n > 1000) {
+        // If ostream& operator>>(ostream& , T&) fails the extraction of
+        // formatted data (such as integer, double, float, ...),
+        // stream.fail() will be true and thus
+        // !stream will evaluate to true too.
         if(!cin) {
             cout << "You entered value with wrong type.\n";
         }
@@ -30,7 +34,10 @@ int get_number() {
         }
 
         cout << "Enter an integer in the range of 1 to 1000.\n";
-        cin.clear();
+        cin.clear(); // unset fail bit
+        // It is important to ignore the rest of the line,
+        // since operator>> won't extract any data from the stream anymore
+        // as it is in a wrong format.
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cin >> n;
     }
@@ -50,9 +57,6 @@ int main() {
         }
         else if(number_entered > target_number) {
             cout << "The number is smaller than you guessed.\n";
-        }
-        else {
-            cout << "???";
         }
         number_entered = get_number();
     }

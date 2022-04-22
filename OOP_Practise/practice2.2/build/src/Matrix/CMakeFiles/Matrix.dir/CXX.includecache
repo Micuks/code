@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/micuks/code/OOP_Practise/practice3/src/Matrix/Matrix.cpp
+Matrix.h
+/home/micuks/code/OOP_Practise/practice3/src/Matrix/Matrix.h
+
+/home/micuks/code/OOP_Practise/practice3/src/Matrix/Matrix.h
+iostream
+-
+
