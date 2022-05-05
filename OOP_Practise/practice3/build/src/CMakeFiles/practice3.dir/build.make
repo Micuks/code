@@ -60,15 +60,15 @@ include src/CMakeFiles/practice3.dir/flags.make
 src/CMakeFiles/practice3.dir/main.cpp.o: src/CMakeFiles/practice3.dir/flags.make
 src/CMakeFiles/practice3.dir/main.cpp.o: ../src/main.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/micuks/code/OOP_Practise/practice3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/CMakeFiles/practice3.dir/main.cpp.o"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/practice3.dir/main.cpp.o -c /home/micuks/code/OOP_Practise/practice3/src/main.cpp
+	cd /home/micuks/code/OOP_Practise/practice3/build/src && /usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/practice3.dir/main.cpp.o -c /home/micuks/code/OOP_Practise/practice3/src/main.cpp
 
 src/CMakeFiles/practice3.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/practice3.dir/main.cpp.i"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/micuks/code/OOP_Practise/practice3/src/main.cpp > CMakeFiles/practice3.dir/main.cpp.i
+	cd /home/micuks/code/OOP_Practise/practice3/build/src && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/micuks/code/OOP_Practise/practice3/src/main.cpp > CMakeFiles/practice3.dir/main.cpp.i
 
 src/CMakeFiles/practice3.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/practice3.dir/main.cpp.s"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/micuks/code/OOP_Practise/practice3/src/main.cpp -o CMakeFiles/practice3.dir/main.cpp.s
+	cd /home/micuks/code/OOP_Practise/practice3/build/src && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/micuks/code/OOP_Practise/practice3/src/main.cpp -o CMakeFiles/practice3.dir/main.cpp.s
 
 # Object files for target practice3
 practice3_OBJECTS = \
