@@ -60,15 +60,15 @@ include src/Circle/CMakeFiles/Circle.dir/flags.make
 src/Circle/CMakeFiles/Circle.dir/Circle.cpp.o: src/Circle/CMakeFiles/Circle.dir/flags.make
 src/Circle/CMakeFiles/Circle.dir/Circle.cpp.o: ../src/Circle/Circle.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/micuks/code/OOP_Practise/practice3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/Circle/CMakeFiles/Circle.dir/Circle.cpp.o"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Circle && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Circle.dir/Circle.cpp.o -c /home/micuks/code/OOP_Practise/practice3/src/Circle/Circle.cpp
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Circle && /usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Circle.dir/Circle.cpp.o -c /home/micuks/code/OOP_Practise/practice3/src/Circle/Circle.cpp
 
 src/Circle/CMakeFiles/Circle.dir/Circle.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Circle.dir/Circle.cpp.i"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Circle && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/micuks/code/OOP_Practise/practice3/src/Circle/Circle.cpp > CMakeFiles/Circle.dir/Circle.cpp.i
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Circle && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/micuks/code/OOP_Practise/practice3/src/Circle/Circle.cpp > CMakeFiles/Circle.dir/Circle.cpp.i
 
 src/Circle/CMakeFiles/Circle.dir/Circle.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Circle.dir/Circle.cpp.s"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Circle && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/micuks/code/OOP_Practise/practice3/src/Circle/Circle.cpp -o CMakeFiles/Circle.dir/Circle.cpp.s
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Circle && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/micuks/code/OOP_Practise/practice3/src/Circle/Circle.cpp -o CMakeFiles/Circle.dir/Circle.cpp.s
 
 # Object files for target Circle
 Circle_OBJECTS = \

@@ -60,15 +60,15 @@ include src/Rectangle/CMakeFiles/Rectangle.dir/flags.make
 src/Rectangle/CMakeFiles/Rectangle.dir/Rectangle.cpp.o: src/Rectangle/CMakeFiles/Rectangle.dir/flags.make
 src/Rectangle/CMakeFiles/Rectangle.dir/Rectangle.cpp.o: ../src/Rectangle/Rectangle.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/micuks/code/OOP_Practise/practice3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/Rectangle/CMakeFiles/Rectangle.dir/Rectangle.cpp.o"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Rectangle && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Rectangle.dir/Rectangle.cpp.o -c /home/micuks/code/OOP_Practise/practice3/src/Rectangle/Rectangle.cpp
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Rectangle && /usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Rectangle.dir/Rectangle.cpp.o -c /home/micuks/code/OOP_Practise/practice3/src/Rectangle/Rectangle.cpp
 
 src/Rectangle/CMakeFiles/Rectangle.dir/Rectangle.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Rectangle.dir/Rectangle.cpp.i"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Rectangle && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/micuks/code/OOP_Practise/practice3/src/Rectangle/Rectangle.cpp > CMakeFiles/Rectangle.dir/Rectangle.cpp.i
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Rectangle && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/micuks/code/OOP_Practise/practice3/src/Rectangle/Rectangle.cpp > CMakeFiles/Rectangle.dir/Rectangle.cpp.i
 
 src/Rectangle/CMakeFiles/Rectangle.dir/Rectangle.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Rectangle.dir/Rectangle.cpp.s"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Rectangle && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/micuks/code/OOP_Practise/practice3/src/Rectangle/Rectangle.cpp -o CMakeFiles/Rectangle.dir/Rectangle.cpp.s
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Rectangle && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/micuks/code/OOP_Practise/practice3/src/Rectangle/Rectangle.cpp -o CMakeFiles/Rectangle.dir/Rectangle.cpp.s
 
 # Object files for target Rectangle
 Rectangle_OBJECTS = \

@@ -60,15 +60,15 @@ include src/Shape/CMakeFiles/Shape.dir/flags.make
 src/Shape/CMakeFiles/Shape.dir/Shape.cpp.o: src/Shape/CMakeFiles/Shape.dir/flags.make
 src/Shape/CMakeFiles/Shape.dir/Shape.cpp.o: ../src/Shape/Shape.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/micuks/code/OOP_Practise/practice3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/Shape/CMakeFiles/Shape.dir/Shape.cpp.o"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Shape && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shape.dir/Shape.cpp.o -c /home/micuks/code/OOP_Practise/practice3/src/Shape/Shape.cpp
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Shape && /usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Shape.dir/Shape.cpp.o -c /home/micuks/code/OOP_Practise/practice3/src/Shape/Shape.cpp
 
 src/Shape/CMakeFiles/Shape.dir/Shape.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Shape.dir/Shape.cpp.i"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Shape && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/micuks/code/OOP_Practise/practice3/src/Shape/Shape.cpp > CMakeFiles/Shape.dir/Shape.cpp.i
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Shape && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/micuks/code/OOP_Practise/practice3/src/Shape/Shape.cpp > CMakeFiles/Shape.dir/Shape.cpp.i
 
 src/Shape/CMakeFiles/Shape.dir/Shape.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Shape.dir/Shape.cpp.s"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Shape && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/micuks/code/OOP_Practise/practice3/src/Shape/Shape.cpp -o CMakeFiles/Shape.dir/Shape.cpp.s
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Shape && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/micuks/code/OOP_Practise/practice3/src/Shape/Shape.cpp -o CMakeFiles/Shape.dir/Shape.cpp.s
 
 # Object files for target Shape
 Shape_OBJECTS = \

@@ -60,15 +60,15 @@ include src/Cube/CMakeFiles/Cube.dir/flags.make
 src/Cube/CMakeFiles/Cube.dir/Cube.cpp.o: src/Cube/CMakeFiles/Cube.dir/flags.make
 src/Cube/CMakeFiles/Cube.dir/Cube.cpp.o: ../src/Cube/Cube.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/micuks/code/OOP_Practise/practice3/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/Cube/CMakeFiles/Cube.dir/Cube.cpp.o"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Cube && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cube.dir/Cube.cpp.o -c /home/micuks/code/OOP_Practise/practice3/src/Cube/Cube.cpp
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Cube && /usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Cube.dir/Cube.cpp.o -c /home/micuks/code/OOP_Practise/practice3/src/Cube/Cube.cpp
 
 src/Cube/CMakeFiles/Cube.dir/Cube.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Cube.dir/Cube.cpp.i"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Cube && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/micuks/code/OOP_Practise/practice3/src/Cube/Cube.cpp > CMakeFiles/Cube.dir/Cube.cpp.i
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Cube && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/micuks/code/OOP_Practise/practice3/src/Cube/Cube.cpp > CMakeFiles/Cube.dir/Cube.cpp.i
 
 src/Cube/CMakeFiles/Cube.dir/Cube.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Cube.dir/Cube.cpp.s"
-	cd /home/micuks/code/OOP_Practise/practice3/build/src/Cube && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/micuks/code/OOP_Practise/practice3/src/Cube/Cube.cpp -o CMakeFiles/Cube.dir/Cube.cpp.s
+	cd /home/micuks/code/OOP_Practise/practice3/build/src/Cube && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/micuks/code/OOP_Practise/practice3/src/Cube/Cube.cpp -o CMakeFiles/Cube.dir/Cube.cpp.s
 
 # Object files for target Cube
 Cube_OBJECTS = \
