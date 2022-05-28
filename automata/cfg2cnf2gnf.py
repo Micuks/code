@@ -128,7 +128,6 @@ class CFG:
                         s.add(jtem)
             for jtem in s:
                 self.grammar[item].remove(jtem)
-        # print(self.grammar)
         # end of algorithm 1 part
 
         set_0 = set(self.start)
@@ -157,6 +156,40 @@ class CFG:
                 if self.in_set(jtem, useless_N.union(useless_T)):
                     self.grammar[item].remove(jtem)
 
+    def cfg_to_cnf(self):
+        self.delete_epsilon()
+        self.delete_useless()
+        self.delete_single_generator()
+        self.is_CNF = True
+
+    def printer(self):
+        for item in self.grammar:
+            print(item+" -> ", end='')
+            for jtem in self.grammar[item]:
+                if self.grammar[item][0] == jtem:
+                    print(jtem+" ", end='')
+                else:
+                    print("| "+jtem+" ", end='')
+            print("")
+
+def helper():
+    print("""
+    Convert Context Free Grammer to Chomsky Normal Form
+    ---
+    Input example:
+    4
+    S->bA
+    S->aB
+    A->bAA|aS|a
+    B -> aBB | bS | b
+    ---
+    Tips:
+    Only support Upper letters(as Non-Terminal) and Lower letters(as Terminal) now;
+    Identify S as start character;
+    Identify 0 as epsilon.
+    
+    """)
+
 
 def main():
     n = int(input("Input the number of grammars.\n"))
@@ -171,12 +204,10 @@ def main():
         else:
             grammars.update({key: vals})
         # grammars[key] = vals
-    print(grammars)
     g = CFG(grammars, 'S')
-    # g.delete_epsilon()
-    # g.delete_single_generator()
-    g.delete_useless()
-    print(grammars)
+    g.cfg_to_cnf()
+    g.printer()
 
 if __name__ == "__main__":
+    helper()
     main()
