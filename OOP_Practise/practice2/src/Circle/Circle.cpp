@@ -49,7 +49,7 @@ Circle Circle::createCircle() {
     cin >> x >> y;
     Point center(x, y);
 
-    cout << "Enter the radius of the circle at";
+    cout << "Enter the radius of the circle at ";
     center.printPoint();
     cout << "\n";
 

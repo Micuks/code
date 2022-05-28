@@ -1,3 +1,0 @@
-/home/micuks/Code/ubuntu/oj/dSCourse/dynamic_search/build/CMakeFiles/rebuild_cache.dir
-/home/micuks/Code/ubuntu/oj/dSCourse/dynamic_search/build/CMakeFiles/edit_cache.dir
-/home/micuks/Code/ubuntu/oj/dSCourse/dynamic_search/build/CMakeFiles/tree.dir

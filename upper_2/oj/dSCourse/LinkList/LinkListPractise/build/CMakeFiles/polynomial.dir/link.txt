@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=c++11 -g -Wall -g   CMakeFiles/polynomial.dir/src/LinkList.cpp.o CMakeFiles/polynomial.dir/src/Polynomial.cpp.o  -o polynomial 
