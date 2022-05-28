@@ -57,11 +57,22 @@ class CFG:
     def get_set_N(self):
         set_n = set()
         for item in self.grammar:
+            if item in alphabet_N:
+                set_n.add(item)
             for jtem in self.grammar[item]:
                 for ktem in jtem:
                     if ktem in alphabet_N:
                         set_n.add(ktem)
         return set_n
+
+    def get_set_T(self):
+        set_t = set()
+        for item in self.grammar:
+            for jtem in self.grammar[item]:
+                for ktem in jtem:
+                    if ktem in alphabet_T:
+                        set_t.add(ktem)
+        return set_t
                     
     def in_set(self, jtem, set):
         flag = True
@@ -117,7 +128,34 @@ class CFG:
                         s.add(jtem)
             for jtem in s:
                 self.grammar[item].remove(jtem)
+        # print(self.grammar)
         # end of algorithm 1 part
+
+        set_0 = set(self.start)
+        set_1 = set(self.start)
+        for item in set_0:
+            for jtem in self.grammar[item]:
+                for ktem in jtem:
+                    set_1.add(ktem)
+        while set_0 != set_1:
+            set_0 = set_1
+            for item in set_0:
+                if item in alphabet_N:
+                    for jtem in self.grammar[item]:
+                        for ktem in jtem:
+                            set_1.add(ktem)
+                    
+        use_n = set_1.intersection(self.get_set_N())
+        useless_N = self.get_set_N() - use_n
+        use_t = set_1.intersection(self.get_set_T())
+        useless_T = self.get_set_T() - use_t;
+
+        for item in useless_N:
+            self.grammar.pop(item, 0)
+        for item in self.grammar:
+            for jtem in self.grammar[item]:
+                if self.in_set(jtem, useless_N.union(useless_T)):
+                    self.grammar[item].remove(jtem)
 
 
 def main():
