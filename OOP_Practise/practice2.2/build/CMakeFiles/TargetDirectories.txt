@@ -1,8 +1,0 @@
-/home/micuks/code/OOP_Practise/practice3/build/CMakeFiles/rebuild_cache.dir
-/home/micuks/code/OOP_Practise/practice3/build/CMakeFiles/edit_cache.dir
-/home/micuks/code/OOP_Practise/practice3/build/src/CMakeFiles/rebuild_cache.dir
-/home/micuks/code/OOP_Practise/practice3/build/src/CMakeFiles/edit_cache.dir
-/home/micuks/code/OOP_Practise/practice3/build/src/CMakeFiles/practice3.dir
-/home/micuks/code/OOP_Practise/practice3/build/src/Matrix/CMakeFiles/rebuild_cache.dir
-/home/micuks/code/OOP_Practise/practice3/build/src/Matrix/CMakeFiles/edit_cache.dir
-/home/micuks/code/OOP_Practise/practice3/build/src/Matrix/CMakeFiles/Matrix.dir

@@ -7,6 +7,7 @@ Matrix::Matrix() {
 }
 
 Matrix::Matrix(int rows, int cols) {
+    std::cout << "Matrix::Matrix(int rows, int cols) is called.\n";
     mRows = rows;
     mCols = cols;
     pData = new int*[rows];
@@ -16,6 +17,7 @@ Matrix::Matrix(int rows, int cols) {
 }
 
 Matrix::Matrix(const Matrix& oldMatrix) {
+    std::cout << "Matrix::Matrix(const Matrix& oldMatrix) is called.\n";
     if(this == &oldMatrix) {
         std::cout << "this == &oldMatrix\n";
     }
@@ -36,6 +38,7 @@ Matrix::Matrix(const Matrix& oldMatrix) {
 }
 
 Matrix::~Matrix() {
+    std::cout << "Matrix::~Matrix() is called.\n";
     for(int i = 0; i < mRows; i++) {
         delete [] pData[i];
     }

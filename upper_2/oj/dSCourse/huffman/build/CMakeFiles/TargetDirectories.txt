@@ -1,3 +1,0 @@
-/home/micuks/Code/ubuntu/oj/dSCourse/huffman/build/CMakeFiles/rebuild_cache.dir
-/home/micuks/Code/ubuntu/oj/dSCourse/huffman/build/CMakeFiles/edit_cache.dir
-/home/micuks/Code/ubuntu/oj/dSCourse/huffman/build/CMakeFiles/haffman.dir

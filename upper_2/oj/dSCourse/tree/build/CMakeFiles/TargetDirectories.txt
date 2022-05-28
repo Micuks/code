@@ -1,3 +1,0 @@
-/home/micuks/Code/ubuntu/oj/dSCourse/tree/build/CMakeFiles/rebuild_cache.dir
-/home/micuks/Code/ubuntu/oj/dSCourse/tree/build/CMakeFiles/edit_cache.dir
-/home/micuks/Code/ubuntu/oj/dSCourse/tree/build/CMakeFiles/tree.dir
