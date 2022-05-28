@@ -1,6 +1,7 @@
 grammars = {}
 epsilon = '0'
-alphabet = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
+alphabet_N = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}
+alphabet_T = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'}
 
 def replace_idx(text, idx=0, pat=''):
     return '%s%s%s'%(text[:idx], pat, text[idx+1:])
@@ -46,7 +47,7 @@ class CFG:
 
     def add_S1(self):
         set_u = self.get_set_N()
-        for item in alphabet:
+        for item in alphabet_N:
             if item not in set_u:
                 self.grammar.update({item: [epsilon]})
                 self.grammar[item].append(self.start)
@@ -58,7 +59,7 @@ class CFG:
         for item in self.grammar:
             for jtem in self.grammar[item]:
                 for ktem in jtem:
-                    if ktem in alphabet:
+                    if ktem in alphabet_N:
                         set_n.add(ktem)
         return set_n
                     
@@ -78,7 +79,7 @@ class CFG:
                 set0 = set1.copy()
                 for jtem in set0:
                     for ktem in self.grammar[jtem]:
-                        if ktem not in set0 and len(ktem) == 1 and ktem in alphabet:
+                        if ktem not in set0 and len(ktem) == 1 and ktem in alphabet_N:
                             set1.add(ktem)
             print(set1)
             for jtem in set1:
@@ -86,6 +87,37 @@ class CFG:
                 self.grammar[item] = list(set(self.grammar[item]))
                 if jtem in self.grammar[item]:
                     self.grammar[item].remove(jtem)
+
+    def delete_useless(self):
+        set_n0 = set()
+        set_n1 = set()
+        for item in self.grammar:
+            for jtem in self.grammar[item]:
+                if self.in_set(jtem, alphabet_T):
+                    set_n1.add(item)
+                    break
+                    
+        while set_n0 != set_n1:
+            set_n0 = set_n1
+            for item in self.grammar:
+                for jtem in self.grammar[item]:
+                    if self.in_set(jtem, alphabet_T.union(set_n0)):
+                        set_n1.add(item)
+                        break
+
+        useless_N = self.get_set_N() - set_n1
+        for item in useless_N:
+            self.grammar.pop(item, 0)
+
+        for item in self.grammar:
+            s = set()
+            for jtem in self.grammar[item]:
+                for ktem in useless_N:
+                    if ktem in jtem:
+                        s.add(jtem)
+            for jtem in s:
+                self.grammar[item].remove(jtem)
+        # end of algorithm 1 part
 
 
 def main():
@@ -96,11 +128,16 @@ def main():
         key = sstr[0].strip()
         vals = sstr[1].split('|')
         vals = [ j.strip() for j in vals ]
-        grammars[key] = vals
+        if key in grammars:
+            grammars[key].extend(vals)
+        else:
+            grammars.update({key: vals})
+        # grammars[key] = vals
     print(grammars)
     g = CFG(grammars, 'S')
-    g.delete_epsilon()
-    g.delete_single_generator()
+    # g.delete_epsilon()
+    # g.delete_single_generator()
+    g.delete_useless()
     print(grammars)
 
 if __name__ == "__main__":
