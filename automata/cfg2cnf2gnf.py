@@ -7,6 +7,9 @@ alphabet_N = set(l_alphabet_N)
 alphabet_T = set(l_alphabet_T)
 
 def replace_idx(text, idx=0, pat=''):
+    """
+    replace pattern at text[idx]
+    """
     return '%s%s%s'%(text[:idx], pat, text[idx+1:])
 
 class CFG:
@@ -17,6 +20,9 @@ class CFG:
         self.is_GNF = False
 
     def delete_epsilon(self):
+        """
+        delete epsilon in CFG
+        """
         set0 = set(epsilon)
         set1 = set(epsilon)
         if epsilon in self.grammar[self.start]:
@@ -49,6 +55,9 @@ class CFG:
                         i = jtem.find(ktem, i+1)
 
     def add_N(self, set=set()):
+        """
+        add new unused Non-Terminal
+        """
         set_n = self.get_set_N()
         set_n = set_n.union(set)
         for i in range(len(l_alphabet_N)):
@@ -57,6 +66,9 @@ class CFG:
         return str()
 
     def add_S1(self):
+        """
+        add new start non-terminal
+        """
         new_N = self.add_N()
         self.grammar.update({new_N: [epsilon]})
         self.grammar[new_N].append(self.start)
@@ -64,6 +76,9 @@ class CFG:
         return
 
     def get_set_N(self):
+        """
+        get non-terminal set
+        """
         set_n = set()
         for item in self.grammar:
             if item in alphabet_N:
@@ -75,6 +90,9 @@ class CFG:
         return set_n
 
     def get_set_T(self):
+        """
+        get terminal set
+        """
         set_t = set()
         for item in self.grammar:
             for jtem in self.grammar[item]:
@@ -84,6 +102,10 @@ class CFG:
         return set_t
                     
     def in_set(self, jtem, set):
+        """
+        if all elements in jtem belong with set, return true
+        else, return false
+        """
         flag = True
         for c in jtem:
             if c not in set:
@@ -92,6 +114,9 @@ class CFG:
         return flag
 
     def delete_single_generator(self):
+        """
+        delete 单生成式
+        """
         for item in self.grammar:
             set0 = set()
             set1 = set(item)
@@ -108,6 +133,9 @@ class CFG:
                     self.grammar[item].remove(jtem)
 
     def delete_useless(self):
+        """
+        delete useless non-terminal and terminal symbols
+        """
         set_n0 = set()
         set_n1 = set()
         for item in self.grammar:
@@ -165,6 +193,9 @@ class CFG:
                     self.grammar[item].remove(jtem)
 
     def conv2cnf(self):
+        """
+        convert CFG with epsilon, useless symbols and 单生成式 deleted to Chomsky Normal Foam
+        """
         set_t_epsilon = alphabet_T.copy()
         set_t_epsilon.add(epsilon)
         dict_new_g = dict()
@@ -211,6 +242,9 @@ class CFG:
             self.grammar.update({item: [dict_new_g[item]]})
     
     def shorten_g(self, jtem, dict):
+        """
+        single step in Chomsky Normal Form conversion
+        """
         to_shorten = jtem[1:3]
         for item in self.grammar:
             if self.grammar[item] == to_shorten:
