@@ -310,15 +310,18 @@ class CFG:
         print("after delete epsilon")
         self.printer()
         print("---")
-        self.delete_useless()
-        print("after delete useless")
-        self.printer()
-        print("---")
         self.delete_single_generator()
         print("after delete single generating equations")
         self.printer()
         print("---")
+        self.delete_useless()
+        print("after delete useless")
+        self.printer()
+        print("---")
         self.conv2cnf()
+        print("after convert to cnf")
+        self.printer()
+        print()
         self.is_CNF = True
 
     def printer(self):
@@ -365,7 +368,6 @@ def main():
         # grammars[key] = vals
     g = CFG(grammars, start)
     g.cfg_to_cnf()
-    g.printer()
 
 if __name__ == "__main__":
     helper()
