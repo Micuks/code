@@ -162,18 +162,16 @@ class CFG:
     def conv2cnf(self):
         set_t_epsilon = alphabet_T.copy()
         set_t_epsilon.add(epsilon)
-
-        self.printer()
+        dict_new_g = dict()
         for item in self.grammar:
             set_del = set()
             set_add = set()
             for jtem in self.grammar[item]:
                 if not self.in_set(jtem, alphabet_N):
-                    # print(jtem)
                     if not jtem in set_t_epsilon:
                         for ktem in jtem:
                             if ktem in set_t_epsilon:
-                                new_fr = self.handle_g(ktem)
+                                new_fr = self.handle_g(ktem, dict_new_g)
                                 new_jtem = jtem.replace(ktem, new_fr, 1)
                                 set_del.add(jtem)
                                 if new_jtem not in self.grammar[item]:
@@ -182,17 +180,21 @@ class CFG:
                 self.grammar[item].remove(jtem)
             for jtem in set_add:
                 self.grammar[item].append(jtem)
-                    
+        for item in dict_new_g:
+            self.grammar.update({item: dict_new_g[item]})
 
-    def handle_g(self, terminal):
+    def handle_g(self, terminal, dict):
         """
-        return N if has grammar N->ternimal; if hasn't, add new grammer N->terminal, return N.
+        return N if there is a N which has only one grammar N->ternimal; if hasn't, add new grammer N->terminal, return N.
         """
         for item in self.grammar:
-            if terminal in self.grammar[item]:
+            if self.grammar[item] == terminal:
+                return item
+        for item in dict:
+            if dict[item] == terminal:
                 return item
         new_N = self.add_N()
-        self.grammar.update({new_N: terminal})
+        dict.update({new_N: terminal})
         return new_N
 
         
@@ -246,6 +248,8 @@ def main():
             grammars.update({key: vals})
         # grammars[key] = vals
     g = CFG(grammars, 'S')
+    g.printer()
+    print()
     g.cfg_to_cnf()
     g.printer()
 
