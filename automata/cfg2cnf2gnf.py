@@ -1,5 +1,7 @@
 grammars = {}
 epsilon = '0'
+l_alphabet_N = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+l_alphabet_T = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 alphabet_N = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}
 alphabet_T = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'}
 
@@ -45,11 +47,13 @@ class CFG:
                             self.grammar[item].append(new_n)
                         i = jtem.find(ktem, i+1)
 
-    def add_N(self):
-        set_u = self.get_set_N()
-        for item in alphabet_N:
-            if item not in set_u:
-                return item
+    def add_N(self, set=set()):
+        set_n = self.get_set_N()
+        set_n = set_n.union(set)
+        for i in range(len(l_alphabet_N)):
+            if l_alphabet_N[i] not in set_n:
+                return l_alphabet_N[i]
+        return str()
 
     def add_S1(self):
         new_N = self.add_N()
@@ -171,7 +175,7 @@ class CFG:
                     if not jtem in set_t_epsilon:
                         for ktem in jtem:
                             if ktem in set_t_epsilon:
-                                new_fr = self.handle_g(ktem, dict_new_g)
+                                new_fr = self.t_to_n(ktem, dict_new_g)
                                 new_jtem = jtem.replace(ktem, new_fr, 1)
                                 set_del.add(jtem)
                                 if new_jtem not in self.grammar[item]:
@@ -181,9 +185,50 @@ class CFG:
             for jtem in set_add:
                 self.grammar[item].append(jtem)
         for item in dict_new_g:
-            self.grammar.update({item: dict_new_g[item]})
+            self.grammar.update({item: [dict_new_g[item]]})
+        # end of step 1
 
-    def handle_g(self, terminal, dict):
+        dict_new_g = dict()
+        for item in self.grammar:
+            q = set()
+            set_add = set()
+            for jtem in self.grammar[item]:
+                if len(jtem) > 2:
+                    q.add(jtem)
+                    self.grammar[item].remove(jtem)
+            while len(q) > 0:
+                jtem = q.pop()
+                new_jtem = self.shorten_g(jtem, dict_new_g)
+                if len(new_jtem) > 2:
+                    q.add(new_jtem)
+                else:
+                    set_add.add(new_jtem)
+
+            for jtem in set_add:
+                self.grammar[item].append(jtem)
+        for item in dict_new_g:
+            self.grammar.update({item: [dict_new_g[item]]})
+    
+    def shorten_g(self, jtem, dict):
+        to_shorten = jtem[1:3]
+        for item in self.grammar:
+            if self.grammar[item] == to_shorten:
+                s = replace_idx(jtem, 1, item)
+                s = replace_idx(s, 1)
+                return s
+        for item in dict:
+            if dict[item] == to_shorten:
+                s = replace_idx(jtem, 1, item)
+                s = replace_idx(s, 1)
+                return s
+        new_N = self.add_N(set(dict.keys()))
+        dict.update({new_N: to_shorten})
+        s = replace_idx(jtem, 1, new_N)
+        s = replace_idx(s, 2)
+        return s
+
+
+    def t_to_n(self, terminal, dict):
         """
         return N if there is a N which has only one grammar N->ternimal; if hasn't, add new grammer N->terminal, return N.
         """
@@ -193,10 +238,9 @@ class CFG:
         for item in dict:
             if dict[item] == terminal:
                 return item
-        new_N = self.add_N()
+        new_N = self.add_N(set(dict.keys()))
         dict.update({new_N: terminal})
         return new_N
-
         
     def cfg_to_cnf(self):
         self.delete_epsilon()
@@ -248,8 +292,6 @@ def main():
             grammars.update({key: vals})
         # grammars[key] = vals
     g = CFG(grammars, 'S')
-    g.printer()
-    print()
     g.cfg_to_cnf()
     g.printer()
 
