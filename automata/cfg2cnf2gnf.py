@@ -212,6 +212,7 @@ class CFG:
         set_t_epsilon = alphabet_T.copy()
         set_t_epsilon.add(epsilon)
         dict_new_g = dict()
+        # convert terminal symbols appearing at the right end of the generating equations to non-terminal symbols
         for item in self.grammar:
             set_del = set()
             set_add = set()
@@ -233,6 +234,7 @@ class CFG:
             self.grammar.update({item: [dict_new_g[item]]})
         # end of step 1
 
+        # shorten the length of the right end of the generating equations to no more than 2
         dict_new_g = dict()
         for item in self.grammar:
             q = set()
@@ -259,6 +261,7 @@ class CFG:
         single step in Chomsky Normal Form conversion
         """
         to_shorten = jtem[1:3]
+        # shorten the length of the right end of the generating equations by one at a time
         for item in self.grammar:
             if self.grammar[item] == to_shorten:
                 s = replace_idx(jtem, 1, item)
