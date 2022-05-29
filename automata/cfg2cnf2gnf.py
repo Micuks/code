@@ -1,4 +1,5 @@
 grammars = {}
+start = 'S'
 epsilon = '0'
 l_alphabet_N = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 l_alphabet_T = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
@@ -291,7 +292,7 @@ def main():
         else:
             grammars.update({key: vals})
         # grammars[key] = vals
-    g = CFG(grammars, 'S')
+    g = CFG(grammars, start)
     g.cfg_to_cnf()
     g.printer()
 
