@@ -215,12 +215,12 @@ class CFG:
         for item in self.grammar:
             if self.grammar[item] == to_shorten:
                 s = replace_idx(jtem, 1, item)
-                s = replace_idx(s, 1)
+                s = replace_idx(s, 2)
                 return s
         for item in dict:
             if dict[item] == to_shorten:
                 s = replace_idx(jtem, 1, item)
-                s = replace_idx(s, 1)
+                s = replace_idx(s, 2)
                 return s
         new_N = self.add_N(set(dict.keys()))
         dict.update({new_N: to_shorten})
