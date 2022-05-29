@@ -26,9 +26,6 @@ class CFG:
         set0 = set(epsilon)
         set1 = set(epsilon)
 
-        # add new start symbol if these is a grammer: S->epsilon 
-        if epsilon in self.grammar[self.start]:
-            self.add_S1()
         # use algorithm 1 to collect non-terminal A if there is a A->epsilon
         for item in self.grammar:
             if epsilon in self.grammar[item]:
@@ -59,6 +56,10 @@ class CFG:
                         if new_n not in self.grammar[k]:
                             self.grammar[k].append(new_n)
                         i = jtem.find(ktem, i+1)
+        # add new start symbol if these is a grammer: S->epsilon 
+        if epsilon in self.grammar[self.start]:
+            self.grammar[self.start].remove(epsilon)
+            self.add_S1()
 
     def add_N(self, set=set()):
         """
@@ -227,9 +228,9 @@ class CFG:
                                 if new_jtem not in self.grammar[k]:
                                     set_add.add(new_jtem)
             for jtem in set_del:
-                self.grammar[k].remove(jtem)
+                v.remove(jtem)
             for jtem in set_add:
-                self.grammar[k].append(jtem)
+                v.append(jtem)
         for item in dict_new_g:
             self.grammar.update({item: [dict_new_g[item]]})
         # end of step 1
