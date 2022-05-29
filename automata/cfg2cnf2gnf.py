@@ -25,11 +25,15 @@ class CFG:
         """
         set0 = set(epsilon)
         set1 = set(epsilon)
+
+        # add new start symbol if these is a grammer: S->epsilon 
         if epsilon in self.grammar[self.start]:
             self.add_S1()
+        # use algorithm 1 to collect non-terminal A if there is a A->epsilon
         for item in self.grammar:
             if epsilon in self.grammar[item]:
                 set1.add(item)
+        # recursively add all symbols can arrive epsilon
         while set0 != set1:
             set0 = set1
             for item in self.grammar:
@@ -38,9 +42,11 @@ class CFG:
                         set1.add(item)
                         break
         set2 = set()
+        # collect all non-terminal symbols that can arrive epsilon
         for item in set1:
-            if item.isupper():
+            if item in alphabet_N:
                 set2.add(item)
+        # clean epsilon grammers
         for item in self.grammar:
             for jtem in self.grammar[item]:
                 if item != self.start and jtem == epsilon:
@@ -138,12 +144,14 @@ class CFG:
         """
         set_n0 = set()
         set_n1 = set()
+        # collect terminal symbols
         for item in self.grammar:
             for jtem in self.grammar[item]:
                 if self.in_set(jtem, alphabet_T):
                     set_n1.add(item)
                     break
                     
+        # collect non-terminal symbols can arrive terminals
         while set_n0 != set_n1:
             set_n0 = set_n1
             for item in self.grammar:
@@ -152,10 +160,12 @@ class CFG:
                         set_n1.add(item)
                         break
 
+        # delete useless non-terminal symbol grammars
         useless_N = self.get_set_N() - set_n1
         for item in useless_N:
             self.grammar.pop(item, 0)
 
+        # delete useless symbols in grammars
         for item in self.grammar:
             s = set()
             for jtem in self.grammar[item]:
@@ -168,10 +178,12 @@ class CFG:
 
         set_0 = set(self.start)
         set_1 = set(self.start)
+        # collect all symbols start symbol can arrive directly
         for item in set_0:
             for jtem in self.grammar[item]:
                 for ktem in jtem:
                     set_1.add(ktem)
+        # collect all symbols start symbol can arrive
         while set_0 != set_1:
             set_0 = set_1
             for item in set_0:
@@ -185,6 +197,7 @@ class CFG:
         use_t = set_1.intersection(self.get_set_T())
         useless_T = self.get_set_T() - use_t;
 
+        # delete symbols can't be accessed
         for item in useless_N:
             self.grammar.pop(item, 0)
         for item in self.grammar:
