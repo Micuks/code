@@ -45,14 +45,18 @@ class CFG:
                             self.grammar[item].append(new_n)
                         i = jtem.find(ktem, i+1)
 
-    def add_S1(self):
+    def add_N(self):
         set_u = self.get_set_N()
         for item in alphabet_N:
             if item not in set_u:
-                self.grammar.update({item: [epsilon]})
-                self.grammar[item].append(self.start)
-                self.start = item
-                return
+                return item
+
+    def add_S1(self):
+        new_N = self.add_N()
+        self.grammar.update({new_N: [epsilon]})
+        self.grammar[new_N].append(self.start)
+        self.start = new_N
+        return
 
     def get_set_N(self):
         set_n = set()
@@ -92,7 +96,6 @@ class CFG:
                     for ktem in self.grammar[jtem]:
                         if ktem not in set0 and len(ktem) == 1 and ktem in alphabet_N:
                             set1.add(ktem)
-            print(set1)
             for jtem in set1:
                 self.grammar[item].extend(self.grammar[jtem])
                 self.grammar[item] = list(set(self.grammar[item]))
@@ -156,10 +159,48 @@ class CFG:
                 if self.in_set(jtem, useless_N.union(useless_T)):
                     self.grammar[item].remove(jtem)
 
+    def conv2cnf(self):
+        set_t_epsilon = alphabet_T.copy()
+        set_t_epsilon.add(epsilon)
+
+        self.printer()
+        for item in self.grammar:
+            set_del = set()
+            set_add = set()
+            for jtem in self.grammar[item]:
+                if not self.in_set(jtem, alphabet_N):
+                    # print(jtem)
+                    if not jtem in set_t_epsilon:
+                        for ktem in jtem:
+                            if ktem in set_t_epsilon:
+                                new_fr = self.handle_g(ktem)
+                                new_jtem = jtem.replace(ktem, new_fr, 1)
+                                set_del.add(jtem)
+                                if new_jtem not in self.grammar[item]:
+                                    set_add.add(new_jtem)
+            for jtem in set_del:
+                self.grammar[item].remove(jtem)
+            for jtem in set_add:
+                self.grammar[item].append(jtem)
+                    
+
+    def handle_g(self, terminal):
+        """
+        return N if has grammar N->ternimal; if hasn't, add new grammer N->terminal, return N.
+        """
+        for item in self.grammar:
+            if terminal in self.grammar[item]:
+                return item
+        new_N = self.add_N()
+        self.grammar.update({new_N: terminal})
+        return new_N
+
+        
     def cfg_to_cnf(self):
         self.delete_epsilon()
         self.delete_useless()
         self.delete_single_generator()
+        self.conv2cnf()
         self.is_CNF = True
 
     def printer(self):
@@ -194,7 +235,7 @@ def helper():
 def main():
     n = int(input("Input the number of grammars.\n"))
     for i in range(n):
-        str = input("Input grammar No.{}\n".format(i))
+        str = input("Input grammar {}/{}\n".format(i+1, n))
         sstr = str.split('->')
         key = sstr[0].strip()
         vals = sstr[1].split('|')
