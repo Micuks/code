@@ -45,17 +45,21 @@ class CFG:
                 set2.add(item)
         # clean epsilon grammers
         for k, v in self.grammar.items():
+            to_del = set()
             for jtem in v:
                 if k != self.start and jtem == epsilon:
-                    self.grammar[k].remove(epsilon)
+                    to_del.add(jtem)
                     continue;
                 for ktem in set2:
                     i = jtem.find(ktem)
                     while i != -1 and len(jtem) > 1:
                         new_n = replace_idx(jtem, i)
-                        if new_n not in self.grammar[k]:
-                            self.grammar[k].append(new_n)
+                        if new_n not in v:
+                            v.append(new_n)
                         i = jtem.find(ktem, i+1)
+
+            for jtem in to_del:
+                v.remove(jtem)
         # add new start symbol if these is a grammer: S->epsilon 
         if epsilon in self.grammar[self.start]:
             self.grammar[self.start].remove(epsilon)
@@ -174,7 +178,7 @@ class CFG:
                     if ktem in jtem:
                         s.add(jtem)
             for jtem in s:
-                self.grammar[k].remove(jtem)
+                v.remove(jtem)
         # end of algorithm 1 part
 
         set_0 = set(self.start)
@@ -201,10 +205,13 @@ class CFG:
         # delete symbols can't be accessed
         for item in useless_N:
             self.grammar.pop(item, 0)
-        for item in self.grammar:
-            for jtem in self.grammar[item]:
+        for k, v in self.grammar.items():
+            to_del = set()
+            for jtem in v:
                 if self.in_set(jtem, useless_N.union(useless_T)):
-                    self.grammar[item].remove(jtem)
+                    to_del.add(jtem)
+            for jtem in to_del:
+                v.remove(jtem)
 
     def conv2cnf(self):
         """
@@ -240,10 +247,13 @@ class CFG:
         for k, v in self.grammar.items():
             q = set()
             set_add = set()
+            to_del = set()
             for jtem in v:
                 if len(jtem) > 2:
                     q.add(jtem)
-                    self.grammar[k].remove(jtem)
+                    to_del.add(jtem)
+            for jtem in to_del:
+                v.remove(jtem)
             while len(q) > 0:
                 jtem = q.pop()
                 new_jtem = self.shorten_g(jtem, dict_new_g)
