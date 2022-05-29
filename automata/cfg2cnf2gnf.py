@@ -35,7 +35,7 @@ class CFG:
                 set1.add(item)
         # recursively add all symbols can arrive epsilon
         while set0 != set1:
-            set0 = set1
+            set0 = set1.copy()
             for item in self.grammar:
                 for jtem in self.grammar[item]:
                     if self.in_set(jtem, set0):
@@ -153,7 +153,7 @@ class CFG:
                     
         # collect non-terminal symbols can arrive terminals
         while set_n0 != set_n1:
-            set_n0 = set_n1
+            set_n0 = set_n1.copy()
             for item in self.grammar:
                 for jtem in self.grammar[item]:
                     if self.in_set(jtem, alphabet_T.union(set_n0)):
@@ -185,7 +185,7 @@ class CFG:
                     set_1.add(ktem)
         # collect all symbols start symbol can arrive
         while set_0 != set_1:
-            set_0 = set_1
+            set_0 = set_1.copy()
             for item in set_0:
                 if item in alphabet_N:
                     for jtem in self.grammar[item]:
@@ -294,9 +294,19 @@ class CFG:
         return new_N
         
     def cfg_to_cnf(self):
+        print("---")
         self.delete_epsilon()
+        print("after delete epsilon")
+        self.printer()
+        print("---")
         self.delete_useless()
+        print("after delete useless")
+        self.printer()
+        print("---")
         self.delete_single_generator()
+        print("after delete single generating equations")
+        self.printer()
+        print("---")
         self.conv2cnf()
         self.is_CNF = True
 
