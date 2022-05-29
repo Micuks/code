@@ -36,10 +36,10 @@ class CFG:
         # recursively add all symbols can arrive epsilon
         while set0 != set1:
             set0 = set1.copy()
-            for item in self.grammar:
-                for jtem in self.grammar[item]:
+            for k, v in self.grammar.items():
+                for jtem in v:
                     if self.in_set(jtem, set0):
-                        set1.add(item)
+                        set1.add(k)
                         break
         set2 = set()
         # collect all non-terminal symbols that can arrive epsilon
@@ -47,17 +47,17 @@ class CFG:
             if item in alphabet_N:
                 set2.add(item)
         # clean epsilon grammers
-        for item in self.grammar:
-            for jtem in self.grammar[item]:
-                if item != self.start and jtem == epsilon:
-                    self.grammar[item].remove(epsilon)
+        for k, v in self.grammar.items():
+            for jtem in v:
+                if k != self.start and jtem == epsilon:
+                    self.grammar[k].remove(epsilon)
                     continue;
                 for ktem in set2:
                     i = jtem.find(ktem)
                     while i != -1 and len(jtem) > 1:
                         new_n = replace_idx(jtem, i)
-                        if new_n not in self.grammar[item]:
-                            self.grammar[item].append(new_n)
+                        if new_n not in self.grammar[k]:
+                            self.grammar[k].append(new_n)
                         i = jtem.find(ktem, i+1)
 
     def add_N(self, set=set()):
@@ -86,10 +86,10 @@ class CFG:
         get non-terminal set
         """
         set_n = set()
-        for item in self.grammar:
-            if item in alphabet_N:
-                set_n.add(item)
-            for jtem in self.grammar[item]:
+        for k, v in self.grammar.items():
+            if k in alphabet_N:
+                set_n.add(k)
+            for jtem in v:
                 for ktem in jtem:
                     if ktem in alphabet_N:
                         set_n.add(ktem)
@@ -100,8 +100,8 @@ class CFG:
         get terminal set
         """
         set_t = set()
-        for item in self.grammar:
-            for jtem in self.grammar[item]:
+        for k, v in self.grammar.items():
+            for jtem in v:
                 for ktem in jtem:
                     if ktem in alphabet_T:
                         set_t.add(ktem)
@@ -145,19 +145,19 @@ class CFG:
         set_n0 = set()
         set_n1 = set()
         # collect terminal symbols
-        for item in self.grammar:
-            for jtem in self.grammar[item]:
+        for k, v in self.grammar.items():
+            for jtem in v:
                 if self.in_set(jtem, alphabet_T):
-                    set_n1.add(item)
+                    set_n1.add(k)
                     break
                     
         # collect non-terminal symbols can arrive terminals
         while set_n0 != set_n1:
             set_n0 = set_n1.copy()
-            for item in self.grammar:
-                for jtem in self.grammar[item]:
+            for k, v in self.grammar.items():
+                for jtem in v:
                     if self.in_set(jtem, alphabet_T.union(set_n0)):
-                        set_n1.add(item)
+                        set_n1.add(k)
                         break
 
         # delete useless non-terminal symbol grammars
@@ -166,14 +166,14 @@ class CFG:
             self.grammar.pop(item, 0)
 
         # delete useless symbols in grammars
-        for item in self.grammar:
+        for k, v in self.grammar.items():
             s = set()
-            for jtem in self.grammar[item]:
+            for jtem in v:
                 for ktem in useless_N:
                     if ktem in jtem:
                         s.add(jtem)
             for jtem in s:
-                self.grammar[item].remove(jtem)
+                self.grammar[k].remove(jtem)
         # end of algorithm 1 part
 
         set_0 = set(self.start)
@@ -213,10 +213,10 @@ class CFG:
         set_t_epsilon.add(epsilon)
         dict_new_g = dict()
         # convert terminal symbols appearing at the right end of the generating equations to non-terminal symbols
-        for item in self.grammar:
+        for k, v in self.grammar.items():
             set_del = set()
             set_add = set()
-            for jtem in self.grammar[item]:
+            for jtem in v:
                 if not self.in_set(jtem, alphabet_N):
                     if not jtem in set_t_epsilon:
                         for ktem in jtem:
@@ -224,25 +224,25 @@ class CFG:
                                 new_fr = self.t_to_n(ktem, dict_new_g)
                                 new_jtem = jtem.replace(ktem, new_fr, 1)
                                 set_del.add(jtem)
-                                if new_jtem not in self.grammar[item]:
+                                if new_jtem not in self.grammar[k]:
                                     set_add.add(new_jtem)
             for jtem in set_del:
-                self.grammar[item].remove(jtem)
+                self.grammar[k].remove(jtem)
             for jtem in set_add:
-                self.grammar[item].append(jtem)
+                self.grammar[k].append(jtem)
         for item in dict_new_g:
             self.grammar.update({item: [dict_new_g[item]]})
         # end of step 1
 
         # shorten the length of the right end of the generating equations to no more than 2
         dict_new_g = dict()
-        for item in self.grammar:
+        for k, v in self.grammar.items():
             q = set()
             set_add = set()
-            for jtem in self.grammar[item]:
+            for jtem in v:
                 if len(jtem) > 2:
                     q.add(jtem)
-                    self.grammar[item].remove(jtem)
+                    self.grammar[k].remove(jtem)
             while len(q) > 0:
                 jtem = q.pop()
                 new_jtem = self.shorten_g(jtem, dict_new_g)
@@ -252,7 +252,7 @@ class CFG:
                     set_add.add(new_jtem)
 
             for jtem in set_add:
-                self.grammar[item].append(jtem)
+                self.grammar[k].append(jtem)
         for item in dict_new_g:
             self.grammar.update({item: [dict_new_g[item]]})
     
@@ -262,14 +262,14 @@ class CFG:
         """
         to_shorten = jtem[1:3]
         # shorten the length of the right end of the generating equations by one at a time
-        for item in self.grammar:
-            if self.grammar[item] == to_shorten:
-                s = replace_idx(jtem, 1, item)
+        for k, v in self.grammar.items():
+            if v == to_shorten:
+                s = replace_idx(jtem, 1, k)
                 s = replace_idx(s, 2)
                 return s
-        for item in dict:
-            if dict[item] == to_shorten:
-                s = replace_idx(jtem, 1, item)
+        for k, v in dict.items():
+            if v == to_shorten:
+                s = replace_idx(jtem, 1, k)
                 s = replace_idx(s, 2)
                 return s
         new_N = self.add_N(set(dict.keys()))
@@ -283,12 +283,12 @@ class CFG:
         """
         return N if there is a N which has only one grammar N->ternimal; if hasn't, add new grammer N->terminal, return N.
         """
-        for item in self.grammar:
-            if self.grammar[item] == terminal:
-                return item
-        for item in dict:
-            if dict[item] == terminal:
-                return item
+        for k, v in self.grammar.items():
+            if v == terminal:
+                return k
+        for k, v in dict.items():
+            if v == terminal:
+                return k
         new_N = self.add_N(set(dict.keys()))
         dict.update({new_N: terminal})
         return new_N
@@ -311,10 +311,10 @@ class CFG:
         self.is_CNF = True
 
     def printer(self):
-        for item in self.grammar:
-            print(item+" -> ", end='')
-            for jtem in self.grammar[item]:
-                if self.grammar[item][0] == jtem:
+        for k, v in self.grammar.items():
+            print(k+" -> ", end='')
+            for jtem in v:
+                if v[0] == jtem:
                     print(jtem+" ", end='')
                 else:
                     print("| "+jtem+" ", end='')
