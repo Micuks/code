@@ -117,12 +117,13 @@ class CFG:
         if all elements in jtem belong with set, return true
         else, return false
         """
-        flag = True
-        for c in jtem:
-            if c not in set:
-                flag = False
-                break
-        return flag
+        return set(jtem) <= set
+        # flag = True
+        # for c in jtem:
+        #     if c not in set:
+        #         flag = False
+        #         break
+        # return flag
 
     def delete_single_generator(self):
         """
