@@ -205,23 +205,14 @@ class CFG:
                     
         use_n = set_1.intersection(self.get_set_n())
         useless_n = self.get_set_n() - use_n
-        use_t = set_1.intersection(self.get_set_t())
-        useless_t = self.get_set_t() - use_t
 
         # delete symbols can't be accessed
         for item in useless_n:
             self.grammar.pop(item, 0)
-        for k, v in self.grammar.items():
-            to_del = set()
-            for jtem in v:
-                if self.in_set(jtem, useless_n.union(useless_t)):
-                    to_del.add(jtem)
-            for jtem in to_del:
-                v.remove(jtem)
 
     def conv2cnf(self):
         """
-        convert CFG with epsilon, useless symbols and 单生成式 deleted to Chomsky Normal Foam
+        convert CFG without epsilon, useless symbols and 单生成式 deleted to Chomsky Normal Form
         """
         set_t_epsilon = alphabet_T.copy()
         set_t_epsilon.add(epsilon)
@@ -366,7 +357,6 @@ def main():
             grammars[key].extend(vals)
         else:
             grammars.update({key: vals})
-        # grammars[key] = vals
     g = CFG(grammars, start)
     g.cfg_to_cnf()
 
