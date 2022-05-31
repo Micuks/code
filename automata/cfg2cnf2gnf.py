@@ -1,5 +1,5 @@
 grammars = {}
-start = 'S'
+start = 'A'
 epsilon = '0'
 l_alphabet_N = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 l_alphabet_T = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
@@ -236,8 +236,7 @@ class CFG:
                 v.remove(jtem)
             for jtem in set_add:
                 v.append(jtem)
-        for item in dict_new_g:
-            self.grammar.update({item: [dict_new_g[item]]})
+        self.grammar.update(dict_new_g)
         # end of step 1
 
         # shorten the length of the right end of the generating equations to no more than 2
@@ -261,7 +260,7 @@ class CFG:
                     set_add.add(new_jtem)
 
             for jtem in set_add:
-                self.grammar[k].append(jtem)
+                v.append(jtem)
         for item in dict_new_g:
             self.grammar.update({item: [dict_new_g[item]]})
     
@@ -272,12 +271,12 @@ class CFG:
         to_shorten = jtem[1:3]
         # shorten the length of the right end of the generating equations by one at a time
         for k, v in self.grammar.items():
-            if v == to_shorten:
+            if len(v) == 1 and v[0] == to_shorten:
                 s = replace_idx(jtem, 1, k)
                 s = replace_idx(s, 2)
                 return s
         for k, v in dict.items():
-            if v == to_shorten:
+            if len(v) == 1 and v[0] == to_shorten:
                 s = replace_idx(jtem, 1, k)
                 s = replace_idx(s, 2)
                 return s
@@ -293,15 +292,36 @@ class CFG:
         return N if there is an N which has only one grammar N->terminal; if hasn't, add new grammar N->terminal, return N.
         """
         for k, v in self.grammar.items():
-            if v == terminal:
+            if len(v) == 1 and v[0] == terminal:
                 return k
         for k, v in dict.items():
-            if v == terminal:
+            if len(v) == 1 and v[0] == terminal:
                 return k
         new_n = self.add_n(set(dict.keys()))
-        dict.update({new_n: terminal})
+        dict.update({new_n: [terminal]})
         return new_n
-        
+
+    def eliminate_left_recursion(self):
+        n_list = list()
+        for item in l_alphabet_N:
+            if item in self.grammar.keys():
+                n_list.append(item)
+
+        for k in n_list:
+            v = self.grammar[k]
+            for i in range(0, n_list.index(k)):
+                to_del = set()
+                to_add = set()
+                for jtem in v:
+                    if jtem[0] in alphabet_N and n_list.index(jtem[0]) == i:
+                        to_del.add(jtem)
+                        for item in self.grammar[jtem[0]]:
+                            to_add.add(item+jtem[1:])
+                for jtem in to_del:
+                    v.remove(jtem)
+                v.extend(list(to_add))
+                v = list(set(v))
+
     def cfg_to_cnf(self):
         print("---")
         self.delete_epsilon()
@@ -359,7 +379,11 @@ def main():
         else:
             grammars.update({key: vals})
     g = CFG(grammars, start)
-    g.cfg_to_cnf()
+    # g.cfg_to_cnf()
+    g.eliminate_left_recursion()
+    print("---")
+    print("after eliminate left recursion")
+    g.printer()
 
 if __name__ == "__main__":
     helper()
