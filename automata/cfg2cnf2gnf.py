@@ -43,13 +43,13 @@ class CFG:
         for item in set1:
             if item in alphabet_N:
                 set2.add(item)
-        # clean epsilon grammers
+        # clean epsilon grammars
         for k, v in self.grammar.items():
             to_del = set()
             for jtem in v:
                 if k != self.start and jtem == epsilon:
                     to_del.add(jtem)
-                    continue;
+                    continue
                 for ktem in set2:
                     i = jtem.find(ktem)
                     while i != -1 and len(jtem) > 1:
@@ -60,33 +60,32 @@ class CFG:
 
             for jtem in to_del:
                 v.remove(jtem)
-        # add new start symbol if these is a grammer: S->epsilon 
-        if epsilon in self.grammar[self.start]:
-            self.grammar[self.start].remove(epsilon)
-            self.add_S1()
+        # add new start symbol if there is a grammar: S->epsilon
+        if self.start in set2:
+            self.add_s1()
 
-    def add_N(self, set=set()):
+    def add_n(self, set=set()):
         """
         add new unused Non-Terminal
         """
-        set_n = self.get_set_N()
+        set_n = self.get_set_n()
         set_n = set_n.union(set)
         for i in range(len(l_alphabet_N)):
             if l_alphabet_N[i] not in set_n:
                 return l_alphabet_N[i]
         return str()
 
-    def add_S1(self):
+    def add_s1(self):
         """
         add new start non-terminal
         """
-        new_N = self.add_N()
-        self.grammar.update({new_N: [epsilon]})
-        self.grammar[new_N].append(self.start)
-        self.start = new_N
+        new_n = self.add_n()
+        self.grammar.update({new_n: [epsilon]})
+        self.grammar[new_n].append(self.start)
+        self.start = new_n
         return
 
-    def get_set_N(self):
+    def get_set_n(self):
         """
         get non-terminal set
         """
@@ -100,7 +99,7 @@ class CFG:
                         set_n.add(ktem)
         return set_n
 
-    def get_set_T(self):
+    def get_set_t(self):
         """
         get terminal set
         """
@@ -117,13 +116,13 @@ class CFG:
         if all elements in jtem belong with set, return true
         else, return false
         """
-        return set(jtem) <= set
-        # flag = True
-        # for c in jtem:
-        #     if c not in set:
-        #         flag = False
-        #         break
-        # return flag
+        # return set(jtem) <= set
+        flag = True
+        for c in jtem:
+            if c not in set:
+                flag = False
+                break
+        return flag
 
     def delete_single_generator(self):
         """
@@ -135,12 +134,18 @@ class CFG:
             while set0 != set1:
                 set0 = set1.copy()
                 for jtem in set0:
+                    if jtem not in self.grammar:
+                        continue
                     for ktem in self.grammar[jtem]:
                         if ktem not in set0 and len(ktem) == 1 and ktem in alphabet_N:
                             set1.add(ktem)
             for jtem in set1:
-                self.grammar[item].extend(self.grammar[jtem])
-                self.grammar[item] = list(set(self.grammar[item]))
+                if jtem not in self.grammar:
+                    continue
+                if len(self.grammar[jtem]) > 0:
+                    self.grammar[item].extend(self.grammar[jtem])
+                    self.grammar[item] = list(set(self.grammar[item]))
+            for jtem in set1:
                 if jtem in self.grammar[item]:
                     self.grammar[item].remove(jtem)
 
@@ -167,15 +172,15 @@ class CFG:
                         break
 
         # delete useless non-terminal symbol grammars
-        useless_N = self.get_set_N() - set_n1
-        for item in useless_N:
+        useless_n = self.get_set_n() - set_n1
+        for item in useless_n:
             self.grammar.pop(item, 0)
 
         # delete useless symbols in grammars
         for k, v in self.grammar.items():
             s = set()
             for jtem in v:
-                for ktem in useless_N:
+                for ktem in useless_n:
                     if ktem in jtem:
                         s.add(jtem)
             for jtem in s:
@@ -198,18 +203,18 @@ class CFG:
                         for ktem in jtem:
                             set_1.add(ktem)
                     
-        use_n = set_1.intersection(self.get_set_N())
-        useless_N = self.get_set_N() - use_n
-        use_t = set_1.intersection(self.get_set_T())
-        useless_T = self.get_set_T() - use_t;
+        use_n = set_1.intersection(self.get_set_n())
+        useless_n = self.get_set_n() - use_n
+        use_t = set_1.intersection(self.get_set_t())
+        useless_t = self.get_set_t() - use_t
 
         # delete symbols can't be accessed
-        for item in useless_N:
+        for item in useless_n:
             self.grammar.pop(item, 0)
         for k, v in self.grammar.items():
             to_del = set()
             for jtem in v:
-                if self.in_set(jtem, useless_N.union(useless_T)):
+                if self.in_set(jtem, useless_n.union(useless_t)):
                     to_del.add(jtem)
             for jtem in to_del:
                 v.remove(jtem)
@@ -284,16 +289,16 @@ class CFG:
                 s = replace_idx(jtem, 1, k)
                 s = replace_idx(s, 2)
                 return s
-        new_N = self.add_N(set(dict.keys()))
-        dict.update({new_N: to_shorten})
-        s = replace_idx(jtem, 1, new_N)
+        new_n = self.add_n(set(dict.keys()))
+        dict.update({new_n: to_shorten})
+        s = replace_idx(jtem, 1, new_n)
         s = replace_idx(s, 2)
         return s
 
 
     def t_to_n(self, terminal, dict):
         """
-        return N if there is a N which has only one grammar N->ternimal; if hasn't, add new grammer N->terminal, return N.
+        return N if there is an N which has only one grammar N->terminal; if hasn't, add new grammar N->terminal, return N.
         """
         for k, v in self.grammar.items():
             if v == terminal:
@@ -301,9 +306,9 @@ class CFG:
         for k, v in dict.items():
             if v == terminal:
                 return k
-        new_N = self.add_N(set(dict.keys()))
-        dict.update({new_N: terminal})
-        return new_N
+        new_n = self.add_n(set(dict.keys()))
+        dict.update({new_n: terminal})
+        return new_n
         
     def cfg_to_cnf(self):
         print("---")
@@ -327,17 +332,12 @@ class CFG:
 
     def printer(self):
         for k, v in self.grammar.items():
-            print(k+" -> ", end='')
-            for jtem in v:
-                if v[0] == jtem:
-                    print(jtem+" ", end='')
-                else:
-                    print("| "+jtem+" ", end='')
-            print("")
+            start_flag = '*' if k == self.start else ''
+            print(f'{k}{start_flag} -> {" | ".join(v)}')
 
 def helper():
     print("""
-    Convert Context Free Grammer to Chomsky Normal Form
+    Convert Context Free Grammar to Chomsky Normal Form
     ---
     Input example:
     4
