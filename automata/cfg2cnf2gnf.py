@@ -212,7 +212,7 @@ class CFG:
 
     def conv2cnf(self):
         """
-        convert CFG without epsilon, useless symbols and 单生成式 deleted to Chomsky Normal Form
+        convert CFG without epsilon, useless symbols and 单生成式 to Chomsky Normal Form
         """
         set_t_epsilon = alphabet_T.copy()
         set_t_epsilon.add(epsilon)
@@ -224,13 +224,14 @@ class CFG:
             for jtem in v:
                 if not self.in_set(jtem, alphabet_N):
                     if not jtem in set_t_epsilon:
-                        for ktem in jtem:
+                        new_jtem = str(jtem)
+                        set_del.add(jtem)
+                        for ktem in new_jtem:
                             if ktem in set_t_epsilon:
                                 new_fr = self.t_to_n(ktem, dict_new_g)
-                                new_jtem = jtem.replace(ktem, new_fr, 1)
-                                set_del.add(jtem)
-                                if new_jtem not in self.grammar[k]:
-                                    set_add.add(new_jtem)
+                                new_jtem = new_jtem.replace(ktem, new_fr, 1)
+                        if new_jtem not in v:
+                            set_add.add(new_jtem)
             for jtem in set_del:
                 v.remove(jtem)
             for jtem in set_add:
