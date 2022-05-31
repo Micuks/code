@@ -5,12 +5,19 @@ l_alphabet_N = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
 l_alphabet_T = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 alphabet_N = set(l_alphabet_N)
 alphabet_T = set(l_alphabet_T)
+INF = 26
 
 def replace_idx(text, idx=0, pat=''):
     """
     replace pattern at text[idx]
     """
     return '%s%s%s'%(text[:idx], pat, text[idx+1:])
+
+def comparator_n_idx(a):
+    if a[0] in l_alphabet_N:
+        return l_alphabet_N.index(a[0])
+    else:
+        return INF
 
 class CFG:
     def __init__(self, grammar, start):
@@ -301,6 +308,7 @@ class CFG:
         dict.update({new_n: [terminal]})
         return new_n
 
+        
     def eliminate_left_recursion(self):
         n_list = list()
         for item in l_alphabet_N:
@@ -309,18 +317,36 @@ class CFG:
 
         for k in n_list:
             v = self.grammar[k]
-            for i in range(0, n_list.index(k)):
+            for i in range(0, l_alphabet_N.index(k)):
+                # v.sort(key=comparator_n_idx)
                 to_del = set()
                 to_add = set()
                 for jtem in v:
-                    if jtem[0] in alphabet_N and n_list.index(jtem[0]) == i:
+                    if jtem[0] in alphabet_N and l_alphabet_N.index(jtem[0]) == i:
                         to_del.add(jtem)
                         for item in self.grammar[jtem[0]]:
                             to_add.add(item+jtem[1:])
                 for jtem in to_del:
-                    v.remove(jtem)
-                v.extend(list(to_add))
-                v = list(set(v))
+                    self.grammar[k].remove(jtem)
+                self.grammar[k].extend(list(to_add))
+                v = self.grammar[k]
+
+            # new_n = None
+            # list_v0 = list()
+            # list_v1 = list()
+            # for item in v:
+            #     if item[0] == k and len(item) > 1:
+            #         if new_n == None:
+            #             new_n = self.add_n()
+            #         list_v1.append(item[1:])
+            #         list_v1.append(item[1:]+new_n)
+            #     else:
+            #         list_v0.append(item)
+            #         if not new_n == None:
+            #             list_v0.append(item+new_n)
+            # self.grammar[k] = list_v0
+            # if not new_n == None:
+            #     self.grammar.update({new_n: list_v1})
 
     def cfg_to_cnf(self):
         print("---")
