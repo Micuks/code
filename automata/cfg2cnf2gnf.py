@@ -1,23 +1,28 @@
 grammars = {}
-start = 'A'
+start = 'S'
 epsilon = '0'
-l_alphabet_N = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-l_alphabet_T = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+l_alphabet_N = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+                'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+l_alphabet_T = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+                'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 alphabet_N = set(l_alphabet_N)
 alphabet_T = set(l_alphabet_T)
 INF = 26
+
 
 def replace_idx(text, idx=0, pat=''):
     """
     replace pattern at text[idx]
     """
-    return '%s%s%s'%(text[:idx], pat, text[idx+1:])
+    return '%s%s%s' % (text[:idx], pat, text[idx+1:])
+
 
 def comparator_n_idx(a):
     if a[0] in l_alphabet_N:
         return l_alphabet_N.index(a[0])
     else:
         return INF
+
 
 class CFG:
     def __init__(self, grammar, start):
@@ -26,6 +31,9 @@ class CFG:
         self.is_CNF = False
         self.is_GNF = False
 
+    # there may still some features here
+    # just some features
+    # doesn't matter ~~
     def delete_epsilon(self):
         """
         delete epsilon in CFG
@@ -45,7 +53,7 @@ class CFG:
                     if self.in_set(jtem, set0):
                         set1.add(k)
                         break
-        set2 = set()
+        set2 = set1.copy()
         # collect all non-terminal symbols that can arrive epsilon
         for item in set1:
             if item in alphabet_N:
@@ -117,7 +125,7 @@ class CFG:
                     if ktem in alphabet_T:
                         set_t.add(ktem)
         return set_t
-                    
+
     def in_set(self, jtem, set):
         """
         if all elements in jtem belong with set, return true
@@ -131,6 +139,9 @@ class CFG:
                 break
         return flag
 
+    # can be improved but we have no time
+    # so much ddl
+    # dying....
     def delete_single_generator(self):
         """
         delete 单生成式
@@ -151,7 +162,7 @@ class CFG:
                     continue
                 if len(self.grammar[jtem]) > 0:
                     self.grammar[item].extend(self.grammar[jtem])
-                    self.grammar[item] = list(set(self.grammar[item]))
+                    self.grammar[item] = list(set(self.grammar[item]))  # 去除重复
             for jtem in set1:
                 if jtem in self.grammar[item]:
                     self.grammar[item].remove(jtem)
@@ -168,7 +179,7 @@ class CFG:
                 if self.in_set(jtem, alphabet_T):
                     set_n1.add(k)
                     break
-                    
+
         # collect non-terminal symbols can arrive terminals
         while set_n0 != set_n1:
             set_n0 = set_n1.copy()
@@ -209,7 +220,7 @@ class CFG:
                     for jtem in self.grammar[item]:
                         for ktem in jtem:
                             set_1.add(ktem)
-                    
+
         use_n = set_1.intersection(self.get_set_n())
         useless_n = self.get_set_n() - use_n
 
@@ -270,7 +281,7 @@ class CFG:
                 v.append(jtem)
         for item in dict_new_g:
             self.grammar.update({item: [dict_new_g[item]]})
-    
+
     def shorten_g(self, jtem, dict):
         """
         single step in Chomsky Normal Form conversion
@@ -293,7 +304,6 @@ class CFG:
         s = replace_idx(s, 2)
         return s
 
-
     def t_to_n(self, terminal, dict):
         """
         return N if there is an N which has only one grammar N->terminal; if hasn't, add new grammar N->terminal, return N.
@@ -308,60 +318,50 @@ class CFG:
         dict.update({new_n: [terminal]})
         return new_n
 
-        
+    # convertion: var->Aw  A->b  =>  var->bw
+    def replace_first_var(self, var, A):
+        res = []
+        for item in self.grammar[var]:
+            if item[0] == A:
+                tmp = [v + item[1:] for v in self.grammar[A]]
+                res.extend(tmp)
+            else:
+                res.append(item)
+        res = list(set(res))
+        self.grammar[var] = res
+
+    # no need to explain
+    def eliminate_direct_left_recursion(self, var):
+        beta = []
+        alpha = []
+
+        for item in self.grammar[var]:
+            if item[0] == var:
+                alpha.append(item[1:])
+            else:
+                beta.append(item)
+
+        if alpha == []:  # no direct_left_recursion
+            return
+
+        new_n = self.add_n()
+        beta.extend([v + new_n for v in beta])
+        self.grammar[var] = beta
+        alpha.extend([v + new_n for v in alpha])
+        self.grammar[new_n] = alpha
+
     def eliminate_left_recursion(self):
-        n_list = list()
-        for item in l_alphabet_N:
-            if item in self.grammar.keys():
-                n_list.append(item)
-
-        for k in n_list:
-            v = self.grammar[k]
-            for i in range(0, l_alphabet_N.index(k)):
-                # v.sort(key=comparator_n_idx)
-                to_del = set()
-                to_add = set()
-                for jtem in v:
-                    if jtem[0] in alphabet_N and l_alphabet_N.index(jtem[0]) == i:
-                        to_del.add(jtem)
-                        for item in self.grammar[jtem[0]]:
-                            to_add.add(item+jtem[1:])
-                for jtem in to_del:
-                    self.grammar[k].remove(jtem)
-                self.grammar[k].extend(list(to_add))
-                v = self.grammar[k]
-
-            # new_n = None
-            # list_v0 = list()
-            # list_v1 = list()
-            # for item in v:
-            #     if item[0] == k and len(item) > 1:
-            #         if new_n == None:
-            #             new_n = self.add_n()
-            #         list_v1.append(item[1:])
-            #         list_v1.append(item[1:]+new_n)
-            #     else:
-            #         list_v0.append(item)
-            #         if not new_n == None:
-            #             list_v0.append(item+new_n)
-            # self.grammar[k] = list_v0
-            # if not new_n == None:
-            #     self.grammar.update({new_n: list_v1})
+        sorted_var = sorted(self.grammar)
+        for i in range(len(sorted_var)):
+            for j in range(i):
+                self.replace_first_var(sorted_var[i], sorted_var[j])
+            self.eliminate_direct_left_recursion(sorted_var[i])
 
     def cfg_to_cnf(self):
         print("---")
         self.delete_epsilon()
-        print("after delete epsilon")
-        self.printer()
-        print("---")
         self.delete_single_generator()
-        print("after delete single generating equations")
-        self.printer()
-        print("---")
         self.delete_useless()
-        print("after delete useless")
-        self.printer()
-        print("---")
         self.conv2cnf()
         print("after convert to cnf")
         self.printer()
@@ -372,6 +372,7 @@ class CFG:
         for k, v in self.grammar.items():
             start_flag = '*' if k == self.start else ''
             print(f'{k}{start_flag} -> {" | ".join(v)}')
+
 
 def helper():
     print("""
@@ -399,17 +400,33 @@ def main():
         sstr = str.split('->')
         key = sstr[0].strip()
         vals = sstr[1].split('|')
-        vals = [ j.strip() for j in vals ]
+        vals = [j.strip() for j in vals]
         if key in grammars:
             grammars[key].extend(vals)
         else:
             grammars.update({key: vals})
+
+    start = input("input the start nonterminal symbol:")
     g = CFG(grammars, start)
-    # g.cfg_to_cnf()
-    g.eliminate_left_recursion()
+    g_cfg = CFG(grammars, start)
     print("---")
+    g.delete_epsilon()
+    print("after delete epsilon")
+    g.printer()
+    print("---")
+    g.delete_single_generator()
+    print("after delete single generating equations")
+    g.printer()
+    print("---")
+    g.delete_useless()
+    print("after delete useless")
+    g.printer()
+    print('---')
+    g.eliminate_left_recursion()
     print("after eliminate left recursion")
     g.printer()
+    g.cfg_to_cnf
+
 
 if __name__ == "__main__":
     helper()
