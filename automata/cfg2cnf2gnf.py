@@ -59,6 +59,7 @@ class CFG:
             if item in alphabet_N:
                 set2.add(item)
         # clean epsilon grammars
+        k_to_del = set()
         for k, v in self.grammar.items():
             to_del = set()
             for jtem in v:
@@ -75,6 +76,14 @@ class CFG:
 
             for jtem in to_del:
                 v.remove(jtem)
+            # remove keys whose value list is empty
+            if not v:
+                k_to_del.add(k)
+
+        # remove keys whose value list is empty
+        for key in k_to_del:
+            self.grammar.pop(key, 0)
+
         # add new start symbol if there is a grammar: S->epsilon
         if self.start in set2:
             self.add_s1()
@@ -358,14 +367,10 @@ class CFG:
             self.eliminate_direct_left_recursion(sorted_var[i])
 
     def cfg_to_cnf(self):
-        print("---")
         self.delete_epsilon()
         self.delete_single_generator()
         self.delete_useless()
         self.conv2cnf()
-        print("after convert to cnf")
-        self.printer()
-        print()
         self.is_CNF = True
 
     def printer(self):
@@ -384,6 +389,7 @@ def helper():
     S->aB
     A->bAA|aS|a
     B -> aBB | bS | b
+    S
     ---
     Tips:
     Only support Upper letters(as Non-Terminal) and Lower letters(as Terminal) now;
@@ -408,7 +414,8 @@ def main():
 
     start = input("input the start nonterminal symbol:")
     g = CFG(grammars, start)
-    g_cfg = CFG(grammars, start)
+    g_cfg = CFG(grammars.copy(), start)
+    print()
     print("---")
     g.delete_epsilon()
     print("after delete epsilon")
@@ -425,7 +432,12 @@ def main():
     g.eliminate_left_recursion()
     print("after eliminate left recursion")
     g.printer()
-    g.cfg_to_cnf
+    print('---')
+    g_cfg.cfg_to_cnf()
+    print("after convert to cnf")
+    g_cfg.printer()
+    print('--- end of output ---')
+
 
 
 if __name__ == "__main__":
