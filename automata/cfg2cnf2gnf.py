@@ -30,9 +30,7 @@ class CFG:
         self.is_CNF = False
         self.is_GNF = False
 
-    # there may still some features here
-    # just some features
-    # doesn't matter ~~
+    # 消除epsilon生成式
     def delete_epsilon(self):
         """
         delete epsilon in CFG
@@ -146,12 +144,10 @@ class CFG:
                 break
         return flag
 
-    # can be improved but we have no time
-    # so much ddl
-    # dying....
+    # 消除单生成式
     def delete_single_generator(self):
         """
-        delete 单生成式
+        消除单生成式
         """
         for item in self.grammar:
             set0 = set()
@@ -174,6 +170,7 @@ class CFG:
                 if jtem in self.grammar[item]:
                     self.grammar[item].remove(jtem)
 
+    # 消除无用符号
     def delete_useless(self):
         """
         delete useless non-terminal and terminal symbols
@@ -235,6 +232,7 @@ class CFG:
         for item in useless_n:
             self.grammar.pop(item, 0)
 
+    # 转换为Chomsky范式
     def conv2cnf(self):
         """
         convert CFG without epsilon, useless symbols and 单生成式 to Chomsky Normal Form
@@ -337,7 +335,7 @@ class CFG:
         res = list(set(res))
         self.grammar[var] = res
 
-    # no need to explain
+    # 消除直接左递归
     def eliminate_direct_left_recursion(self, var):
         beta = []
         alpha = []
@@ -357,6 +355,7 @@ class CFG:
         alpha.extend([v + new_n for v in alpha])
         self.grammar[new_n] = alpha
 
+    # 消除左递归
     def eliminate_left_recursion(self):
         sorted_var = sorted(self.grammar)
         for i in range(len(sorted_var)):
@@ -380,7 +379,7 @@ class CFG:
 def helper():
     print("""
     Context Free Grammar Converter
-    
+
     - Elimite epsilon-generation
     - Elimite single-generation
     - Elimite useless symbols
