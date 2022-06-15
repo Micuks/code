@@ -379,7 +379,14 @@ class CFG:
 
 def helper():
     print("""
-    Convert Context Free Grammar to Chomsky Normal Form
+    Context Free Grammar Converter
+    
+    - Elimite epsilon-generation
+    - Elimite single-generation
+    - Elimite useless symbols
+    - Convert Context Free Grammar to Chomsky Normal Form
+    - Elimite left recursion
+
     ---
     Input example:
     4
