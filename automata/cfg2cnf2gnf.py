@@ -1,5 +1,4 @@
 grammars = {}
-start = 'S'
 epsilon = '0'
 l_alphabet_N = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
                 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
@@ -53,11 +52,9 @@ class CFG:
                     if self.in_set(jtem, set0):
                         set1.add(k)
                         break
-        set2 = set1.copy()
+
         # collect all non-terminal symbols that can arrive epsilon
-        for item in set1:
-            if item in alphabet_N:
-                set2.add(item)
+        set2 = set1.copy()
         # clean epsilon grammars
         k_to_del = set()
         for k, v in self.grammar.items():
@@ -86,6 +83,7 @@ class CFG:
 
         # add new start symbol if there is a grammar: S->epsilon
         if self.start in set2:
+            self.grammar[self.start].remove(epsilon)
             self.add_s1()
 
     def add_n(self, set=set()):
@@ -412,7 +410,7 @@ def main():
         else:
             grammars.update({key: vals})
 
-    start = input("input the start nonterminal symbol:")
+    start = input("input the start non-terminal symbol:")
     g = CFG(grammars, start)
     g_cfg = CFG(grammars.copy(), start)
     print()
