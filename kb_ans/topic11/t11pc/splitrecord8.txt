@@ -1,0 +1,67 @@
+
+20
+r0
+r1
+r2
+r3
+r4
+r5
+r6
+r7
+r8
+r9
+r10
+r11
+r12
+r13
+r14
+r15
+r16
+r17
+r18
+r19
+20
+d0 p0
+d1 p1
+d2 p2
+d3 p3
+d4 p4
+d5 p5
+d6 p6
+d7 p7
+d8 p8
+d9 p9
+d10 p10
+d11 p11
+d12 p12
+d13 p13
+d14 p14
+d15 p15
+d16 p16
+d17 p17
+d18 p18
+d19 p19
+20
+p10 r7
+p5 r1
+p6 r10
+p15 r2
+p17 r9
+p10 r3
+p6 r3
+p6 r14
+p4 r16
+p3 r5
+p6 r17
+p9 r4
+p2 r19
+p19 r0
+p3 r1
+p7 r0
+p2 r6
+p10 r10
+p8 r19
+p19 r19
+output:
+9
+
