@@ -1,0 +1,9 @@
+rule 0: k:2 x:5 y[0][0]: 0 y[0][1]: 3 Mx[0]: 6
+rule 1: k:1 x:2 y[1][0]: 1 Mx[1]: 15
+rule 2: k:2 x:3 y[2][0]: 1 y[2][1]: 2 Mx[2]: 10
+rem = 0 y[0][0] = 0 b = 0 Mx[0]: 0 has found not answer!
+rem = 3 y[0][0] = 1 b = 3 Mx[0]: 0 has found not answer!
+5
+rem = 8 y[0][1] = 1 b = 3 Mx[0]: 1 has found not answer!
+rem = 10 y[0][2] = 0 b = 0 Mx[0]: 2 has found not answer!
+13

@@ -1,0 +1,136 @@
+lcp: 0 7 4 1 2 9 6 3 2 0 1 8 5 2 3 3 1 0 
+a:0 b:1 ra:9, rb:16, min_lcp:0, sa:aabaabab sb:b
+ans:0, i:1, j:0
+a:1 b:2 ra:9, rb:17, min_lcp:0, sa:aabaabab sb:
+ans:0, i:1, j:1
+a:0 b:1 ra:9, rb:16, min_lcp:0, sa:aabaabab sb:b
+a:2 b:3 ra:15, rb:17, min_lcp:0, sa:ab sb:
+ans:0, i:1, j:2
+a:1 b:2 ra:9, rb:17, min_lcp:0, sa:aabaabab sb:
+a:3 b:4 ra:5, rb:15, min_lcp:0, sa:baabaabaabab sb:ab
+ans:0, i:1, j:3
+a:2 b:3 ra:15, rb:17, min_lcp:0, sa:ab sb:
+a:4 b:5 ra:5, rb:11, min_lcp:0, sa:baabaabaabab sb:baabab
+ans:0, i:1, j:4
+a:3 b:4 ra:5, rb:15, min_lcp:0, sa:baabaabaabab sb:ab
+a:5 b:6 ra:1, rb:11, min_lcp:0, sa:abbabaabaabaabab sb:baabab
+ans:0, i:1, j:5
+a:4 b:5 ra:5, rb:11, min_lcp:0, sa:baabaabaabab sb:baabab
+a:6 b:7 ra:1, rb:6, min_lcp:1, sa:abbabaabaabaabab sb:aabaabaabab
+ans:1, i:1, j:6
+a:5 b:6 ra:1, rb:11, min_lcp:0, sa:abbabaabaabaabab sb:baabab
+a:7 b:8 ra:6, rb:12, min_lcp:0, sa:aabaabaabab sb:aabab
+ans:0, i:1, j:7
+a:6 b:7 ra:1, rb:6, min_lcp:1, sa:abbabaabaabaabab sb:aabaabaabab
+a:8 b:9 ra:2, rb:12, min_lcp:0, sa:bbabaabaabaabab sb:aabab
+ans:0, i:1, j:8
+a:7 b:8 ra:6, rb:12, min_lcp:0, sa:aabaabaabab sb:aabab
+a:9 b:10 ra:2, rb:7, min_lcp:1, sa:bbabaabaabaabab sb:abaabaabab
+ans:1, i:1, j:9
+a:8 b:9 ra:2, rb:12, min_lcp:0, sa:bbabaabaabaabab sb:aabab
+a:10 b:11 ra:7, rb:13, min_lcp:0, sa:abaabaabab sb:abab
+ans:0, i:1, j:10
+a:9 b:10 ra:2, rb:7, min_lcp:1, sa:bbabaabaabaabab sb:abaabaabab
+a:11 b:12 ra:3, rb:13, min_lcp:0, sa:babaabaabaabab sb:abab
+ans:0, i:1, j:11
+a:10 b:11 ra:7, rb:13, min_lcp:0, sa:abaabaabab sb:abab
+a:12 b:13 ra:3, rb:8, min_lcp:1, sa:babaabaabaabab sb:baabaabab
+ans:1, i:1, j:12
+a:11 b:12 ra:3, rb:13, min_lcp:0, sa:babaabaabaabab sb:abab
+a:13 b:14 ra:8, rb:14, min_lcp:0, sa:baabaabab sb:bab
+ans:0, i:1, j:13
+a:12 b:13 ra:3, rb:8, min_lcp:1, sa:babaabaabaabab sb:baabaabab
+a:14 b:15 ra:4, rb:14, min_lcp:0, sa:abaabaabaabab sb:bab
+ans:0, i:1, j:14
+a:13 b:14 ra:8, rb:14, min_lcp:0, sa:baabaabab sb:bab
+a:15 b:16 ra:4, rb:10, min_lcp:0, sa:abaabaabaabab sb:abaabab
+ans:0, i:1, j:15
+a:14 b:15 ra:4, rb:14, min_lcp:0, sa:abaabaabaabab sb:bab
+a:0 b:2 ra:16, rb:17, min_lcp:0, sa:b sb:
+ans:0, i:2, j:0
+a:2 b:4 ra:5, rb:17, min_lcp:0, sa:baabaabaabab sb:
+ans:0, i:2, j:2
+a:0 b:2 ra:16, rb:17, min_lcp:0, sa:b sb:
+a:4 b:6 ra:1, rb:5, min_lcp:1, sa:abbabaabaabaabab sb:baabaabaabab
+ans:1, i:2, j:4
+a:3 b:5 ra:11, rb:15, min_lcp:2, sa:baabab sb:ab
+a:6 b:8 ra:1, rb:12, min_lcp:0, sa:abbabaabaabaabab sb:aabab
+ans:0, i:2, j:6
+a:4 b:6 ra:1, rb:5, min_lcp:1, sa:abbabaabaabaabab sb:baabaabaabab
+a:8 b:10 ra:7, rb:12, min_lcp:0, sa:abaabaabab sb:aabab
+ans:0, i:2, j:8
+a:6 b:8 ra:1, rb:12, min_lcp:0, sa:abbabaabaabaabab sb:aabab
+a:10 b:12 ra:3, rb:7, min_lcp:1, sa:babaabaabaabab sb:abaabaabab
+ans:1, i:2, j:10
+a:9 b:11 ra:2, rb:13, min_lcp:0, sa:bbabaabaabaabab sb:abab
+a:12 b:14 ra:3, rb:14, min_lcp:0, sa:babaabaabaabab sb:bab
+ans:0, i:2, j:12
+a:10 b:12 ra:3, rb:7, min_lcp:1, sa:babaabaabaabab sb:abaabaabab
+a:14 b:16 ra:10, rb:14, min_lcp:1, sa:abaabab sb:bab
+ans:1, i:2, j:14
+a:13 b:15 ra:4, rb:8, min_lcp:2, sa:abaabaabaabab sb:baabaabab
+a:0 b:3 ra:15, rb:16, min_lcp:1, sa:ab sb:b
+ans:1, i:3, j:0
+a:3 b:6 ra:1, rb:15, min_lcp:0, sa:abbabaabaabaabab sb:ab
+ans:0, i:3, j:3
+a:0 b:3 ra:15, rb:16, min_lcp:1, sa:ab sb:b
+a:6 b:9 ra:1, rb:2, min_lcp:4, sa:abbabaabaabaabab sb:bbabaabaabaabab
+ans:4, i:3, j:6
+a:4 b:7 ra:5, rb:6, min_lcp:6, sa:baabaabaabab sb:aabaabaabab
+a:9 b:12 ra:2, rb:3, min_lcp:1, sa:bbabaabaabaabab sb:babaabaabaabab
+ans:1, i:3, j:9
+a:7 b:10 ra:6, rb:7, min_lcp:3, sa:aabaabaabab sb:abaabaabab
+a:12 b:15 ra:3, rb:4, min_lcp:1, sa:babaabaabaabab sb:abaabaabaabab
+ans:1, i:3, j:12
+a:10 b:13 ra:7, rb:8, min_lcp:2, sa:abaabaabab sb:baabaabab
+a:0 b:4 ra:5, rb:16, min_lcp:0, sa:baabaabaabab sb:b
+ans:0, i:4, j:0
+a:4 b:8 ra:5, rb:12, min_lcp:0, sa:baabaabaabab sb:aabab
+ans:0, i:4, j:4
+a:0 b:4 ra:5, rb:16, min_lcp:0, sa:baabaabaabab sb:b
+a:8 b:12 ra:3, rb:12, min_lcp:0, sa:babaabaabaabab sb:aabab
+ans:0, i:4, j:8
+a:4 b:8 ra:5, rb:12, min_lcp:0, sa:baabaabaabab sb:aabab
+a:12 b:16 ra:3, rb:10, min_lcp:0, sa:babaabaabaabab sb:abaabab
+ans:0, i:4, j:12
+a:8 b:12 ra:3, rb:12, min_lcp:0, sa:babaabaabaabab sb:aabab
+a:0 b:5 ra:11, rb:16, min_lcp:1, sa:baabab sb:b
+ans:1, i:5, j:0
+a:5 b:10 ra:7, rb:11, min_lcp:0, sa:abaabaabab sb:baabab
+ans:0, i:5, j:5
+a:0 b:5 ra:11, rb:16, min_lcp:1, sa:baabab sb:b
+a:10 b:15 ra:4, rb:7, min_lcp:2, sa:abaabaabaabab sb:abaabaabab
+ans:2, i:5, j:10
+a:7 b:12 ra:3, rb:6, min_lcp:1, sa:babaabaabaabab sb:aabaabaabab
+a:0 b:6 ra:1, rb:16, min_lcp:0, sa:abbabaabaabaabab sb:b
+ans:0, i:6, j:0
+a:6 b:12 ra:1, rb:3, min_lcp:1, sa:abbabaabaabaabab sb:babaabaabaabab
+ans:1, i:6, j:6
+a:1 b:7 ra:6, rb:9, min_lcp:0, sa:aabaabaabab sb:aabaabab
+a:0 b:7 ra:6, rb:16, min_lcp:0, sa:aabaabaabab sb:b
+ans:0, i:7, j:0
+a:7 b:14 ra:6, rb:14, min_lcp:0, sa:aabaabaabab sb:bab
+ans:0, i:7, j:7
+a:0 b:7 ra:6, rb:16, min_lcp:0, sa:aabaabaabab sb:b
+a:0 b:8 ra:12, rb:16, min_lcp:1, sa:aabab sb:b
+ans:1, i:8, j:0
+a:8 b:16 ra:10, rb:12, min_lcp:1, sa:abaabab sb:aabab
+ans:1, i:8, j:8
+a:1 b:9 ra:2, rb:9, min_lcp:0, sa:bbabaabaabaabab sb:aabaabab
+a:0 b:9 ra:2, rb:16, min_lcp:0, sa:bbabaabaabaabab sb:b
+ans:0, i:9, j:0
+a:0 b:10 ra:7, rb:16, min_lcp:0, sa:abaabaabab sb:b
+ans:0, i:10, j:0
+a:0 b:11 ra:13, rb:16, min_lcp:1, sa:abab sb:b
+ans:1, i:11, j:0
+a:0 b:12 ra:3, rb:16, min_lcp:0, sa:babaabaabaabab sb:b
+ans:0, i:12, j:0
+a:0 b:13 ra:8, rb:16, min_lcp:0, sa:baabaabab sb:b
+ans:0, i:13, j:0
+a:0 b:14 ra:14, rb:16, min_lcp:1, sa:bab sb:b
+ans:1, i:14, j:0
+a:0 b:15 ra:4, rb:16, min_lcp:0, sa:abaabaabaabab sb:b
+ans:0, i:15, j:0
+a:0 b:16 ra:10, rb:16, min_lcp:1, sa:abaabab sb:b
+ans:1, i:16, j:0
+3

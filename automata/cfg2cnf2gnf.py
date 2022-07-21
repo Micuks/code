@@ -1,3 +1,6 @@
+from hashlib import new
+
+
 grammars = {}
 epsilon = '0'
 l_alphabet_N = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
@@ -363,12 +366,52 @@ class CFG:
                 self.replace_first_var(sorted_var[i], sorted_var[j])
             self.eliminate_direct_left_recursion(sorted_var[i])
 
+    def conv2gnf(self, old_set_n):
+        set_t = self.get_set_t()
+        sorted_old_keys = sorted(list(old_set_n))
+        sorted_old_keys.reverse()
+
+        for k in sorted_old_keys:
+            v = self.grammar[k]
+            to_add = list()
+            to_del = list()
+            for item in v:
+                if item[0] not in set_t:
+                    to_del.append(item)
+                    to_add.extend(self.conv2t(item))
+            for item in to_del:
+                v.remove(item)
+            v.extend(to_add)
+            v = list(set(v))
+
+    def conv2t(self, item):
+        q_item = list(item)
+        ret_item = list()
+        while(q_item):
+            qtop = q_item.pop(0)
+            for jtem in self.grammar[qtop[0]]:
+                new_item = replace_idx(qtop, 0, jtem)
+                if(new_item[0] in alphabet_T):
+                    ret_item.append(new_item)
+                else:
+                    q_item.append(new_item)
+        return ret_item
+
     def cfg_to_cnf(self):
         self.delete_epsilon()
         self.delete_single_generator()
         self.delete_useless()
         self.conv2cnf()
         self.is_CNF = True
+    
+    def cnf_to_gnf(self):
+        old_set_n = self.get_set_n()
+        self.eliminate_left_recursion()
+        print("after eliminate left recursion")
+        self.printer()
+        print('---')
+        self.conv2gnf(old_set_n)
+        self.is_GNF = True
 
     def printer(self):
         for k, v in self.grammar.items():
@@ -385,6 +428,7 @@ def helper():
     - Elimite useless symbols
     - Convert Context Free Grammar to Chomsky Normal Form
     - Elimite left recursion
+    - Convert Context Free Grammar to Greibach Normal Form
 
     ---
     Input example:
@@ -418,7 +462,6 @@ def main():
 
     start = input("input the start non-terminal symbol:")
     g = CFG(grammars, start)
-    g_cfg = CFG(grammars.copy(), start)
     print()
     print("---")
     g.delete_epsilon()
@@ -433,13 +476,17 @@ def main():
     print("after delete useless")
     g.printer()
     print('---')
-    g.eliminate_left_recursion()
-    print("after eliminate left recursion")
+    g.cfg_to_cnf()
+    print("after convert to cnf")
     g.printer()
     print('---')
-    g_cfg.cfg_to_cnf()
-    print("after convert to cnf")
-    g_cfg.printer()
+    # g.eliminate_left_recursion()
+    # print("after eliminate left recursion")
+    # g.printer()
+    # print('---')
+    print("after convert to gnf")
+    g.cnf_to_gnf()
+    g.printer()
     print('--- end of output ---')
 
 
@@ -447,3 +494,4 @@ def main():
 if __name__ == "__main__":
     helper()
     main()
+    # input()
