@@ -1,5 +1,5 @@
 CXX=g++
-GTEST_DIR=/home/zhangxianwen/package/googletest-release-1.7.0
+GTEST_DIR=/usr/src/gtest
 USER_DIR=./
 # A sample Makefile for building Google Test and using it in user
 # tests.  Please tweak it to suit your environment and project.  You

@@ -58,7 +58,7 @@ function make_dir()
     #touch $TEMP_NAME/${TEMP_NAME}_unittest.cpp
     
     RC_LOC="CXX=g++
-GTEST_DIR=/home/zhangxianwen/package/googletest-release-1.7.0
+GTEST_DIR=/usr/src/gtest
 USER_DIR=./"
 
     #[ -f "${RC_LOC}" ] || { echo "no ${RC_LOC} here"; exit -1; }
