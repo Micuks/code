@@ -2,6 +2,7 @@
 #define _t2_20220722_
 #include <algorithm>
 #include <assert.h>
+#include <climits>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -14,8 +15,14 @@
 #include <vector>
 using namespace std;
 
+const int CANNOT_REACH = INT_MAX;
 const int MAXN = 40;
+const int dirs[6][3] = {{1, 0, 0},  {0, 1, 0},  {0, 0, 1},
+                        {-1, 0, 0}, {0, -1, 0}, {0, 0, -1}};
+int visited[MAXN][MAXN][MAXN];
 char maze[MAXN][MAXN][MAXN];
+int l, r, c;
+
 class Point {
   public:
     int x;
@@ -23,28 +30,79 @@ class Point {
     int z;
     int distance;
     Point() : x(-1), y(-1), z(-1), distance(-1) {}
-    Point(int _x, int _y, int _z) : x(_x), y(_y), z(_z) {}
+    Point(const int &_x, const int &_y, const int &_z) : x(_x), y(_y), z(_z) {}
+    Point(const Point &_p) {
+        x = _p.x;
+        y = _p.y;
+        z = _p.z;
+        distance = _p.distance;
+    }
+    void setPoint(const int &_x, const int &_y, const int &_z) {
+        x = _x;
+        y = _y;
+        z = _z;
+        distance = -1;
+    }
+    void setDistance(const int &_dst) { distance = _dst; }
+    inline int isValid() {
+        return ((x >= 0 && x < r) && (y >= 0 && y < c) && (z >= 0 && z < l) &&
+                visited[x][y][z] == 0 &&
+                (maze[x][y][z] == '.' || maze[x][y][z] == 'E'));
+    }
 };
 
 Point data[MAXN][MAXN][MAXN];
 
-void dijkstra(Point begin, Point end) {}
+int bfs(Point b, Point e) {
+    queue<Point> q;
+    memset(visited, 0, MAXN * MAXN * MAXN * sizeof(int));
+    b.setDistance(0);
+    visited[b.x][b.y][b.z] = 1;
 
-int main(int argc, char **argv) {
-    int l, r, c;
-    while (scanf("%d%d%d", &l, &r, &c) == 3 && (l != 0 && r != 0 && c != 0)) {
-        memset(maze, '#', MAXN * MAXN * MAXN * sizeof(int));
-        memset(distance, -1, MAXN * MAXN * MAXN * sizeof(int));
-        for (int i = 0; i < r; i++) {
-            for (int j = 0; j < c; j++) {
-                char tmp = getchar();
-                while (tmp == '\n') {
-                    tmp = getchar();
+    q.push(Point(b.x, b.y, b.z));
+    while (!q.empty()) {
+        Point p = q.front();
+        q.pop();
+        for (int i = 0; i < 6; i++) {
+            Point tp(p.x + dirs[i][0], p.y + dirs[i][1], p.z + dirs[i][2]);
+            if (tp.isValid() == 1) {
+                visited[tp.x][tp.y][tp.z] = 1;
+                if (maze[tp.x][tp.y][tp.z] == 'E') {
+                    return p.distance + 1;
                 }
-                maze[i][j] = tmp;
+                tp.setDistance(p.distance + 1);
+                q.push(tp);
             }
         }
-        dijkstra();
+    }
+    return CANNOT_REACH;
+}
+
+int main(int argc, char **argv) {
+    Point begin, end;
+    while (scanf("%d%d%d", &l, &r, &c) == 3 && (l != 0 && r != 0 && c != 0)) {
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                for (int k = 0; k < l; k++) {
+                    char tmp = getchar();
+                    while (tmp == '\n') {
+                        tmp = getchar();
+                    }
+                    maze[i][j][k] = tmp;
+                    if (tmp == 'S') {
+                        begin.setPoint(i, j, k);
+                    } else if (tmp == 'E') {
+                        end.setPoint(i, j, k);
+                    }
+                }
+            }
+        }
+        int ans = bfs(begin, end);
+        if (ans == CANNOT_REACH) {
+            printf("Trapped!\n");
+        } else {
+            printf("Escaped in %d minute(s).\n", ans);
+        }
     }
     return 0;
 };
