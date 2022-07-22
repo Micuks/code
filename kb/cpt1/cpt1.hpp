@@ -82,9 +82,7 @@ void printMatrix() {
 }
 
 int main(int argc, char **argv) {
-    scanf("%d%d", &n, &k);
-    // printf("%d %d\n", n, k);
-    while (n != -1 || k != -1) {
+    while(scanf("%d%d", &n, &k) == 2 && n != -1 && k != -1) {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 char tmp;
@@ -106,8 +104,6 @@ int main(int argc, char **argv) {
         ans = 0;
         process();
         printf("%d\n", ans);
-        scanf("%d%d", &n, &k);
-        // printf("%d %d\n", n, k);
     }
     putchar('\n');
     return 0;
