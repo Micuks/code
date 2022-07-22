@@ -16,73 +16,56 @@ using namespace std;
 const int maxn = 10;
 
 int g_flag[maxn][maxn];
-int c_avai[maxn];
-int r_avai[maxn];
-int n, k, ans = 0;
+int n, k;
 int cnt = 0;
 
-int unitprocess(int i, int j) {
-    if (cnt == k) {
-        return 0;
+void printMatrix(int mtx[][maxn]) {
+    for (int i = 0; i < n; i++) {
+        putchar('-');
     }
-    if (g_flag[i][j] != 0 && c_avai[j] != 0 && r_avai[i] != 0) {
-        c_avai[j] = 0;
-        r_avai[i] = 0;
-        cnt++;
-    }
-    return 1;
-}
-
-void process() {
-    int ibgn = 0;
-    int jbgn = 0;
-    for (ibgn = 0; ibgn < n; ibgn++) {
-        for (jbgn = 0; jbgn < n; jbgn++) {
-            for(int i = 0; i < n; i++) {
-                c_avai[i] = 1;
-                r_avai[i] = 1;
-            }
-            cnt = 0;
-
-            if (g_flag[ibgn][jbgn] == 0) {
-                continue;
-            }
-            for (int i = ibgn; i < n; i++) {
-                if (cnt == k) {
-                    break;
-                }
-                if (i == ibgn) {
-                    for (int j = jbgn; j < n; j++) {
-                        if (unitprocess(i, j) == 0) {
-                            break;
-                        }
-                    }
-                } else {
-                    for (int j = 0; j < n; j++) {
-                        if (unitprocess(i, j) == 0) {
-                            break;
-                        }
-                    }
-                }
-            }
-            if (cnt == k) {
-                ans++;
-            }
-        }
-    }
-};
-
-void printMatrix() {
+    putchar('\n');
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            printf("%d ", g_flag[i][j]);
+            printf("%d ", mtx[i][j]);
         }
         putchar('\n');
     }
 }
 
+int process(int ns, int iter_depth, int mtx[][maxn]) {
+    int flag[maxn][maxn];
+    memcpy(flag, mtx, maxn * maxn * sizeof(int));
+    // printMatrix(flag);
+    int sum = 0;
+
+    if (iter_depth == k) {
+        // printf("1\n");
+        return 1;
+    }
+    if (iter_depth + n - ns < k) {
+        return 0;
+    }
+    int i = ns;
+    for (int j = 0; j < n; j++) {
+        if (flag[i][j] == 1) {
+            memset(flag[i], 0, maxn * sizeof(int));
+            for (int k = 0; k < maxn; k++) {
+                flag[i][k] = 0;
+            }
+            sum += process(ns + 1, iter_depth + 1, flag);
+            memcpy(flag[i], mtx[i], maxn * sizeof(int));
+            for (int k = 0; k < maxn; k++) {
+                flag[i][k] = mtx[i][k];
+            }
+        } else {
+            sum += process(ns + 1, iter_depth, flag);
+        }
+    }
+    return sum;
+}
+
 int main(int argc, char **argv) {
-    while(scanf("%d%d", &n, &k) == 2 && n != -1 && k != -1) {
+    while (scanf("%d%d", &n, &k) == 2 && n != -1 && k != -1) {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 char tmp;
@@ -97,13 +80,7 @@ int main(int argc, char **argv) {
             }
         }
         // printMatrix();
-        for(int i = 0; i < n; i++) {
-            c_avai[i] = 0;
-            r_avai[i] = 0;
-        }
-        ans = 0;
-        process();
-        printf("%d\n", ans);
+        printf("%d\n", process(0, 0, g_flag));
     }
     putchar('\n');
     return 0;
