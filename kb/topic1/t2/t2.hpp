@@ -49,9 +49,12 @@ class Point {
                 visited[x][y][z] == 0 &&
                 (maze[x][y][z] == '.' || maze[x][y][z] == 'E'));
     }
+    inline string toString() {
+        string str;
+        str += to_string(x) + ", " + to_string(y) + ", " + to_string(z);
+        return str;
+    }
 };
-
-Point data[MAXN][MAXN][MAXN];
 
 int bfs(Point b, Point e) {
     queue<Point> q;
@@ -78,12 +81,24 @@ int bfs(Point b, Point e) {
     return CANNOT_REACH;
 }
 
+void printMaze() {
+    for (int k = 0; k < l; k++) {
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                printf("%c ", maze[i][j][k]);
+            }
+            putchar('\n');
+        }
+        putchar('\n');
+    }
+}
+
 int main(int argc, char **argv) {
     Point begin, end;
     while (scanf("%d%d%d", &l, &r, &c) == 3 && (l != 0 && r != 0 && c != 0)) {
-        for (int i = 0; i < r; i++) {
-            for (int j = 0; j < c; j++) {
-                for (int k = 0; k < l; k++) {
+        for (int k = 0; k < l; k++) {
+            for (int i = 0; i < r; i++) {
+                for (int j = 0; j < c; j++) {
                     char tmp = getchar();
                     while (tmp == '\n') {
                         tmp = getchar();
@@ -97,11 +112,15 @@ int main(int argc, char **argv) {
                 }
             }
         }
-        int ans = bfs(begin, end);
-        if (ans == CANNOT_REACH) {
+        // printf("begin[%s], end[%s]", begin.toString().c_str(),
+        //        end.toString().c_str());
+        putchar('\n');
+        // printMaze();
+        int result = bfs(begin, end);
+        if (result == CANNOT_REACH) {
             printf("Trapped!\n");
         } else {
-            printf("Escaped in %d minute(s).\n", ans);
+            printf("Escaped in %d minute(s).\n", result);
         }
     }
     return 0;
