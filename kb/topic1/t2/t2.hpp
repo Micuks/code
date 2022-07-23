@@ -30,18 +30,20 @@ class Point {
     int z;
     int distance;
     Point() : x(-1), y(-1), z(-1), distance(-1) {}
-    Point(const int &_x, const int &_y, const int &_z) : x(_x), y(_y), z(_z) {}
+    Point(const int &_x, const int &_y, const int &_z, const int &_d = -1)
+        : x(_x), y(_y), z(_z), distance(_d) {}
     Point(const Point &_p) {
         x = _p.x;
         y = _p.y;
         z = _p.z;
         distance = _p.distance;
     }
-    void setPoint(const int &_x, const int &_y, const int &_z) {
+    void setPoint(const int &_x, const int &_y, const int &_z,
+                  const int &_d = -1) {
         x = _x;
         y = _y;
         z = _z;
-        distance = -1;
+        distance = _d;
     }
     void setDistance(const int &_dst) { distance = _dst; }
     inline int isValid() {
@@ -62,7 +64,7 @@ int bfs(Point b, Point e) {
     b.setDistance(0);
     visited[b.x][b.y][b.z] = 1;
 
-    q.push(Point(b.x, b.y, b.z));
+    q.push(Point(b.x, b.y, b.z, b.distance));
     while (!q.empty()) {
         Point p = q.front();
         q.pop();
@@ -114,7 +116,7 @@ int main(int argc, char **argv) {
         }
         // printf("begin[%s], end[%s]", begin.toString().c_str(),
         //        end.toString().c_str());
-        putchar('\n');
+        // putchar('\n');
         // printMaze();
         int result = bfs(begin, end);
         if (result == CANNOT_REACH) {
