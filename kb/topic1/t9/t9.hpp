@@ -1,4 +1,4 @@
-#define db
+// #define db
 #ifndef _t9_20220726_
 #define _t9_20220726_
 #include <algorithm>
@@ -13,6 +13,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <sstream>
 using namespace std;
 const int MAXN = 100;
 int dirs[][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
@@ -40,18 +41,13 @@ bool isValid(const char maze[][MAXN], const int n, const int m, const int x,
     return (x >= 0 && x < n && y >= 0 && y < m && maze[x][y] == '#');
 }
 int dfs(char maze[][MAXN], const int n, const int m, const int x1, const int y1,
-        const int x2, const int y2, const int steps) {
+        const int x2, const int y2, int steps) {
 #ifdef db
     cout << "------before\n";
     printMaze(maze, n, m);
 #endif
-    if (isAllBurnt(maze, n, m)) {
-#ifdef db
-        cout << "---all burnt---\n";
-#endif
-        return steps;
-    }
-    int result = 1 << 15;
+    int result1 = 1 << 15;
+    int result2 = 1 << 15;
     if (maze[x1][y1] == '#') {
         maze[x1][y1] = '.';
         for (int i = 0; i < 4; i++) {
@@ -59,17 +55,15 @@ int dfs(char maze[][MAXN], const int n, const int m, const int x1, const int y1,
             int ny = y1 + dirs[i][1];
             if (isValid(maze, n, m, nx, ny)) {
                 int tmp = dfs(maze, n, m, nx, ny, -1, -1, steps + 1);
-                result = (tmp != -1 && tmp < result) ? tmp : result;
-                if (result != 1 << 15) {
-#ifdef db
-                    cout << "result[" << result << "]" << endl;
-#endif
-                    return result;
-                }
+                result1 = (result1 == 1 << 15) ? tmp : result1;
+                result1 = (result1 < tmp) ? tmp : result1;
             }
         }
     }
     if (x2 != -1 && y2 != -1) {
+#ifdef db
+        cout << "x2[" << x2 << "], y2[" << y2 << "]" << endl;
+#endif
         if (maze[x2][y2] == '#') {
             maze[x2][y2] = '.';
             for (int i = 0; i < 4; i++) {
@@ -77,33 +71,53 @@ int dfs(char maze[][MAXN], const int n, const int m, const int x1, const int y1,
                 int ny = y2 + dirs[i][1];
                 if (isValid(maze, n, m, nx, ny)) {
                     int tmp = dfs(maze, n, m, nx, ny, -1, -1, steps + 1);
-                    result = (tmp != -1 && tmp < result) ? tmp : result;
-                    if (result != 1 << 15) {
-#ifdef db
-                        cout << "result[" << result << "]" << endl;
-#endif
-                        return result;
-                    }
+                    result2 = (result2 == 1 << 15) ? tmp : result2;
+                    result2 = (result2 < tmp) ? tmp : result2;
                 }
             }
         }
     }
 #ifdef db
-    cout << "result[" << result << "]" << endl;
     cout << "after------\n";
     printMaze(maze, n, m);
+    cout << "steps[" << steps << "], result1[" << result1 << "], result2["
+         << result2 << "]" << endl;
 #endif
-    if (isAllBurnt(maze, n, m)) {
+    if (result1 != 1 << 15 && result2 != 1 << 15) {
+        if (result1 > result2 && result1 > steps) {
 #ifdef db
-        cout << "---all burnt---\n";
+            cout << "return result1[" << result1 << "]" << endl;
+#endif
+            return result1;
+        }
+        if (result2 > result1 && result2 > steps) {
+#ifdef db
+            cout << "return result2[" << result2 << "]" << endl;
+#endif
+            return result2;
+        }
+#ifdef db
+        cout << "return steps[" << steps << "]" << endl;
 #endif
         return steps;
+    } else if (result1 == 1 << 15 && result2 != 1 << 15) {
+#ifdef db
+        cout << "return result2[" << result2 << "]" << endl;
+#endif
+        return (result2 > steps) ? result2 : steps;
+    } else if (result2 == 1 << 15 && result1 != 1 << 15) {
+#ifdef db
+        cout << "return result1[" << result1 << "]" << endl;
+#endif
+        return (result1 > steps) ? result1 : steps;
     }
-    if (result == 1 << 15)
-        return -1;
-    return result;
+#ifdef db
+    cout << "return steps[" << steps << "]" << endl;
+#endif
+    return steps;
 }
 int main(int argc, char **argv) {
+    ios_base::sync_with_stdio(false);
     int n, m, t;
     cin >> t;
     for (int kase = 1; kase <= t; kase++) {
@@ -126,9 +140,14 @@ int main(int argc, char **argv) {
                          << ", l[" << l << "]" << endl;
 #endif
                     int steps = dfs(maze, n, m, i, j, k, l, 0);
-                    if (steps != -1 && steps < best_steps) {
+                    if (steps != -1 && steps < best_steps &&
+                        isAllBurnt(maze, n, m)) {
                         best_steps = steps;
                     }
+#ifdef db
+                    cout << "steps[" << steps << "], best_steps[" << best_steps
+                         << "]" << endl;
+#endif
                     memcpy(maze, origin_maze, MAXN * MAXN * sizeof(char));
                 }
                 for (int k = i + 1; k < n; k++) {
@@ -139,9 +158,14 @@ int main(int argc, char **argv) {
                         // printMaze(maze, n, m);
 #endif
                         int steps = dfs(maze, n, m, i, j, k, l, 0);
-                        if (steps != -1 && steps < best_steps) {
+                        if (steps != -1 && steps < best_steps &&
+                            isAllBurnt(maze, n, m)) {
                             best_steps = steps;
                         }
+#ifdef db
+                        cout << "steps[" << steps << "], best_steps["
+                             << best_steps << "]" << endl;
+#endif
                         memcpy(maze, origin_maze, MAXN * MAXN * sizeof(char));
                     }
                 }
