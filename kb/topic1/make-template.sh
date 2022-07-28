@@ -64,6 +64,7 @@ USER_DIR=./"
     #[ -f "${RC_LOC}" ] || { echo "no ${RC_LOC} here"; exit -1; }
     echo "${RC_LOC}"  >  $TEMP_NAME/Makefile
     cat ./Makefile >> $TEMP_NAME/Makefile
+    cat ./.clang-format >> $TEMP_NAME/.clang-format
 
     sed -i "s/sample1_unittest/${TEMP_NAME}_unittest/g" $TEMP_NAME/Makefile
     sed -i "s/\<sample1\>/${TEMP_NAME}/g" $TEMP_NAME/Makefile
