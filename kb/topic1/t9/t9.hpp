@@ -1,3 +1,4 @@
+#define db
 #ifndef _t9_20220726_
 #define _t9_20220726_
 #include <algorithm>
@@ -40,10 +41,14 @@ bool isValid(const char maze[][MAXN], const int n, const int m, const int x,
 }
 int dfs(char maze[][MAXN], const int n, const int m, const int x1, const int y1,
         const int x2, const int y2, const int steps) {
+#ifdef db
     cout << "------before\n";
     printMaze(maze, n, m);
+#endif
     if (isAllBurnt(maze, n, m)) {
+#ifdef db
         cout << "---all burnt---\n";
+#endif
         return steps;
     }
     int result = 1 << 15;
@@ -56,7 +61,9 @@ int dfs(char maze[][MAXN], const int n, const int m, const int x1, const int y1,
                 int tmp = dfs(maze, n, m, nx, ny, -1, -1, steps + 1);
                 result = (tmp != -1 && tmp < result) ? tmp : result;
                 if (result != 1 << 15) {
+#ifdef db
                     cout << "result[" << result << "]" << endl;
+#endif
                     return result;
                 }
             }
@@ -72,18 +79,24 @@ int dfs(char maze[][MAXN], const int n, const int m, const int x1, const int y1,
                     int tmp = dfs(maze, n, m, nx, ny, -1, -1, steps + 1);
                     result = (tmp != -1 && tmp < result) ? tmp : result;
                     if (result != 1 << 15) {
+#ifdef db
                         cout << "result[" << result << "]" << endl;
+#endif
                         return result;
                     }
                 }
             }
         }
     }
+#ifdef db
     cout << "result[" << result << "]" << endl;
     cout << "after------\n";
     printMaze(maze, n, m);
+#endif
     if (isAllBurnt(maze, n, m)) {
+#ifdef db
         cout << "---all burnt---\n";
+#endif
         return steps;
     }
     if (result == 1 << 15)
@@ -93,8 +106,8 @@ int dfs(char maze[][MAXN], const int n, const int m, const int x1, const int y1,
 int main(int argc, char **argv) {
     int n, m, t;
     cin >> t;
-    int best_steps = 1 << 15;
     for (int kase = 1; kase <= t; kase++) {
+        int best_steps = 1 << 15;
         cin >> n >> m;
         for (int i = 0; i < n; i++) {
             string tmp;
@@ -108,6 +121,10 @@ int main(int argc, char **argv) {
                 for (int l = j; l < m; l++) {
                     // printMaze(maze, n, m);
                     int k = i;
+#ifdef db
+                    cout << "i[" << i << "], j[" << j << "], k[" << k << "]"
+                         << ", l[" << l << "]" << endl;
+#endif
                     int steps = dfs(maze, n, m, i, j, k, l, 0);
                     if (steps != -1 && steps < best_steps) {
                         best_steps = steps;
@@ -115,8 +132,12 @@ int main(int argc, char **argv) {
                     memcpy(maze, origin_maze, MAXN * MAXN * sizeof(char));
                 }
                 for (int k = i + 1; k < n; k++) {
-                    for (int l = 0; l < m; k++) {
+                    for (int l = 0; l < m; l++) {
+#ifdef db
+                        cout << "i[" << i << "], j[" << j << "], k[" << k << "]"
+                             << ", l[" << l << "]" << endl;
                         // printMaze(maze, n, m);
+#endif
                         int steps = dfs(maze, n, m, i, j, k, l, 0);
                         if (steps != -1 && steps < best_steps) {
                             best_steps = steps;
