@@ -37,16 +37,16 @@ class State {
     int cost;
     State(int _x, int _y, int _cost) : x(_x), y(_y), cost(_cost) {}
 };
-bool isValid(int r, int c, int nx, int ny, int cost) {
+inline bool isValid(int r, int c, int nx, int ny, int cost) {
     return (nx >= 0 && nx < r && ny >= 0 && ny < c && maze[nx][ny] != '#' &&
             cost < fired[nx][ny]);
 }
-bool isEscaped(int r, int c, int nx, int ny) {
+inline bool isEscaped(int r, int c, int nx, int ny) {
     return (nx < 0 || nx >= r || ny < 0 || ny >= c);
 }
-bool isWalkable(int r, int c, int x, int y, int cost) {
+inline bool isWalkable(int r, int c, int x, int y, int cost) {
     return (x >= 0 && x < r && y >= 0 && y < c && maze[x][y] == '.' &&
-            fired[x][y] > cost);
+            visited[x][y] == 0 && fired[x][y] > cost);
 }
 int bfs(int r, int c, int jx, int jy, vector<int> &fx, vector<int> &fy) {
     queue<State> q;
@@ -96,7 +96,7 @@ int bfs(int r, int c, int jx, int jy, vector<int> &fx, vector<int> &fy) {
     return -1;
 }
 int main(int argc, char **argv) {
-    // ios_base::sync_with_stdio(false);
+    ios_base::sync_with_stdio(false);
     int kases, c, r;
     cin >> kases;
     while (kases--) {
@@ -116,8 +116,10 @@ int main(int argc, char **argv) {
         vector<int> fx, fy;
         int jx, jy;
         for (int i = 0; i < r; i++) {
-            scanf("%s\n", &maze[i]);
+            // scanf("%s\n", &maze[i]);
+            cin.getline(maze[i], MAXN, '\n');
             for (int j = 0; j < c; j++) {
+                cin >> maze[i][j];
                 switch (maze[i][j]) {
                 case 'F':
                     fx.push_back(i);
