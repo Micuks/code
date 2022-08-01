@@ -16,11 +16,6 @@
 #include <vector>
 using namespace std;
 
-// #define return_partial(X)                                                      \
-//     if (X < rs.X)                                                              \
-//         return true;                                                           \
-//     if (X > rs.X)                                                              \
-//         return false;
 class State {
   public:
     int s;
@@ -37,12 +32,6 @@ class State {
         m = oldS.m;
         steps = oldS.steps;
     }
-    // bool operator<(const State &rs) {
-    //     return_partial(s);
-    //     return_partial(n);
-    //     return_partial(m);
-    //     return false;
-    // }
     inline bool isEqual(const int target) {
         return ((s == target && n == target) || (s == target && m == target) ||
                 (n == target && m == target));
@@ -74,22 +63,22 @@ bool operator<(const State &ls, const State &rs) {
             X = 0;                                                             \
         }                                                                      \
     } while (0)
-template <typename t> void printStack(const stack<t> st) {
-    stack<t> newst(st);
+template <typename t> void printStack(const queue<t> st) {
+    queue<t> newst(st);
 #ifdef db
     cout << "size[" << newst.size() << "]" << endl;
 #endif
     while (!newst.empty()) {
-        auto &a = newst.top();
+        auto &a = newst.front();
         newst.pop();
         cout << a << ' ';
     }
     cout << endl;
 }
-int dfs(const int sMax, const int nMax, const int mMax) {
+int bfs(const int sMax, const int nMax, const int mMax) {
     if (sMax % 2 == 1)
         return -1;
-    stack<State> st;
+    queue<State> st;
     set<State> visited;
 #ifdef db
     cout << "sMax[" << sMax << "], nMax[" << nMax << "], mMax[" << mMax << "]"
@@ -98,7 +87,7 @@ int dfs(const int sMax, const int nMax, const int mMax) {
     visited.insert(State(sMax, 0, 0));
     st.push(State(sMax, 0, 0));
     while (!st.empty()) {
-        State t = st.top();
+        State t = st.front();
         st.pop();
 #ifdef db
         cout << "t: ";
@@ -166,7 +155,7 @@ int dfs(const int sMax, const int nMax, const int mMax) {
 int main(int argc, char **argv) {
     int s, n, m;
     while (cin >> s >> n >> m && s != 0 && n != 0 && m != 0) {
-        int result = dfs(s, n, m);
+        int result = bfs(s, n, m);
         if (result == -1) {
             cout << "NO" << endl;
         } else
