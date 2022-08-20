@@ -1,3 +1,4 @@
+// #define db
 #ifndef _t14_20220801_
 #define _t14_20220801_
 #include <algorithm>
@@ -13,11 +14,20 @@
 #include <string>
 #include <vector>
 using namespace std;
-const int MAXN = 1000;
+const int MAXN = 210;
 char maze[MAXN][MAXN];
-int visited[MAXN][MAXN];
+int yvisited[MAXN][MAXN];
+int mvisited[MAXN][MAXN];
 const int dirs[][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 
+template <typename T> void printMaze(int n, int m, T maze[MAXN][MAXN]) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cout << maze[i][j] << ' ';
+        }
+        cout << endl;
+    }
+}
 class State {
   public:
     int x;
@@ -26,29 +36,24 @@ class State {
     State(int _x, int _y, int _c) : x(_x), y(_y), cost(_c) {}
     State(const State &ss) : x(ss.x), y(ss.y), cost(ss.cost) {}
 };
-bool isArrived(const State &s, const pair<int, int> kfc) {
-    return ((s.x == kfc.first) && (s.y == kfc.second));
-}
-bool isValid(const int &x, const int &y, const int &n, const int &m) {
+bool isValid(int visited[][MAXN], const int &x, const int &y, const int &n,
+             const int &m) {
     return ((x >= 0 && x < n && y >= 0 && y < m) && (maze[x][y] != '#') &&
-            (visited[x][y] == 0));
+            (visited[x][y] == -1));
 }
-int bfs(int x, int y, pair<int, int> kfc, int n, int m) {
-    memset(visited, 0, sizeof(visited));
+int bfs(int visited[][MAXN], int x, int y, int n, int m) {
+    memset(visited, -1, MAXN * MAXN * sizeof(int));
     queue<State> q;
     q.push(State(x, y, 0));
-    visited[x][y] = 1;
+    visited[x][y] = 0;
     while (!q.empty()) {
         State s = q.front();
         q.pop();
-        if (isArrived(s, kfc)) {
-            return s.cost;
-        }
         for (int i = 0; i < 4; i++) {
             int nx = s.x + dirs[i][0];
             int ny = s.y + dirs[i][1];
-            if (isValid(nx, ny, n, m)) {
-                visited[nx][ny] = 1;
+            if (isValid(visited, nx, ny, n, m)) {
+                visited[nx][ny] = s.cost + 1;
                 q.push(State(nx, ny, s.cost + 1));
             }
         }
@@ -56,6 +61,7 @@ int bfs(int x, int y, pair<int, int> kfc, int n, int m) {
     return -1;
 }
 int main(int argc, char **argv) {
+    ios_base::sync_with_stdio(false);
     int n, m;
     vector<pair<int, int>> kfcs;
     int yi, yj, mi, mj;
@@ -79,12 +85,17 @@ int main(int argc, char **argv) {
                 }
             }
         }
+        // printMaze(n,m,maze);
+        bfs(yvisited, yi, yj, n, m);
+        bfs(mvisited, mi, mj, n, m);
         while (!kfcs.empty()) {
             pair<int, int> kfc = kfcs.back();
             kfcs.pop_back();
-            int yCost = bfs(yi, yj, kfc, n, m);
-            int mCost = bfs(mi, mj, kfc, n, m);
-            if (yCost == -1 || mCost == -1) // one of them cannot reach kfc
+            int yCost = yvisited[kfc.first][kfc.second];
+            if (yCost == -1)
+                continue;
+            int mCost = mvisited[kfc.first][kfc.second];
+            if (mCost == -1)
                 continue;
             int total = yCost + mCost;
             bestCost = (bestCost < total) ? bestCost : total;
