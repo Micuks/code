@@ -17,8 +17,7 @@ using namespace std;
 
 typedef pair<int, int> point_t;
 
-ostream &operator<<(ostream &out, const point_t &pt)
-{
+ostream &operator<<(ostream &out, const point_t &pt) {
     out << '(' << pt.first << ", " << pt.second << ')';
     return out;
 }
@@ -35,8 +34,7 @@ struct State {
     int tc;
 };
 
-int bfs(int r, int c, int jx, int jy, vector<int> &fx, vector<int> &fy)
-{
+int bfs(int r, int c, int jx, int jy, vector<int> &fx, vector<int> &fy) {
     queue<State> mqueue;
     for (int i = 0; i < fx.size(); ++i) {
         mqueue.push(State(fx[i], fy[i], 0));
@@ -50,8 +48,8 @@ int bfs(int r, int c, int jx, int jy, vector<int> &fx, vector<int> &fy)
         for (int i = 0; i < 4; ++i) {
             int newx = s.x + dirs[i][0];
             int newy = s.y + dirs[i][1];
-            if (newx >= 0 && newx < r && newy >= 0 && newy < c && maze[newx][newy] != '#' &&
-                fired[newx][newy] > s.tc + 1) {
+            if (newx >= 0 && newx < r && newy >= 0 && newy < c &&
+                maze[newx][newy] != '#' && fired[newx][newy] > s.tc + 1) {
                 mqueue.push(State(newx, newy, s.tc + 1));
                 fired[newx][newy] = s.tc + 1;
             }
@@ -83,8 +81,7 @@ int bfs(int r, int c, int jx, int jy, vector<int> &fx, vector<int> &fy)
     return -1;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int case_cnt;
     int r, c;
     cin >> case_cnt;
@@ -100,22 +97,21 @@ int main(int argc, char **argv)
             for (int k = 0; k < c; ++k) {
                 // cin >> maze[j][k];
                 switch (maze[j][k]) {
-                    case 'F':
-                        fx.push_back(j), fy.push_back(k);
-                        break;
-                    case 'J':
-                        jx = j, jy = k;
-                        break;
-                    default:
-                        break;
+                case 'F':
+                    fx.push_back(j), fy.push_back(k);
+                    break;
+                case 'J':
+                    jx = j, jy = k;
+                    break;
+                default:
+                    break;
                 }
             }
         }
         int res = bfs(r, c, jx, jy, fx, fy);
         if (res == -1) {
             cout << "IMPOSSIBLE" << endl;
-        }
-        else {
+        } else {
             cout << res << endl;
         }
     }
