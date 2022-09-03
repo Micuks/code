@@ -1,7 +1,11 @@
 from builtins import range
 from builtins import object
+from cProfile import label
+from matplotlib.pyplot import close
 import numpy as np
 from past.builtins import xrange
+from torch import CompilationUnit, per_tensor_affine
+import torch
 
 
 class KNearestNeighbor(object):
@@ -77,8 +81,9 @@ class KNearestNeighbor(object):
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-                pass
-
+                p_train = X[i]
+                p_test = self.X_train[j]
+                dists[i][j] = np.sum(np.square(p_train - p_test))
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
@@ -100,8 +105,9 @@ class KNearestNeighbor(object):
             # Do not use np.linalg.norm().                                        #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-            pass
+            p_test = X[i]
+            all_p_train = self.X_train
+            dists[i, :] = np.sum(np.square(p_test-all_p_train), axis=1)
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -131,8 +137,27 @@ class KNearestNeighbor(object):
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        all_p_test = X
+        all_p_train = np.transpose(self.X_train)
+        # print(
+        #     f'all_p_test[{all_p_test.shape}],all_p_train[{all_p_train.shape}]')
 
+        multiply_rslt = np.matmul(all_p_test, all_p_train)
+        square_p_test = np.square(all_p_test)
+        square_p_test = np.sum(square_p_test, axis=1)
+
+        square_p_train = np.square(all_p_train)
+        square_p_train = np.sum(square_p_train, axis=0)
+        # square_p_train = np.transpose(square_p_train)
+
+        # print(
+        #     f'multiply_rslt[{multiply_rslt.shape}],square_p_test[{square_p_test.shape}],square_p_train[{square_p_train.shape}]')
+        rslt = -2*multiply_rslt
+        rslt = rslt + square_p_test[:,None]
+        # print(f'add p_test[{rslt}]')
+        rslt += square_p_train[None,:]
+        # print(f'add p_train[{rslt}]')
+        dists = rslt
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
@@ -164,7 +189,11 @@ class KNearestNeighbor(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
+            dist_to_test = dists[i]
+            indices_sorted_dist = np.argsort(dist_to_test)
+            labels = self.y_train
+            closest_y = labels[indices_sorted_dist[0:k]]
+            # print('closest_y[{}]'.format(closest_y))
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             #########################################################################
@@ -176,7 +205,10 @@ class KNearestNeighbor(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
+            values, counts = np.unique(closest_y, return_counts=True)
+            idx_maxcount = np.argmax(counts)
+            y_pred[i] = values[idx_maxcount]
+            # print('y_pred[{}]={}'.format(i,y_pred[i]))
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
