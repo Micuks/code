@@ -1,5 +1,6 @@
 from builtins import range
 from builtins import object
+from matplotlib.transforms import AffineBase
 import numpy as np
 
 from ..layers import *
@@ -55,7 +56,17 @@ class TwoLayerNet(object):
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        W1 = np.random.normal(loc=0.0, scale=weight_scale,
+                              size=(input_dim, hidden_dim))
+        b1 = np.zeros((input_dim,), dtype=float)
+        W2 = np.random.normal(loc=0.0, scale=weight_scale,
+                              size=(hidden_dim, num_classes))
+        b2 = np.zeros((hidden_dim,), dtype=float)
+
+        self.params.update({'W1': W1})
+        self.params.update({'W2': W2})
+        self.params.update({'b1': b1})
+        self.params.update({'b2': b2})
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
@@ -88,7 +99,15 @@ class TwoLayerNet(object):
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        W1 = self.params['W1']
+        W2 = self.params['W2']
+        b1 = self.params['b1']
+        b2 = self.params['b2']
+
+        out1, cache1 = affine_relu_forward(X, W1, b1)
+        out2, cache2 = affine_forward(out1, W2, b2)
+
+        scores = out2
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
@@ -112,7 +131,23 @@ class TwoLayerNet(object):
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        loss, d_scores = softmax_loss(scores, y)
+        dout1, dW2, db2 = affine_backward(d_scores, cache2)
+        dX, dW1, db1 = affine_relu_backward(dout1, cache1)
+
+        # regularization
+        reg = self.reg
+
+        loss += reg * 0.5 * np.sum(W2*W2)
+        loss += reg * 0.5 * np.sum(W1*W1)
+
+        dW1 += reg * W1
+        dW2 += reg * W2
+
+        grads.update({'W1': dW1})
+        grads.update({'W2': dW2})
+        grads.update({'b1': db1})
+        grads.update({'b2': db2})
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
