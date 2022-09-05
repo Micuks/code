@@ -87,20 +87,16 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    num_classes = W.shape[1]
+    # X[N,D], W[D,C], y[N,], S[N,C]
     num_train = X.shape[0]
-    S = X.dot(W)  # X[N,D], W[D,C], S[N,C]
+    S = X.dot(W)
     X_index = np.arange(num_train)
-    # print(X_index)
-    correct_class_scores = S[X_index, y]
-    # print(f'correct_class_scores.shape={correct_class_scores.shape}', end='')
-    S -= correct_class_scores.reshape(-1, 1)
-    # print(f'correct_class_scores(reshaped).shape={correct_class_scores.shape}')
-    S += 1
-    S[X_index, y] = 0
-    # print(S)
-    loss += np.sum(S*(S > 0))
-    loss /= num_train
+    yi_score = S[X_index, y]
+    # print(f'yi_score.shape = {yi_score.shape}')
+    margins = np.maximum(0, S-yi_score[:,np.newaxis]+1)
+    # margins = np.maximum(0, S-np.matrix(yi_score).T+1)
+    margins[X_index, y] = 0
+    loss = np.mean(np.sum(margins, axis=1))
     loss += reg * np.sum(W*W)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -116,22 +112,15 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+    binary = margins
+    binary[margins > 0] = 1
+    yi_binary = np.sum(binary, axis=1)
+    binary[X_index, y] -= yi_binary
     X_T = X.transpose()
-    sum_X_T = np.sum(X_T, axis=1)
-    sum_X_T.reshape(-1, 1)
-    sum_X_T *= num_classes
-    dW += sum_X_T[:, np.newaxis]
-    print(f'before:\n{dW}')
+    dW = X_T.dot(binary)
 
-    D = W.shape[0]
-    N = X.shape[0]
-    # to_del_X_T = X_T[np.arange(D), y]
-    to_del_X_T = np.zeros(W.shape)
-    for i in range(num_train):
-        to_del_X_T[:, y[i]] += X_T[:, i]
-
-    # dW[:, y] -= to_del_X_T
-    dW -= to_del_X_T
+    dW /= num_train
+    dW += reg * 2 * W
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 

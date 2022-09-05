@@ -66,7 +66,11 @@ class LinearClassifier(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
+            indices = np.random.choice(num_train, batch_size, replace=True)
+            X_batch = X[indices]
+            y_batch = y[indices]
+            # print(f'X_batch.shape = {X_batch.shape}')
+            # print(f'y_batch.shape = {y_batch.shape}')
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -81,7 +85,7 @@ class LinearClassifier(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
+            self.W -= learning_rate * grad #/ batch_size
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -111,7 +115,12 @@ class LinearClassifier(object):
         ###########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        num_test = X.shape[0]
+        S = X.dot(self.W)
+        # indices_sorted_score = np.argsort(S,axis=1)
+        # y_pred = indices_sorted_score[:,0]
+        y_pred = np.argmax(S, axis=1)
+        # print(f'y_pred[{y_pred}]')
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return y_pred
