@@ -18,11 +18,16 @@ CODE=(
 # that the generated pdf is
 # in order of questions
 NOTEBOOKS=(
-	"knn.ipynb"
-	"svm.ipynb"
-	"softmax.ipynb"
-	"two_layer_net.ipynb"
-	"features.ipynb"
+# 	"knn.ipynb"
+# 	"svm.ipynb"
+# 	"softmax.ipynb"
+# 	"two_layer_net.ipynb"
+# 	"features.ipynb"
+ 	"knn.tex"
+ 	"svm.tex"
+ 	"softmax.tex"
+ 	"two_layer_net.tex"
+ 	"features.tex"
 )
 
 FILES=( "${CODE[@]}" "${NOTEBOOKS[@]}" )
@@ -45,9 +50,9 @@ do
 	fi
 done
 
-echo -e "### Zipping file ###"
-rm -f ${ZIP_FILENAME}
-zip -q "${ZIP_FILENAME}" -r ${NOTEBOOKS[@]} $(find . -name "*.py") -x "makepdf.py"
+# echo -e "### Zipping file ###"
+# rm -f ${ZIP_FILENAME}
+# zip -q "${ZIP_FILENAME}" -r ${NOTEBOOKS[@]} $(find . -name "*.py") -x "makepdf.py"
 
 echo -e "### Creating PDFs ###"
 python makepdf.py --notebooks "${NOTEBOOKS[@]}" --pdf_filename "${PDF_FILENAME}"

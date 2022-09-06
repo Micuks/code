@@ -12,21 +12,26 @@ except ImportError:
 
 
 def main(files, pdf_name):
-    os_args = [
-        "jupyter",
-        "nbconvert",
-        "--log-level",
-        "CRITICAL",
-        "--to",
-        "pdf",
-    ]
-    for f in files:
-        os_args.append(f)
-        subprocess.run(os_args)
-        print("Created PDF {}.".format(f))
+#    os_args = [
+#        "jupyter",
+#        "nbconvert",
+#        "--log-level",
+#        "CRITICAL",
+#        "--to",
+#        # "pdf",
+#        "latex"
+#    ]
+#    os_args = [
+#        "xelatex"
+#    ]
+#    for f in files:
+#        os_args.append(f)
+#        subprocess.run(os_args)
+#        print("Created PDF {}.".format(f))
     if MERGE:
         pdfs = [f.split(".")[0] + ".pdf" for f in files]
         merger = PdfFileMerger()
+        print(pdfs)
         for pdf in pdfs:
             merger.append(pdf)
         merger.write(pdf_name)
