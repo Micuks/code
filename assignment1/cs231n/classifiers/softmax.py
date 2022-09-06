@@ -112,7 +112,7 @@ def softmax_loss_vectorized(W, X, y, reg):
     # gradient part
     margins = exp_scores/sum_axis_1_exp_scores[:, np.newaxis]
     # should be NxC
-    print(f'margins.shape={margins.shape}')
+    # print(f'margins.shape={margins.shape}')
     margins[X_index, y] -= 1
     X_T = X.transpose()
     dW = X_T.dot(margins)

@@ -58,10 +58,10 @@ class TwoLayerNet(object):
 
         W1 = np.random.normal(loc=0.0, scale=weight_scale,
                               size=(input_dim, hidden_dim))
-        b1 = np.zeros((input_dim,), dtype=float)
+        b1 = np.zeros((hidden_dim,), dtype=float)
         W2 = np.random.normal(loc=0.0, scale=weight_scale,
                               size=(hidden_dim, num_classes))
-        b2 = np.zeros((hidden_dim,), dtype=float)
+        b2 = np.zeros((num_classes,), dtype=float)
 
         self.params.update({'W1': W1})
         self.params.update({'W2': W2})
@@ -154,4 +154,6 @@ class TwoLayerNet(object):
         #                             END OF YOUR CODE                             #
         ############################################################################
 
+        # print(f'loss = {loss}')
+        # TODO loss == inf, loss == nan
         return loss, grads
