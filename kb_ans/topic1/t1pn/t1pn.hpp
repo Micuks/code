@@ -28,8 +28,7 @@ struct State {
     State(int tc, int x, int y) : tc(tc), x(x), y(y) {}
 };
 
-void bfs(int vflg[][256], int sx, int sy, int n, int m)
-{
+void bfs(int vflg[][256], int sx, int sy, int n, int m) {
     vflg[sx][sy] = 0;
     State s(0, sx, sy);
     queue<State> mqueue;
@@ -42,8 +41,8 @@ void bfs(int vflg[][256], int sx, int sy, int n, int m)
         for (int i = 0; i < 4; ++i) {
             int newx = s.x + dirs[i][0];
             int newy = s.y + dirs[i][1];
-            if (newx >= 0 && newx < n && newy >= 0 && newy < m && nb_map[newx][newy] != '#' &&
-                vflg[newx][newy] == -1) {
+            if (newx >= 0 && newx < n && newy >= 0 && newy < m &&
+                nb_map[newx][newy] != '#' && vflg[newx][newy] == -1) {
                 vflg[newx][newy] = s.tc + 1;
                 mqueue.push(State(s.tc + 1, newx, newy));
             }
@@ -51,8 +50,8 @@ void bfs(int vflg[][256], int sx, int sy, int n, int m)
     }
 }
 
-int bfs(const vector<point_t> &mcs, int n, int m, int yx, int yy, int mx, int my)
-{
+int bfs(const vector<point_t> &mcs, int n, int m, int yx, int yy, int mx,
+        int my) {
     int ret_min = 0x3F3F3F3F;
 
     bfs(yvisited, yx, yy, n, m);
@@ -75,15 +74,16 @@ int bfs(const vector<point_t> &mcs, int n, int m, int yx, int yy, int mx, int my
 #endif
     for (int i = 0; i < mcs.size(); ++i) {
         const point_t &p = mcs[i];
-        if (yvisited[p.first][p.second] != -1 && mvisited[p.first][p.second] != -1) {
-            ret_min = min(ret_min, yvisited[p.first][p.second] + mvisited[p.first][p.second]);
+        if (yvisited[p.first][p.second] != -1 &&
+            mvisited[p.first][p.second] != -1) {
+            ret_min = min(ret_min, yvisited[p.first][p.second] +
+                                       mvisited[p.first][p.second]);
         }
     }
     return ret_min;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int n, m;
     while (cin >> n >> m) {
         vector<point_t> mcs;
@@ -94,15 +94,15 @@ int main(int argc, char **argv)
             for (int j = 0; j < m; ++j) {
                 cin >> nb_map[i][j];
                 switch (nb_map[i][j]) {
-                    case 'Y':
-                        yx = i, yy = j;
-                        break;
-                    case 'M':
-                        mx = i, my = j;
-                        break;
-                    case '@':
-                        mcs.push_back(point_t(i, j));
-                        break;
+                case 'Y':
+                    yx = i, yy = j;
+                    break;
+                case 'M':
+                    mx = i, my = j;
+                    break;
+                case '@':
+                    mcs.push_back(point_t(i, j));
+                    break;
                 }
             }
         }

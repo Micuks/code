@@ -1,0 +1,1399 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{xeCJK}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+
+    \setCJKmainfont{Source Han Serif SC VF}
+    \setCJKsansfont{Source Han Sans SC VF}
+    \setCJKmonofont{Source Han Sans SC VF}
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{features}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{25}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} This mounts your Google Drive to the Colab VM.}
+\PY{k+kn}{from} \PY{n+nn}{google}\PY{n+nn}{.}\PY{n+nn}{colab} \PY{k+kn}{import} \PY{n}{drive}
+\PY{n}{drive}\PY{o}{.}\PY{n}{mount}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{/content/drive}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} TODO: Enter the foldername in your Drive where you have saved the unzipped}
+\PY{c+c1}{\PYZsh{} assignment folder, e.g. \PYZsq{}cs231n/assignments/assignment1/\PYZsq{}}
+\PY{n}{FOLDERNAME} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cs231n/assignments/assignment1/}\PY{l+s+s1}{\PYZsq{}}
+\PY{k}{assert} \PY{n}{FOLDERNAME} \PY{o+ow}{is} \PY{o+ow}{not} \PY{k+kc}{None}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{[!] Enter the foldername.}\PY{l+s+s2}{\PYZdq{}}
+
+\PY{c+c1}{\PYZsh{} Now that we\PYZsq{}ve mounted your Drive, this ensures that}
+\PY{c+c1}{\PYZsh{} the Python interpreter of the Colab VM can load}
+\PY{c+c1}{\PYZsh{} python files from within it.}
+\PY{k+kn}{import} \PY{n+nn}{sys}
+\PY{n}{sys}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{/content/drive/My Drive/}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{FOLDERNAME}\PY{p}{)}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} This downloads the CIFAR\PYZhy{}10 dataset to your Drive}
+\PY{c+c1}{\PYZsh{} if it doesn\PYZsq{}t already exist.}
+\PY{o}{\PYZpc{}}\PY{n}{cd} \PY{o}{/}\PY{n}{content}\PY{o}{/}\PY{n}{drive}\PY{o}{/}\PY{n}{My}\PYZbs{} \PY{n}{Drive}\PY{o}{/}\PY{err}{\PYZdl{}}\PY{n}{FOLDERNAME}\PY{o}{/}\PY{n}{cs231n}\PY{o}{/}\PY{n}{datasets}\PY{o}{/}
+\PY{err}{!}\PY{n}{bash} \PY{n}{get\PYZus{}datasets}\PY{o}{.}\PY{n}{sh}
+\PY{o}{\PYZpc{}}\PY{n}{cd} \PY{o}{/}\PY{n}{content}\PY{o}{/}\PY{n}{drive}\PY{o}{/}\PY{n}{My}\PYZbs{} \PY{n}{Drive}\PY{o}{/}\PY{err}{\PYZdl{}}\PY{n}{FOLDERNAME}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Drive already mounted at /content/drive; to attempt to forcibly remount, call
+drive.mount("/content/drive", force\_remount=True).
+/content/drive/My Drive/cs231n/assignments/assignment1/cs231n/datasets
+/content/drive/My Drive/cs231n/assignments/assignment1
+    \end{Verbatim}
+
+    \hypertarget{image-features-exercise}{%
+\section{Image features exercise}\label{image-features-exercise}}
+
+\emph{Complete and hand in this completed worksheet (including its
+outputs and any supporting code outside of the worksheet) with your
+assignment submission. For more details see the
+\href{http://vision.stanford.edu/teaching/cs231n/assignments.html}{assignments
+page} on the course website.}
+
+We have seen that we can achieve reasonable performance on an image
+classification task by training a linear classifier on the pixels of the
+input image. In this exercise we will show that we can improve our
+classification performance by training linear classifiers not on raw
+pixels but on features that are computed from the raw pixels.
+
+All of your work for this exercise will be done in this notebook.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{26}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{random}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{from} \PY{n+nn}{cs231n}\PY{n+nn}{.}\PY{n+nn}{data\PYZus{}utils} \PY{k+kn}{import} \PY{n}{load\PYZus{}CIFAR10}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+
+
+\PY{o}{\PYZpc{}}\PY{n}{matplotlib} \PY{n}{inline}
+\PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{figure.figsize}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{10.0}\PY{p}{,} \PY{l+m+mf}{8.0}\PY{p}{)} \PY{c+c1}{\PYZsh{} set default size of plots}
+\PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image.interpolation}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nearest}\PY{l+s+s1}{\PYZsq{}}
+\PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{image.cmap}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{gray}\PY{l+s+s1}{\PYZsq{}}
+
+\PY{c+c1}{\PYZsh{} for auto\PYZhy{}reloading extenrnal modules}
+\PY{c+c1}{\PYZsh{} see http://stackoverflow.com/questions/1907993/autoreload\PYZhy{}of\PYZhy{}modules\PYZhy{}in\PYZhy{}ipython}
+\PY{o}{\PYZpc{}}\PY{n}{load\PYZus{}ext} \PY{n}{autoreload}
+\PY{o}{\PYZpc{}}\PY{n}{autoreload} \PY{l+m+mi}{2}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+The autoreload extension is already loaded. To reload it, use:
+  \%reload\_ext autoreload
+    \end{Verbatim}
+
+    \hypertarget{load-data}{%
+\subsection{Load data}\label{load-data}}
+
+Similar to previous exercises, we will load CIFAR-10 data from disk.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{27}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{from} \PY{n+nn}{cs231n}\PY{n+nn}{.}\PY{n+nn}{features} \PY{k+kn}{import} \PY{n}{color\PYZus{}histogram\PYZus{}hsv}\PY{p}{,} \PY{n}{hog\PYZus{}feature}
+
+\PY{k}{def} \PY{n+nf}{get\PYZus{}CIFAR10\PYZus{}data}\PY{p}{(}\PY{n}{num\PYZus{}training}\PY{o}{=}\PY{l+m+mi}{49000}\PY{p}{,} \PY{n}{num\PYZus{}validation}\PY{o}{=}\PY{l+m+mi}{1000}\PY{p}{,} \PY{n}{num\PYZus{}test}\PY{o}{=}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{:}
+    \PY{c+c1}{\PYZsh{} Load the raw CIFAR\PYZhy{}10 data}
+    \PY{n}{cifar10\PYZus{}dir} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cs231n/datasets/cifar\PYZhy{}10\PYZhy{}batches\PYZhy{}py}\PY{l+s+s1}{\PYZsq{}}
+
+    \PY{c+c1}{\PYZsh{} Cleaning up variables to prevent loading data multiple times (which may cause memory issue)}
+    \PY{k}{try}\PY{p}{:}
+       \PY{k}{del} \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}
+       \PY{k}{del} \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}test}
+       \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Clear previously loaded data.}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{k}{except}\PY{p}{:}
+       \PY{k}{pass}
+
+    \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}test} \PY{o}{=} \PY{n}{load\PYZus{}CIFAR10}\PY{p}{(}\PY{n}{cifar10\PYZus{}dir}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Subsample the data}
+    \PY{n}{mask} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{n+nb}{range}\PY{p}{(}\PY{n}{num\PYZus{}training}\PY{p}{,} \PY{n}{num\PYZus{}training} \PY{o}{+} \PY{n}{num\PYZus{}validation}\PY{p}{)}\PY{p}{)}
+    \PY{n}{X\PYZus{}val} \PY{o}{=} \PY{n}{X\PYZus{}train}\PY{p}{[}\PY{n}{mask}\PY{p}{]}
+    \PY{n}{y\PYZus{}val} \PY{o}{=} \PY{n}{y\PYZus{}train}\PY{p}{[}\PY{n}{mask}\PY{p}{]}
+    \PY{n}{mask} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{n+nb}{range}\PY{p}{(}\PY{n}{num\PYZus{}training}\PY{p}{)}\PY{p}{)}
+    \PY{n}{X\PYZus{}train} \PY{o}{=} \PY{n}{X\PYZus{}train}\PY{p}{[}\PY{n}{mask}\PY{p}{]}
+    \PY{n}{y\PYZus{}train} \PY{o}{=} \PY{n}{y\PYZus{}train}\PY{p}{[}\PY{n}{mask}\PY{p}{]}
+    \PY{n}{mask} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{n+nb}{range}\PY{p}{(}\PY{n}{num\PYZus{}test}\PY{p}{)}\PY{p}{)}
+    \PY{n}{X\PYZus{}test} \PY{o}{=} \PY{n}{X\PYZus{}test}\PY{p}{[}\PY{n}{mask}\PY{p}{]}
+    \PY{n}{y\PYZus{}test} \PY{o}{=} \PY{n}{y\PYZus{}test}\PY{p}{[}\PY{n}{mask}\PY{p}{]}
+    
+    \PY{k}{return} \PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}val}\PY{p}{,} \PY{n}{y\PYZus{}val}\PY{p}{,} \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}test}
+
+\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}val}\PY{p}{,} \PY{n}{y\PYZus{}val}\PY{p}{,} \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}test} \PY{o}{=} \PY{n}{get\PYZus{}CIFAR10\PYZus{}data}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{extract-features}{%
+\subsection{Extract Features}\label{extract-features}}
+
+For each image we will compute a Histogram of Oriented Gradients (HOG)
+as well as a color histogram using the hue channel in HSV color space.
+We form our final feature vector for each image by concatenating the HOG
+and color histogram feature vectors.
+
+Roughly speaking, HOG should capture the texture of the image while
+ignoring color information, and the color histogram represents the color
+of the input image while ignoring texture. As a result, we expect that
+using both together ought to work better than using either alone.
+Verifying this assumption would be a good thing to try for your own
+interest.
+
+The \texttt{hog\_feature} and \texttt{color\_histogram\_hsv} functions
+both operate on a single image and return a feature vector for that
+image. The extract\_features function takes a set of images and a list
+of feature functions and evaluates each feature function on each image,
+storing the results in a matrix where each column is the concatenation
+of all feature vectors for a single image.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{28}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{from} \PY{n+nn}{cs231n}\PY{n+nn}{.}\PY{n+nn}{features} \PY{k+kn}{import} \PY{o}{*}
+
+\PY{n}{num\PYZus{}color\PYZus{}bins} \PY{o}{=} \PY{l+m+mi}{10} \PY{c+c1}{\PYZsh{} Number of bins in the color histogram}
+\PY{n}{feature\PYZus{}fns} \PY{o}{=} \PY{p}{[}\PY{n}{hog\PYZus{}feature}\PY{p}{,} \PY{k}{lambda} \PY{n}{img}\PY{p}{:} \PY{n}{color\PYZus{}histogram\PYZus{}hsv}\PY{p}{(}\PY{n}{img}\PY{p}{,} \PY{n}{nbin}\PY{o}{=}\PY{n}{num\PYZus{}color\PYZus{}bins}\PY{p}{)}\PY{p}{]}
+\PY{n}{X\PYZus{}train\PYZus{}feats} \PY{o}{=} \PY{n}{extract\PYZus{}features}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{feature\PYZus{}fns}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{n}{X\PYZus{}val\PYZus{}feats} \PY{o}{=} \PY{n}{extract\PYZus{}features}\PY{p}{(}\PY{n}{X\PYZus{}val}\PY{p}{,} \PY{n}{feature\PYZus{}fns}\PY{p}{)}
+\PY{n}{X\PYZus{}test\PYZus{}feats} \PY{o}{=} \PY{n}{extract\PYZus{}features}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{feature\PYZus{}fns}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Preprocessing: Subtract the mean feature}
+\PY{n}{mean\PYZus{}feat} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{X\PYZus{}train\PYZus{}feats}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{keepdims}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{n}{X\PYZus{}train\PYZus{}feats} \PY{o}{\PYZhy{}}\PY{o}{=} \PY{n}{mean\PYZus{}feat}
+\PY{n}{X\PYZus{}val\PYZus{}feats} \PY{o}{\PYZhy{}}\PY{o}{=} \PY{n}{mean\PYZus{}feat}
+\PY{n}{X\PYZus{}test\PYZus{}feats} \PY{o}{\PYZhy{}}\PY{o}{=} \PY{n}{mean\PYZus{}feat}
+
+\PY{c+c1}{\PYZsh{} Preprocessing: Divide by standard deviation. This ensures that each feature}
+\PY{c+c1}{\PYZsh{} has roughly the same scale.}
+\PY{n}{std\PYZus{}feat} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{n}{X\PYZus{}train\PYZus{}feats}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{keepdims}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{n}{X\PYZus{}train\PYZus{}feats} \PY{o}{/}\PY{o}{=} \PY{n}{std\PYZus{}feat}
+\PY{n}{X\PYZus{}val\PYZus{}feats} \PY{o}{/}\PY{o}{=} \PY{n}{std\PYZus{}feat}
+\PY{n}{X\PYZus{}test\PYZus{}feats} \PY{o}{/}\PY{o}{=} \PY{n}{std\PYZus{}feat}
+
+\PY{c+c1}{\PYZsh{} Preprocessing: Add a bias dimension}
+\PY{n}{X\PYZus{}train\PYZus{}feats} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{hstack}\PY{p}{(}\PY{p}{[}\PY{n}{X\PYZus{}train\PYZus{}feats}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{(}\PY{n}{X\PYZus{}train\PYZus{}feats}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}\PY{p}{]}\PY{p}{)}
+\PY{n}{X\PYZus{}val\PYZus{}feats} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{hstack}\PY{p}{(}\PY{p}{[}\PY{n}{X\PYZus{}val\PYZus{}feats}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{(}\PY{n}{X\PYZus{}val\PYZus{}feats}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}\PY{p}{]}\PY{p}{)}
+\PY{n}{X\PYZus{}test\PYZus{}feats} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{hstack}\PY{p}{(}\PY{p}{[}\PY{n}{X\PYZus{}test\PYZus{}feats}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{(}\PY{n}{X\PYZus{}test\PYZus{}feats}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Done extracting features for 1000 / 49000 images
+Done extracting features for 2000 / 49000 images
+Done extracting features for 3000 / 49000 images
+Done extracting features for 4000 / 49000 images
+Done extracting features for 5000 / 49000 images
+Done extracting features for 6000 / 49000 images
+Done extracting features for 7000 / 49000 images
+Done extracting features for 8000 / 49000 images
+Done extracting features for 9000 / 49000 images
+Done extracting features for 10000 / 49000 images
+Done extracting features for 11000 / 49000 images
+Done extracting features for 12000 / 49000 images
+Done extracting features for 13000 / 49000 images
+Done extracting features for 14000 / 49000 images
+Done extracting features for 15000 / 49000 images
+Done extracting features for 16000 / 49000 images
+Done extracting features for 17000 / 49000 images
+Done extracting features for 18000 / 49000 images
+Done extracting features for 19000 / 49000 images
+Done extracting features for 20000 / 49000 images
+Done extracting features for 21000 / 49000 images
+Done extracting features for 22000 / 49000 images
+Done extracting features for 23000 / 49000 images
+Done extracting features for 24000 / 49000 images
+Done extracting features for 25000 / 49000 images
+Done extracting features for 26000 / 49000 images
+Done extracting features for 27000 / 49000 images
+Done extracting features for 28000 / 49000 images
+Done extracting features for 29000 / 49000 images
+Done extracting features for 30000 / 49000 images
+Done extracting features for 31000 / 49000 images
+Done extracting features for 32000 / 49000 images
+Done extracting features for 33000 / 49000 images
+Done extracting features for 34000 / 49000 images
+Done extracting features for 35000 / 49000 images
+Done extracting features for 36000 / 49000 images
+Done extracting features for 37000 / 49000 images
+Done extracting features for 38000 / 49000 images
+Done extracting features for 39000 / 49000 images
+Done extracting features for 40000 / 49000 images
+Done extracting features for 41000 / 49000 images
+Done extracting features for 42000 / 49000 images
+Done extracting features for 43000 / 49000 images
+Done extracting features for 44000 / 49000 images
+Done extracting features for 45000 / 49000 images
+Done extracting features for 46000 / 49000 images
+Done extracting features for 47000 / 49000 images
+Done extracting features for 48000 / 49000 images
+Done extracting features for 49000 / 49000 images
+    \end{Verbatim}
+
+    \hypertarget{train-svm-on-features}{%
+\subsection{Train SVM on features}\label{train-svm-on-features}}
+
+Using the multiclass SVM code developed earlier in the assignment, train
+SVMs on top of the features extracted above; this should achieve better
+results than training SVMs directly on top of raw pixels.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{29}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Use the validation set to tune the learning rate and regularization strength}
+
+\PY{k+kn}{from} \PY{n+nn}{cs231n}\PY{n+nn}{.}\PY{n+nn}{classifiers}\PY{n+nn}{.}\PY{n+nn}{linear\PYZus{}classifier} \PY{k+kn}{import} \PY{n}{LinearSVM}
+
+\PY{n}{learning\PYZus{}rates} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{l+m+mf}{1e\PYZhy{}8}\PY{p}{,} \PY{l+m+mf}{50e\PYZhy{}8}\PY{p}{,} \PY{l+m+mf}{5e\PYZhy{}8}\PY{p}{)}
+\PY{n}{regularization\PYZus{}strengths} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{l+m+mf}{1e5}\PY{p}{,} \PY{l+m+mf}{10e5}\PY{p}{,} \PY{l+m+mf}{2e5}\PY{p}{)}
+
+\PY{n}{results} \PY{o}{=} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+\PY{n}{best\PYZus{}val} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+\PY{n}{best\PYZus{}svm} \PY{o}{=} \PY{k+kc}{None}
+
+\PY{c+c1}{\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}}
+\PY{c+c1}{\PYZsh{} TODO:                                                                        \PYZsh{}}
+\PY{c+c1}{\PYZsh{} Use the validation set to set the learning rate and regularization strength. \PYZsh{}}
+\PY{c+c1}{\PYZsh{} This should be identical to the validation that you did for the SVM; save    \PYZsh{}}
+\PY{c+c1}{\PYZsh{} the best trained classifer in best\PYZus{}svm. You might also want to play          \PYZsh{}}
+\PY{c+c1}{\PYZsh{} with different numbers of bins in the color histogram. If you are careful    \PYZsh{}}
+\PY{c+c1}{\PYZsh{} you should be able to get accuracy of near 0.44 on the validation set.       \PYZsh{}}
+\PY{c+c1}{\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}}
+\PY{c+c1}{\PYZsh{} *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****}
+
+\PY{k}{for} \PY{n}{lr} \PY{o+ow}{in} \PY{n}{learning\PYZus{}rates}\PY{p}{:}
+  \PY{k}{for} \PY{n}{reg} \PY{o+ow}{in} \PY{n}{regularization\PYZus{}strengths}\PY{p}{:}
+    \PY{n}{svm} \PY{o}{=} \PY{n}{LinearSVM}\PY{p}{(}\PY{p}{)}
+    \PY{n}{svm}\PY{o}{.}\PY{n}{train}\PY{p}{(}\PY{n}{X\PYZus{}train\PYZus{}feats}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{,} \PY{n}{learning\PYZus{}rate}\PY{o}{=}\PY{n}{lr}\PY{p}{,} \PY{n}{reg}\PY{o}{=}\PY{n}{reg}\PY{p}{,} \PY{n}{num\PYZus{}iters}\PY{o}{=}\PY{l+m+mi}{1500}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+
+    \PY{n}{y\PYZus{}train\PYZus{}pred} \PY{o}{=} \PY{n}{svm}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}train\PYZus{}feats}\PY{p}{)}
+    \PY{n}{y\PYZus{}val\PYZus{}pred} \PY{o}{=} \PY{n}{svm}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}val\PYZus{}feats}\PY{p}{)}
+
+    \PY{n}{train\PYZus{}accuracy} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{y\PYZus{}train} \PY{o}{==} \PY{n}{y\PYZus{}train\PYZus{}pred}\PY{p}{)}
+    \PY{n}{val\PYZus{}accuracy} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{y\PYZus{}val} \PY{o}{==} \PY{n}{y\PYZus{}val\PYZus{}pred}\PY{p}{)}
+
+    \PY{n}{results}\PY{o}{.}\PY{n}{update}\PY{p}{(}\PY{p}{\PYZob{}}\PY{p}{(}\PY{n}{lr}\PY{p}{,} \PY{n}{reg}\PY{p}{)}\PY{p}{:}\PY{p}{(}\PY{n}{train\PYZus{}accuracy}\PY{p}{,} \PY{n}{val\PYZus{}accuracy}\PY{p}{)}\PY{p}{\PYZcb{}}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lr }\PY{l+s+si}{\PYZpc{}e}\PY{l+s+s1}{ reg }\PY{l+s+si}{\PYZpc{}e}\PY{l+s+s1}{ train accuracy: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s1}{ val accuracy: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s1}{\PYZsq{}} \PY{o}{\PYZpc{}} \PY{p}{(}
+                \PY{n}{lr}\PY{p}{,} \PY{n}{reg}\PY{p}{,} \PY{n}{train\PYZus{}accuracy}\PY{p}{,} \PY{n}{val\PYZus{}accuracy}\PY{p}{)}\PY{p}{)}
+
+    \PY{k}{if} \PY{n}{val\PYZus{}accuracy} \PY{o}{\PYZgt{}} \PY{n}{best\PYZus{}val}\PY{p}{:}
+      \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{new best val accuracy: }\PY{l+s+si}{\PYZob{}}\PY{n}{val\PYZus{}accuracy}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+      \PY{n}{best\PYZus{}val} \PY{o}{=} \PY{n}{val\PYZus{}accuracy}
+      \PY{n}{best\PYZus{}svm} \PY{o}{=} \PY{n}{svm}
+
+\PY{c+c1}{\PYZsh{} *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****}
+
+\PY{c+c1}{\PYZsh{} Print out results.}
+\PY{k}{for} \PY{n}{lr}\PY{p}{,} \PY{n}{reg} \PY{o+ow}{in} \PY{n+nb}{sorted}\PY{p}{(}\PY{n}{results}\PY{p}{)}\PY{p}{:}
+    \PY{n}{train\PYZus{}accuracy}\PY{p}{,} \PY{n}{val\PYZus{}accuracy} \PY{o}{=} \PY{n}{results}\PY{p}{[}\PY{p}{(}\PY{n}{lr}\PY{p}{,} \PY{n}{reg}\PY{p}{)}\PY{p}{]}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lr }\PY{l+s+si}{\PYZpc{}e}\PY{l+s+s1}{ reg }\PY{l+s+si}{\PYZpc{}e}\PY{l+s+s1}{ train accuracy: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s1}{ val accuracy: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s1}{\PYZsq{}} \PY{o}{\PYZpc{}} \PY{p}{(}
+                \PY{n}{lr}\PY{p}{,} \PY{n}{reg}\PY{p}{,} \PY{n}{train\PYZus{}accuracy}\PY{p}{,} \PY{n}{val\PYZus{}accuracy}\PY{p}{)}\PY{p}{)}
+    
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{best validation accuracy achieved: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s1}{\PYZsq{}} \PY{o}{\PYZpc{}} \PY{n}{best\PYZus{}val}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+lr 1.000000e-08 reg 1.000000e+05 train accuracy: 0.136122 val accuracy: 0.146000
+new best val accuracy: 0.146
+lr 1.000000e-08 reg 3.000000e+05 train accuracy: 0.411980 val accuracy: 0.409000
+new best val accuracy: 0.409
+lr 1.000000e-08 reg 5.000000e+05 train accuracy: 0.416163 val accuracy: 0.418000
+new best val accuracy: 0.418
+lr 1.000000e-08 reg 7.000000e+05 train accuracy: 0.411612 val accuracy: 0.405000
+lr 1.000000e-08 reg 9.000000e+05 train accuracy: 0.419143 val accuracy: 0.428000
+new best val accuracy: 0.428
+lr 6.000000e-08 reg 1.000000e+05 train accuracy: 0.414000 val accuracy: 0.420000
+lr 6.000000e-08 reg 3.000000e+05 train accuracy: 0.412122 val accuracy: 0.416000
+lr 6.000000e-08 reg 5.000000e+05 train accuracy: 0.412367 val accuracy: 0.426000
+lr 6.000000e-08 reg 7.000000e+05 train accuracy: 0.398796 val accuracy: 0.387000
+lr 6.000000e-08 reg 9.000000e+05 train accuracy: 0.401735 val accuracy: 0.397000
+lr 1.100000e-07 reg 1.000000e+05 train accuracy: 0.411633 val accuracy: 0.418000
+lr 1.100000e-07 reg 3.000000e+05 train accuracy: 0.409551 val accuracy: 0.418000
+lr 1.100000e-07 reg 5.000000e+05 train accuracy: 0.403347 val accuracy: 0.391000
+lr 1.100000e-07 reg 7.000000e+05 train accuracy: 0.399041 val accuracy: 0.381000
+lr 1.100000e-07 reg 9.000000e+05 train accuracy: 0.396939 val accuracy: 0.382000
+lr 1.600000e-07 reg 1.000000e+05 train accuracy: 0.418510 val accuracy: 0.420000
+lr 1.600000e-07 reg 3.000000e+05 train accuracy: 0.408714 val accuracy: 0.406000
+lr 1.600000e-07 reg 5.000000e+05 train accuracy: 0.403531 val accuracy: 0.398000
+lr 1.600000e-07 reg 7.000000e+05 train accuracy: 0.393816 val accuracy: 0.406000
+lr 1.600000e-07 reg 9.000000e+05 train accuracy: 0.397367 val accuracy: 0.408000
+lr 2.100000e-07 reg 1.000000e+05 train accuracy: 0.421122 val accuracy: 0.419000
+lr 2.100000e-07 reg 3.000000e+05 train accuracy: 0.411898 val accuracy: 0.412000
+lr 2.100000e-07 reg 5.000000e+05 train accuracy: 0.386592 val accuracy: 0.368000
+lr 2.100000e-07 reg 7.000000e+05 train accuracy: 0.391490 val accuracy: 0.391000
+lr 2.100000e-07 reg 9.000000e+05 train accuracy: 0.366143 val accuracy: 0.381000
+lr 2.600000e-07 reg 1.000000e+05 train accuracy: 0.408184 val accuracy: 0.411000
+lr 2.600000e-07 reg 3.000000e+05 train accuracy: 0.391102 val accuracy: 0.371000
+lr 2.600000e-07 reg 5.000000e+05 train accuracy: 0.390612 val accuracy: 0.381000
+lr 2.600000e-07 reg 7.000000e+05 train accuracy: 0.376122 val accuracy: 0.380000
+lr 2.600000e-07 reg 9.000000e+05 train accuracy: 0.374796 val accuracy: 0.394000
+lr 3.100000e-07 reg 1.000000e+05 train accuracy: 0.408735 val accuracy: 0.410000
+lr 3.100000e-07 reg 3.000000e+05 train accuracy: 0.403347 val accuracy: 0.401000
+lr 3.100000e-07 reg 5.000000e+05 train accuracy: 0.384388 val accuracy: 0.386000
+lr 3.100000e-07 reg 7.000000e+05 train accuracy: 0.357939 val accuracy: 0.364000
+lr 3.100000e-07 reg 9.000000e+05 train accuracy: 0.357653 val accuracy: 0.364000
+lr 3.600000e-07 reg 1.000000e+05 train accuracy: 0.411714 val accuracy: 0.405000
+lr 3.600000e-07 reg 3.000000e+05 train accuracy: 0.389449 val accuracy: 0.383000
+lr 3.600000e-07 reg 5.000000e+05 train accuracy: 0.386939 val accuracy: 0.366000
+lr 3.600000e-07 reg 7.000000e+05 train accuracy: 0.387408 val accuracy: 0.379000
+lr 3.600000e-07 reg 9.000000e+05 train accuracy: 0.351633 val accuracy: 0.368000
+lr 4.100000e-07 reg 1.000000e+05 train accuracy: 0.403367 val accuracy: 0.413000
+lr 4.100000e-07 reg 3.000000e+05 train accuracy: 0.387184 val accuracy: 0.386000
+lr 4.100000e-07 reg 5.000000e+05 train accuracy: 0.377776 val accuracy: 0.385000
+lr 4.100000e-07 reg 7.000000e+05 train accuracy: 0.370980 val accuracy: 0.352000
+lr 4.100000e-07 reg 9.000000e+05 train accuracy: 0.361633 val accuracy: 0.352000
+lr 4.600000e-07 reg 1.000000e+05 train accuracy: 0.405082 val accuracy: 0.399000
+lr 4.600000e-07 reg 3.000000e+05 train accuracy: 0.388429 val accuracy: 0.387000
+lr 4.600000e-07 reg 5.000000e+05 train accuracy: 0.378347 val accuracy: 0.389000
+lr 4.600000e-07 reg 7.000000e+05 train accuracy: 0.371612 val accuracy: 0.386000
+lr 4.600000e-07 reg 9.000000e+05 train accuracy: 0.344306 val accuracy: 0.360000
+lr 1.000000e-08 reg 1.000000e+05 train accuracy: 0.136122 val accuracy: 0.146000
+lr 1.000000e-08 reg 3.000000e+05 train accuracy: 0.411980 val accuracy: 0.409000
+lr 1.000000e-08 reg 5.000000e+05 train accuracy: 0.416163 val accuracy: 0.418000
+lr 1.000000e-08 reg 7.000000e+05 train accuracy: 0.411612 val accuracy: 0.405000
+lr 1.000000e-08 reg 9.000000e+05 train accuracy: 0.419143 val accuracy: 0.428000
+lr 6.000000e-08 reg 1.000000e+05 train accuracy: 0.414000 val accuracy: 0.420000
+lr 6.000000e-08 reg 3.000000e+05 train accuracy: 0.412122 val accuracy: 0.416000
+lr 6.000000e-08 reg 5.000000e+05 train accuracy: 0.412367 val accuracy: 0.426000
+lr 6.000000e-08 reg 7.000000e+05 train accuracy: 0.398796 val accuracy: 0.387000
+lr 6.000000e-08 reg 9.000000e+05 train accuracy: 0.401735 val accuracy: 0.397000
+lr 1.100000e-07 reg 1.000000e+05 train accuracy: 0.411633 val accuracy: 0.418000
+lr 1.100000e-07 reg 3.000000e+05 train accuracy: 0.409551 val accuracy: 0.418000
+lr 1.100000e-07 reg 5.000000e+05 train accuracy: 0.403347 val accuracy: 0.391000
+lr 1.100000e-07 reg 7.000000e+05 train accuracy: 0.399041 val accuracy: 0.381000
+lr 1.100000e-07 reg 9.000000e+05 train accuracy: 0.396939 val accuracy: 0.382000
+lr 1.600000e-07 reg 1.000000e+05 train accuracy: 0.418510 val accuracy: 0.420000
+lr 1.600000e-07 reg 3.000000e+05 train accuracy: 0.408714 val accuracy: 0.406000
+lr 1.600000e-07 reg 5.000000e+05 train accuracy: 0.403531 val accuracy: 0.398000
+lr 1.600000e-07 reg 7.000000e+05 train accuracy: 0.393816 val accuracy: 0.406000
+lr 1.600000e-07 reg 9.000000e+05 train accuracy: 0.397367 val accuracy: 0.408000
+lr 2.100000e-07 reg 1.000000e+05 train accuracy: 0.421122 val accuracy: 0.419000
+lr 2.100000e-07 reg 3.000000e+05 train accuracy: 0.411898 val accuracy: 0.412000
+lr 2.100000e-07 reg 5.000000e+05 train accuracy: 0.386592 val accuracy: 0.368000
+lr 2.100000e-07 reg 7.000000e+05 train accuracy: 0.391490 val accuracy: 0.391000
+lr 2.100000e-07 reg 9.000000e+05 train accuracy: 0.366143 val accuracy: 0.381000
+lr 2.600000e-07 reg 1.000000e+05 train accuracy: 0.408184 val accuracy: 0.411000
+lr 2.600000e-07 reg 3.000000e+05 train accuracy: 0.391102 val accuracy: 0.371000
+lr 2.600000e-07 reg 5.000000e+05 train accuracy: 0.390612 val accuracy: 0.381000
+lr 2.600000e-07 reg 7.000000e+05 train accuracy: 0.376122 val accuracy: 0.380000
+lr 2.600000e-07 reg 9.000000e+05 train accuracy: 0.374796 val accuracy: 0.394000
+lr 3.100000e-07 reg 1.000000e+05 train accuracy: 0.408735 val accuracy: 0.410000
+lr 3.100000e-07 reg 3.000000e+05 train accuracy: 0.403347 val accuracy: 0.401000
+lr 3.100000e-07 reg 5.000000e+05 train accuracy: 0.384388 val accuracy: 0.386000
+lr 3.100000e-07 reg 7.000000e+05 train accuracy: 0.357939 val accuracy: 0.364000
+lr 3.100000e-07 reg 9.000000e+05 train accuracy: 0.357653 val accuracy: 0.364000
+lr 3.600000e-07 reg 1.000000e+05 train accuracy: 0.411714 val accuracy: 0.405000
+lr 3.600000e-07 reg 3.000000e+05 train accuracy: 0.389449 val accuracy: 0.383000
+lr 3.600000e-07 reg 5.000000e+05 train accuracy: 0.386939 val accuracy: 0.366000
+lr 3.600000e-07 reg 7.000000e+05 train accuracy: 0.387408 val accuracy: 0.379000
+lr 3.600000e-07 reg 9.000000e+05 train accuracy: 0.351633 val accuracy: 0.368000
+lr 4.100000e-07 reg 1.000000e+05 train accuracy: 0.403367 val accuracy: 0.413000
+lr 4.100000e-07 reg 3.000000e+05 train accuracy: 0.387184 val accuracy: 0.386000
+lr 4.100000e-07 reg 5.000000e+05 train accuracy: 0.377776 val accuracy: 0.385000
+lr 4.100000e-07 reg 7.000000e+05 train accuracy: 0.370980 val accuracy: 0.352000
+lr 4.100000e-07 reg 9.000000e+05 train accuracy: 0.361633 val accuracy: 0.352000
+lr 4.600000e-07 reg 1.000000e+05 train accuracy: 0.405082 val accuracy: 0.399000
+lr 4.600000e-07 reg 3.000000e+05 train accuracy: 0.388429 val accuracy: 0.387000
+lr 4.600000e-07 reg 5.000000e+05 train accuracy: 0.378347 val accuracy: 0.389000
+lr 4.600000e-07 reg 7.000000e+05 train accuracy: 0.371612 val accuracy: 0.386000
+lr 4.600000e-07 reg 9.000000e+05 train accuracy: 0.344306 val accuracy: 0.360000
+best validation accuracy achieved: 0.428000
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{30}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Evaluate your trained SVM on the test set: you should be able to get at least 0.40}
+\PY{n}{y\PYZus{}test\PYZus{}pred} \PY{o}{=} \PY{n}{best\PYZus{}svm}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test\PYZus{}feats}\PY{p}{)}
+\PY{n}{test\PYZus{}accuracy} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{y\PYZus{}test} \PY{o}{==} \PY{n}{y\PYZus{}test\PYZus{}pred}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{test\PYZus{}accuracy}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+0.423
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{31}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} An important way to gain intuition about how an algorithm works is to}
+\PY{c+c1}{\PYZsh{} visualize the mistakes that it makes. In this visualization, we show examples}
+\PY{c+c1}{\PYZsh{} of images that are misclassified by our current system. The first column}
+\PY{c+c1}{\PYZsh{} shows images that our system labeled as \PYZdq{}plane\PYZdq{} but whose true label is}
+\PY{c+c1}{\PYZsh{} something other than \PYZdq{}plane\PYZdq{}.}
+
+\PY{n}{examples\PYZus{}per\PYZus{}class} \PY{o}{=} \PY{l+m+mi}{8}
+\PY{n}{classes} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{plane}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{car}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bird}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cat}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{deer}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dog}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{frog}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{horse}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ship}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{truck}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{k}{for} \PY{n+nb+bp}{cls}\PY{p}{,} \PY{n}{cls\PYZus{}name} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{classes}\PY{p}{)}\PY{p}{:}
+    \PY{n}{idxs} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{where}\PY{p}{(}\PY{p}{(}\PY{n}{y\PYZus{}test} \PY{o}{!=} \PY{n+nb+bp}{cls}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{y\PYZus{}test\PYZus{}pred} \PY{o}{==} \PY{n+nb+bp}{cls}\PY{p}{)}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+    \PY{n}{idxs} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{choice}\PY{p}{(}\PY{n}{idxs}\PY{p}{,} \PY{n}{examples\PYZus{}per\PYZus{}class}\PY{p}{,} \PY{n}{replace}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+    \PY{k}{for} \PY{n}{i}\PY{p}{,} \PY{n}{idx} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{idxs}\PY{p}{)}\PY{p}{:}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{subplot}\PY{p}{(}\PY{n}{examples\PYZus{}per\PYZus{}class}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{classes}\PY{p}{)}\PY{p}{,} \PY{n}{i} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{classes}\PY{p}{)} \PY{o}{+} \PY{n+nb+bp}{cls} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{)}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{[}\PY{n}{idx}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{uint8}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{axis}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{off}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{k}{if} \PY{n}{i} \PY{o}{==} \PY{l+m+mi}{0}\PY{p}{:}
+            \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{n}{cls\PYZus{}name}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{features_files/features_10_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{inline-question-1}{%
+\subsubsection{Inline question 1:}\label{inline-question-1}}
+
+Describe the misclassification results that you see. Do they make sense?
+
+\(\color{blue}{\textit Your Answer:}\)
+
+在纹理, 形状和颜色方面都和被错误分到的类别的平均特征比较相像.
+
+    \hypertarget{neural-network-on-image-features}{%
+\subsection{Neural Network on image
+features}\label{neural-network-on-image-features}}
+
+Earlier in this assigment we saw that training a two-layer neural
+network on raw pixels achieved better classification performance than
+linear classifiers on raw pixels. In this notebook we have seen that
+linear classifiers on image features outperform linear classifiers on
+raw pixels.
+
+For completeness, we should also try training a neural network on image
+features. This approach should outperform all previous approaches: you
+should easily be able to achieve over 55\% classification accuracy on
+the test set; our best model achieves about 60\% classification
+accuracy.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{32}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Preprocessing: Remove the bias dimension}
+\PY{c+c1}{\PYZsh{} Make sure to run this cell only ONCE}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{X\PYZus{}train\PYZus{}feats}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\PY{n}{X\PYZus{}train\PYZus{}feats} \PY{o}{=} \PY{n}{X\PYZus{}train\PYZus{}feats}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{p}{:}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+\PY{n}{X\PYZus{}val\PYZus{}feats} \PY{o}{=} \PY{n}{X\PYZus{}val\PYZus{}feats}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{p}{:}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+\PY{n}{X\PYZus{}test\PYZus{}feats} \PY{o}{=} \PY{n}{X\PYZus{}test\PYZus{}feats}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{p}{:}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{X\PYZus{}train\PYZus{}feats}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+(49000, 155)
+(49000, 154)
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{55}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{from} \PY{n+nn}{cs231n}\PY{n+nn}{.}\PY{n+nn}{classifiers}\PY{n+nn}{.}\PY{n+nn}{fc\PYZus{}net} \PY{k+kn}{import} \PY{n}{TwoLayerNet}
+\PY{k+kn}{from} \PY{n+nn}{cs231n}\PY{n+nn}{.}\PY{n+nn}{solver} \PY{k+kn}{import} \PY{n}{Solver}
+
+\PY{n}{input\PYZus{}dim} \PY{o}{=} \PY{n}{X\PYZus{}train\PYZus{}feats}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+\PY{n}{hidden\PYZus{}dim} \PY{o}{=} \PY{l+m+mi}{500}
+\PY{n}{num\PYZus{}classes} \PY{o}{=} \PY{l+m+mi}{10}
+
+\PY{n}{data} \PY{o}{=} \PY{p}{\PYZob{}}
+    \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{X\PYZus{}train}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{X\PYZus{}train\PYZus{}feats}\PY{p}{,} 
+    \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y\PYZus{}train}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{y\PYZus{}train}\PY{p}{,} 
+    \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{X\PYZus{}val}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{X\PYZus{}val\PYZus{}feats}\PY{p}{,} 
+    \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y\PYZus{}val}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{y\PYZus{}val}\PY{p}{,} 
+    \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{X\PYZus{}test}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{X\PYZus{}test\PYZus{}feats}\PY{p}{,} 
+    \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y\PYZus{}test}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{y\PYZus{}test}\PY{p}{,} 
+\PY{p}{\PYZcb{}}
+
+\PY{n}{net} \PY{o}{=} \PY{n}{TwoLayerNet}\PY{p}{(}\PY{n}{input\PYZus{}dim}\PY{p}{,} \PY{n}{hidden\PYZus{}dim}\PY{p}{,} \PY{n}{num\PYZus{}classes}\PY{p}{)}
+\PY{n}{best\PYZus{}net} \PY{o}{=} \PY{k+kc}{None}
+
+\PY{c+c1}{\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}}
+\PY{c+c1}{\PYZsh{} TODO: Train a two\PYZhy{}layer neural network on image features. You may want to    \PYZsh{}}
+\PY{c+c1}{\PYZsh{} cross\PYZhy{}validate various parameters as in previous sections. Store your best   \PYZsh{}}
+\PY{c+c1}{\PYZsh{} model in the best\PYZus{}net variable.                                              \PYZsh{}}
+\PY{c+c1}{\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}}
+\PY{c+c1}{\PYZsh{} *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****}
+
+\PY{n}{best\PYZus{}acc} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1}
+
+\PY{c+c1}{\PYZsh{} learning\PYZus{}rates = np.arange(1e\PYZhy{}8, 50e\PYZhy{}8, 5e\PYZhy{}8)5e\PYZhy{}4,}
+\PY{n}{learning\PYZus{}rates} \PY{o}{=} \PY{p}{[} \PY{l+m+mf}{8e\PYZhy{}2}\PY{p}{,} \PY{l+m+mf}{1e\PYZhy{}1}\PY{p}{]}
+
+\PY{c+c1}{\PYZsh{} default learning\PYZus{}rate: 5e\PYZhy{}4}
+\PY{c+c1}{\PYZsh{} regularization\PYZus{}strengths = np.arange(1e5, 10e5, 2e5)}
+\PY{n}{regularization\PYZus{}strengths} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mf}{1e\PYZhy{}5}\PY{p}{,} \PY{l+m+mf}{1e\PYZhy{}3}\PY{p}{]}
+
+\PY{k}{for} \PY{n}{lr} \PY{o+ow}{in} \PY{n}{learning\PYZus{}rates}\PY{p}{:}
+  \PY{k}{for} \PY{n}{reg} \PY{o+ow}{in} \PY{n}{regularization\PYZus{}strengths}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{lr=[}\PY{l+s+si}{\PYZpc{}e}\PY{l+s+s2}{], reg=[}\PY{l+s+si}{\PYZpc{}e}\PY{l+s+s2}{]}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{p}{(}\PY{n}{lr}\PY{p}{,} \PY{n}{reg}\PY{p}{)}\PY{p}{)}
+
+    \PY{n}{model} \PY{o}{=} \PY{n}{TwoLayerNet}\PY{p}{(}\PY{n}{input\PYZus{}dim}\PY{p}{,} \PY{n}{hidden\PYZus{}dim}\PY{p}{,} \PY{n}{num\PYZus{}classes}\PY{p}{,} \PY{n}{weight\PYZus{}scale}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}3}\PY{p}{,} \PY{n}{reg}\PY{o}{=}\PY{n}{reg}\PY{p}{)}
+  
+    \PY{n}{solver} \PY{o}{=} \PY{n}{Solver}\PY{p}{(}\PY{n}{model}\PY{p}{,} \PY{n}{data}\PY{p}{,}
+              \PY{n}{update\PYZus{}rule}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sgd}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}
+              \PY{n}{optim\PYZus{}config}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{learning\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{lr}\PY{p}{\PYZcb{}}\PY{p}{,}
+              \PY{n}{lr\PYZus{}decay}\PY{o}{=}\PY{l+m+mf}{0.95}\PY{p}{,} \PY{n}{num\PYZus{}epochs}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{,}
+              \PY{n}{batch\PYZus{}size}\PY{o}{=}\PY{l+m+mi}{200}\PY{p}{,} \PY{n}{print\PYZus{}every}\PY{o}{=}\PY{l+m+mi}{100}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+    \PY{n}{solver}\PY{o}{.}\PY{n}{train}\PY{p}{(}\PY{p}{)}
+    
+    \PY{n}{accuracy} \PY{o}{=} \PY{n}{solver}\PY{o}{.}\PY{n}{best\PYZus{}val\PYZus{}acc}
+    
+    \PY{k}{if} \PY{n}{accuracy} \PY{o}{\PYZgt{}} \PY{n}{best\PYZus{}acc}\PY{p}{:}
+      \PY{n}{best\PYZus{}net} \PY{o}{=} \PY{n}{model}
+      \PY{n}{best\PYZus{}acc} \PY{o}{=} \PY{n}{accuracy}
+      \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{new best accuracy: }\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{accuracy}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{best accuracy: }\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{accuracy}\PY{p}{)}
+  
+\PY{c+c1}{\PYZsh{} *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+
+lr=[8.000000e-02], reg=[0.000000e+00]
+(Iteration 1 / 4900) loss: 2.302622
+(Epoch 0 / 20) train acc: 0.085000; val\_acc: 0.078000
+(Iteration 101 / 4900) loss: 2.286931
+(Iteration 201 / 4900) loss: 1.928599
+(Epoch 1 / 20) train acc: 0.344000; val\_acc: 0.338000
+(Iteration 301 / 4900) loss: 1.704965
+(Iteration 401 / 4900) loss: 1.435758
+(Epoch 2 / 20) train acc: 0.482000; val\_acc: 0.477000
+(Iteration 501 / 4900) loss: 1.414846
+(Iteration 601 / 4900) loss: 1.444802
+(Iteration 701 / 4900) loss: 1.394903
+(Epoch 3 / 20) train acc: 0.531000; val\_acc: 0.502000
+(Iteration 801 / 4900) loss: 1.260161
+(Iteration 901 / 4900) loss: 1.336885
+(Epoch 4 / 20) train acc: 0.491000; val\_acc: 0.513000
+(Iteration 1001 / 4900) loss: 1.384597
+(Iteration 1101 / 4900) loss: 1.306056
+(Iteration 1201 / 4900) loss: 1.280956
+(Epoch 5 / 20) train acc: 0.523000; val\_acc: 0.531000
+(Iteration 1301 / 4900) loss: 1.362702
+(Iteration 1401 / 4900) loss: 1.317527
+(Epoch 6 / 20) train acc: 0.553000; val\_acc: 0.528000
+(Iteration 1501 / 4900) loss: 1.126388
+(Iteration 1601 / 4900) loss: 1.374586
+(Iteration 1701 / 4900) loss: 1.081325
+(Epoch 7 / 20) train acc: 0.549000; val\_acc: 0.535000
+(Iteration 1801 / 4900) loss: 1.219752
+(Iteration 1901 / 4900) loss: 1.194975
+(Epoch 8 / 20) train acc: 0.581000; val\_acc: 0.537000
+(Iteration 2001 / 4900) loss: 1.276603
+(Iteration 2101 / 4900) loss: 1.308115
+(Iteration 2201 / 4900) loss: 1.264899
+(Epoch 9 / 20) train acc: 0.575000; val\_acc: 0.555000
+(Iteration 2301 / 4900) loss: 1.150610
+(Iteration 2401 / 4900) loss: 1.335365
+(Epoch 10 / 20) train acc: 0.588000; val\_acc: 0.552000
+(Iteration 2501 / 4900) loss: 1.199193
+(Iteration 2601 / 4900) loss: 1.054419
+(Epoch 11 / 20) train acc: 0.603000; val\_acc: 0.557000
+(Iteration 2701 / 4900) loss: 1.223268
+(Iteration 2801 / 4900) loss: 1.133676
+(Iteration 2901 / 4900) loss: 1.210104
+(Epoch 12 / 20) train acc: 0.552000; val\_acc: 0.560000
+(Iteration 3001 / 4900) loss: 1.318343
+(Iteration 3101 / 4900) loss: 1.139619
+(Epoch 13 / 20) train acc: 0.580000; val\_acc: 0.555000
+(Iteration 3201 / 4900) loss: 1.145285
+(Iteration 3301 / 4900) loss: 1.150572
+(Iteration 3401 / 4900) loss: 1.254765
+(Epoch 14 / 20) train acc: 0.618000; val\_acc: 0.560000
+(Iteration 3501 / 4900) loss: 1.253052
+(Iteration 3601 / 4900) loss: 0.987641
+(Epoch 15 / 20) train acc: 0.587000; val\_acc: 0.569000
+(Iteration 3701 / 4900) loss: 1.221455
+(Iteration 3801 / 4900) loss: 1.110772
+(Iteration 3901 / 4900) loss: 1.159542
+(Epoch 16 / 20) train acc: 0.598000; val\_acc: 0.572000
+(Iteration 4001 / 4900) loss: 0.994873
+(Iteration 4101 / 4900) loss: 1.179974
+(Epoch 17 / 20) train acc: 0.609000; val\_acc: 0.574000
+(Iteration 4201 / 4900) loss: 1.114083
+(Iteration 4301 / 4900) loss: 1.129617
+(Iteration 4401 / 4900) loss: 1.141559
+(Epoch 18 / 20) train acc: 0.636000; val\_acc: 0.573000
+(Iteration 4501 / 4900) loss: 1.099054
+(Iteration 4601 / 4900) loss: 1.022275
+(Epoch 19 / 20) train acc: 0.624000; val\_acc: 0.575000
+(Iteration 4701 / 4900) loss: 1.247808
+(Iteration 4801 / 4900) loss: 1.076249
+(Epoch 20 / 20) train acc: 0.662000; val\_acc: 0.580000
+new best accuracy:  0.58
+
+lr=[8.000000e-02], reg=[1.000000e-05]
+(Iteration 1 / 4900) loss: 2.302582
+(Epoch 0 / 20) train acc: 0.102000; val\_acc: 0.100000
+(Iteration 101 / 4900) loss: 2.279332
+(Iteration 201 / 4900) loss: 1.957010
+(Epoch 1 / 20) train acc: 0.366000; val\_acc: 0.362000
+(Iteration 301 / 4900) loss: 1.689029
+(Iteration 401 / 4900) loss: 1.377337
+(Epoch 2 / 20) train acc: 0.453000; val\_acc: 0.469000
+(Iteration 501 / 4900) loss: 1.454473
+(Iteration 601 / 4900) loss: 1.329089
+(Iteration 701 / 4900) loss: 1.474159
+(Epoch 3 / 20) train acc: 0.498000; val\_acc: 0.506000
+(Iteration 801 / 4900) loss: 1.355174
+(Iteration 901 / 4900) loss: 1.298777
+(Epoch 4 / 20) train acc: 0.549000; val\_acc: 0.519000
+(Iteration 1001 / 4900) loss: 1.292656
+(Iteration 1101 / 4900) loss: 1.390064
+(Iteration 1201 / 4900) loss: 1.419241
+(Epoch 5 / 20) train acc: 0.538000; val\_acc: 0.522000
+(Iteration 1301 / 4900) loss: 1.154339
+(Iteration 1401 / 4900) loss: 1.469299
+(Epoch 6 / 20) train acc: 0.541000; val\_acc: 0.517000
+(Iteration 1501 / 4900) loss: 1.332341
+(Iteration 1601 / 4900) loss: 1.278407
+(Iteration 1701 / 4900) loss: 1.318819
+(Epoch 7 / 20) train acc: 0.533000; val\_acc: 0.541000
+(Iteration 1801 / 4900) loss: 1.224090
+(Iteration 1901 / 4900) loss: 1.314861
+(Epoch 8 / 20) train acc: 0.563000; val\_acc: 0.536000
+(Iteration 2001 / 4900) loss: 1.241408
+(Iteration 2101 / 4900) loss: 1.244774
+(Iteration 2201 / 4900) loss: 1.243860
+(Epoch 9 / 20) train acc: 0.576000; val\_acc: 0.544000
+(Iteration 2301 / 4900) loss: 1.130182
+(Iteration 2401 / 4900) loss: 1.124001
+(Epoch 10 / 20) train acc: 0.584000; val\_acc: 0.547000
+(Iteration 2501 / 4900) loss: 1.173580
+(Iteration 2601 / 4900) loss: 1.216008
+(Epoch 11 / 20) train acc: 0.599000; val\_acc: 0.549000
+(Iteration 2701 / 4900) loss: 1.125201
+(Iteration 2801 / 4900) loss: 1.240387
+(Iteration 2901 / 4900) loss: 1.202577
+(Epoch 12 / 20) train acc: 0.581000; val\_acc: 0.558000
+(Iteration 3001 / 4900) loss: 1.218987
+(Iteration 3101 / 4900) loss: 1.083482
+(Epoch 13 / 20) train acc: 0.576000; val\_acc: 0.556000
+(Iteration 3201 / 4900) loss: 1.125721
+(Iteration 3301 / 4900) loss: 1.296972
+(Iteration 3401 / 4900) loss: 1.112760
+(Epoch 14 / 20) train acc: 0.619000; val\_acc: 0.568000
+(Iteration 3501 / 4900) loss: 1.170662
+(Iteration 3601 / 4900) loss: 1.148641
+(Epoch 15 / 20) train acc: 0.586000; val\_acc: 0.557000
+(Iteration 3701 / 4900) loss: 1.224092
+(Iteration 3801 / 4900) loss: 1.060980
+(Iteration 3901 / 4900) loss: 1.121947
+(Epoch 16 / 20) train acc: 0.609000; val\_acc: 0.570000
+(Iteration 4001 / 4900) loss: 1.131951
+(Iteration 4101 / 4900) loss: 1.085411
+(Epoch 17 / 20) train acc: 0.591000; val\_acc: 0.577000
+(Iteration 4201 / 4900) loss: 1.083873
+(Iteration 4301 / 4900) loss: 1.111030
+(Iteration 4401 / 4900) loss: 1.140475
+(Epoch 18 / 20) train acc: 0.630000; val\_acc: 0.571000
+(Iteration 4501 / 4900) loss: 1.131660
+(Iteration 4601 / 4900) loss: 1.099706
+(Epoch 19 / 20) train acc: 0.620000; val\_acc: 0.580000
+(Iteration 4701 / 4900) loss: 1.114464
+(Iteration 4801 / 4900) loss: 1.008431
+(Epoch 20 / 20) train acc: 0.628000; val\_acc: 0.584000
+new best accuracy:  0.584
+
+lr=[8.000000e-02], reg=[1.000000e-03]
+(Iteration 1 / 4900) loss: 2.302619
+(Epoch 0 / 20) train acc: 0.101000; val\_acc: 0.119000
+(Iteration 101 / 4900) loss: 2.282076
+(Iteration 201 / 4900) loss: 1.953241
+(Epoch 1 / 20) train acc: 0.344000; val\_acc: 0.357000
+(Iteration 301 / 4900) loss: 1.642411
+(Iteration 401 / 4900) loss: 1.545704
+(Epoch 2 / 20) train acc: 0.472000; val\_acc: 0.467000
+(Iteration 501 / 4900) loss: 1.470352
+(Iteration 601 / 4900) loss: 1.466944
+(Iteration 701 / 4900) loss: 1.568184
+(Epoch 3 / 20) train acc: 0.499000; val\_acc: 0.522000
+(Iteration 801 / 4900) loss: 1.395515
+(Iteration 901 / 4900) loss: 1.343099
+(Epoch 4 / 20) train acc: 0.539000; val\_acc: 0.502000
+(Iteration 1001 / 4900) loss: 1.569294
+(Iteration 1101 / 4900) loss: 1.453773
+(Iteration 1201 / 4900) loss: 1.395249
+(Epoch 5 / 20) train acc: 0.531000; val\_acc: 0.524000
+(Iteration 1301 / 4900) loss: 1.305968
+(Iteration 1401 / 4900) loss: 1.293080
+(Epoch 6 / 20) train acc: 0.534000; val\_acc: 0.522000
+(Iteration 1501 / 4900) loss: 1.296069
+(Iteration 1601 / 4900) loss: 1.251443
+(Iteration 1701 / 4900) loss: 1.246231
+(Epoch 7 / 20) train acc: 0.553000; val\_acc: 0.530000
+(Iteration 1801 / 4900) loss: 1.302080
+(Iteration 1901 / 4900) loss: 1.341497
+(Epoch 8 / 20) train acc: 0.537000; val\_acc: 0.536000
+(Iteration 2001 / 4900) loss: 1.223531
+(Iteration 2101 / 4900) loss: 1.277232
+(Iteration 2201 / 4900) loss: 1.273507
+(Epoch 9 / 20) train acc: 0.572000; val\_acc: 0.534000
+(Iteration 2301 / 4900) loss: 1.270039
+(Iteration 2401 / 4900) loss: 1.235782
+(Epoch 10 / 20) train acc: 0.565000; val\_acc: 0.550000
+(Iteration 2501 / 4900) loss: 1.218867
+(Iteration 2601 / 4900) loss: 1.201168
+(Epoch 11 / 20) train acc: 0.578000; val\_acc: 0.554000
+(Iteration 2701 / 4900) loss: 1.249023
+(Iteration 2801 / 4900) loss: 1.215988
+(Iteration 2901 / 4900) loss: 1.319889
+(Epoch 12 / 20) train acc: 0.588000; val\_acc: 0.550000
+(Iteration 3001 / 4900) loss: 1.198954
+(Iteration 3101 / 4900) loss: 1.229085
+(Epoch 13 / 20) train acc: 0.591000; val\_acc: 0.541000
+(Iteration 3201 / 4900) loss: 1.157168
+(Iteration 3301 / 4900) loss: 1.056483
+(Iteration 3401 / 4900) loss: 1.249550
+(Epoch 14 / 20) train acc: 0.570000; val\_acc: 0.560000
+(Iteration 3501 / 4900) loss: 1.115789
+(Iteration 3601 / 4900) loss: 1.230970
+(Epoch 15 / 20) train acc: 0.603000; val\_acc: 0.560000
+(Iteration 3701 / 4900) loss: 1.300283
+(Iteration 3801 / 4900) loss: 1.098935
+(Iteration 3901 / 4900) loss: 1.083509
+(Epoch 16 / 20) train acc: 0.620000; val\_acc: 0.580000
+(Iteration 4001 / 4900) loss: 1.181173
+(Iteration 4101 / 4900) loss: 1.214223
+(Epoch 17 / 20) train acc: 0.597000; val\_acc: 0.559000
+(Iteration 4201 / 4900) loss: 1.168058
+(Iteration 4301 / 4900) loss: 1.184302
+(Iteration 4401 / 4900) loss: 1.176099
+(Epoch 18 / 20) train acc: 0.580000; val\_acc: 0.572000
+(Iteration 4501 / 4900) loss: 1.075072
+(Iteration 4601 / 4900) loss: 1.149669
+(Epoch 19 / 20) train acc: 0.629000; val\_acc: 0.576000
+(Iteration 4701 / 4900) loss: 1.120599
+(Iteration 4801 / 4900) loss: 1.146646
+(Epoch 20 / 20) train acc: 0.601000; val\_acc: 0.577000
+
+lr=[1.000000e-01], reg=[0.000000e+00]
+(Iteration 1 / 4900) loss: 2.302590
+(Epoch 0 / 20) train acc: 0.112000; val\_acc: 0.078000
+(Iteration 101 / 4900) loss: 2.236383
+(Iteration 201 / 4900) loss: 1.774593
+(Epoch 1 / 20) train acc: 0.391000; val\_acc: 0.393000
+(Iteration 301 / 4900) loss: 1.541420
+(Iteration 401 / 4900) loss: 1.434870
+(Epoch 2 / 20) train acc: 0.493000; val\_acc: 0.500000
+(Iteration 501 / 4900) loss: 1.456043
+(Iteration 601 / 4900) loss: 1.230485
+(Iteration 701 / 4900) loss: 1.512534
+(Epoch 3 / 20) train acc: 0.540000; val\_acc: 0.509000
+(Iteration 801 / 4900) loss: 1.310777
+(Iteration 901 / 4900) loss: 1.443361
+(Epoch 4 / 20) train acc: 0.529000; val\_acc: 0.507000
+(Iteration 1001 / 4900) loss: 1.375571
+(Iteration 1101 / 4900) loss: 1.228884
+(Iteration 1201 / 4900) loss: 1.375662
+(Epoch 5 / 20) train acc: 0.552000; val\_acc: 0.517000
+(Iteration 1301 / 4900) loss: 1.224642
+(Iteration 1401 / 4900) loss: 1.236784
+(Epoch 6 / 20) train acc: 0.575000; val\_acc: 0.534000
+(Iteration 1501 / 4900) loss: 1.223496
+(Iteration 1601 / 4900) loss: 1.240032
+(Iteration 1701 / 4900) loss: 1.323501
+(Epoch 7 / 20) train acc: 0.562000; val\_acc: 0.551000
+(Iteration 1801 / 4900) loss: 1.107593
+(Iteration 1901 / 4900) loss: 1.076361
+(Epoch 8 / 20) train acc: 0.575000; val\_acc: 0.554000
+(Iteration 2001 / 4900) loss: 1.094492
+(Iteration 2101 / 4900) loss: 1.251643
+(Iteration 2201 / 4900) loss: 1.283564
+(Epoch 9 / 20) train acc: 0.572000; val\_acc: 0.556000
+(Iteration 2301 / 4900) loss: 1.167513
+(Iteration 2401 / 4900) loss: 1.141331
+(Epoch 10 / 20) train acc: 0.648000; val\_acc: 0.566000
+(Iteration 2501 / 4900) loss: 1.081622
+(Iteration 2601 / 4900) loss: 1.204024
+(Epoch 11 / 20) train acc: 0.613000; val\_acc: 0.557000
+(Iteration 2701 / 4900) loss: 1.186019
+(Iteration 2801 / 4900) loss: 1.053492
+(Iteration 2901 / 4900) loss: 1.285352
+(Epoch 12 / 20) train acc: 0.605000; val\_acc: 0.573000
+(Iteration 3001 / 4900) loss: 1.032835
+(Iteration 3101 / 4900) loss: 1.067538
+(Epoch 13 / 20) train acc: 0.649000; val\_acc: 0.573000
+(Iteration 3201 / 4900) loss: 1.213955
+(Iteration 3301 / 4900) loss: 1.132523
+(Iteration 3401 / 4900) loss: 1.121052
+(Epoch 14 / 20) train acc: 0.603000; val\_acc: 0.588000
+(Iteration 3501 / 4900) loss: 0.977680
+(Iteration 3601 / 4900) loss: 0.938381
+(Epoch 15 / 20) train acc: 0.642000; val\_acc: 0.591000
+(Iteration 3701 / 4900) loss: 1.123199
+(Iteration 3801 / 4900) loss: 1.094130
+(Iteration 3901 / 4900) loss: 1.044856
+(Epoch 16 / 20) train acc: 0.631000; val\_acc: 0.590000
+(Iteration 4001 / 4900) loss: 0.968724
+(Iteration 4101 / 4900) loss: 0.911977
+(Epoch 17 / 20) train acc: 0.640000; val\_acc: 0.596000
+(Iteration 4201 / 4900) loss: 1.092546
+(Iteration 4301 / 4900) loss: 1.106916
+(Iteration 4401 / 4900) loss: 1.066006
+(Epoch 18 / 20) train acc: 0.631000; val\_acc: 0.597000
+(Iteration 4501 / 4900) loss: 1.023933
+(Iteration 4601 / 4900) loss: 1.116080
+(Epoch 19 / 20) train acc: 0.650000; val\_acc: 0.596000
+(Iteration 4701 / 4900) loss: 1.002024
+(Iteration 4801 / 4900) loss: 1.038736
+(Epoch 20 / 20) train acc: 0.672000; val\_acc: 0.599000
+new best accuracy:  0.599
+
+lr=[1.000000e-01], reg=[1.000000e-05]
+(Iteration 1 / 4900) loss: 2.302619
+(Epoch 0 / 20) train acc: 0.103000; val\_acc: 0.113000
+(Iteration 101 / 4900) loss: 2.259277
+(Iteration 201 / 4900) loss: 1.737930
+(Epoch 1 / 20) train acc: 0.409000; val\_acc: 0.410000
+(Iteration 301 / 4900) loss: 1.551953
+(Iteration 401 / 4900) loss: 1.504815
+(Epoch 2 / 20) train acc: 0.496000; val\_acc: 0.499000
+(Iteration 501 / 4900) loss: 1.407880
+(Iteration 601 / 4900) loss: 1.363506
+(Iteration 701 / 4900) loss: 1.313112
+(Epoch 3 / 20) train acc: 0.519000; val\_acc: 0.510000
+(Iteration 801 / 4900) loss: 1.265264
+(Iteration 901 / 4900) loss: 1.262774
+(Epoch 4 / 20) train acc: 0.505000; val\_acc: 0.523000
+(Iteration 1001 / 4900) loss: 1.276024
+(Iteration 1101 / 4900) loss: 1.369477
+(Iteration 1201 / 4900) loss: 1.305326
+(Epoch 5 / 20) train acc: 0.569000; val\_acc: 0.519000
+(Iteration 1301 / 4900) loss: 1.156364
+(Iteration 1401 / 4900) loss: 1.277893
+(Epoch 6 / 20) train acc: 0.565000; val\_acc: 0.544000
+(Iteration 1501 / 4900) loss: 1.312396
+(Iteration 1601 / 4900) loss: 1.257143
+(Iteration 1701 / 4900) loss: 1.170644
+(Epoch 7 / 20) train acc: 0.555000; val\_acc: 0.542000
+(Iteration 1801 / 4900) loss: 1.241511
+(Iteration 1901 / 4900) loss: 1.201878
+(Epoch 8 / 20) train acc: 0.555000; val\_acc: 0.547000
+(Iteration 2001 / 4900) loss: 1.136193
+(Iteration 2101 / 4900) loss: 1.185465
+(Iteration 2201 / 4900) loss: 1.214198
+(Epoch 9 / 20) train acc: 0.578000; val\_acc: 0.562000
+(Iteration 2301 / 4900) loss: 1.131311
+(Iteration 2401 / 4900) loss: 1.080305
+(Epoch 10 / 20) train acc: 0.607000; val\_acc: 0.572000
+(Iteration 2501 / 4900) loss: 1.181659
+(Iteration 2601 / 4900) loss: 1.116178
+(Epoch 11 / 20) train acc: 0.592000; val\_acc: 0.568000
+(Iteration 2701 / 4900) loss: 1.159250
+(Iteration 2801 / 4900) loss: 1.041445
+(Iteration 2901 / 4900) loss: 1.110197
+(Epoch 12 / 20) train acc: 0.591000; val\_acc: 0.575000
+(Iteration 3001 / 4900) loss: 1.053921
+(Iteration 3101 / 4900) loss: 1.168308
+(Epoch 13 / 20) train acc: 0.604000; val\_acc: 0.575000
+(Iteration 3201 / 4900) loss: 1.152245
+(Iteration 3301 / 4900) loss: 0.990027
+(Iteration 3401 / 4900) loss: 1.061325
+(Epoch 14 / 20) train acc: 0.632000; val\_acc: 0.583000
+(Iteration 3501 / 4900) loss: 0.925185
+(Iteration 3601 / 4900) loss: 1.088775
+(Epoch 15 / 20) train acc: 0.629000; val\_acc: 0.586000
+(Iteration 3701 / 4900) loss: 1.160887
+(Iteration 3801 / 4900) loss: 0.999682
+(Iteration 3901 / 4900) loss: 0.975366
+(Epoch 16 / 20) train acc: 0.622000; val\_acc: 0.587000
+(Iteration 4001 / 4900) loss: 1.018237
+(Iteration 4101 / 4900) loss: 0.980045
+(Epoch 17 / 20) train acc: 0.664000; val\_acc: 0.586000
+(Iteration 4201 / 4900) loss: 0.877141
+(Iteration 4301 / 4900) loss: 1.130042
+(Iteration 4401 / 4900) loss: 0.902301
+(Epoch 18 / 20) train acc: 0.638000; val\_acc: 0.593000
+(Iteration 4501 / 4900) loss: 1.000542
+(Iteration 4601 / 4900) loss: 0.982715
+(Epoch 19 / 20) train acc: 0.636000; val\_acc: 0.597000
+(Iteration 4701 / 4900) loss: 1.021509
+(Iteration 4801 / 4900) loss: 1.093519
+(Epoch 20 / 20) train acc: 0.636000; val\_acc: 0.595000
+
+lr=[1.000000e-01], reg=[1.000000e-03]
+(Iteration 1 / 4900) loss: 2.302628
+(Epoch 0 / 20) train acc: 0.106000; val\_acc: 0.078000
+(Iteration 101 / 4900) loss: 2.245800
+(Iteration 201 / 4900) loss: 1.817439
+(Epoch 1 / 20) train acc: 0.418000; val\_acc: 0.414000
+(Iteration 301 / 4900) loss: 1.537593
+(Iteration 401 / 4900) loss: 1.515550
+(Epoch 2 / 20) train acc: 0.502000; val\_acc: 0.495000
+(Iteration 501 / 4900) loss: 1.389303
+(Iteration 601 / 4900) loss: 1.456539
+(Iteration 701 / 4900) loss: 1.296751
+(Epoch 3 / 20) train acc: 0.515000; val\_acc: 0.517000
+(Iteration 801 / 4900) loss: 1.412949
+(Iteration 901 / 4900) loss: 1.348960
+(Epoch 4 / 20) train acc: 0.521000; val\_acc: 0.518000
+(Iteration 1001 / 4900) loss: 1.259809
+(Iteration 1101 / 4900) loss: 1.200192
+(Iteration 1201 / 4900) loss: 1.363640
+(Epoch 5 / 20) train acc: 0.529000; val\_acc: 0.528000
+(Iteration 1301 / 4900) loss: 1.238229
+(Iteration 1401 / 4900) loss: 1.279729
+(Epoch 6 / 20) train acc: 0.549000; val\_acc: 0.536000
+(Iteration 1501 / 4900) loss: 1.327279
+(Iteration 1601 / 4900) loss: 1.251899
+(Iteration 1701 / 4900) loss: 1.257346
+(Epoch 7 / 20) train acc: 0.575000; val\_acc: 0.549000
+(Iteration 1801 / 4900) loss: 1.147661
+(Iteration 1901 / 4900) loss: 1.299044
+(Epoch 8 / 20) train acc: 0.570000; val\_acc: 0.550000
+(Iteration 2001 / 4900) loss: 1.288339
+(Iteration 2101 / 4900) loss: 1.293492
+(Iteration 2201 / 4900) loss: 1.048936
+(Epoch 9 / 20) train acc: 0.613000; val\_acc: 0.549000
+(Iteration 2301 / 4900) loss: 1.137331
+(Iteration 2401 / 4900) loss: 1.110009
+(Epoch 10 / 20) train acc: 0.590000; val\_acc: 0.556000
+(Iteration 2501 / 4900) loss: 1.191745
+(Iteration 2601 / 4900) loss: 1.336939
+(Epoch 11 / 20) train acc: 0.587000; val\_acc: 0.565000
+(Iteration 2701 / 4900) loss: 1.220373
+(Iteration 2801 / 4900) loss: 1.166228
+(Iteration 2901 / 4900) loss: 1.176944
+(Epoch 12 / 20) train acc: 0.609000; val\_acc: 0.560000
+(Iteration 3001 / 4900) loss: 1.106674
+(Iteration 3101 / 4900) loss: 1.195104
+(Epoch 13 / 20) train acc: 0.605000; val\_acc: 0.568000
+(Iteration 3201 / 4900) loss: 1.176410
+(Iteration 3301 / 4900) loss: 1.138381
+(Iteration 3401 / 4900) loss: 1.088084
+(Epoch 14 / 20) train acc: 0.606000; val\_acc: 0.565000
+(Iteration 3501 / 4900) loss: 1.048339
+(Iteration 3601 / 4900) loss: 1.281443
+(Epoch 15 / 20) train acc: 0.600000; val\_acc: 0.584000
+(Iteration 3701 / 4900) loss: 1.125791
+(Iteration 3801 / 4900) loss: 1.185219
+(Iteration 3901 / 4900) loss: 1.089864
+(Epoch 16 / 20) train acc: 0.621000; val\_acc: 0.582000
+(Iteration 4001 / 4900) loss: 1.035556
+(Iteration 4101 / 4900) loss: 1.073107
+(Epoch 17 / 20) train acc: 0.634000; val\_acc: 0.586000
+(Iteration 4201 / 4900) loss: 1.046265
+(Iteration 4301 / 4900) loss: 1.129060
+(Iteration 4401 / 4900) loss: 1.130642
+(Epoch 18 / 20) train acc: 0.637000; val\_acc: 0.592000
+(Iteration 4501 / 4900) loss: 1.194807
+(Iteration 4601 / 4900) loss: 1.016915
+(Epoch 19 / 20) train acc: 0.642000; val\_acc: 0.597000
+(Iteration 4701 / 4900) loss: 1.141588
+(Iteration 4801 / 4900) loss: 1.266221
+(Epoch 20 / 20) train acc: 0.629000; val\_acc: 0.592000
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{56}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Run your best neural net classifier on the test set. You should be able}
+\PY{c+c1}{\PYZsh{} to get more than 55\PYZpc{} accuracy.}
+
+\PY{n}{y\PYZus{}test\PYZus{}pred} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{n}{best\PYZus{}net}\PY{o}{.}\PY{n}{loss}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{X\PYZus{}test}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{test\PYZus{}acc} \PY{o}{=} \PY{p}{(}\PY{n}{y\PYZus{}test\PYZus{}pred} \PY{o}{==} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y\PYZus{}test}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{test\PYZus{}acc}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+0.571
+    \end{Verbatim}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
