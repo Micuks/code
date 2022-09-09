@@ -74,8 +74,18 @@ class FullyConnectedNet(object):
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        in_dim = [input_dim] + hidden_dims
+        out_dim = hidden_dims + [num_classes]
 
+        for i in range(self.num_layers):
+            W = np.random.normal(loc=0.0, scale=weight_scale,
+                                 size=(in_dim[i], out_dim[i]))
+            b = np.zeros((out_dim[i],), dtype=float)
+
+            self.params.update({'W'+str(i+1): W})
+            self.params.update({'b'+str(i+1): b})
+
+        # TODO last layer from hidden_dims[len(hidden_dims-1)] to num_classes
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
         #                             END OF YOUR CODE                             #
@@ -97,7 +107,8 @@ class FullyConnectedNet(object):
         # pass of the second batch normalization layer, etc.
         self.bn_params = []
         if self.normalization == "batchnorm":
-            self.bn_params = [{"mode": "train"} for i in range(self.num_layers - 1)]
+            self.bn_params = [{"mode": "train"}
+                              for i in range(self.num_layers - 1)]
         if self.normalization == "layernorm":
             self.bn_params = [{} for i in range(self.num_layers - 1)]
 
@@ -107,7 +118,7 @@ class FullyConnectedNet(object):
 
     def loss(self, X, y=None):
         """Compute loss and gradient for the fully connected net.
-        
+
         Inputs:
         - X: Array of input data of shape (N, d_1, ..., d_k)
         - y: Array of labels, of shape (N,). y[i] gives the label for X[i].
@@ -148,7 +159,26 @@ class FullyConnectedNet(object):
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        caches = []
+
+        out = X
+        for i in range(self.num_layers-1):
+            W = self.params['W'+str(i+1)]
+            b = self.params['b'+str(i+1)]
+            # print(f'W{i+1}.shape={W.shape},b{i+1}.shape={b.shape}')
+            # print(f'X.shape={X.shape}')
+            out, fc_cache = affine_forward(out, W, b)
+            out, relu_cache = relu_forward(out)
+            cache = (fc_cache, relu_cache)
+            caches.append(cache)
+
+        # last hidden layer
+        W = self.params['W'+str((self.num_layers-1)+1)]
+        b = self.params['b'+str((self.num_layers-1)+1)]
+        out, cache = affine_forward(out, W, b)
+        caches.append(cache)
+
+        scores = out
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
@@ -175,8 +205,34 @@ class FullyConnectedNet(object):
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        reg = 0.0
+        if self.normalization != None:
+            reg = self.reg
 
+        loss, d_scores = softmax_loss(scores, y)
+        cache = caches[self.num_layers-1]
+        X, W, b = cache
+        dout, dW, db = affine_backward(d_scores, cache)
+        if self.normalization != None:
+            loss += reg * 0.5 * np.sum(W*W)
+            dW += reg * W
+
+        grads.update({'W'+str(self.num_layers):dW})
+        grads.update({'b'+str(self.num_layers):db})
+
+        for i in range(self.num_layers-1, 0, -1):
+            cache = caches[i-1]
+            fc_cache, relu_cache = cache
+            dout = relu_backward(dout, relu_cache)
+            dout, dW, db = affine_backward(dout, fc_cache)
+            if self.normalization != None:
+                X, W, b = fc_cache
+                loss += reg * 0.5 * np.sum(W*W)
+                dW += reg * W
+            
+            grads.update({'W'+str(i): dW})
+            grads.update({'b'+str(i): db})
+            
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
         #                             END OF YOUR CODE                             #

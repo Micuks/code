@@ -1,4 +1,5 @@
 from builtins import range
+from matplotlib.pyplot import sca
 import numpy as np
 
 
@@ -25,7 +26,10 @@ def affine_forward(x, w, b):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    N = x.shape[0]
+    D = w.shape[0]
+    # print(f'N={N}, D={D}')
+    out = x.reshape(N, D).dot(w) + b[np.newaxis, :]
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -57,7 +61,11 @@ def affine_backward(dout, cache):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    N = x.shape[0]
+    D = w.shape[0]
+    db = np.sum(dout.transpose(), axis=1)
+    dw = x.reshape(N, D).transpose().dot(dout)
+    dx = dout.dot(w.transpose()).reshape(x.shape)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -82,7 +90,7 @@ def relu_forward(x):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    out = np.maximum(0, x)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -108,7 +116,9 @@ def relu_backward(dout, cache):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    binary = np.zeros_like(x)
+    binary[x >= 0] = 1
+    dx = binary*dout
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -137,7 +147,25 @@ def softmax_loss(x, y):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    num_train = x.shape[0]
+    num_classes = x.shape[1]
+    scores = x  # x is already the score
+    X_index = np.arange(num_train)
+    Xi_Wyi = scores[X_index, y]
+    sum_Xi_Wyi = np.sum(Xi_Wyi)
+
+    exp_scores = np.exp(scores)
+    sum_axis_1_exp_scores = np.sum(exp_scores, axis=1)
+    log_sum_axis_1_exp_scores = np.log(sum_axis_1_exp_scores)
+    sum_log_sum_axis_1_exp_scores = np.sum(log_sum_axis_1_exp_scores)
+
+    loss = (sum_log_sum_axis_1_exp_scores - sum_Xi_Wyi) / num_train
+
+    # gradient part
+    df = exp_scores
+    df /= sum_axis_1_exp_scores[:, np.newaxis]
+    df[X_index, y] += -1
+    dx = df / num_train
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -171,7 +199,7 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     Input:
     - x: Data of shape (N, D)
     - gamma: Scale parameter of shape (D,)
-    - beta: Shift paremeter of shape (D,)
+    - beta: Shift parameter of shape (D,)
     - bn_param: Dictionary with the following keys:
       - mode: 'train' or 'test'; required
       - eps: Constant for numeric stability
@@ -216,7 +244,29 @@ def batchnorm_forward(x, gamma, beta, bn_param):
         #######################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        mean = np.mean(x, axis=0)  # NxD
+        x_minus_mean = x - mean  # NxD
+        x_minus_mean_sq = x_minus_mean**2  # NxD
+        var = np.sum(x_minus_mean_sq, axis=0) / N  # 1xD
+        std_var = np.sqrt(var+eps)  # 1xD
+        inv_std_var = 1./std_var  # 1xD
+        x_norm = x_minus_mean * inv_std_var  # NxD
+        scaled_x = gamma * x_norm  # NxD
+        out = scaled_x + beta  # NxD
+
+        cache = {'mean': mean, 'x_minus_mean': x_minus_mean,
+                 'x_minus_mean_sq': x_minus_mean_sq,
+                 'var': var, 'std_var': std_var,
+                 'inv_std_var': inv_std_var,  'x_norm': x_norm, 'scaled_x': scaled_x,
+                 'shifted_scaled_x': out, 'x': x, 'gamma': gamma, 'beta': beta, 'eps': eps}
+
+        # update running_mean and running_var
+        sample_mean = np.mean(x, axis=0)
+        sample_var = np.var(x, axis=0)
+        running_mean = momentum * running_mean + (1-momentum) * sample_mean
+        running_var = momentum * running_var + (1-momentum) * sample_var
+        bn_param["running_mean"] = running_mean
+        bn_param["running_var"] = running_var
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         #######################################################################
@@ -231,7 +281,8 @@ def batchnorm_forward(x, gamma, beta, bn_param):
         #######################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        out = (x-running_mean)/(np.sqrt(running_var+eps))
+        out = gamma * out + beta
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         #######################################################################
@@ -272,7 +323,32 @@ def batchnorm_backward(dout, cache):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    N = dout.shape[0]
+    D = dout.shape[1]
+    mean, x_minus_mean,\
+        x_minus_mean_sq,\
+        var, std_var,\
+        inv_std_var, x_norm,\
+        scaled_x, shifted_scaled_x, x, gamma, beta, eps = cache['mean'], cache['x_minus_mean'],\
+        cache['x_minus_mean_sq'],\
+        cache['var'], cache['std_var'],\
+        cache['inv_std_var'], cache['x_norm'], cache['scaled_x'],\
+        cache['shifted_scaled_x'], cache['x'], cache['gamma'], cache['beta'], cache['eps']
+
+    dgamma = np.sum(x_norm * dout, axis=0)  # Nx1
+    dbeta = np.sum(dout, axis=0)  # 1xD
+    dx_hat = dout * gamma  # NxD, caution about gamma's shape
+    dinv_std_var = np.sum(dx_hat * x_minus_mean, axis=0)
+    dx_minus_mean = dx_hat * inv_std_var
+    dstd_var = dinv_std_var * -1/(std_var**2)
+    dvar = dstd_var * (1/2) * 1/np.sqrt((var+eps))
+    dx_minus_mean_sq = dvar * np.ones((N,D)) / N
+    dx_minus_mean += dx_minus_mean_sq * 2 * x_minus_mean
+    # dmean = np.sum(dx_minus_mean, axis=0) * (-1) # TODO why is sum instead of mean?
+    dmean = np.sum(dx_minus_mean * np.ones((N, D)), axis=0) * (-1)
+    dx = dx_minus_mean
+    dx += dmean * np.ones((N, D)) / N
+    # print(f'dx.shape={dx.shape}, dgamma.shape={dgamma.shape}, dbeta.shape{dbeta.shape}')
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -692,7 +768,7 @@ def spatial_batchnorm_backward(dout, cache):
 
 def spatial_groupnorm_forward(x, gamma, beta, G, gn_param):
     """Computes the forward pass for spatial group normalization.
-    
+
     In contrast to layer normalization, group normalization splits each entry in the data into G
     contiguous pieces, which it then normalizes independently. Per-feature shifting and scaling
     are then applied to the data, in a manner identical to that of batch normalization and layer
