@@ -1,3 +1,4 @@
+from cv2 import sqrt
 import numpy as np
 
 """
@@ -69,7 +70,13 @@ def sgd_momentum(w, dw, config=None):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    learning_rate = config["learning_rate"]
+    mu = config["momentum"]
+    # print(f'v0 = {v}')
+    v = mu * v - learning_rate * dw
+    # print(f'v1 = {v}')
+    # print(f'momentum sgd executed')
+    next_w = w + v
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -107,7 +114,17 @@ def rmsprop(w, dw, config=None):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    # shallow copy, copy by value
+    learning_rate = config["learning_rate"]
+    decay_rate = config["decay_rate"]
+    eps = config["epsilon"]
+    cache = config["cache"]
+
+    cache = decay_rate * cache + (1-decay_rate) * dw**2
+    next_w = w - learning_rate * dw / (np.sqrt(cache) + eps)
+
+    # update cache
+    config["cache"] = cache
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -152,7 +169,27 @@ def adam(w, dw, config=None):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    learning_rate = config["learning_rate"]
+    beta_1 = config["beta1"]
+    beta_2 = config["beta2"]
+    eps = config["epsilon"]
+    m = config["m"]
+    v = config["v"]
+    t = config["t"]
+
+    # update t to sync with iteration
+    t += 1
+
+    m = beta_1 * m + (1-beta_1) * dw
+    v = beta_2 * v + (1-beta_2) * (dw**2)
+    mt = m / (1-beta_1**t)
+    vt = v / (1-beta_2**t)
+    next_w = w - learning_rate * mt / (np.sqrt(vt) + eps)
+
+    # update parameters
+    config["m"] = m
+    config["v"] = v
+    config["t"] = t
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
