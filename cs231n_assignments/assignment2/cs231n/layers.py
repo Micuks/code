@@ -1,6 +1,8 @@
 from builtins import range
 from matplotlib.pyplot import sca
 import numpy as np
+from scipy.fftpack import shift
+from zmq import XPUB_NODROP
 
 
 def affine_forward(x, w, b):
@@ -29,6 +31,7 @@ def affine_forward(x, w, b):
     N = x.shape[0]
     D = w.shape[0]
     # print(f'N={N}, D={D}')
+    # print(f'x.shape={x.shape}, w.shape{w.shape}')
     out = x.reshape(N, D).dot(w) + b[np.newaxis, :]
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -342,7 +345,7 @@ def batchnorm_backward(dout, cache):
     dx_minus_mean = dx_hat * inv_std_var
     dstd_var = dinv_std_var * -1/(std_var**2)
     dvar = dstd_var * (1/2) * 1/np.sqrt((var+eps))
-    dx_minus_mean_sq = dvar * np.ones((N,D)) / N
+    dx_minus_mean_sq = dvar * np.ones((N, D)) / N
     dx_minus_mean += dx_minus_mean_sq * 2 * x_minus_mean
     # dmean = np.sum(dx_minus_mean, axis=0) * (-1) # TODO why is sum instead of mean?
     dmean = np.sum(dx_minus_mean * np.ones((N, D)), axis=0) * (-1)
@@ -382,7 +385,26 @@ def batchnorm_backward_alt(dout, cache):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    N = dout.shape[0]
+    D = dout.shape[1]
+    mean, x_minus_mean,\
+        x_minus_mean_sq,\
+        var, std_var,\
+        inv_std_var, x_norm,\
+        scaled_x, shifted_scaled_x, x, gamma, beta, eps = cache['mean'], cache['x_minus_mean'],\
+        cache['x_minus_mean_sq'],\
+        cache['var'], cache['std_var'],\
+        cache['inv_std_var'], cache['x_norm'], cache['scaled_x'],\
+        cache['shifted_scaled_x'], cache['x'], cache['gamma'], cache['beta'], cache['eps']
+
+    dx_norm = gamma * dout
+    dgamma = np.sum(dout * x_norm, axis=0)
+    dbeta = np.sum(dout, axis=0)
+
+    dvar = np.sum(dx_norm * x_minus_mean * (-1/2) * inv_std_var**3, axis=0)
+    dmean = np.sum(dx_norm * -1 * inv_std_var, axis=0) + \
+        np.sum(dvar * -2 * x_minus_mean / N, axis=0)
+    dx = dx_norm * inv_std_var + dvar * x_minus_mean * 2 / N + dmean / N
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -427,7 +449,24 @@ def layernorm_forward(x, gamma, beta, ln_param):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    D = x.shape[1]
+    mean = np.mean(x, axis=1)
+    x_minus_mean = x - mean[:, np.newaxis]
+    x_minus_mean_sq = x_minus_mean**2
+    var = np.mean(x_minus_mean_sq, axis=1)
+    std_var = np.sqrt(var+eps)
+    inv_std_var = 1/std_var
+    x_norm = x_minus_mean*inv_std_var[:, np.newaxis]
+    scaled_x = gamma*x_norm
+    shifted_scaled_x = scaled_x+beta
+    out = shifted_scaled_x
+
+    cache = {'x': x, 'gamma': gamma, 'beta': beta, 'eps': eps,
+             'mean': mean, 'x_minus_mean': x_minus_mean,
+             'x_minus_mean_sq': x_minus_mean_sq, 'var': var,
+             'std_var': std_var, 'inv_std_var': inv_std_var,
+             'x_norm': x_norm, 'scaled_x': scaled_x,
+             'shifted_scaled_x': shifted_scaled_x}
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -461,7 +500,31 @@ def layernorm_backward(dout, cache):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    x, gamma, beta, eps, mean, x_minus_mean, x_minus_mean_sq, var, std_var, \
+        inv_std_var, x_norm, scaled_x, shifted_scaled_x = cache['x'], cache['gamma'], \
+        cache['beta'], cache['eps'], cache['mean'], cache['x_minus_mean'], \
+        cache['x_minus_mean_sq'], cache['var'], cache['std_var'], \
+        cache['inv_std_var'], cache['x_norm'], cache['scaled_x'], \
+        cache['shifted_scaled_x']
+
+    N = x.shape[0]
+    D = x.shape[1]
+    dshifted_scaled_x = dout * 1
+    dbeta = np.sum(dshifted_scaled_x * 1, axis=0)
+    dscaled_x = dshifted_scaled_x * 1
+    dgamma = np.sum(dscaled_x * x_norm, axis=0)
+    dx_norm = dscaled_x * gamma
+    dx_minus_mean = dx_norm * inv_std_var[:, np.newaxis]
+    # unsure whether it is sum or mean
+    dinv_std_var = np.sum(dx_norm * x_minus_mean, axis=1)
+    dstd_var = dinv_std_var * (-1) * inv_std_var**2
+    dvar = dstd_var * (1/2) * inv_std_var
+    dx_minus_mean_sq = np.ones((N, D)) * dvar[:, np.newaxis] / D
+    dx_minus_mean += dx_minus_mean_sq * 2 * x_minus_mean
+    dx = dx_minus_mean * 1
+    # unsure whether it is sum or mean
+    dmean = np.sum(dx_minus_mean * (-1), axis=1)
+    dx += dmean[:, np.newaxis] * 1 / D * np.ones((N, D))
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
