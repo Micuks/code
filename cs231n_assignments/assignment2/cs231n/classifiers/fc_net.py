@@ -176,6 +176,7 @@ class FullyConnectedNet(object):
         caches = []
 
         out = X
+
         for i in range(self.num_layers-1):
             W = self.params['W'+str(i+1)]
             b = self.params['b'+str(i+1)]
@@ -195,6 +196,12 @@ class FullyConnectedNet(object):
                     out, W, b, gamma, beta, bn_param)
             else:
                 out, cache = affine_relu_forward(out, W, b)
+
+            # dropout
+            if self.use_dropout:
+                dropout_param = self.dropout_param
+                out, dropout_cache = dropout_forward(out, dropout_param)
+                cache += dropout_cache
 
             caches.append(cache)
 
@@ -250,8 +257,14 @@ class FullyConnectedNet(object):
         for i in range(self.num_layers-1, 0, -1):
             cache = caches[i-1]
             if self.normalization == 'batchnorm':
+                if self.use_dropout:
+                    fc_cache, bn_cache, relu_cache, dropout_param, mask = cache
+                    dropout_cache = (dropout_param, mask)
+                    dout = dropout_backward(dout, dropout_cache)
+                    cache = (fc_cache, bn_cache, relu_cache)
                 dout, dW, db, dgamma, dbeta = affine_bn_relu_backward(
                     dout, cache)
+
                 if self.normalization != None:
                     fc_cache, _, _ = cache
                     _, W, _ = fc_cache
@@ -262,8 +275,15 @@ class FullyConnectedNet(object):
                 grads.update({'beta'+str(i): dbeta})
 
             elif self.normalization == 'layernorm':
+                if self.use_dropout:
+                    fc_cache, ln_cache, relu_cache, dropout_param, mask = cache
+                    dropout_cache = (dropout_param, mask)
+                    dout = dropout_backward(dout, dropout_cache)
+                    cache = (fc_cache, ln_cache, relu_cache)
+
                 dout, dW, db, dgamma, dbeta = affine_ln_relu_backward(
                     dout, cache)
+
                 if self.normalization != None:
                     fc_cache, _, _ = cache
                     _, W, _ = fc_cache
@@ -274,7 +294,16 @@ class FullyConnectedNet(object):
                 grads.update({'beta'+str(i): dbeta})
 
             else:
+                # print(f'self.normalization={self.normalization}')
+                # print(f'len(cache)={len(cache)}')
+                if self.use_dropout:
+                    fc_cache, relu_cache, dropout_param, mask = cache
+                    dropout_cache = (dropout_param, mask)
+                    dout = dropout_backward(dout, dropout_cache)
+                    cache = (fc_cache, relu_cache)
+
                 dout, dW, db = affine_relu_backward(dout, cache)
+
                 if self.normalization != None:
                     fc_cache, _ = cache
                     _, W, _ = fc_cache
