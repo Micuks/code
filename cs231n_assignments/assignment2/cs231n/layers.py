@@ -893,7 +893,12 @@ def spatial_batchnorm_forward(x, gamma, beta, bn_param):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    N, C, H, W = x.shape
+    # transpose x to treat N, H and W the same in batchnorm step
+    # for every feature channel is produced by the same convolutional filter
+    x_T = x.transpose((0, 2, 3, 1)).reshape((N*H*W, C))
+    out, cache = batchnorm_forward(x_T, gamma, beta, bn_param)
+    out = out.reshape((N, H, W, C)).transpose((0, 3, 1, 2))
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -925,7 +930,17 @@ def spatial_batchnorm_backward(dout, cache):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    N, C, H, W = dout.shape
+    dout_T = dout.transpose((0, 2, 3, 1)).reshape((N*H*W, C))
+    # dx, dgamma, dbeta of shape(N*H*W, C), (C,), (C,)
+    dx, dgamma, dbeta = batchnorm_backward(dout_T, cache)
+
+    # transpose and reshape dx, dgamma and dbeta to shape (N, C, H, W), (1, C, 1, 1) and (1, C, 1, 1)
+    # print(
+    #     f'before reshape and transpose: dx.shape={dx.shape}, dgamma.shape={dgamma.shape}, dbeta.shape{dbeta.shape}')
+    dx = dx.reshape((N, H, W, C)).transpose((0, 3, 1, 2))
+    # print(
+    #     f'after reshape and transpose: dx.shape={dx.shape}, dgamma.shape={dgamma.shape}, dbeta.shape{dbeta.shape}')
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -965,8 +980,37 @@ def spatial_groupnorm_forward(x, gamma, beta, G, gn_param):
     # and layer normalization!                                                #
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    N, C, H, W = x.shape
 
-    pass
+    gamma = gamma[0,:,0,0]
+    beta = beta[0,:,0,0]
+    print(f'gamma={gamma.shape}, beta={beta.shape}')
+
+    x = x.reshape((N * G, C//G * H * W))
+    NG, D = x.shape
+    mean = np.mean(x, axis=1) # N,
+    x_minus_mean = x - mean[:, np.newaxis] # N, D
+    x_minus_mean_sq = x_minus_mean**2 # N, D
+    var = np.mean(x_minus_mean_sq, axis=1) # N,
+    std_var = np.sqrt(var + eps) # N,
+    inv_std_var = 1 / std_var # N,
+    x_norm = x_minus_mean * inv_std_var[:, np.newaxis] # N, D
+    print(x_norm.shape)
+    scaled_x = gamma * x_norm # N, D
+    print(scaled_x.shape)
+    shifted_scaled_x = scaled_x + beta # N, D
+    print(shifted_scaled_x.shape)
+    out = shifted_scaled_x # N, D
+    print(f'out.shape={out.shape}')
+
+    cache = {'x': x, 'gamma': gamma, 'beta': beta, 'eps': eps,
+             'mean': mean, 'x_minus_mean': x_minus_mean,
+             'x_minus_mean_sq': x_minus_mean_sq, 'var': var,
+             'std_var': std_var, 'inv_std_var': inv_std_var,
+             'x_norm': x_norm, 'scaled_x': scaled_x,
+             'shifted_scaled_x': shifted_scaled_x, 'G': G}
+
+    out.reshape((N, C, H, W))
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
