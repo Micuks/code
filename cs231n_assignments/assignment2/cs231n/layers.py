@@ -982,26 +982,20 @@ def spatial_groupnorm_forward(x, gamma, beta, G, gn_param):
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     N, C, H, W = x.shape
 
-    gamma = gamma[0,:,0,0]
-    beta = beta[0,:,0,0]
-    print(f'gamma={gamma.shape}, beta={beta.shape}')
-
     x = x.reshape((N * G, C//G * H * W))
     NG, D = x.shape
-    mean = np.mean(x, axis=1) # N,
-    x_minus_mean = x - mean[:, np.newaxis] # N, D
-    x_minus_mean_sq = x_minus_mean**2 # N, D
-    var = np.mean(x_minus_mean_sq, axis=1) # N,
-    std_var = np.sqrt(var + eps) # N,
-    inv_std_var = 1 / std_var # N,
-    x_norm = x_minus_mean * inv_std_var[:, np.newaxis] # N, D
-    print(x_norm.shape)
-    scaled_x = gamma * x_norm # N, D
-    print(scaled_x.shape)
-    shifted_scaled_x = scaled_x + beta # N, D
-    print(shifted_scaled_x.shape)
-    out = shifted_scaled_x # N, D
-    print(f'out.shape={out.shape}')
+    mean = np.mean(x, axis=1)  # N,
+    x_minus_mean = x - mean[:, np.newaxis]  # N, D
+    x_minus_mean_sq = x_minus_mean**2  # N, D
+    var = np.mean(x_minus_mean_sq, axis=1)  # N,
+    std_var = np.sqrt(var + eps)  # N,
+    inv_std_var = 1 / std_var  # N,
+    x_norm = x_minus_mean * inv_std_var[:, np.newaxis]  # N, D
+    # reshape x_norm to (N, C, H, W) to scale and shift with gamma and beta
+    scaled_x = x_norm.reshape((N, C, H, W))  # N, C, H, W
+    scaled_x = gamma * scaled_x  # N, C, H, W
+    shifted_scaled_x = scaled_x + beta  # N, C, H, W
+    out = shifted_scaled_x  # N, C, H, W
 
     cache = {'x': x, 'gamma': gamma, 'beta': beta, 'eps': eps,
              'mean': mean, 'x_minus_mean': x_minus_mean,
@@ -1038,7 +1032,40 @@ def spatial_groupnorm_backward(dout, cache):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    # load values from cache
+    x, gamma, beta, eps, mean, x_minus_mean, x_minus_mean_sq, var, std_var, \
+        inv_std_var, x_norm, scaled_x, shifted_scaled_x, G = cache['x'], cache['gamma'], \
+        cache['beta'], cache['eps'], cache['mean'], cache['x_minus_mean'], \
+        cache['x_minus_mean_sq'], cache['var'], cache['std_var'], cache['inv_std_var'], \
+        cache['x_norm'], cache['scaled_x'], cache['shifted_scaled_x'], cache['G']
+
+    N, C, H, W = dout.shape
+    NG, D = N * G, C//G * H * W
+    dshifted_scaled_x = dout * 1  # N, C, H, W
+    dbeta = np.sum(dshifted_scaled_x * 1, axis=(0, 2, 3)) # 1, C, 1, 1
+    dscaled_x = dshifted_scaled_x * 1  # N, C, H, W
+    dgamma = np.sum(dscaled_x * x_norm.reshape((N, C, H, W)),
+                    axis=(0, 2, 3)) # 1, C, 1, 1
+    dx_norm = (dscaled_x * gamma).reshape((N * G, C//G * H * W))  # N, D
+    dx_minus_mean = dx_norm * inv_std_var[:, np.newaxis]  # N, D
+    dinv_std_var = np.sum(dx_norm * x_minus_mean, axis=1)  # N,
+    dstd_var = dinv_std_var * (-1) * inv_std_var**2  # N,
+    dvar = dstd_var * (1/2) * inv_std_var  # N,
+    dx_minus_mean_sq = dvar[:, np.newaxis] * \
+        (1/D) * np.ones(x_minus_mean_sq.shape)  # N, D
+    dx_minus_mean += dx_minus_mean_sq * 2 * x_minus_mean  # N, D
+    dx = dx_minus_mean * 1  # N, D
+    dmean = np.sum(dx_minus_mean * (-1), axis=1)  # N,
+    dx += dmean[:, np.newaxis] * (1/D) * np.ones(x.shape)  # N, D
+
+    # reshape dx, dgamma, dbeta
+    dx = dx.reshape((N, C, H, W))
+    dgamma = dgamma.reshape((1, C, 1, 1))
+    dbeta = dbeta.reshape((1, C, 1, 1))
+    # print(
+    #     f'x.shape={x.shape}, gamma.shape={gamma.shape}, beta.shape={beta.shape}')
+    # print(
+    #     f'dx.shape={dx.shape}, dgamma.shape={dgamma.shape}, dbeta.shape={dbeta.shape}')
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
