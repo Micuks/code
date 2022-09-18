@@ -39,14 +39,15 @@ class MyConvNet(object):
         pool_pad_2=0,
         pool_stride_2=2,
 
-        momentum=0.1,
-        eps=1e-5,
+        bn_momentum=0.1, # TODO check whether it is unused.
+        bn_eps=1e-5, # TODO checker whether it is unused.
 
         hidden_dim=100,
         num_classes=10,
         weight_scale=1e-3,
         reg=0.0,
-        dtype=np.float32
+        dtype=np.float32,
+        fast=False
     ):
         '''
         Initialize a new network.
@@ -103,11 +104,16 @@ class MyConvNet(object):
         self.pool_pad_2 = pool_pad_2
         self.pool_stride_2 = pool_stride_2
 
+        self.bn_momentum = bn_momentum
+        self.bn_eps = bn_eps
+
         self.hidden_dim = hidden_dim,
         self.weight_scale = weight_scale
 
         self.reg = reg
         self.dtype = dtype
+
+        self.fast = fast
 
         N = 64  # number of images in one mini batch
         C, H, W = input_dim
@@ -277,40 +283,53 @@ class MyConvNet(object):
         ###############################################################################
         # The implementation of the forward pass for the nine-layer convolutional net.#
         ###############################################################################
+        conv_forward = conv_forward_naive
+        conv_backward = conv_backward_naive
+        max_pool_forward = max_pool_forward_naive
+        max_pool_backward = max_pool_backward_naive
+
+        if self.fast == True:
+            # Conv2d fast implementation
+            conv_forward = conv_forward_strides
+            conv_backward = conv_backward_strides
+
+            # Max pooling fast implementation
+            max_pool_forward = max_pool_forward_fast
+            max_pool_backward = max_pool_backward_fast
 
         # Sandwich layer 1: conv(3x3) - relu - maxpool(3x3)
-        print('# Sandwich layer 1: conv(3x3) - relu - maxpool(3x3)')
-        out_conv_3_1, cache_conv_3_1 = conv_forward_naive(
+        # print('# Sandwich layer 1: conv(3x3) - relu - maxpool(3x3)')
+        out_conv_3_1, cache_conv_3_1 = conv_forward(
             X, W_conv_3_1, b_conv_3_1, conv_param_1)
         out_relu_1, cache_relu_1 = relu_forward(out_conv_3_1)
-        out_pool_1, cache_pool_1 = max_pool_forward_naive(
+        out_pool_1, cache_pool_1 = max_pool_forward(
             out_relu_1, pool_param_1)
 
         # Sandwich layer 2: conv(3x3) - relu - maxpool(3x3)
-        print('# Sandwich layer 2: conv(3x3) - relu - maxpool(3x3)')
-        out_conv_3_2, cache_conv_3_2 = conv_forward_naive(
+        # print('# Sandwich layer 2: conv(3x3) - relu - maxpool(3x3)')
+        out_conv_3_2, cache_conv_3_2 = conv_forward(
             out_pool_1, W_conv_3_2, b_conv_3_2, conv_param_1)
         out_relu_2, cache_relu_2 = relu_forward(out_conv_3_2)
-        out_pool_2, cache_pool_2 = max_pool_forward_naive(
+        out_pool_2, cache_pool_2 = max_pool_forward(
             out_relu_2, pool_param_1)
 
         # Sandwich layer 3: batchnorm2d - relu - conv(1x1) - maxpool(2x2)
-        print('# Sandwich layer 3: batchnorm2d - relu - conv(1x1) - maxpool(2x2)')
+        # print('# Sandwich layer 3: batchnorm2d - relu - conv(1x1) - maxpool(2x2)')
         out_bn2d, cache_bn2d = spatial_batchnorm_forward(
             out_pool_2, gamma_bn2d_1, beta_bn2d_1, bn_param)
         out_relu_3, cache_relu_3 = relu_forward(out_bn2d)
-        out_conv_1_1, cache_conv_1_1 = conv_forward_naive(
+        out_conv_1_1, cache_conv_1_1 = conv_forward(
             out_relu_3, W_conv_1_1, b_conv_1_1, conv_param_2)
-        out_pool_3, cache_pool_3 = max_pool_forward_naive(
+        out_pool_3, cache_pool_3 = max_pool_forward(
             out_conv_1_1, pool_param_2)
 
         # Sandwich layer 4: affine - relu
-        print('# Sandwich layer 4: affine - relu')
+        # print('# Sandwich layer 4: affine - relu')
         out_fc_1, cache_fc_1 = affine_forward(out_pool_3, W_fc_1, b_fc_1)
         out_relu_4, cache_relu_4 = relu_forward(out_fc_1)
 
         # Sandwich layer 5: affine
-        print('# Sandwich layer 5: affine')
+        # print('# Sandwich layer 5: affine')
         out_fc_2, cache_fc_2 = affine_forward(out_relu_4, W_fc_2, b_fc_2)
 
         # final output
@@ -345,8 +364,8 @@ class MyConvNet(object):
         grads.update({'W_fc_1': dW, 'b_fc_1': db})
 
         # Sandwich layer 3: batchnorm2d - relu - conv(1x1) - maxpool(2x2)
-        dout = max_pool_backward_naive(dout, cache_pool_3)
-        dout, dW, db = conv_backward_naive(dout, cache_conv_1_1)
+        dout = max_pool_backward(dout, cache_pool_3)
+        dout, dW, db = conv_backward(dout, cache_conv_1_1)
         dout = relu_backward(dout, cache_relu_3)
         dout, dgamma, dbeta = spatial_batchnorm_backward(dout, cache_bn2d)
         # L2 regularization
@@ -355,18 +374,18 @@ class MyConvNet(object):
         grads.update({'W_conv_1_1': dW, 'b_conv_1_1': db})
 
         # Sandwich layer 2: conv(3x3) - relu - maxpool(3x3)
-        dout = max_pool_backward_naive(dout, cache_pool_2)
+        dout = max_pool_backward(dout, cache_pool_2)
         dout = relu_backward(dout, cache_relu_2)
-        dout, dW, db = conv_backward_naive(dout, cache_conv_3_2)
+        dout, dW, db = conv_backward(dout, cache_conv_3_2)
         # L2 regularization
         loss += reg * 0.5 * np.sum(W_conv_3_2*W_conv_3_2)
         dW += reg * W_conv_3_2
         grads.update({'W_conv_3_2': dW, 'b_conv_3_2': db})
 
         # Sandwich layer 1: conv(3x3) - relu - maxpool(3x3)
-        dout = max_pool_backward_naive(dout, cache_pool_1)
+        dout = max_pool_backward(dout, cache_pool_1)
         dout = relu_backward(dout, cache_relu_1)
-        dout, dW, db = conv_backward_naive(dout, cache_conv_3_1)
+        dout, dW, db = conv_backward(dout, cache_conv_3_1)
         # L2 regularization
         loss += reg * 0.5 * np.sum(W_conv_3_1*W_conv_3_1)
         dW += reg * W_conv_3_1

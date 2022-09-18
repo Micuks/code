@@ -8,6 +8,16 @@ from data_utils import *
 from layers_test import *
 
 
+def setup_im2col():
+    '''
+    setup im2col for fast implementation of Conv2d and MaxPool.
+    '''
+    print('Setting up im2col with cython...')
+    cmd = 'python setup.py build_ext --inplace'
+    os.system(cmd)
+    print('Successfully setup im2col.')
+
+
 def init():
     ''' Initialize dataset '''
     # initialize dataset
@@ -103,6 +113,11 @@ def main():
     print('shape of data:')
     for k, v in list(data.items()):
         print(f'{k}: {v.shape}')
+
+    # Setup im2col cython extension for Conv2d and maxpool
+    setup_im2col()
+
+    # Check layer implementations
     test()
 
 
