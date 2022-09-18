@@ -1,4 +1,5 @@
 import numpy as np
+# import cupy as np
 
 
 def eval_numerical_gradient_array(f, x, df, h=1e-5):
