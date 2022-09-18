@@ -1,4 +1,3 @@
-from turtle import numinput
 import numpy as np
 # import cupy as np
 

@@ -1,8 +1,186 @@
 import numpy as np
 # import cupy as cp
 
+try:
+    from im2col_cython import col2im_cython, im2col_cython
+    from im2col_cython import col2im_6d_cython
+except ImportError:
+    print('The message below can be safely ignored if fast implementation of Conv2d and MaxPool is not used.')
+    print('\tIt is needed to compile a Cython extension for a portion of this net.')
+
+from im2col import *
 
 # TODO: Fast Implementation of Convolution and Maxpooling Layers
+
+
+def conv_forward_strides(x, w, b, conv_param):
+    '''
+    Fast implementation of the forward pass for a convolutional layer.
+
+    Input / Output: The same as those used in forward pass of naive
+    convolutinal layer.
+    '''
+    N, C, H, W = x.shape
+    F, _, HH, WW = w.shape
+    stride, pad = conv_param['stride'], conv_param['pad']
+
+    # # Check dimensions
+    assert (W + 2 * pad - WW) % stride == 0, 'width does not work'
+    assert (H + 2 * pad - HH) % stride == 0, 'height does not work'
+
+    # pad the input
+    p = pad
+    x_padded = np.pad(x, ((0, 0), (0, 0), (p, p), (p, p)), mode='constant',
+                      constant_values=((0, 0), (0, 0), (0, 0), (0, 0)))
+
+    # Figure out output dimensions
+    H += 2 * pad
+    W += 2 * pad
+    out_h = (H - HH) // stride + 1
+    out_w = (W - WW) // stride + 1
+
+    # Perform an im2col operation by picking clever strides
+    shape = (C, HH, WW, N, out_h, out_w)
+    strides = (H * W, W, 1, C * H * W, stride * W, stride)
+    strides = x.itemsize * np.array(strides)
+    x_stride = np.lib.stride_tricks.as_strided(
+        x_padded, shape=shape, strides=strides)
+    x_cols = np.ascontiguousarray(x_stride)
+    x_cols.shape = (C*HH*WW, N*out_h*out_w)
+
+    # Now all our convolutions are a big matrix multiply
+    res = w.reshape(F, -1).dot(x_cols) + b.reshape(-1, 1)
+
+    # Reshape the output
+    res.shape = (F, N, out_h, out_w)
+    out = res.transpose(1, 0, 2, 3)
+
+    # Be nice and return a contiguous array
+    out = np.ascontiguousarray(out)
+
+    cache = (x, w, b, conv_param, x_cols)
+    return out, cache
+
+
+def conv_backward_strides(dout, cache):
+    '''
+    Fast implementation of the backward pass for a convolutinal layer.
+
+    Input / Output: The same as those used in backward pass of naive
+    convolutional layer
+    '''
+    x, w, b, conv_param, x_cols = cache
+    stride, pad = conv_param['stride'], conv_param['pad']
+
+    N, C, H, W = x.shape
+    F, _, HH, WW = w.shape
+    _, _, out_h, out_w = dout.shape
+
+    db = np.sum(dout, axis=(0, 2, 3))
+
+    dout_reshaped = dout.transpose(1, 0, 2, 3).reshape(F, -1)
+    dw = dout_reshaped.dot(x_cols.T).reshape(w.shape)
+
+    dx_cols = w.reshape(F, -1).T.dot(dout_reshaped)
+    dx_cols.shape = (C, HH, WW, N, out_h, out_w)
+    dx = col2im_6d_cython(dx_cols, N, C, H, W, HH, WW, pad, stride)
+
+    return dx, dw, db
+
+
+def max_pool_forward_reshape(x, pool_param):
+    '''
+    A fast implementation of the forward pass for the max pooling layer
+    that uses some clever reshaping.
+
+    This can only be used for square pooling regions that tile the input.
+    '''
+    N, C, H, W = x.shape
+    pool_height, pool_width, stride = pool_param['pool_height'], \
+        pool_param['pool_width'], pool_param['stride']
+
+    assert pool_height == pool_width == stride, 'Invalid pool params'
+    assert H % pool_height == 0
+    assert W % pool_height == 0  # height and width are equal
+    x_reshaped = x.reshape(
+        N, C, H // pool_height, pool_height, W // pool_width, pool_width
+    )
+    out = x_reshaped.max(axis=3).max(axis=4)
+
+    cache = (x, x_reshaped, out)
+    return out, cache
+
+
+def max_pool_backward_reshape(dout, cache):
+    '''
+    A fast implementation of the backward pass for the max pooling layer that
+    uses some clever broadcasting and reshaping.
+
+    This can only be used if the forward pass was computed using
+    max_pool_forward_reshape.
+
+    NOTE: If there are multiple argmaxes, this method will assign gradient to
+    **ALL** argmax elements of the input rather than picking one. In this case
+    the gradient will actually be incorrect. However this is unlikely to ovvur
+    in practice, so it shouldn't matter much. One possible solution is to split
+    the upstream gradient equally among all argmax elements; this should result
+    in a valid subtradient. you can make this happen by uncommenting the line
+    below; however this results in a significant performance penalty (about
+    40% lower) and is unlikely to matter in practice so we don't do that.
+    '''
+    x, x_reshaped, out = cache
+
+    dx_reshaped = np.zeros(x_reshaped.shape)
+    out_newaxis = out[:, :, :, np.newaxis, :, np.newaxis]
+    mask = x_reshaped == out_newaxis
+    dout_newaxis = dout[:, :, :, np.newaxis, :, np.newaxis]
+    dout_broadcast, _ = np.broadcast_arrays(dout_newaxis, dx_reshaped)
+    dx_reshaped[mask] = dout_broadcast[mask]
+    dx_reshaped /= np.sum(mask, axis=(3, 5), keepdims=True)
+    dx = dx_reshaped.reshape(x.shape)
+
+    return dx
+
+
+def max_pool_forward_fast(x, pool_param):
+    '''
+    A fast implementation of the forward pass for a max pooling layer.
+
+    This chooses between the reshape method and the im2col method. If
+    the pooling regions are square and tile the input image, then we can
+    use the reshape method which is very fast. Otherwise we fall back on
+    the naive method.
+    '''
+    N, C, H, W = x.shape
+    pool_height, pool_width = pool_param['pool_height'], pool_param['pool_width']
+    stride = pool_param['stride']
+
+    same_size = pool_height == pool_width == stride
+    tiles = H % pool_height == 0 and W % pool_width == 0
+    if same_size and tiles:
+        out, reshape_cache = max_pool_forward_reshape(x, pool_param)
+        cache = ('reshape', reshape_cache)
+    else:
+        out, naive_cache = max_pool_forward_naive(x, pool_param)
+        cache = ('naive', naive_cache)
+
+    return out, cache
+
+
+def max_pool_backward_fast(dout, cache):
+    '''
+    A fast implementation of the backward pass for a max pooling layer.
+
+    This switches between the reshape method and the naive method
+    depending on which method was used to generate the cache.
+    '''
+    method, real_cache = cache
+    if method == 'reshape':
+        return max_pool_backward_reshape(dout, real_cache)
+    elif method == 'naive':
+        return max_pool_backward_naive(dout, real_cache)
+    else:
+        raise ValueError('Unrecognized method "%s"' % method)
 
 
 def conv_forward_naive(x, w, b, conv_param):
