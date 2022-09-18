@@ -1,5 +1,5 @@
 import os
-from platform import platform
+import platform
 import numpy as np
 from six.moves import cPickle as pickle
 
