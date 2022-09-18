@@ -1,6 +1,7 @@
 import os
 import platform
 import numpy as np
+# import cupy as np
 from six.moves import cPickle as pickle
 
 
@@ -15,8 +16,8 @@ def load_CIFAR_batch(filename):
     ''' load single batch of cifar '''
     with open(filename, 'rb') as f:
         datadict = load_pickle(f)
-        X = datadict['data']
-        Y = datadict['labels']
+        X = np.asarray(datadict['data'])
+        Y = np.asarray(datadict['labels'])
         X = X.reshape(10000, 3, 32, 32).transpose(
             0, 2, 3, 1).astype('float')  # N, C, H, W to N, H, W, C
         Y = np.array(Y)
@@ -32,8 +33,8 @@ def load_CIFAR10(ROOT):
         X, Y = load_CIFAR_batch(f)
         xs.append(X)
         ys.append(Y)
-    Xtr = np.concatenate(xs)
-    Ytr = np.concatenate(ys)
+    Xtr = np.concatenate(np.asarray(xs))
+    Ytr = np.concatenate(np.asarray(ys))
     del X, Y
     Xte, Yte = load_CIFAR_batch(os.path.join(ROOT, 'test_batch'))
     return Xtr, Ytr, Xte, Yte
