@@ -39,8 +39,8 @@ class MyConvNet(object):
         pool_pad_2=0,
         pool_stride_2=2,
 
-        bn_momentum=0.1, # TODO check whether it is unused.
-        bn_eps=1e-5, # TODO checker whether it is unused.
+        bn_momentum=0.1,  # TODO check whether it is unused.
+        bn_eps=1e-5,  # TODO checker whether it is unused.
 
         hidden_dim=100,
         num_classes=10,
@@ -185,31 +185,38 @@ class MyConvNet(object):
         WP_3 = (WC_3 + 2 * pool_pad_2 - pool_size_2) // pool_stride_2 + 1
         HP_3 = (HC_3 + 2 * pool_pad_2 - pool_size_2) // pool_stride_2 + 1
 
-        # affine_1((channel_2 * WP_3 * HP_3) x hidden_dim)
-        W_fc_1 = np.random.normal(loc=0.0, scale=weight_scale,
-                                  size=(channel_2 * WP_3 * HP_3, hidden_dim))
-        b_fc_1 = np.zeros((hidden_dim,), dtype=float)
+        # # affine_1((channel_2 * WP_3 * HP_3) x hidden_dim)
+        # W_fc_1 = np.random.normal(loc=0.0, scale=weight_scale,
+        #                           size=(channel_2 * WP_3 * HP_3, hidden_dim))
+        # b_fc_1 = np.zeros((hidden_dim,), dtype=float)
 
-        # relu
-        # no effect on image shape
+        # # relu
+        # # no effect on image shape
 
-        # affine_2(hidden_dim x num_classes)
-        W_fc_2 = np.random.normal(loc=0.0, scale=weight_scale,
-                                  size=(hidden_dim, num_classes))
-        b_fc_2 = np.zeros((num_classes,), dtype=float)
+        # # affine_2(hidden_dim x num_classes)
+        # W_fc_2 = np.random.normal(loc=0.0, scale=weight_scale,
+        #                           size=(hidden_dim, num_classes))
+        # b_fc_2 = np.zeros((num_classes,), dtype=float)
+
+        # Debug affine layer:
+        W_fc_dbg = np.random.normal(loc=0.0, scale=weight_scale,
+                                    size=(channel_2*WP_3*WP_3, num_classes))
+        b_fc_dbg = np.zeros((num_classes,), dtype=float)
 
         # store parameters in self.params
         self.params.update({
+            'W_fc_dbg': W_fc_dbg,
+            'b_fc_dbg': b_fc_dbg,
             'W_conv_3_1': W_conv_3_1,
             'b_conv_3_1': b_conv_3_1,
             'W_conv_3_2': W_conv_3_2,
             'b_conv_3_2': b_conv_3_2,
             'W_conv_1_1': W_conv_1_1,
             'b_conv_1_1': b_conv_1_1,
-            'W_fc_1': W_fc_1,
-            'b_fc_1': b_fc_1,
-            'W_fc_2': W_fc_2,
-            'b_fc_2': b_fc_2,
+            # 'W_fc_1': W_fc_1,
+            # 'b_fc_1': b_fc_1,
+            # 'W_fc_2': W_fc_2,
+            # 'b_fc_2': b_fc_2,
             'gamma_bn2d_1': gamma_bn2d_1,
             'beta_bn2d_1': beta_bn2d_1,
         })
@@ -241,15 +248,25 @@ class MyConvNet(object):
         mode = 'test' if y is None else 'train'
 
         # extract parameters from self.params
-        W_conv_3_1, b_conv_3_1, W_conv_3_2, b_conv_3_2, W_conv_1_1, b_conv_1_1, \
-            W_fc_1, b_fc_1, W_fc_2, b_fc_2, gamma_bn2d_1, beta_bn2d_1 = (
-                self.params[k] for k in self.params.keys())
+        # W_conv_3_1, b_conv_3_1, W_conv_3_2, b_conv_3_2, W_conv_1_1, b_conv_1_1, \
+        #     W_fc_1, b_fc_1, W_fc_2, b_fc_2, gamma_bn2d_1, beta_bn2d_1 = (
+        #         self.params[k] for k in self.params.keys())
 
-        # # debug: compare self.params and values extracted from it.
-        # print('--- begin of diff ---')
-        # print((self.params[k] for k in self.params.keys()), (W_conv_3_1, b_conv_3_1, W_conv_3_2, b_conv_3_2, W_conv_1_1, b_conv_1_1,
-        #       W_fc_1, b_fc_1, W_fc_2, b_fc_2))
-        # input('--- end of diff ---')
+        # W_conv_3_1, b_conv_3_1, W_conv_3_2, b_conv_3_2, W_conv_1_1, b_conv_1_1, \
+        #     W_fc_1, b_fc_1, W_fc_2, b_fc_2, gamma_bn2d_1, beta_bn2d_1 = \
+        #     self.params['W_conv_3_1'], self.params['b_conv_3_1'], \
+        #     self.params['W_conv_3_2'], self.params['b_conv_3_2'], \
+        #     self.params['W_conv_1_1'], self.params['b_conv_1_1'], \
+        #     self.params['W_fc_1'], self.params['b_fc_1'], self.params['W_fc_2'], \
+        #     self.params['b_fc_2'], self.params['gamma_bn2d_1'], self.params['beta_bn2d_1']
+
+        W_conv_3_1, b_conv_3_1, W_conv_3_2, b_conv_3_2, W_conv_1_1, b_conv_1_1, \
+            W_fc_dbg, b_fc_dbg, gamma_bn2d_1, beta_bn2d_1 = \
+            self.params['W_conv_3_1'], self.params['b_conv_3_1'], \
+            self.params['W_conv_3_2'], self.params['b_conv_3_2'], \
+            self.params['W_conv_1_1'], self.params['b_conv_1_1'], \
+            self.params['W_fc_dbg'], self.params['b_fc_dbg'], \
+            self.params['gamma_bn2d_1'], self.params['beta_bn2d_1']
 
         # pass conv_param to the forward layer
         # Padding and stride chosen to preserve the input spatial size
@@ -315,6 +332,7 @@ class MyConvNet(object):
 
         # Sandwich layer 3: batchnorm2d - relu - conv(1x1) - maxpool(2x2)
         # print('# Sandwich layer 3: batchnorm2d - relu - conv(1x1) - maxpool(2x2)')
+        # print(f'gamma_bn2d_1=\n{gamma_bn2d_1}')
         out_bn2d, cache_bn2d = spatial_batchnorm_forward(
             out_pool_2, gamma_bn2d_1, beta_bn2d_1, bn_param)
         out_relu_3, cache_relu_3 = relu_forward(out_bn2d)
@@ -323,17 +341,22 @@ class MyConvNet(object):
         out_pool_3, cache_pool_3 = max_pool_forward(
             out_conv_1_1, pool_param_2)
 
-        # Sandwich layer 4: affine - relu
-        # print('# Sandwich layer 4: affine - relu')
-        out_fc_1, cache_fc_1 = affine_forward(out_pool_3, W_fc_1, b_fc_1)
-        out_relu_4, cache_relu_4 = relu_forward(out_fc_1)
+        # # Sandwich layer 4: affine - relu
+        # out_fc_1, cache_fc_1 = affine_forward(out_pool_3, W_fc_1, b_fc_1)
+        # out_relu_4, cache_relu_4 = relu_forward(out_fc_1)
 
-        # Sandwich layer 5: affine
-        # print('# Sandwich layer 5: affine')
-        out_fc_2, cache_fc_2 = affine_forward(out_relu_4, W_fc_2, b_fc_2)
+        # # Sandwich layer 5: affine
+        # out_fc_2, cache_fc_2 = affine_forward(out_relu_4, W_fc_2, b_fc_2)
+
+        # Debug affine layer:
+        out_fc_2, cache_fc_2 = affine_forward(out_pool_3, W_fc_dbg, b_fc_dbg)
 
         # final output
         scores = out_fc_2
+
+        # Return scores if mode is test
+        if mode == 'test':
+            return scores
 
         #########################################################################################
         # The implementation of the backward pass for the nine-layer convolutional net,         #
@@ -348,47 +371,61 @@ class MyConvNet(object):
         # Softmax scores
         loss, d_scores = softmax_loss(scores, y)
 
-        # Sandwich layer 5: affine
+        # Debug affine layer:
         dout, dW, db = affine_backward(d_scores, cache_fc_2)
         # L2 regularization
-        loss += reg * 0.5 * np.sum(W_fc_2*W_fc_2)
-        dW += reg * W_fc_2
-        grads.update({'W_fc_2': dW, 'b_fc_2': db})
+        loss += reg * 0.5 * np.sum(W_fc_dbg*W_fc_dbg)
+        dW += reg * W_fc_dbg
+        grads.update({'W_fc_dbg': dW, 'b_fc_dbg': db})
 
-        # Sandwich layer 4: affine - relu
-        dout = relu_backward(dout, cache_relu_4)
-        dout, dW, db = affine_backward(dout, cache_fc_1)
-        # L2 regularization
-        loss += reg * 0.5 * np.sum(W_fc_1 * W_fc_1)
-        dW += reg * W_fc_1
-        grads.update({'W_fc_1': dW, 'b_fc_1': db})
+        # # Sandwich layer 5: affine
+        # dout, dW, db = affine_backward(d_scores, cache_fc_2)
+        # # # L2 regularization
+        # loss += reg * 0.5 * np.sum(W_fc_2*W_fc_2)
+        # dW += reg * W_fc_2
+        # grads.update({'W_fc_2': dW, 'b_fc_2': db})
+
+        # # Sandwich layer 4: affine - relu
+        # dout = relu_backward(dout, cache_relu_4)
+        # dout, dW, db = affine_backward(dout, cache_fc_1)
+        # # # L2 regularization
+        # loss += reg * 0.5 * np.sum(W_fc_1 * W_fc_1)
+        # dW += reg * W_fc_1
+        # grads.update({'W_fc_1': dW, 'b_fc_1': db})
 
         # Sandwich layer 3: batchnorm2d - relu - conv(1x1) - maxpool(2x2)
         dout = max_pool_backward(dout, cache_pool_3)
         dout, dW, db = conv_backward(dout, cache_conv_1_1)
         dout = relu_backward(dout, cache_relu_3)
         dout, dgamma, dbeta = spatial_batchnorm_backward(dout, cache_bn2d)
-        # L2 regularization
+        # # L2 regularization
         loss += reg * 0.5 * np.sum(W_conv_1_1*W_conv_1_1)
         dW += reg * W_conv_1_1
         grads.update({'W_conv_1_1': dW, 'b_conv_1_1': db})
+        grads.update({'gamma_bn2d_1': gamma_bn2d_1, 'beta_bn2d_1': beta_bn2d_1})
+
+        assert np.sum(dW) != 0
 
         # Sandwich layer 2: conv(3x3) - relu - maxpool(3x3)
         dout = max_pool_backward(dout, cache_pool_2)
         dout = relu_backward(dout, cache_relu_2)
         dout, dW, db = conv_backward(dout, cache_conv_3_2)
-        # L2 regularization
+        # # L2 regularization
         loss += reg * 0.5 * np.sum(W_conv_3_2*W_conv_3_2)
         dW += reg * W_conv_3_2
         grads.update({'W_conv_3_2': dW, 'b_conv_3_2': db})
+
+        assert np.sum(dW) != 0
 
         # Sandwich layer 1: conv(3x3) - relu - maxpool(3x3)
         dout = max_pool_backward(dout, cache_pool_1)
         dout = relu_backward(dout, cache_relu_1)
         dout, dW, db = conv_backward(dout, cache_conv_3_1)
-        # L2 regularization
+        # # L2 regularization
         loss += reg * 0.5 * np.sum(W_conv_3_1*W_conv_3_1)
         dW += reg * W_conv_3_1
         grads.update({'W_conv_3_1': dW, 'b_conv_3_1': db})
+
+        assert np.sum(dW) != 0
 
         return loss, grads
