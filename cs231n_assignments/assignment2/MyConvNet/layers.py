@@ -318,14 +318,20 @@ def max_pool_forward_naive(x, pool_param):
         pool_param.get('pool_width'), pool_param.get('stride', 1), \
         pool_param.get('pad', 0)
 
+    # print(pool_height, pool_width, stride, pad, pool_param)
+
     HH = pool_height
     WW = pool_width
 
     # output shape
     H_ = (H + 2 * pad - pool_height) // stride + 1
-    W_ = (W + 2 * pad - pool_height) // stride + 1
+    W_ = (W + 2 * pad - pool_width) // stride + 1
+    # print(f'H_: ({H_}={H}+2*{pad}-{pool_height})//{stride}+1')
 
-    out = np.zeros((N, C, H_, W_))
+    # out = np.zeros((N, C, H_, W_))
+    out = np.ones((N, C, H_, W_))
+    # print(f'(N,C,H_,W_)=\n{(N,C,H_,W_)}')
+    # print(f'initial out=\n{out}')
     # add padding to out and x
     padded_out = np.pad(out, ((0, 0), (0, 0), (pad, pad), (pad, pad)),
                         'constant', constant_values=((0, 0), (0, 0), (0, 0), (0, 0)))
@@ -345,7 +351,9 @@ def max_pool_forward_naive(x, pool_param):
                         padded_x[iter_n, iter_c, h_begin:h_end, w_begin:w_end], axis=(0, 1))
 
     # delete padding from out
+    # print(f'padded_out=\n{padded_out}')
     out = padded_out[:, :, pad:pad+H_, pad:pad+W_]
+    # print(f'x=\n{x}\nout={out}')
     # store cache for backprop
     cache = (x, pool_param)
     # print(f'out.shape={out.shape}')
@@ -656,7 +664,9 @@ def affine_backward(dout, cache):
     N = x.shape[0]
     D = w.shape[0]
     # calculate backward pass
-    db = np.sum(dout.transpose(), axis=1)
+    # db = np.sum(dout.transpose(), axis=1)
+    # upper db expression is equal to below
+    db = np.sum(dout, axis=0)
     dw = x.reshape(N, D).transpose().dot(dout)
     dx = dout.dot(w.transpose()).reshape(x.shape)
 
