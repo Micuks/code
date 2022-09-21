@@ -3,3 +3,5 @@ __pycache__/
 *.rdb
 *.c
 *.so
+*.log
+

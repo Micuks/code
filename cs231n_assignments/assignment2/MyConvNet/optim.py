@@ -81,7 +81,7 @@ def adam(w, dw, config=None):
     m = beta1 * m + (1 - beta1) * dw
     v = beta2 * v + (1 - beta2) * (dw**2)
     mt = m / (1 - beta1**t)
-    vt = v / (1-beta2**t)
+    vt = v / (1 - beta2**t)
     next_w = w - learning_rate * mt / (np.sqrt(vt) + eps)
 
     # Update parameters in config

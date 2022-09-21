@@ -158,9 +158,15 @@ def max_pool_forward_fast(x, pool_param):
     same_size = pool_height == pool_width == stride
     tiles = H % pool_height == 0 and W % pool_width == 0
     if same_size and tiles:
+        # print(f'max pool reshape is used.')
         out, reshape_cache = max_pool_forward_reshape(x, pool_param)
         cache = ('reshape', reshape_cache)
     else:
+        print('')
+        print(f'pool_height={pool_height}, pool_width={pool_width}, stride={stride}')
+        print(f'H={H}, H%pool_height={H%pool_height}')
+        print(f'W={W}, W%pool_width={W%pool_width}')
+        print(f'max pool naive is used.')
         out, naive_cache = max_pool_forward_naive(x, pool_param)
         cache = ('naive', naive_cache)
 

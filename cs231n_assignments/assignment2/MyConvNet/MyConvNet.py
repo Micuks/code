@@ -1,8 +1,8 @@
+from builtins import object
 import numpy as np
 # import cupy as np
 
 from layers import *
-from layer_utils import *
 
 
 class MyConvNet(object):
@@ -31,15 +31,15 @@ class MyConvNet(object):
         filter_pad_2=0,
         filter_stride_2=1,
 
-        pool_size_1=3,
+        pool_size_1=1,
         pool_pad_1=0,  # try 1
-        pool_stride_1=3,  # try 1
+        pool_stride_1=1,  # try 1
 
         pool_size_2=2,
         pool_pad_2=0,
         pool_stride_2=2,
 
-        bn_momentum=0.1,  # TODO check whether it is unused.
+        bn_momentum=0.9,  # TODO check whether it is unused.
         bn_eps=1e-5,  # TODO checker whether it is unused.
 
         hidden_dim=100,
@@ -115,7 +115,6 @@ class MyConvNet(object):
 
         self.fast = fast
 
-        N = 64  # number of images in one mini batch
         C, H, W = input_dim
 
         ###########################################################################
@@ -295,7 +294,8 @@ class MyConvNet(object):
         pool_param_2 = {'pool_height': pool_size_2, 'pool_width': pool_size_2,
                         'stride': pool_stride_2}
 
-        bn_param = {'mode': 'train'}
+        bn_param = {'mode': mode, 'momentum': self.bn_momentum,
+                    'epsilon': self.bn_eps}
 
         ###############################################################################
         # The implementation of the forward pass for the nine-layer convolutional net.#
@@ -402,7 +402,7 @@ class MyConvNet(object):
         loss += reg * 0.5 * np.sum(W_conv_1_1*W_conv_1_1)
         dW += reg * W_conv_1_1
         grads.update({'W_conv_1_1': dW, 'b_conv_1_1': db})
-        grads.update({'gamma_bn2d_1': gamma_bn2d_1, 'beta_bn2d_1': beta_bn2d_1})
+        grads.update({'gamma_bn2d_1': dgamma, 'beta_bn2d_1': dbeta})
 
         assert np.sum(dW) != 0
 
