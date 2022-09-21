@@ -130,8 +130,6 @@ class Solver(object):
         '''
         # Make a minibatch of training shape
         num_train = self.X_train.shape[0]
-        # DEBUG
-        print(f'num_train = {num_train}')
         batch_mask = np.random.choice(num_train, self.batch_size)
         X_batch = self.X_train[batch_mask]
         y_batch = self.y_train[batch_mask]

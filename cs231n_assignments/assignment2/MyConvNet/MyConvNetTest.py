@@ -5,9 +5,11 @@ from layer_test_utils import *
 from layers import *
 from layers_test import *
 from gradient_check import eval_numerical_gradient
-from layer_test_utils import rel_error
+
+import matplotlib.pyplot as plt
 
 seed = 576
+
 
 def LayerTest():
     '''
@@ -78,8 +80,6 @@ def LayerTest():
     spatial_batchnorm_backward_test()
 
 
-
-
 def MyConvNetSanityCheckLoss(fast=False):
     '''
     Sanity check the loss. For softmax loss is used, it is expected
@@ -93,8 +93,10 @@ def MyConvNetSanityCheckLoss(fast=False):
         print('Check fast implementation version')
     elif not fast:
         print('Check naive implementation version')
+    else:
+        ValueError('Unknown value of fast "%s"' % str)
 
-    model = MyConvNet(fast)
+    model = MyConvNet(fast=fast)
 
     N = 50
     C = 10
@@ -157,6 +159,11 @@ def MyConvNetOverfitCheck(data={}, fast=False):
     '''
     np.random.seed(seed)
 
+    # Check data
+    print(f'shape of data:')
+    for k, v in data.items():
+        print(f'{k}: {v.shape}')
+
     num_train = 100
     small_data = {
         'X_train': data['X_train'][:num_train],
@@ -169,22 +176,53 @@ def MyConvNetOverfitCheck(data={}, fast=False):
         weight_scale=1e-2,
         fast=fast,
     )
+    # model = ThreeLayerConvNet(
+    #     weight_scale=1e-2,
+    # )
 
     solver = Solver(
-        model, 
+        model,
         small_data,
         num_epochs=15,
         batch_size=50,
         update_rule='adam',
-        optim_config={'learning_rate': 5e-4,},
+        optim_config={'learning_rate': 1e-3, },
         verbose=True,
         print_every=1,
     )
     solver.train()
 
+    # Print final training accuracy.
+    print(
+        'Small data training accuracy:',
+        solver.check_accuracy(small_data['X_train'], small_data['y_train'])
+    )
+    # Print final validation accuracy.
+    print(
+        'Small data validation accuracy:',
+        solver.check_accuracy(small_data['X_val'], small_data['y_val'])
+    )
+
+    # Plotting the loss, train accuracy, and validation accuracy
+    # There should be clear overfitting:
+    plt.subplot(2, 1, 1)
+    plt.plot(solver.loss_history, 'o')
+    plt.xlabel('iteration')
+    plt.ylabel('loss')
+
+    plt.subplot(2, 1, 2)
+    plt.plot(solver.train_acc_history, '-o')
+    plt.plot(solver.val_acc_history, '-o')
+    plt.legend(['train', 'val'], loc='upper left')
+    plt.xlabel('epoch')
+    plt.ylabel('accuracy')
+
+    plt.show()
+
+
 if __name__ == '__main__':
     '''
-    Can be executed directly for debug conveniently
+    This file can also be executed directly for debug conveniently
     '''
     # MyConvNetSanityCheckLoss(fast=True)
     MyConvNetSanityCheckLoss()
