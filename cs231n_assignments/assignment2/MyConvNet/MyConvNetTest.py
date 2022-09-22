@@ -132,9 +132,9 @@ def MyConvNetGradientCheck(fast=False):
 
     model = MyConvNet(
         channel_1=3,
-        filter_size_1=3,
+        # filter_size_1=3,
         channel_2=3,
-        filter_size_2=1,
+        # filter_size_2=1,
         input_dim=input_dim,
         hidden_dim=7,
         fast=fast,
@@ -203,21 +203,21 @@ def MyConvNetOverfitCheck(data={}, fast=False):
         solver.check_accuracy(small_data['X_val'], small_data['y_val'])
     )
 
-    # Plotting the loss, train accuracy, and validation accuracy
-    # There should be clear overfitting:
-    plt.subplot(2, 1, 1)
-    plt.plot(solver.loss_history, 'o')
-    plt.xlabel('iteration')
-    plt.ylabel('loss')
+    # # Plotting the loss, train accuracy, and validation accuracy
+    # # There should be clear overfitting:
+    # plt.subplot(2, 1, 1)
+    # plt.plot(solver.loss_history, 'o')
+    # plt.xlabel('iteration')
+    # plt.ylabel('loss')
 
-    plt.subplot(2, 1, 2)
-    plt.plot(solver.train_acc_history, '-o')
-    plt.plot(solver.val_acc_history, '-o')
-    plt.legend(['train', 'val'], loc='upper left')
-    plt.xlabel('epoch')
-    plt.ylabel('accuracy')
+    # plt.subplot(2, 1, 2)
+    # plt.plot(solver.train_acc_history, '-o')
+    # plt.plot(solver.val_acc_history, '-o')
+    # plt.legend(['train', 'val'], loc='upper left')
+    # plt.xlabel('epoch')
+    # plt.ylabel('accuracy')
 
-    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':

@@ -50,13 +50,27 @@ def test(data=dict()):
 
     # Sanity check loss
     # print(f'Running sanity loss check...')
+    # t0 = time()
     # MyConvNetSanityCheckLoss(fast=True)
+    # t1 = time()
     # MyConvNetSanityCheckLoss()
+    # t2 = time()
+    # print('Testing speed of fast and naive conv and maxpool layer:')
+    # print('Fast: %fs' % (t1 - t0))
+    # print('Naive: %fs' % (t2 - t1))
+    # print('Speedup: %fx' % ((t2 - t1) / (t1 - t0)))
 
     # Gradient check
-    # print(f'Running gradient check...')
-    # MyConvNetGradientCheck(fast=True)
+    print(f'Running gradient check...')
+    t0 = time()
+    MyConvNetGradientCheck(fast=True)
+    t1 = time()
     # MyConvNetGradientCheck()
+    # t2 = time()
+    # print('Testing speed of fast and naive conv and maxpool layer:')
+    print('Fast: %fs' % (t1 - t0))
+    # print('Naive: %fs' % (t2 - t1))
+    # print('Speedup: %fx' % ((t2 - t1) / (t1 - t0)))
 
     # Small dataset overfit check
     print(f'Running small dataset overfit check...')
@@ -64,11 +78,32 @@ def test(data=dict()):
     MyConvNetOverfitCheck(data, fast=True)
     t1 = time()
     # MyConvNetOverfitCheck(data)
-    # t2 = time()
+    t2 = time()
     print('Testing speed of fast and naive conv and maxpool layer:')
     print('Fast: %fs' % (t1 - t0))
     # print('Naive: %fs' % (t2 - t1))
     # print('Speedup: %fx' % ((t2 - t1) / (t1 - t0)))
+
+
+def train(data={}, fast=False):
+    ''' Train MyConvNet on dataset '''
+    model = MyConvNet(weight_scale=1e-3,
+                      reg=1e-3,
+                      fast=fast,
+                      )
+    print(f'fast={fast}')
+    solver = Solver(
+        model,
+        data,
+        num_epochs=1,
+        batch_size=50,
+        update_rule='adam',
+        optim_config={'learning_rate': 1e-3, },
+        verbose=True,
+        print_every=20,
+    )
+
+    return model, solver
 
 
 def main():
@@ -84,6 +119,20 @@ def main():
 
     # Test implementations
     test(data)
+
+    # Train MyConvNet
+    # time0 = time()
+    # final_model, final_solver = train(data=data, fast=True)
+    # time1 = time()
+    # print(
+    #     'Full data training accuracy:',
+    #     final_solver.check_accuracy(data['X_train'], data['y_train'])
+    # )
+    # print(
+    #     'Full data validation accuracy:',
+    #     final_solver.check_accuracy(data['X_val'], data['y_val'])
+    # )
+    # print('Training time cost: %fs' % (time1 - time0))
 
 
 if __name__ == '__main__':
