@@ -131,27 +131,122 @@ SymbolList Lex::process() {
                 case EOF:
                     break;
                 default:
-                    cout << "ERROR: Illegal char" << ch << "in L:" << numLines
-                         << endl;
+                    string err = "Illegal char " + to_string(ch);
+                    logError(err);
                     break;
                 }
             }
-        case 1:
+        case 1: // Identifer state
             if (is_letter() || is_digit()) {
                 cat();
                 state = 1;
             } else {
-                unget_char();
                 state = 0;
                 if (is_keyword()) {
-                    addSymbol("keyword", str);
+                    addSymbol("keyword", bufStr);
                 } else {
-                    addSymbol("id", str);
+                    addSymbol("id", bufStr);
                 }
+                // Unget last char from buffer.
+                unget_char();
+                // Clear symbol cache bufStr.
+                clrStr();
             }
             break;
-        case 2:
-            
+        case 2: // Integer state
+            if (is_digit()) {
+                cat();
+                state = 2;
+            } else if (ch == '.') {
+                cat();
+                state = 3;
+            } else if (ch == 'E' || ch == 'e') {
+                cat();
+                state = 5;
+            } else {
+                state = 0;
+                addSymbol("integer", bufStr);
+                unget_char();
+                clrStr();
+            }
+        case 3: // '.' state
+            if (is_digit()) {
+                cat();
+                state = 4;
+            } else {
+                state = 0;
+                // concat 0 to bufStr
+                bufStr.push_back('0');
+                addSymbol("float", bufStr);
+                unget_char();
+                clrStr();
+            }
+            break;
+        case 4: // after '.' state
+            if (is_digit()) {
+                cat();
+                state = 4;
+            } else if (ch == 'E' || ch == 'e') {
+                // exp state
+                cat();
+                state = 5;
+            } else {
+                state = 0;
+                addSymbol("float", bufStr);
+                unget_char();
+                clrStr();
+            }
+        case 5:
+            if (is_digit()) {
+                cat();
+                state = 7;
+            } else if (ch == '+' || ch == '-') {
+                cat();
+                state = 6;
+            } else {
+                state = 0;
+                logError("Expected exponent");
+                unget_char();
+                clrStr();
+            }
+        case 6:
+            if (is_digit()) {
+                cat();
+                state = 7;
+            } else {
+                state = 0;
+                logError("Expected exponent");
+                unget_char();
+                clrStr();
+            }
+        case 7:
+            if (is_digit()) {
+                cat();
+                state = 7;
+            } else {
+                state = 0;
+                addSymbol("float", bufStr);
+                unget_char();
+                clrStr();
+            }
+        case 8:
+            if (ch == '=') {
+                addSymbol("relop", "<=");
+                state = 0;
+            } else if (ch == '<') {
+                addSymbol("bitop", "<<");
+                state = 0;
+            } else {
+                addSymbol("relop", "<");
+                state = 0;
+                unget_char();
+            }
+        case 9:
+            if(ch == '=') {
+              addSymbol("relop", ">=");
+              state = 0;
+            } else if(ch == '>') {
+            }
         }
     }
 }

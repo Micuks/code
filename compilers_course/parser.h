@@ -86,9 +86,9 @@ class Lex {
     char buffer[BUFFER_SIZE];
     int numLines;
     int numChar;
-    char ch;      // store next char
-    string str;   // store current string
-    int pForward; // forward pointer of buffer
+    char ch;       // store next char
+    string bufStr; // store current string
+    int pForward;  // forward pointer of buffer
     int pBackward;
 
     void get_char() {
@@ -97,9 +97,9 @@ class Lex {
     }
     bool is_letter() { return (isalpha(ch) || ch == '_'); }
     bool is_digit() { return (ch >= '0' && ch <= '9'); }
-    bool is_keyword() { return (keywords.find(str) != keywords.end()); }
-    void cat() { str.push_back(ch); } // concat ch to the end of str.
-    void clrStr() { str.clear(); }
+    bool is_keyword() { return (keywords.find(bufStr) != keywords.end()); }
+    void cat() { bufStr.push_back(ch); } // concat ch to the end of bufStr.
+    void clrStr() { bufStr.clear(); }
     void unget_char() {
         pForward = (pForward - 1) % BUFFER_SIZE;
         // decrease char counter when
@@ -116,6 +116,12 @@ class Lex {
 
     void addSymbol(const string &notation, const string &property = "") {
         sl.add(notation, property);
+    }
+
+    // log zone
+    void logError(const string &err) {
+        string msg = "ERROR: " + err + "in L" + to_string(numLines);
+        cout << msg << endl;
     }
 };
 } // namespace parser
