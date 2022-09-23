@@ -1,4 +1,5 @@
 import numpy as np
+from cnn import *
 from MyConvNet import *
 from solver import *
 from layer_test_utils import *
@@ -121,8 +122,9 @@ def MyConvNetGradientCheck(fast=False):
     NOTE: correct implementations may still have relative errors up to the
     order of e-2.
     '''
-    num_inputs = 10
-    input_dim = (3, 32, 32)
+    num_inputs = 2
+    # input_dim = (3, 32, 32)
+    input_dim = (3, 16, 16)
     reg = 0.0
     num_classes = 10
     np.random.seed(seed)
@@ -132,13 +134,21 @@ def MyConvNetGradientCheck(fast=False):
 
     model = MyConvNet(
         channel_1=3,
-        # filter_size_1=3,
+        filter_size_1=3,
         channel_2=3,
-        # filter_size_2=1,
+        filter_size_2=1,
         input_dim=input_dim,
         hidden_dim=7,
         fast=fast,
     )
+    # model = ThreeLayerConvNet(
+    #     num_filters=3,
+    #     filter_size=3,
+    #     input_dim=input_dim,
+    #     hidden_dim=7,
+    #     dtype=np.float64,
+    # )
+
     loss, grads = model.loss(X, y)
     # Errors should be small, but correct implementations may have relative errors up to the
     # order of e-2

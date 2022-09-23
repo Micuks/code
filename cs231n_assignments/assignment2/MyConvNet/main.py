@@ -15,10 +15,18 @@ def setup_im2col():
     '''
     setup im2col for fast implementation of Conv2d and MaxPool.
     '''
-    print('Setting up im2col with cython...')
-    cmd = 'python setup.py build_ext --inplace'
-    os.system(cmd)
-    print('Successfully setup im2col.')
+    print("Checking im2col state...")
+    try:
+        from im2col_cython import col2im_cython, im2col_cython
+        from im2col_cython import col2im_6d_cython
+    except ImportError:
+        print("""=========== You can safely ignore the message below if you are NOT working on ConvolutionalNetworks.ipynb ===========""")
+        print('Setting up im2col with cython...')
+        cmd = 'python setup.py build_ext --inplace'
+        os.system(cmd)
+        print('Successfully setup im2col.')
+    else:
+        print('im2col already installed.')
 
 
 def init():
