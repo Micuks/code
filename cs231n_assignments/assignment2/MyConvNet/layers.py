@@ -749,3 +749,6 @@ def softmax_loss(x, y):
     dx = df / num_train
 
     return loss, dx
+
+conv_forward_fast = conv_forward_strides
+conv_backward_fast = conv_backward_strides
