@@ -302,7 +302,7 @@ def word_embedding_backward(dout, cache):
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
     # extract values from cache
-    x, W, out = cache # x(N, T), W(V, D), out(N, T, D)
+    x, W, out = cache  # x(N, T), W(V, D), out(N, T, D)
     dW = np.zeros(W.shape)
     np.add.at(dW, x, dout)
 
@@ -353,7 +353,22 @@ def lstm_step_forward(x, prev_h, prev_c, Wx, Wh, b):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    a = x.dot(Wx) + prev_h.dot(Wh) + b  # maybe b needs transpose and reshape
+    N, H = prev_h.shape
+
+    # 4*H should be equal to a.length
+    a_i, a_f, a_o, a_g = a[:, :H], a[:, H:2*H], a[:, 2*H:3*H], a[:, 3*H:4*H]
+
+    i = sigmoid(a_i)
+    f = sigmoid(a_f)
+    o = sigmoid(a_o)
+    g = np.tanh(a_g)
+
+    next_c = f * prev_c + i * g
+    next_h = o * np.tanh(next_c)
+
+    cache = (x, prev_h, prev_c, Wx, Wh, b, a_i, a_f,
+             a_o, a_g, i, f, o, g, next_c, next_h)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ##############################################################################
@@ -388,7 +403,34 @@ def lstm_step_backward(dnext_h, dnext_c, cache):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    # extract values from cache
+    x, prev_h, prev_c, Wx, Wh, b, a_i, a_f, a_o, a_g, i, f, o, g, next_c, next_h = cache
+    N, H = prev_h.shape
+
+    do = dnext_h * np.tanh(next_c)
+    dc = dnext_h * o * (1 - np.tanh(next_c)**2)
+    dc += dnext_c  # add gradient from next cell
+    df = dc * prev_c
+    dprev_c = dc * f
+    di = dc * g
+    dg = dc * i
+
+    da_g = dg * (1 - np.tanh(a_g)**2)
+    da_o = do * sigmoid(a_o) * (1 - sigmoid(a_o))
+    da_f = df * sigmoid(a_f) * (1 - sigmoid(a_f))
+    da_i = di * sigmoid(a_i) * (1 - sigmoid(a_i))
+
+    da = np.zeros((N, 4*H))  # (N, 4H)
+    da[:, :H] = da_i
+    da[:, H:2*H] = da_f
+    da[:, 2*H:3*H] = da_o
+    da[:, 3*H:4*H] = da_g
+
+    dx = da.dot(Wx.transpose())  # (N, 4H).dot(4H, D) = (N, D)
+    dWx = x.transpose().dot(da)  # (D, 4H)
+    dprev_h = da.dot(Wh.transpose())  # (N, H)
+    dWh = prev_h.transpose().dot(da)  # (H, 4H)
+    db = np.sum(da, axis=0)
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ##############################################################################
@@ -427,7 +469,24 @@ def lstm_forward(x, h0, Wx, Wh, b):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    N, T, D = x.shape
+    _, H = h0.shape
+    h = np.zeros((N, T, H))
+    lstm_caches = []
+    prev_c = np.zeros((N, H))
+    prev_h = h0
+    for t in range(T):
+        next_h, next_c, lstm_cache = lstm_step_forward(
+            x[:, t, :], prev_h, prev_c, Wx, Wh, b)
+        # save to cache
+        lstm_caches.append(lstm_cache)
+        # assign current state to prev_h, prev_c
+        prev_h = next_h
+        prev_c = next_c
+        # save current hidden state to h at current timestep
+        h[:, t, :] = next_h
+
+    cache = lstm_caches, D
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ##############################################################################
@@ -458,7 +517,31 @@ def lstm_backward(dh, cache):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    N, T, H = dh.shape
+    real_cache, D = cache
+
+    dx = np.zeros((N, T, D))
+    dWx = np.zeros((D, 4*H))
+    dWh = np.zeros((H, 4*H))
+    db = np.zeros(4*H)
+
+    dnext_c = np.zeros((N, H))
+    dprev_h = np.zeros((N, H))
+
+    for t in range(T-1, -1, -1):
+        lstm_cache = real_cache[t]
+        # dh calculated from current state output plus upstream dh from
+        # previous hidden state
+        dnext_h = dh[:, t, :] + dprev_h
+        dx_t, dprev_h, dprev_c, dWx_t, dWh_t, db_t = lstm_step_backward(
+            dnext_h, dnext_c, lstm_cache)
+        dnext_c = dprev_c
+        # save gradients
+        dx[:, t, :] = dx_t
+        dh0 = dprev_h
+        dWx += dWx_t
+        dWh += dWh_t
+        db += db_t
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ##############################################################################
