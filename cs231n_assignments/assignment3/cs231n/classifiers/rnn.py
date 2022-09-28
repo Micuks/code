@@ -163,11 +163,12 @@ class CaptioningRNN:
         if self.cell_type == 'rnn':
             # (3)Use RNN to process the sequence of input word vectors and produce hidden
             # state vectors for all timestep
-            h, rnn_cache = rnn_forward(word_embedded, h0, Wx=Wx,
-                                       Wh=Wh, b=b)  # (N, T, H)
+            h, rnn_cache = rnn_forward(word_embedded, h0, Wx=Wx, Wh=Wh, b=b) # (N, T, H)
+        elif self.cell_type == 'lstm':
+            h, lstm_cache = lstm_forward(word_embedded, h0, Wx, Wh, b)
         else:
-            # TODO: LSTM
-            h, rnn_cache = 0.0, None
+            # Handle unknown cell type
+            raise ValueError("Unrecognized cell type %s " % self.cell_type)
 
         # (4)Transform from (N, T, H) to (N, T, V)
         scores, scores_cache = temporal_affine_forward(
@@ -184,9 +185,10 @@ class CaptioningRNN:
         if self.cell_type == 'rnn':
             dword_embedded, dh0, dWx, dWh, db = rnn_backward(
                 dh, rnn_cache)  # dword_embedded(N, T, W),
+        elif self.cell_type == 'lstm':
+            dword_embedded, dh0, dWx, dWh, db = lstm_backward(dh, lstm_cache)
         else:
-            # TODO: LSTM
-            dword_embedded, dh0, dWx, dWh, db = None, None, None, None, None
+            raise ValueError("Unrecognized cell type %s " % self.cell_type)
 
         # dh0(N, H), dWx(D, H), dWh(H, H), db(H,)
         dW_embed = word_embedding_backward(
@@ -276,12 +278,26 @@ class CaptioningRNN:
         x = np.ones((N, D)) * W_embed[self._start]
         prev_h = h
         # get scores for all words
-        for t in range(0, max_length, 1):
-            h, _ = rnn_step_forward(x, prev_h, Wx, Wh, b)
-            scores, _ = affine_forward(h, W_vocab, b_vocab)
-            captions[:, t] = np.argmax(scores, axis=1)
-            x = W_embed[captions[:, t], :]
-            prev_h = h
+        if self.cell_type == 'rnn':
+            for t in range(0, max_length, 1):
+                h, _ = rnn_step_forward(x, prev_h, Wx, Wh, b)
+                scores, _ = affine_forward(h, W_vocab, b_vocab)
+                captions[:, t] = np.argmax(scores, axis=1)
+                x = W_embed[captions[:, t], :]
+                prev_h = h
+        elif self.cell_type == 'lstm':
+            _, H = h.shape
+            prev_c = np.zeros((N, H))
+            for t in range(0, max_length, 1):
+                h, c, _ = lstm_step_forward(x, prev_h, prev_c, Wx, Wh, b)
+                scores, _ = affine_forward(h, W_vocab, b_vocab)
+                captions[:, t] = np.argmax(scores, axis=1)
+                x = W_embed[captions[:, t], :]
+                prev_h = h
+                prev_c = c
+        else:
+            # Handle unknown cell type
+            raise ValueError("Unrecognized cell type %s " % self.cell_type)
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         ############################################################################
