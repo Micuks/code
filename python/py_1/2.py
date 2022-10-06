@@ -11,12 +11,13 @@ def main():
     while i < len_a or j < len_b:
         if(i < len_a):
             result += a[i]
-            i+=1
+            i += 1
         if(j < len_b):
             result += b[j]
-            j+=1
+            j += 1
 
     print(result)
+
 
 if __name__ == '__main__':
     main()
