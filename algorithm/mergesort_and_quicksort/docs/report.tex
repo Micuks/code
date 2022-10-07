@@ -1,8 +1,9 @@
-\documentclass[12pt]{article}
+\documentclass[12pt, twoside]{article}
 \usepackage{xeCJK}
 
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{multirow}
 
 \usepackage[a4paper, left=3.17cm, right=3.17cm, top=2.54cm, bottom=2.54cm]{geometry}
 \usepackage{fancyhdr} % header and footer
@@ -17,8 +18,6 @@
 \usepackage{hyperref}
 
 \setCJKmainfont{Songti SC}
-% \setCJKsansfont{Songti SC}
-% \setCJKmonofont{Songti SC}
 
 \lstset{ %
   language=C++,
@@ -45,6 +44,7 @@
 \fancyfoot{} % clear all footer fileds
 \fancyfoot[CE, CO]{\thepage}
 
+% TODO: QuickSort 实验报告
 \section{实验题目}
 \input{content/1.tex}
 \section{实验过程}
