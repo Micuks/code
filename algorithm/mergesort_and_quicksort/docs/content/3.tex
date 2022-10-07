@@ -1,0 +1,47 @@
+本节应至少包括三方面：
+1.程序执行环境及运行方式；
+2.程序输入及输出格式；
+3.程序执行示例。此处应添加一至多个程序执行示例，以反应在不同的初始条件下算法的正确性。
+\begin{enumerate}
+\item 词法分析程序的作用:
+  \begin{enumerate}
+  \item 扫描源程序字符流;
+  \item 按照源语言的词法规则识别出各类单词符号;
+  \item 产生用于语法分析的记号序列;
+  \item 词法检查;
+  \item 创建符号表, 将识别出来的标识符放入符号表中;
+  \item 跳过源程序中的注释和空格等, 把错误信息和源代码联系起来;
+  \end{enumerate}
+\item 源程序代词类别:
+  \begin{enumerate}
+    \item 关键字;
+    \item 用户定义变量标识符;
+    \item 数字, 字符和字符串常量;
+    \item 运算符;
+    \item 分隔符;
+  \end{enumerate}
+\item 设计思路:
+  利用有限状态自动机模型, 将整个源代码分析的过程转化为不同状态之间的转移, 在画好
+  状态转移图之后, 借用C++的switch语句或if/else语句将状态转移图描述出来. 此外, 
+  实现好读取源代码, 缓冲区, 以及输出分析结果, 和将常量和变量名插入到符号表的功能.
+\item 伪代码描述:
+\begin{lstlisting}
+// Initializing...
+while(End of source file not reached) {
+  ch = getchar();
+  switch(ch) {
+    determine state based on the input char
+    case 0:
+    ...
+  }
+  switch(State) {
+    // Limited state machine process
+    case 0:
+      // state 0 process
+    case 1:
+      // state 1 process
+    ...
+  }
+}
+\end{lstlisting}
+\end{enumerate}

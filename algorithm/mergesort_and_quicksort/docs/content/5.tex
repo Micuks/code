@@ -1,0 +1,113 @@
+在此处粘贴算法的源代码，注意应对关键的变量、函数及代码段加以注释。
+\subsection{C++版实现}
+出于模块化, 解耦合, 可扩展性和可读性考虑, 将词法分析程序划分为\textbf{符号和符号表}
+与\textbf{词法分析处理和输入输出}两个模块, 分别在 Symbol.h, Symbol.cpp, Lex.h和Lex.cpp
+四个源代码文件中进行实现, 并使用CMake作为构建工具.
+
+其中, Symbol.h和Symbol.cpp对记号(Symbol)及记号表(SymbolList)的类进行成员和方法定义和实现,
+ Lex.h和Lex.cpp对词法分析处理, 输入和输出类Lex进行成员和方法定义和实现.
+
+main.cpp承担着作为词法分析程序入口的功能.
+
+% \subsubsection{main.cpp}
+% 词法分析程序入口
+% \lstinputlisting{../src/main.cpp}
+% \subsubsection{Symbol.h}
+% 对记号(Symbol)及记号表(SymbolList)的类成员和方法定义;
+% \lstinputlisting{../src/Symbol.h}
+% \subsubsection{Symbol.cpp}
+% 对记号(Symbol)及记号表(SymbolList)的类成员和方法实现;
+% \lstinputlisting{../src/Symbol.cpp}
+% \subsubsection{Lex.h}
+% 词法分析处理和输出类Lex的成员和方法定义;
+% \lstinputlisting{../src/Lex.h}
+% \subsubsection{Lex.cpp}
+% 词法分析处理和输出类Lex的成员和方法实现;
+% \lstinputlisting{../src/Lex.cpp}
+
+% \subsection{FLEX版实现}
+% 在C++版本实现思路的基础上, 通过学习FLEX的语法, 用FLEX实现了相同功能的版本.
+% \subsubsection{FLEX介绍}
+% \paragraph{基本结构}
+% 一个FLEX程序的基本结构为
+% \begin{lstlisting}
+% Statements/Definitaions
+% %%
+% Rules
+% %%
+% User Functions(optional)
+% \end{lstlisting}
+% 我们将lexer保存在扩展名为.i的文件中.
+
+% \paragraph{Definitions}
+% 我们可以为工具添加如下\textbf{options}:
+% \begin{itemize}
+%   \item \%option noyywrap -> flex将只读一个输入文件
+%   \item \%option case-insensitive -> flex将不区分大小写
+% \end{itemize}
+% 我们也可以对某些正则表达式设置\textbf{start states}: \\
+% \begin{lstlisting}
+% %x STATE_NAME
+% \end{lstlisting}
+% 对于多行注释, 这是很好用的, 因为当到达注释末尾的时候, 可以更方便的搜索连续的内容
+% 并结束注释状态. \\
+% 此外, 我们可以利用正则表达式定义一些\textbf{Identifiers}并给他们命名, 如: \\
+% \begin{lstlisting}
+% print [ -\~] // space to \~(所有可打印的ASCII字符)
+% \end{lstlisting}
+% 语句识别\{print\}作为一个包含所有可打印字符的group. \\
+% 使用identifiers我们可以在匹配特定token的时候方便的使用名称调用, 而不是每次都要
+% 书写完整的正则表达式. \\
+% 最后, 我们也可以定义一个\textbf{literal block of code}, 即事实上的c代码, 并且可以
+% 包含头文件, 常量, 全局变量和函数定义等. 这些代码将会被复制到flex生成的分析器中, 
+% 并最终成为编译器的一部分. \\
+% 要定义一个这样的block, 要以如下形式:
+% \begin{lstlisting}
+% %{
+%   // literal c code
+% %}
+% \end{lstlisting}
+
+\paragraph{Rules}
+我们在这里定义tokens的规则.
+我们使用这样的格式: \\
+\begin{lstlisting}
+regex-rule { // c action-code }
+\end{lstlisting}
+左边部分仅包含正则表达式规则, 而右边部分是定义了行为的实际上的c代码. 目前我们将
+仅仅输出到标准输出说我们找到了一个特定的token, 在那之后我们会返回token的记号和属性.
+
+所以, 要搜索一个可打印字符串序列, 我们可能会使用: \\
+\begin{lstlisting}
+{print}+ { printf("Found printable character sequence %s\n", yytext); }
+\end{lstlisting}
+左边是一条匹配包含至少一个可打印字符的字符串的正则表达式规则, 变量yytext
+包含每次识别到的token.
+
+\paragraph{User Functions}
+最后, 在FLEX中我们也可以定义函数. \\
+例如, 代码可以包含主程序入口main(), 也可以包含一个错误信息打印函数yyerror().
+yywrap()函数由option "\%option noyywrap"定义. 我们可能还需要一个打印token的记号和
+属性的函数, 比如ret\_print(), 将token传入到后面的处理程序, 如语法分析程序, 并同时
+输出到标准输出.
+
+\paragraph{Variables}
+Flex的变量有如下几种:
+\begin{itemize}
+  \item char *yytext -> 包含识别到的token;
+  \item int yyleng -> 包含识别到的token的长度;
+  \item YYSTYPE yylval -> 用来和之后的程序, 例如语法分析程序通信.
+\end{itemize}
+
+\paragraph{Usage of Flex}
+要使用Flex, 需要先安装Flex, 之后执行以下命令: \\[0.5cm]
+flex lex.l // lex.l is the flex file \\[0.5cm]
+clang lex.yy.c -o c\_lex -lfl // or use gcc instead, generate c source file \\[0.5cm]
+./lex input\_file // lex will take input\_file as c source file to be analysed \\[0.5cm]
+默认情况下, 分析结果将输出到console中.
+
+\subsubsection{FLEX源代码清单}
+\begin{lstlisting}
+// lex.i
+% \end{lstlisting}
+% \lstinputlisting{../lex.i}
