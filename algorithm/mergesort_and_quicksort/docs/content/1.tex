@@ -1,15 +1,16 @@
-\subsection{题目描述}
+\subsection{归并排序}
+\subsubsection{题目描述}
 对n个整数使用归并排序进行升序排列.
-\subsection{输入格式}
+\subsubsection{输入格式}
 输入文件名为mergesort.in, 输入共两行.
 \begin{itemize}
 	\item 第一行是一个正整数n.
 	\item 第二行包含n个整数$n_i$, 每两个整数之间用空格隔开.
 \end{itemize}
-\subsection{输出格式}
+\subsubsection{输出格式}
 输出文件名为mergesort.out, 输出共一行.
 第一行包含n个整数, 为排序后的升序序列, 每两个整数之间用空格隔开.
-\subsection{输入输出样例}
+\subsubsection{输入输出样例}
 \begin{table}[h!]
 	\centering
 	\begin{tabular}{|l|l|}
@@ -21,6 +22,34 @@
 		\hline
 	\end{tabular}
 \end{table}
-\subsection{数据范围}
+\subsubsection{数据范围}
 $ 0 < n \leq 10^6 $,
-$ | n_i | < 10^8 $
+$ | n_i | \leq 10^8 $
+
+\subsection{快速排序}
+\subsubsection{题目描述}
+对n个整数使用快速排序进行升序排列.
+\subsubsection{输入格式}
+输入文件名为quicksort.in, 输入共两行.
+\begin{itemize}
+	\item 第一行是一个正整数n.
+	\item 第二行包含n个整数$n_i$, 每两个整数之间用空格隔开.
+\end{itemize}
+\subsubsection{输出格式}
+输出文件名为quicksort.out, 输出共一行.
+第一行包含n个整数, 为排序后的升序序列, 每两个整数之间用空格隔开.
+\subsubsection{输入输出样例}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|l|}
+		\hline
+		quicksort.in & quicksort.out \\
+		\hline
+		5            & 5 9 11 12 22  \\
+		9 11 5 22 12 & ~             \\
+		\hline
+	\end{tabular}
+\end{table}
+\subsubsection{数据范围}
+$ 0 < n \leq 2*10^6 $,
+$ | n_i | \leq 10^8 $

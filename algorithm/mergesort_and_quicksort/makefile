@@ -6,6 +6,9 @@ amount := 50
 mergesort_cpp := mergesort/mergesort.cpp
 mergesort_filename := build/mergesort
 
+quicksort_cpp := quicksort/quicksort.cpp
+quicksort_filename := build/quicksort
+
 stdsort_cpp := data_gen/stdsort.cpp
 stdsort_filename := build/stdsort
 
@@ -31,22 +34,28 @@ make_and_test: sort testg_all
 
 test:
 	$(mergesort_filename) samples/mergesort.in
+	$(quicksort_filename) samples/quicksort.in
 
 testg_all: $(gen_filename) $(stdsort_filename) generate_yasample
 	$(mergesort_filename) $(gen_sample)
+	$(quicksort_filename) $(gen_sample)
 	$(stdsort_filename)
 	diff $(gen_sample) samples/mergesort.out
+	diff $(gen_sample) samples/quicksort.out
 
 testg: $(gen_filename) generate_yasample
 	$(mergesort_filename) $(gen_sample)
+	$(quicksort_filename) $(gen_sample)
 
 testg_ascend: $(stdsort_filename) $(gen_filename) generate_yasample
 	$(stdsort_filename) ascend
 	$(mergesort_filename) $(gen_sample)
+	$(quicksort_filename) $(gen_sample)
 
 testg_descend: $(stdsort_filename) $(gen_filename) generate_yasample
 	$(stdsort_filename) descend
 	$(mergesort_filename) $(gen_sample)
+	$(quicksort_filename) $(gen_sample)
 
 generate_yasample:
 	echo "generage $(amount) random numbers from $(from) to $(to)."
@@ -58,7 +67,13 @@ $(gen_filename): $(gen_cpp)
 $(stdsort_filename): $(stdsort_cpp)
 	$(CCXX) $(cxxflags) $(stdsort_cpp) -o $(stdsort_filename)
 
-sort: $(mergesort_filename)
+sort: $(mergesort_filename) $(quicksort_filename)
+
+$(quicksort_filename): $(quicksort_filename).o
+	$(CCXX) $(cxxflags) $(quicksort_filename).o -o $(quicksort_filename)
+
+$(quicksort_filename).o: $(quicksort_cpp)
+	$(CCXX) $(cxxflags) -c -g $(quicksort_cpp) -o $(quicksort_filename).o
 
 $(mergesort_filename): $(mergesort_filename).o
 	$(CCXX) $(cxxflags) $(mergesort_filename).o -o $(mergesort_filename)

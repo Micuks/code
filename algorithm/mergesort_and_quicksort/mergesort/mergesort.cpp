@@ -175,6 +175,7 @@ int main(int argc, char **argv) {
     char output_file_name[] = "samples/mergesort.out";
     fs.open(output_file_name, std::ios_base::out);
     // Print sorted numbers to output_file_name
+    pMergeSort->print();
     pMergeSort->fprint(fs);
     pMergeSort->~MergeSort();
     delete[] (char *)p;

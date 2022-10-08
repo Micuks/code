@@ -1,6 +1,8 @@
-\subsection{算法类别}
+\subsection{归并排序mergesort}
+\subsubsection{算法类别}
 mergesort(归并排序)是一种基于\textbf{分治}的算法.
-\subsection{算法思路}
+
+\subsubsection{算法思路}
 在mergesort中, 待排序数组被分为两等分, 分别排序后合并为一个数组. \par
 mergesort是一个递归算法, 持续的将数组二等分并对等分后得到的两个数组
 分别进行mergesort, 直到数组不能再分, 此时数组为空或仅剩1个元素.
@@ -8,7 +10,8 @@ mergesort是一个递归算法, 持续的将数组二等分并对等分后得到
 并在每一份上递归的调用mergesort. 最终, 当两半数组都被排序, 对两个数组
 执行merge(合并)操作. \par
 merge(合并)操作是将两个较小的有序数组结合成一个大的有序数组的过程.
-\subsection{关键函数及代码段的描述}
+
+\subsubsection{关键函数及代码段的描述}
 采用non-recursive的迭代方式实现mergesort, 基于DRY \footnote{
 	DRY: don't repeat yourself, 即不要做重复性的工作,
 	通过良好的函数和类的抽象减少冗余和重复代码的出现}
@@ -78,10 +81,12 @@ void merge(int *c, int *d, int l, int m, int r) {
 	}
 }
 \end{lstlisting}
-\subsection{算法时间及空间复杂性分析}
-\subsubsection{空间复杂度分析}
+
+\subsubsection{算法时间及空间复杂性分析}
+\paragraph{空间复杂度分析}
 mergesort需要一个长度为n的辅助数组进行辅助merge, 故空间复杂度为$O(n)$.
-\subsubsection{时间复杂度分析}
+
+\paragraph{时间复杂度分析}
 对于mergesort, 比较和挪动元素都发生在merge阶段, 由于对两个元素不进行
 比较就不可能进行挪动, 估元素移动次数不会大于比较次数, 只需根据分析次数
 即可分析时间复杂度. \par
@@ -113,3 +118,5 @@ mergesort需要一个长度为n的辅助数组进行辅助merge, 故空间复杂
 	C(n) = n\log_2{n}
 \end{equation}
 综上, mergesort的时间复杂度为$O(n\log n)$
+
+\subsection{快速排序quicksort}
