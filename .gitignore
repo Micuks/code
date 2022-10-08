@@ -5,3 +5,4 @@ cs231n_assignments/assignment3/cs231n/datasets/imagenet_val_25.npz
 algorithm/mergesort_and_quicksort/build
 algorithm/mergesort_and_quicksort/docs/build
 algorithm/mergesort_and_quicksort/docs/report.pdf
+algorithm/mergesort_and_quicksort/.vscode

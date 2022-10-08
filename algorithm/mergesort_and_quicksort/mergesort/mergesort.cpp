@@ -4,6 +4,8 @@
 #include <system_error>
 #include <vector>
 
+using namespace std;
+
 /**
  * The non-recursive implementation of mergesort algorithm for integers
  */
@@ -13,11 +15,12 @@ class MergeSort {
     MergeSort(int *_a, int _n) : n(_n) {
         a = new int[n + 1];
         b = new int[n + 1];
-        std::cout << "a["<<a<<"], b["<< b << "]";
-        memcpy(a, _a, _n);
+        memcpy(a, _a, _n * sizeof(int));
+        printA();
+        printB();
     }
     ~MergeSort() { delete[] a; }
-    void mergeSort(int a[], int n);
+    void mergeSort();
     void printA() {
         std::cout << "Array A:\n";
         for (int i = 0; i < n; i++) {
@@ -46,17 +49,26 @@ class MergeSort {
 /**
  * Iterative mergesort function to sort a[0, ..., n-1]
  */
-void MergeSort::mergeSort(int *a, int n) {
+void MergeSort::mergeSort() {
     // merge step size
     int s = 1;
+    cout<<endl;
     while (s < n) {
         // treat b as assistant array
         mergePass(a, b, s, n);
         // exponential increase step size
+        cout << "s["<<s<<"]"<<endl;
+        printA();
+        printB();
+        cout<<endl;
         s += s;
         // treat a as assistant array
         mergePass(b, a, s, n);
         // exponential increase step size
+        cout << "s["<<s<<"]"<<endl;
+        printA();
+        printB();
+        cout<<endl;
         s += s;
     }
 }
@@ -69,12 +81,11 @@ void MergeSort::mergeSort(int *a, int n) {
 void MergeSort::mergePass(int *x, int *y, int s, int n) {
     int i = 0;
     // mergesort until less than 2*s elements left.
-    while (i <= n - 2 * s) {
+    while (i + 2 * s - 1 < n) {
         merge(x, y, i, i + s - 1, i + 2 * s - 1);
         i += 2 * s;
     }
-    if (i + s < n) {
-
+    if (i + s - 1 < n) {
         merge(x, y, i, i + s - 1, n - 1);
     } else {
         for (int j = i; j <= n - 1; j++) {
@@ -90,7 +101,7 @@ void MergeSort::mergePass(int *x, int *y, int s, int n) {
 void MergeSort::merge(int *c, int *d, int l, int m, int r) {
     int i = l;
     int j = m + 1;
-    int k = 0;
+    int k = i;
     // Merge the two halves of array c to array d
     while ((i <= m) && (j <= r)) {
         if (c[i] <= c[j]) {
@@ -141,12 +152,9 @@ int main(int argc, char **argv) {
         arr.push_back(num);
     }
     fs.close();
-    std::cout << "arr: \n";
-    for(auto& a : arr) {
-      std::cout << a << " ";
-    }
     std::cout << std::endl;
     MergeSort mSort(&arr[0], arr.size());
+    mSort.mergeSort();
     mSort.printA();
     mSort.printB();
 
