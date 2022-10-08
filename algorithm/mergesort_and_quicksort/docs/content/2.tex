@@ -1,8 +1,88 @@
-本节描述解决问题的主要方法。应包括如下内容：
-1.算法类别（如分治、递归、动态规划、贪心等）；
-2.算法思路；
-3.关键函数及代码段的描述（可使用伪代码）；
-4.算法时间及空间复杂性分析。
+\subsection{算法类别}
+mergesort(归并排序)是一种基于\textbf{分治}的算法.
+\subsection{算法思路}
+\begin{itemize}
+	\item 在mergesort中, 待排序数组被分为两等分, 分别排序后合并为一个数组.
+	\item mergesort是一个递归算法, 持续的将数组二等分并对等分后得到的两个数组
+分别进行mergesort, 直到数组不能再分, 此时数组为空或仅剩1个元素.
+也就是说, 这是递归的终止情况. 如果数组有多个元素, 将数组分为两等份,
+并在每一份上递归的调用mergesort. 最终, 当两半数组都被排序, 对两个数组
+执行merge(合并)操作.
+	\item merge(合并)操作是将两个较小的有序数组结合成一个大的有序数组的过程.
+\end{itemize}
+\subsection{关键函数及代码段的描述}
+\begin{itemize}
+  \item 采用non-recursive的迭代方式实现mergesort, 基于DRY \footnote{
+DRY: don't repeat yourself, 即不要做重复性的工作,
+通过良好的函数和类的抽象减少冗余和重复代码的出现}的原则,
+将mergesort分为三个函数, 分别是mergeSort(), mergePass(int *x, int *y,
+int s, int n)和merge(int *c, int *d, int l, int m, int r).
+	\item mergeSort()是归并排序的入口函数, 管理步长倍增, 并通过将数组a和数组
+b交替作为辅助数组的方式, 减少了一半的元素赋值操作.
+	\item mergePass()是归并排序中的一遍, 通过不断调用merge(),
+将两个子序列用步长s按从小到大的顺序排序.
+	\item merge()函数将两个子数组c[l, ..., m]和c[m+1, ..., r]合并到d中.
+\end{itemize}
+\begin{lstlisting}[language=c++, frame=single]
+/**
+ * Iterative mergesort function to sort a[0, ..., n-1], 
+ * Merge subarrays in bottam up manner. First merge subarrays of
+ * size 1 to create sorted subarrays of size 2, then merge subarrays
+ * of size 2 to create sorted subarrays of size 4, and vice versa.
+ */
+void mergeSort() {
+	// Initializing...
+	int s = 1;
+	while (s < n) {
+		// treat b as assistant array
+		mergePass(a, b, s, n);
+		// double the step size
+		s += s;
+		// treat a as assistant array
+		mergePass(b, a, s, n);
+		// double the step size
+		s += s;
+	}
+}
+
+/**
+ * A pass of merge with step size of s.
+ */
+void mergePass(int *x, int *y, int s, int n) {
+	int i = 0; // left variable
+	// merge until less than 2*s elements left.
+	if (i + step_size - 1 < n) {
+		// merge till the end of array
+	} else {
+		// append rest elements of x to y
+	}
+}
+
+/**
+ * Function to merge the two halves c[l, ..., m] and c[m+1, ..., r]
+ * to d
+ */
+void merge(int *c, int *d, int l, int m, int r) {
+	int i = l;
+	int j = m+1;
+	int k = i;
+	// merge the two halves of array c to array d
+	while(left half not reach the end &&
+		right half of c not reach the end) {
+			 append smaller element of c[i] and c[j] to d[k]
+			 and increase i and k or j and k
+		}
+
+	// if left half of array c reaches the end, append rest elements
+	// of right half of array c to d
+	if (i > m) {
+		append rest elements of right half of array c to d
+	} else {
+		vice versa
+	}
+}
+\end{lstlisting}
+\subsection{算法时间及空间复杂性分析}
 \begin{description}
 	\item[操作系统] Ubuntu 20.04.5 LTS on Windows 10 x86\_64, \\
 		macOS 12.6 21G115 arm64,
