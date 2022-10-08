@@ -1,4 +1,4 @@
-\subsection{程序执行环境及运行方式}
+\subsection{归并排序mergesort程序执行环境及运行方式}
 \subsubsection{程序执行环境}
 在以下环境下进行过测试.
 \begin{description}
@@ -6,6 +6,7 @@
 		macOS 12.6 21G115 arm64;
 	\item[编译器] clang-1400.0.29.102;
 \end{description}
+
 \subsubsection{运行方式}
 程序(及文档)均使用make进行构建, 对于程序运行, 在shell中执行以下命令:
 \begin{lstlisting}[language=bash]
@@ -22,44 +23,7 @@ build/mergesort $(filename)
 \end{lstlisting}
 其中, \$(filename)是按第一章中的\textbf{输入格式}组织的输入数据. 默认情况下
 将同时输出到标准输出和samples/mergesort.out.
-\subsubsection{数据生成}
-为了方便的生成测试数据, 来测试算法性能和算法正确性, 我设计了一个数据生成器,
-可以生成指定数量(如$1e6$)的, 分布在$[-1e8, 1e8]$范围内的如下几种数据:
-\begin{itemize}
-  \item uniform\_distribution(均匀分布)的, 顺序随机的数据;
-  \item 均匀分布的, 正序排列的数据;
-  \item 均匀分布的, 倒序排列的数据;
-\end{itemize}
-\paragraph{设计思路}
-常用的C++随机数生成方法均采用rand()函数和模操作获取分布在某一范围内的均匀
-分布数据, 但是, 这种方法\href{https://stackoverflow.com/a/52869953}
-{可能不会生成均匀分布的数据}
-(这取决于生成数据的范围, 以及\textbf{RAND\_MAX}的取值), 因此是不被建议
-的方式.\par
 
-因此, 我采用C++11引入的随机数生成操作. C++11标准引入了多种其他的随机数生成
-方式, 在这些方式中, \href{http://en.cppreference.com/w/cpp/numeric/random/uniform\_int\_distribution}
-{std::uniform\_int\_distribution}
-与我的需求吻合, 所以我采用这种方式生成均匀分布的数据.
-由于我认为数据的分布方式(均匀分布, 正态分布等)不会影响数据的大小关系分布, 
-从而不会影响算法性能, 所以没有生成均匀分布之外的分布的数据.
-\paragraph{运行方式}
-数据生成器也使用make构建和管理, 对于程序执行, 在shell中执行以下命令:
-\begin{lstlisting}[language=bash]
-make
-\end{lstlisting}
-二进制文件data_gen将被编译在build/目录下, 在不传入参数的情况下会默认生成
-[-1000, 1000]内的50个整数. 在shell中执行这条命令:
-\begin{lstlisting}[language=bash]
-make testg
-\end{lstlisting}
-data_gen可以传入三个参数from, to和amount, 可以生成[from, to]范围内的amount个
-整数, 当不传入amount的时候, 将默认生成50个随机数. 在shell中执行这条命令:
-\begin{lstlisting}[language=bash]
-make testg from=<from> to=<to> [amount=<amount>]
-\end{lstlisting}
-运行结束后, console会显示排序花费的时间, samples/yet_another_sample.in保存
-生成的随机数, samples/mergesort.out保存排序后的结果.
 \subsubsection{程序执行示例}
 此处演示程序从构建到测试的过程.
 \begin{lstlisting}[language=bash]
@@ -98,3 +62,49 @@ Time measured: 2.416e-06 seconds.
 0 0 3 4 7 8 10 10 11 11 14 15 15 16 17 20 22 22 26 30 ...
 # not all displayed
 \end{lstlisting}
+
+\subsection{快速排序quicksort程序执行环境及运行方式}
+
+\subsection{数据生成工具data\_ gen执行环境及运行方式}
+为了方便的生成测试数据, 来测试算法性能和算法正确性, 我设计了一个数据生成器,
+可以生成指定数量(如$1e6$)的, 分布在$[-1e8, 1e8]$范围内的如下几种数据:
+\begin{itemize}
+  \item uniform\_distribution(均匀分布)的, 顺序随机的数据;
+  \item 均匀分布的, 正序排列的数据;
+  \item 均匀分布的, 倒序排列的数据;
+\end{itemize}
+
+\subsubsection{设计思路}
+常用的C++随机数生成方法均采用rand()函数和模操作获取分布在某一范围内的均匀
+分布数据, 但是, 这种方法\href{https://stackoverflow.com/a/52869953}
+{可能不会生成均匀分布的数据}
+(这取决于生成数据的范围, 以及\textbf{RAND\_MAX}的取值), 因此是不被建议
+的方式.\par
+
+因此, 我采用C++11引入的随机数生成操作. C++11标准引入了多种其他的随机数生成
+方式, 在这些方式中, \href{http://en.cppreference.com/w/cpp/numeric/random/uniform\_int\_distribution}
+{std::uniform\_int\_distribution}
+与我的需求吻合, 所以我采用这种方式生成均匀分布的数据.
+由于我认为数据的分布方式(均匀分布, 正态分布等)不会影响数据的大小关系分布, 
+从而不会影响算法性能, 所以没有生成均匀分布之外的分布的数据.
+
+\subsubsection{运行方式}
+数据生成器也使用make构建和管理, 对于程序执行, 在shell中执行以下命令:
+\begin{lstlisting}[language=bash]
+make
+\end{lstlisting}
+二进制文件data\_gen将被编译在build/目录下, 在不传入参数的情况下会默认生成
+[-1000, 1000]内的50个整数. 在shell中执行这条命令:
+\begin{lstlisting}[language=bash]
+make testg
+\end{lstlisting}
+data\_gen可以传入三个参数from, to和amount, 可以生成[from, to]范围内的amount个
+整数, 当不传入amount的时候, 将默认生成50个随机数. 在shell中执行这条命令:
+\begin{lstlisting}[language=bash]
+make testg from=<from> to=<to> [amount=<amount>]
+\end{lstlisting}
+运行结束后, console会显示排序花费的时间, samples/yet\_another\_sample.in保存
+生成的随机数, samples/mergesort.out保存排序后的结果.
+
+\subsubsection{数据生成执行示例}
+TODO
