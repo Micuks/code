@@ -1,10 +1,9 @@
+#include <chrono>
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <system_error>
 #include <vector>
-
-using namespace std;
 
 /**
  * The non-recursive implementation of mergesort algorithm for integers
@@ -42,19 +41,26 @@ class MergeSort {
         }
         std::cout << std::endl;
     }
+    void fprint(std::fstream &fs) {
+      fs << n << std::endl;
+        for (int i = 0; i < n; i++) {
+            fs << a[i] << " ";
+        }
+        fs << std::endl;
+    }
 
   private:
-    void mergePass(int x[], int y[], int s, int n);
-    void merge(int c[], int d[], int l, int m, int r);
     // assistant arrays for merge sort
     int *a;
     int *b;
     // number of given integers
     int n;
+    void mergePass(int x[], int y[], int s, int n);
+    void merge(int c[], int d[], int l, int m, int r);
 };
 
 /**
- * Iterative mergesort function to sort a[0, ..., n-1], 
+ * Iterative mergesort function to sort a[0, ..., n-1],
  * Merge subarrays in bottam up manner. First merge subarrays of
  * size 1 to create sorted subarrays of size 2, then merge subarrays
  * of size 2 to create sorted subarrays of size 4, and vice versa.
@@ -125,7 +131,7 @@ void MergeSort::merge(int *c, int *d, int l, int m, int r) {
 }
 
 int main(int argc, char **argv) {
-    ios_base::sync_with_stdio(false);
+    std::ios_base::sync_with_stdio(false);
     std::fstream fs;
     // Will attempt to open given file if received more then one
     // parameters.
@@ -135,12 +141,10 @@ int main(int argc, char **argv) {
         } catch (std::system_error &e) {
             std::cerr << e.code().message() << std::endl;
         }
-        // std::cout << argv[1] << std::endl; // debug
     } else {
         // Open default input file
         try {
             char filename[] = "samples/mergesort.in";
-            // std::cout << filename << std::endl; // debug
             fs.open(filename, std::ios_base::in);
         } catch (std::system_error &e) {
             std::cerr << e.code().message() << std::endl;
@@ -156,8 +160,22 @@ int main(int argc, char **argv) {
     fs.close();
     void *p = new char[sizeof(MergeSort)];
     MergeSort *pMergeSort = new (p) MergeSort(&arr[0], arr.size());
+    auto begin = std::chrono::high_resolution_clock::now();
+
     pMergeSort->mergeSort();
-    pMergeSort->print();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    std::cout.precision(6);
+    std::cout << "[MergeSort] Time measured: " << elapsed.count() * 1e-9
+              << " seconds.\n";
+    // Print sorted numbers to console
+    // pMergeSort->print();
+    char output_file_name[] = "samples/mergesort.out";
+    fs.open(output_file_name, std::ios_base::out);
+    // Print sorted numbers to output_file_name
+    pMergeSort->fprint(fs);
     pMergeSort->~MergeSort();
     delete[] (char *)p;
     return 0;
