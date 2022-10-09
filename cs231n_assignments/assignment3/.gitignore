@@ -1,0 +1,5 @@
+cs231n/datasets/*
+__pycache__/
+*.py[cod]
+*.zip
+*.npz
