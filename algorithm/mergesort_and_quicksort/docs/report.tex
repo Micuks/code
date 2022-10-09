@@ -1,7 +1,10 @@
 \documentclass[12pt, twoside]{article}
+\setlength{\headheight}{14.49998pt}
 \usepackage{xeCJK}
+% \usepackage{zi4}
 
 \usepackage{listings}
+\usepackage{lstautogobble} % Fix relative indenting
 \usepackage{xcolor}
 \usepackage{multirow}
 
@@ -18,13 +21,37 @@
 \usepackage{hyperref}
 
 \setCJKmainfont{Songti SC}
+\setCJKmonofont{Songti SC}
 
-\lstset{ %
-  language=C++,
-  backgroundcolor=\color{black!5},
-  basicstyle=\footnotesize,
-  tabsize=4
+% Define colors for code listing
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.9,0,0}
+\definecolor{graynumbers}{rgb}{0.5,0.5,0.5}
+
+\lstset{
+  autogobble,
+  columns=fullflexible,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  commentstyle=\color{greencomments},
+  keywordstyle=\color{bluekeywords},
+  stringstyle=\color{redstrings},
+  numberstyle=\color{graynumbers},
+  basicstyle=\ttfamily\footnotesize,
+  frame=l,
+  framesep=12pt,
+  xleftmargin=12pt,
+  tabsize=4,
+  captionpos=b
+  language=C++
+  % backgroundcolor=\color{black!5},
 }
+
 % show paragraphs in table of contentes
 \setcounter{tocdepth}{4}
 \setcounter{secnumdepth}{4}
@@ -41,7 +68,7 @@
 \pagestyle{fancy}
 \fancyhead{} % clear all header fields
 \fancyhead[LE, RO]{吴清柳 2020211597}
-\fancyhead[LO, RE]{归并排序和快速排序}
+\fancyhead[LO, RE]{归并排序和快速排序算法的设计与分析实验报告}
 \fancyfoot{} % clear all footer fileds
 \fancyfoot[CE, CO]{\thepage}
 
