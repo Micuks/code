@@ -89,24 +89,22 @@ mergesort需要一个长度为n的辅助数组进行辅助merge, 故空间复杂
 
 \paragraph{时间复杂度分析}
 对于mergesort, 比较和挪动元素都发生在merge阶段, 由于对两个元素不进行
-比较就不可能进行挪动, 估元素移动次数不会大于比较次数, 只需根据分析次数
+比较就不可能进行挪动, 故元素移动次数不会大于比较次数, 只需根据比较次数
 即可分析时间复杂度. \par
 由于归并排序是递归的过程, 可以方便地写出递推式:
 \begin{align}
-	\label{equ:mergesort_time_complexity}
 	C(1)       & = 0                                \nonumber \\
 	C_{max}(n) & = 2C(\frac{n}{2}) + n-1            \nonumber \\
 	C_{min}(n) & = 2C(\frac{n}{2}) + \frac{n}{2}    \nonumber \\
 	C_{avg}(n) & = 2C(\frac{n}{2}) + \frac{3n-2}{2} \nonumber
 \end{align}
-令\(n=2^k\), 将式\ref{equ:mergesort_time_complexity}中$O(n)$项
+令\(n=2^k\), 将式中$O(n)$项
 用$O(n)$代替, 则最好, 最坏和平均情形都为相同形式, 即
 \begin{equation}
 	C(n) = 2C(\frac{n}{n})+(n)
 \end{equation}
 记$C(n)$为比较次数, 有
 \begin{gather}
-	\label{equ:recursive_equation_derivation}
 	C'(0) = 0            \nonumber \\
 	C'(k) = 2C'(k-1)+2^k \nonumber
 \end{gather}
@@ -118,7 +116,7 @@ mergesort需要一个长度为n的辅助数组进行辅助merge, 故空间复杂
 \begin{equation}
 	C(n) = n\log_2{n} \nonumber
 \end{equation}
-综上, mergesort的时间复杂度为$O(n\log n)$
+综上, mergesort的时间复杂度为$O(n\log{n})$
 
 \subsection{应用尾递归优化的快速排序quicksort}
 \subsubsection{算法类别}
@@ -145,7 +143,6 @@ quicksort的关键阶段是partition(). partitions的目标是, 给定一个数�
 情况空间复杂度降到$O(\log{n})$.
 \begin{figure}[h!]
 	\centering
-	\label{fig:QuickSort2}
 	\includegraphics[width=0.8\textwidth]{figures/QuickSort2.png}
 	\caption{Quicksort中的partition过程}
 \end{figure}
@@ -224,17 +221,14 @@ int QuickSort::partition(int arr[], int l, int r, int x) {
 
 \paragraph{时间复杂度分析}
 由于quicksort不进行比较就不会移动元素, 所以元素移动次数一定小于比较次数,
-像mergesort的分析过程\ref{equ:mergesort_time_complexity}一样, 只需要分析
-比较次数即可.\par
+像mergesort的分析过程一样, 只需要分析比较次数即可.\par
 由于快速排序是递归的过程, 可以方便地写出递推式:
 \begin{align}
-	\label{equ:quicksort_time_complexity}
 	C(1)       & = 0                        \nonumber \\
 	C_{avg}(n) & = 2C(\frac{n}{2}) + n - 1  \nonumber \\
 	C_{max}(n) & = C(1) + C(n - 1) + n - 1  \nonumber
 \end{align}
-令\(n=2^k\), 将式\ref{equ:quicksort_time_complexity}中$O(n)$项
-用$O(n)$代替, 得
+令\(n=2^k\), 将式中$O(n)$项用$O(n)$代替, 得
 \begin{align}
 	C'(0)       & = 0                                           \nonumber \\
 	C'_{avg}(k) & = 2C'_{avg}(k-1)+2^k-1                        \nonumber \\
@@ -374,31 +368,4 @@ int QuickSort::partition(int arr[], int l, int r, int x) {
 考虑函数调用栈上空间占用的空间复杂度.
 
 \paragraph{时间复杂度分析}
-由于quicksort不进行比较就不会移动元素, 所以元素移动次数一定小于比较次数,
-像mergesort的分析过程\ref{equ:mergesort_time_complexity}一样, 只需要分析
-比较次数即可.\par
-由于快速排序是递归的过程, 可以方便地写出递推式:
-\begin{align}
-	\label{equ:quicksort_time_complexity}
-	C(1)       & = 0                        \nonumber \\
-	C_{avg}(n) & = 2C(\frac{n}{2}) + n - 1  \nonumber \\
-	C_{max}(n) & = C(1) + C(n - 1) + n - 1  \nonumber
-\end{align}
-令\(n=2^k\), 将式\ref{equ:quicksort_time_complexity}中$O(n)$项
-用$O(n)$代替, 得
-\begin{align}
-	C'(0)       & = 0                                           \nonumber \\
-	C'_{avg}(k) & = 2C'_{avg}(k-1)+2^k-1                        \nonumber \\
-	            & = 2C'_{avg}(0)+k\cdot 2^k - \sum_{i=0}^k 2^i  \nonumber \\
-	            & = k\cdot 2^k - 2^{k+1}+1                      \nonumber \\
-	            & = (k-2)\cdot 2^k + 1 \nonumber
-\end{align}
-故
-\begin{align}
-	C_{avg}(n) & = (\log_2{n}-2)\cdot n+1  \nonumber \\
-	C_{max}(n) & = \sum_{i=1}^{n-1}i       \nonumber \\
-	           & = \frac{n(n-1)}{2}        \nonumber \\
-	           & =\frac{n^2-n}{2}          \nonumber
-\end{align}
-综上, quicksort的平均时间复杂度为$O(n\log n)$, 最坏时间复杂度为
-$O(n^2)$.
+TODO
