@@ -64,6 +64,7 @@ testg_ascend: $(stdsort_filename) $(gen_filename) generate_yasample
 	$(mergesort_filename) $(gen_sample)
 	$(quicksort_filename) $(gen_sample)
 	$(quicksort_kthSmallest_filename) $(gen_sample)
+	$(stdsort_filename)
 
 testg_descend: $(stdsort_filename) $(gen_filename) generate_yasample
 	$(stdsort_filename) descend
@@ -71,6 +72,7 @@ testg_descend: $(stdsort_filename) $(gen_filename) generate_yasample
 	$(mergesort_filename) $(gen_sample)
 	$(quicksort_filename) $(gen_sample)
 	$(quicksort_kthSmallest_filename) $(gen_sample)
+	$(stdsort_filename)
 
 generate_yasample:
 	echo "[INFO]: generage $(amount) random numbers from $(from) to $(to)."

@@ -47,6 +47,10 @@ class QuickSort {
     }
 };
 
+/**
+ * Main function to perform quicksort on arr[],
+ * optimized with **tail call elimination**
+ */
 void QuickSort::quickSort(int arr[], int l, int h) {
     while (l < h) {
         // Size of current subarray
@@ -58,13 +62,20 @@ void QuickSort::quickSort(int arr[], int l, int h) {
         // Partition the array around median
         int p = partition(arr, l, h, med);
 
-        // Recur for two halves of partition
-        quickSort(arr, l, p - 1);
-        l = p+1;
-        // quickSort(arr, p + 1, h);
+        if (p - l < h - p) {
+            quickSort(arr, l, p - 1);
+            l = p + 1;
+        } else {
+            quickSort(arr, p + 1, h);
+            h = p - 1;
+        }
     }
 }
 
+/**
+ * recursively find kth smallest element in arr[]
+ * in worst linear time
+ */
 int QuickSort::kthSmallest(int arr[], int l, int r, int k) {
     // Indeces range from 1.
     // If k is smaller than number of elements in array.
