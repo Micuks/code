@@ -18,16 +18,26 @@ int main(int argc, char **argv) {
         arrange = argv[1];
         if (std::find(preserved.begin(), preserved.end(), arrange) !=
             preserved.end()) {
+            if (argc > 2) {
+                try {
+                    fs.open(argv[2], std::ios_base::in);
+                } catch (std::system_error &e) {
+                    std::cerr << e.code().message() << std::endl;
+                }
+            } else {
+                try {
+                    char filename[] = "samples/yet_another_sample.in";
+                    fs.open(filename, std::ios_base::in);
+                } catch (std::system_error &e) {
+                    std::cerr << e.code().message() << std::endl;
+                }
+            }
+        } else {
             try {
-                fs.open(argv[2], std::ios_base::in);
+                fs.open(argv[1], std::ios_base::in);
             } catch (std::system_error &e) {
                 std::cerr << e.code().message() << std::endl;
             }
-        }
-        try {
-            fs.open(argv[1], std::ios_base::in);
-        } catch (std::system_error &e) {
-            std::cerr << e.code().message() << std::endl;
         }
     } else {
         try {
@@ -69,10 +79,19 @@ int main(int argc, char **argv) {
     if (argc > 2) {
         if (std::find(preserved.begin(), preserved.end(), arrange) !=
             preserved.end()) {
-            try {
-                fs.open(argv[3], std::ios_base::out);
-            } catch (std::system_error &e) {
-                std::cerr << e.code().message() << std::endl;
+            if (argc > 3) {
+                try {
+                    fs.open(argv[3], std::ios_base::out);
+                } catch (std::system_error &e) {
+                    std::cerr << e.code().message() << std::endl;
+                }
+            } else {
+                try {
+                    char filename[] = "samples/stdsort.out";
+                    fs.open(filename, std::ios_base::out);
+                } catch (std::system_error &e) {
+                    std::cerr << e.code().message() << std::endl;
+                }
             }
         } else {
             try {
@@ -83,7 +102,7 @@ int main(int argc, char **argv) {
         }
     } else {
         try {
-            char filename[] = "samples/yet_another_sample.in";
+            char filename[] = "samples/stdsort.out";
             fs.open(filename, std::ios_base::out);
         } catch (std::system_error &e) {
             std::cerr << e.code().message() << std::endl;
@@ -91,7 +110,7 @@ int main(int argc, char **argv) {
     }
 
     fs << n << std::endl;
-    for(int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         fs << a[i] << " ";
     }
     fs << std::endl;
