@@ -45,18 +45,27 @@ class QuickSort {
     }
 };
 
+/**
+ * Main function to perform quicksort on arr[],
+ * optimized with **tail call elimination**
+ */
 void QuickSort::quickSort(int arr[], int l, int h) {
     while (l < h) {
-
         // Median of arr[]
         int pivor = arr[(l + h) / 2];
 
         // Partition the array around median
         int p = partition(arr, l, h, pivor);
 
-        // Recur for two halves of partition
-        quickSort(arr, l, p - 1);
-        l = p+1;
+        // If left half has less elements, recur for left half.
+        // Else recur for right half.
+        if (p - l < h - p) {
+            quickSort(arr, l, p - 1);
+            l = p + 1;
+        } else {
+            quickSort(arr, p + 1, h);
+            h = p - 1;
+        }
     }
 }
 
