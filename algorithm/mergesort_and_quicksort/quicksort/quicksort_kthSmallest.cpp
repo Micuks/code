@@ -38,6 +38,8 @@ class QuickSort {
     // number of given integers
     int n;
     int partition(int arr[], int l, int r, int k);
+    int findMedian(int arr[], int n);
+    int kthSmallest(int arr[], int l, int r, int k);
     void swap(int *a, int *b) {
         int temp = *a;
         *a = *b;
@@ -47,17 +49,78 @@ class QuickSort {
 
 void QuickSort::quickSort(int arr[], int l, int h) {
     while (l < h) {
+        // Size of current subarray
+        int n = h - l + 1;
 
         // Median of arr[]
-        int pivor = arr[(l + h) / 2];
+        int med = kthSmallest(arr, l, h, n / 2);
 
         // Partition the array around median
-        int p = partition(arr, l, h, pivor);
+        int p = partition(arr, l, h, med);
 
         // Recur for two halves of partition
         quickSort(arr, l, p - 1);
         l = p+1;
+        // quickSort(arr, p + 1, h);
     }
+}
+
+int QuickSort::kthSmallest(int arr[], int l, int r, int k) {
+    // Indeces range from 1.
+    // If k is smaller than number of elements in array.
+    if (k > 0 && k <= r - l + 1) {
+        // Number of elements in arr.
+        int n = r - l + 1;
+
+        int i = 0;
+        // Divide arr[] in groups of size 5, then store median
+        // of each group in median[] array.
+        int median[(n + 4) / 5]; // Make sure there are enough space
+                                 // even if there are rest elements
+                                 // after modular 5.
+        for (i = 0; 5 * i + 4 < n; i++) {
+            median[i] = findMedian(arr + l + 5 * i, 5);
+        }
+        if (5 * i < n) { // For last group with less than 5 elements.
+            median[i] = findMedian(arr + l + i * 5, n % 5);
+            i++;
+        }
+
+        // Recursively find median of all medians.
+        int medOfMed =
+            (i == 1) ? median[0] : kthSmallest(median, 0, i - 1, i / 2);
+
+        int pos = partition(arr, l, r, medOfMed);
+
+        if (pos - l == k - 1) {
+            return arr[pos];
+        } else if (pos - l > k - 1) {
+            return kthSmallest(arr, l, pos - 1, k);
+        }
+
+        return kthSmallest(arr, pos + 1, r, k - (pos - l) - 1);
+    }
+
+    // If k is more than number of elements in arr[]
+    return INT_MAX;
+}
+
+// A simple function to find median of arr[]. This is called
+// only for an array of size 5 in this program, thus has an
+// time complexity of O(1).
+int QuickSort::findMedian(int arr[], int n) {
+    // Simple insertion sort
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+
+    return arr[n / 2];
 }
 
 // Search for x in arr[l, ..., r], then partition
@@ -115,17 +178,18 @@ int main(int argc, char **argv) {
     void *p = new char[sizeof(QuickSort)];
     QuickSort *pQuickSort = new (p) QuickSort(&arr[0], arr.size());
     int n = arr.size();
+    int* a = &arr[0];
     auto begin = std::chrono::high_resolution_clock::now();
 
-    pQuickSort->quickSort(&arr[0], 0, n - 1);
+    pQuickSort->quickSort(a, 0, n - 1);
 
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed =
         std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
     std::cout.precision(6);
-    std::cout << "[QuickSort] Time measured: " << elapsed.count() * 1e-9
+    std::cout << "[QuickSort_kthSmallest] Time measured: " << elapsed.count() * 1e-9
               << " seconds.\n";
-    char output_file_name[] = "samples/quicksort.out";
+    char output_file_name[] = "samples/QuickSort_kthSmallest.out";
     fs.open(output_file_name, std::ios_base::out);
     // Print sorted numbers to output_file_name
     pQuickSort->fprint(fs);
