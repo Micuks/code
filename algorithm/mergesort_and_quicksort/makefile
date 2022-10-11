@@ -1,7 +1,7 @@
 CCXX := clang++
-from := -1000
-to := 1000
-amount := 50
+from := -100000000
+to := 100000000
+amount := 1000000
 
 mergesort_cpp := mergesort/mergesort.cpp
 mergesort_filename := build/mergesort
@@ -27,7 +27,8 @@ BUILD_DIR := build
 
 cxxflags := -Wall -std=c++11 -O3
 
-all:mkdir make_and_test
+# .PHONY all
+all: mkdir sort
 
 docs: $(docs)
 	# make docs
@@ -40,11 +41,11 @@ test:
 	$(quicksort_filename) samples/quicksort.in
 	$(quicksort_kthSmallest_filename) samples/quicksort.in
 	$(stdsort_filename) samples/quicksort.in
-	diff samples/stssort.out samples/mergesort.out
-	diff samples/stssort.out samples/quicksort.out
-	diff samples/stssort.out samples/quicksort_kthSmallest.out
+	diff samples/stdsort.out samples/mergesort.out
+	diff samples/stdsort.out samples/quicksort.out
+	diff samples/stdsort.out samples/quicksort_kthSmallest.out
 
-testg_all: $(gen_filename) $(stdsort_filename) generate_yasample
+testg: $(gen_filename) $(stdsort_filename) generate_yasample
 	$(mergesort_filename) $(gen_sample)
 	$(quicksort_filename) $(gen_sample)
 	$(quicksort_kthSmallest_filename) $(gen_sample)
@@ -52,11 +53,6 @@ testg_all: $(gen_filename) $(stdsort_filename) generate_yasample
 	diff samples/stdsort.out samples/mergesort.out
 	diff samples/stdsort.out samples/quicksort.out
 	diff samples/stdsort.out samples/quicksort_kthSmallest.out
-
-testg: $(gen_filename) generate_yasample
-	$(mergesort_filename) $(gen_sample)
-	$(quicksort_filename) $(gen_sample)
-	$(quicksort_kthSmallest_filename) $(gen_sample)
 
 testg_ascend: $(stdsort_filename) $(gen_filename) generate_yasample
 	$(stdsort_filename) ascend
@@ -75,16 +71,16 @@ testg_descend: $(stdsort_filename) $(gen_filename) generate_yasample
 	$(stdsort_filename)
 
 generate_yasample:
-	echo "[INFO]: generage $(amount) random numbers from $(from) to $(to)."
+	echo "[INFO]: Generate $(amount) random numbers ranging from $(from) to $(to)."
 	$(gen_filename) $(from) $(to) $(amount)
 
 $(gen_filename): $(gen_cpp)
 	$(CCXX) $(cxxflags)  $(gen_cpp) -o $(gen_filename)
 
+sort: mkdir $(mergesort_filename) $(quicksort_filename) $(quicksort_kthSmallest_filename) $(stdsort_filename)
+
 $(stdsort_filename): $(stdsort_cpp)
 	$(CCXX) $(cxxflags) $(stdsort_cpp) -o $(stdsort_filename)
-
-sort: $(mergesort_filename) $(quicksort_filename) $(quicksort_kthSmallest_filename)
 
 $(quicksort_kthSmallest_filename): $(quicksort_kthSmallest_filename).o
 	$(CCXX) $(cxxflags) $(quicksort_kthSmallest_filename).o -o $(quicksort_kthSmallest_filename)
@@ -107,6 +103,7 @@ $(mergesort_filename).o: $(mergesort_cpp)
 mkdir:
 	$(shell mkdir -p $(BUILD_DIR))
 
+# .PHONY clean
 clean:
 	rm -rf $(BUILD_DIR)/*
 	$(MAKE) -C docs/ clean
