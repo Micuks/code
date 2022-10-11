@@ -12,7 +12,7 @@
 \end{description}
 
 \subsection{程序运行方式}
-\paragraph{排序程序的编译, 运行和测试方法}
+\subsubsection{排序程序的编译, 运行和测试方法}
 mergesort, 尾递归调用优化的quicksort和应用线性选择优化的quicksort都采用
 make进行统一构建和测试, 并使用diff命令和C++的STL库sort结果进行比较,
 以确保排序结果正确.\par
@@ -69,7 +69,7 @@ build/quicksort_kthSmallest ${infilename} [${outfilename}]
 默认情况下将同时输出到标准输出和samples/mergesort.out, 可选自定义输出到
 \$\{outfilename\}路径下. 输出格式为第一章中的\textbf{输出格式}\ref{sec:iosample}.
 
-\paragraph{文档编译}
+\subsubsection{文档编译}
 除排序程序使用make管理之外, 本实验的课程报告使用latex进行编写, 因此同样可以
 使用make进行管理. 如果要编译文档, 运行这条命令:
 \begin{lstlisting}[language=bash]
