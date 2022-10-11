@@ -379,6 +379,8 @@ int QuickSort::partition(int arr[], int l, int r, int x) {
 空间复杂度为$O(n)$.
 
 \paragraph{时间复杂度分析}
+对于\textbf{quicksort}部分的时间复杂度分析, 参见~\ref{par:quicksortTime}.\par
+
 对于\textbf{线性选择问题}部分, 最坏情况下的时间复杂度为$O(n)$.\par
 寻找长度为5的数组的中位数花费$O(1)$时间, 由于有$n/5$个长度为5的数组,
 这一步花费$O(n)$时间.\par
@@ -416,4 +418,3 @@ int QuickSort::partition(int arr[], int l, int r, int x) {
 综上, 这个算法是线性的.\par
 \textbf{然而}, 由于这个算法中的常数c很大, 导致虽然最坏情况下时间复杂度更低,
 但是实际应用中的表现却不好, 参见~\ref{sec:sortBench}.\par
-对于\textbf{quicksort}部分的时间复杂度分析, 参见~\ref{par:quicksortTime}.
