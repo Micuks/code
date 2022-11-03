@@ -5,16 +5,13 @@ class vector:
     def __init__(self, vec=[]):
         self.vec = vec
 
-    def add(self, u=[0, 0, 0]):
+    def add(self, u):
         vec = self.vec
-        ret = []
-        for i in range(0, 3):
-            ret.append(vec[i]+u[i])
-        # return [vec[i]+u[i] for i in range(0, 3)]
-        return ret
+        return [vec[i]+u.vec[i] for i in range(0, 3)]
 
-    def sub(self, u=[0, 0, 0]):
-        return self.add([-x for x in u])
+    def sub(self, u):
+        vec = self.vec
+        return [vec[i]-u.vec[i] for i in range(0, 3)]
 
     def mul(self, scalar=1):
         vec = self.vec
@@ -40,7 +37,7 @@ if __name__ == "__main__":
     if(op == "add"):
         print(to_string(v1.add(v2)))
     elif(op == "sub"):
-        print(to_string(v2.sub(v2)))
+        print(to_string(v1.sub(v2)))
     elif(op == "mul"):
         print(to_string(v1.mul(int(input()))))
     elif(op == "div"):
