@@ -145,3 +145,6 @@ python/sin
 .clangd
 nlp/track1/.vscode
 library-fa22
+
+algorithm/dynamic_programming/build
+algorithm/dynamic_programming/.idea
