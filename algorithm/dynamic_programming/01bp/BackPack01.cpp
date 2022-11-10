@@ -5,10 +5,13 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 class BackPack01 {
-  public:
-    BackPack01(std::istream &is) {
+public:
+    BackPack01(std::istream &is, bool verbose = false) {
         // Initialize array that dp uses.
         for (int i = 0; i < MAXN; i++) {
             dp[i] = new int[MAXN];
@@ -19,9 +22,12 @@ class BackPack01 {
         for (int i = 0; i < n; i++) {
             is >> w[i] >> val[i];
         }
+
+        // Set whether track items in backpack at every step.
+        trackBackPackStatus = verbose;
     }
 
-    BackPack01(std::fstream &fs) {
+    BackPack01(std::fstream &fs, bool verbose = false) {
         // Initialize array that dp uses.
         for (int i = 0; i < MAXN; i++) {
             dp[i] = new int[MAXN];
@@ -32,6 +38,8 @@ class BackPack01 {
         for (int i = 0; i < n; i++) {
             fs >> w[i] >> val[i];
         }
+        // Set whether track items in backpack at every step.
+        trackBackPackStatus = verbose;
     }
 
     ~BackPack01() {
@@ -55,23 +63,68 @@ class BackPack01 {
     }
 
     void backPackDP(); // DP to calculate best maxVal.
-                       //
+    //
     int getMaxVal() const { return maxVal; }
 
-  private:
-    int maxVal; // Max total value of items in backpack.
-    int volume; // Volume of backpack.
-    int n;      // Number of items.
+    std::string itemsInMaxValBackPackToString() {
+        std::stringstream ss;
+        ss << std::setw(4) << "Item"
+           << " | " << std::setw(4) << "Weight"
+           << " | " << std::setw(4) << "Value"
+           << " |" << std::endl;
+        for (auto &a: itemsInMaxValBackPack) {
+            ss << std::setw(4) << a << " | " << std::setw(4) << w[a] << " | "
+               << std::setw(4) << val[a] << " |" << std::endl;
+        }
+        return ss.str();
+    }
 
-    const int MAXN = 2600;
+    friend std::ostream &operator<<(std::ostream &os, BackPack01 &bp);
+
+private:
+    bool trackBackPackStatus = false; // Track items in backpack at every state.
+    int maxVal;                       // Max total value of items in backpack.
+    int volume;                       // Volume of backpack.
+    int n;                            // Number of items.
+
+    static const int MAXN = 2600;
     int *w = new int[MAXN];   // Weight of items
     int *val = new int[MAXN]; // Value of items
 
     int **dp = new int *[MAXN]; // dp[MAXN][MAXN], dp[item][volume].
+
+    class BackPackState {
+    public:
+        BackPackState(int newItemID, int previousItemID, int previousVolume)
+                : newItem(newItemID),
+                  previousState(
+                          std::make_pair(previousItemID, previousVolume)) {}
+
+        int newItem;
+        std::pair<int, int> previousState; // Link-list-like store method
+    };
+
+    class PairHasher {
+    public:
+        size_t operator()(const std::pair<int, int> &obj) const {
+            return (obj.first) * 10000 + (obj.second);
+            // return (obj.first);
+        }
+    };
+
+    std::unordered_map<std::pair<int, int>, BackPackState, PairHasher>
+            backPackStateMap; // backPackState(itemID, remainedVolume) =
+    // (itemJustInsertedID,
+    // previousBackPackState(itemID, remainedVolume)
+    std::vector<int> itemsInMaxValBackPack;
 };
 
-std::ostream &operator<<(std::ostream &os, const BackPack01 &bp) {
+std::ostream &operator<<(std::ostream &os, BackPack01 &bp) {
     os << bp.getMaxVal();
+    if (bp.trackBackPackStatus) {
+        os << std::endl;
+        os << bp.itemsInMaxValBackPackToString();
+    }
     return os;
 }
 
@@ -81,6 +134,13 @@ void BackPack01::backPackDP() {
     // Initialize
     for (int j = 0; j <= volume; j++) {
         dp[n - 1][j] = (j >= w[n - 1]) ? val[n - 1] : 0;
+        if (trackBackPackStatus) {
+            backPackStateMap.emplace(
+                    std::make_pair(n - 1, j),
+                    (j >= w[n - 1]) ? BackPackState(n - 1, -1, -1)
+                                    : BackPackState(-1, -1, -1)); // No previous
+            // backpack state
+        }
     }
 
     int i = n - 2, j = volume;
@@ -88,15 +148,36 @@ void BackPack01::backPackDP() {
         j = volume;
         for (; j >= 0; j--) {
 
-            // Compare total value of items in the backpack between put item[i]
-            // in and not put it in.
+            // Compare total value of items in the backpack between put
+            // item[i] in and not put it in.
             dp[i][j] = (j >= w[i]) ? std::max(dp[i + 1][j],
                                               dp[i + 1][j - w[i]] + val[i])
                                    : dp[i + 1][j];
+
+            if (trackBackPackStatus) {
+                backPackStateMap.emplace(std::make_pair(i, j),
+                                         (dp[i][j] == dp[i + 1][j])
+                                         ? BackPackState(-1, i + 1, j)
+                                         : BackPackState(i, i + 1, j));
+            }
         }
     }
 
     maxVal = dp[0][volume];
+    if (trackBackPackStatus) {
+        BackPackState &currState =
+                backPackStateMap.at(std::make_pair(0, volume));
+        if (currState.newItem != -1) {
+            itemsInMaxValBackPack.emplace_back(currState.newItem);
+        }
+
+        while (currState.previousState.first != -1) {
+            currState = backPackStateMap.at(currState.previousState);
+            if (currState.newItem != -1) {
+                itemsInMaxValBackPack.emplace_back(currState.newItem);
+            }
+        }
+    }
 }
 
 int main(int argc, char **argv) {
@@ -114,7 +195,7 @@ int main(int argc, char **argv) {
     } else {
         // Open default input file
         try {
-            char filename[] = "samples/bag1.in";
+            char filename[] = "../samples/bag1.in";
             fs.open(filename, std::ios_base::in);
         } catch (std::system_error &e) {
             std::cerr << e.code().message() << std::endl;
@@ -124,7 +205,7 @@ int main(int argc, char **argv) {
     assert(fs.is_open() == true);
 
     void *p = new char[sizeof(BackPack01)];
-    BackPack01 *backPack01 = new (p) BackPack01(fs);
+    BackPack01 *backPack01 = new(p) BackPack01(fs, true);
     fs.close();
 
     std::cout << backPack01->constructorDebugString();
@@ -135,7 +216,7 @@ int main(int argc, char **argv) {
 
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed =
-        std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+            std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
     std::cout.precision(6);
     std::cout << "[BackPack01DP] Time measured: " << elapsed.count() * 1e-9
               << " seconds.\n";
@@ -148,6 +229,6 @@ int main(int argc, char **argv) {
     std::cout << *backPack01 << std::endl;
 
     backPack01->~BackPack01();
-    delete[] (char *)p;
+    delete[] (char *) p;
     return 0;
 }
