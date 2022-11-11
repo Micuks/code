@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
     } else {
         // Open default input file
         try {
-            char filename[] = "../samples/bag.in";
+            char filename[] = "samples/bag.in";
             fs.open(filename, std::ios_base::in);
         } catch (std::system_error &e) {
             std::cerr << e.code().message() << std::endl;
