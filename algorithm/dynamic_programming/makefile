@@ -1,7 +1,7 @@
 CCXX := clang++
-from := -100000000
-to := 100000000
-amount := 1000000
+from := 0
+to := 1000
+amount := 500
 
 BUILD_DIR := build
 
@@ -13,13 +13,13 @@ jump_point_backpack_src_dir := 01bp_optimized
 jump_point_backpack_filename := JumpPointBackPack
 jump_point_backpack_cpp := $(jump_point_backpack_src_dir)/$(jump_point_backpack_filename).cpp
 
-# gen_cpp := data_gen/data_gen.cpp
-# gen_filename := build/data_gen
-# gen_sample := samples/yet_another_sample.in
+gen_cpp := data_gen/data_gen.cpp
+gen_filename := build/data_gen
+gen_sample := samples/yet_another_sample.in
 
-# report := docs/report.tex
-# content := $(wildcard docs/content/*.tex)
-# docs := $(report) $(content)
+report := docs/report.tex
+content := $(wildcard docs/content/*.tex)
+docs := $(report) $(content)
 
 cxxflags := -Wall -std=c++17 -O3
 
@@ -34,23 +34,23 @@ docs: $(docs)
 	# make docs
 	$(MAKE) -C docs/ all
 
-testg: $(gen_filename) $(stdsort_filename) generate_yasample
-	$(mergesort_filename) $(gen_sample)
-	$(quicksort_filename) $(gen_sample)
-	$(quicksort_kthSmallest_filename) $(gen_sample)
-	$(stdsort_filename)
-	diff samples/stdsort.out samples/mergesort.out
-	diff samples/stdsort.out samples/quicksort.out
-	diff samples/stdsort.out samples/quicksort_kthSmallest.out
+test_default: backpack jump_point_backpack
+	$(BUILD_DIR)/$(backpack_filename)
+	$(BUILD_DIR)/$(jump_point_backpack_filename)
+
+test: $(gen_filename) backpack jump_point_backpack generate_yasample
+	$(BUILD_DIR)/$(backpack_filename) $(gen_sample)
+	$(BUILD_DIR)/$(jump_point_backpack_filename) $(gen_sample)
+
+	diff samples/bag.out samples/jump_bag.out
 
 generate_yasample:
 	echo "[INFO]: Generate $(amount) random numbers ranging from $(from) to $(to)."
 	$(gen_filename) $(from) $(to) $(amount)
 
+# Data Generator
 $(gen_filename): $(gen_cpp)
 	$(CCXX) $(cxxflags)  $(gen_cpp) -o $(gen_filename)
-
-sort: mkdir $(backpack_filename)
 
 # BackPack
 $(BUILD_DIR)/$(backpack_filename): $(BUILD_DIR)/$(backpack_filename).o
@@ -72,5 +72,4 @@ mkdir:
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)/*
-
-# $(MAKE) -C docs/ clean
+	$(MAKE) -C docs/ clean

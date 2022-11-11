@@ -24,7 +24,7 @@ class Pack {
 class BackPackJumpPoint {
   public:
     BackPackJumpPoint(std::istream &is, bool verbose = false) {
-        for (int i = 0; i <= MAXN; i++) {
+        for (int i = 0; i < MAXN * 1000; i++) {
             jp[i] = new int[2];
         }
 
@@ -35,11 +35,11 @@ class BackPackJumpPoint {
         }
 
         // Set whether track items in backpack at every step.
-        trackBackPackStatus = verbose;
+        traceBackPackStatus = verbose;
     }
 
     BackPackJumpPoint(std::fstream &fs, bool verbose = false) {
-        for (int i = 0; i <= MAXN; i++) {
+        for (int i = 0; i < MAXN * 1000; i++) {
             jp[i] = new int[2];
         }
 
@@ -49,7 +49,7 @@ class BackPackJumpPoint {
             fs >> w[i] >> val[i];
         }
         // Set whether track items in backpack at every step.
-        trackBackPackStatus = verbose;
+        traceBackPackStatus = verbose;
     }
 
     ~BackPackJumpPoint() {
@@ -92,15 +92,15 @@ class BackPackJumpPoint {
     friend std::ostream &operator<<(std::ostream &os, BackPackJumpPoint &bp);
 
   private:
-    bool trackBackPackStatus = false; // Track items in backpack at every state.
+    bool traceBackPackStatus = false; // Track items in backpack at every state.
     int maxVal;                       // Max total value of items in backpack.
     int volume;                       // Volume of backpack.
     int n;                            // Number of items.
 
     static const int MAXN = 100000;
-    int *w = new int[MAXN];     // Weight of items
-    int *val = new int[MAXN];   // Value of items
-    int **jp = new int *[MAXN]; // Jump points
+    int *w = new int[MAXN];            // Weight of items
+    int *val = new int[MAXN];          // Value of items
+    int **jp = new int *[MAXN * 1000]; // Jump points
 
     std::vector<int> itemsInMaxValBackPack;
 };
@@ -173,16 +173,26 @@ void BackPackJumpPoint::JumpPointBackPackDP() {
         head[i - 1] = next;
     }
 
-    std::cout << "head:" << std::endl;
-    for (int i = 0; i <= n + 1; i++) {
-        std::cout << head[i] << ", ";
-    }
-    std::cout << "jump points:" << std::endl;
-    for (int i = 0; i < n + 1; i++) {
-        for (int j = head[i]; j < head[i] - 1; j++) {
-            std::cout << "(" << jp[i][0] << ", " << jp[i][1] << ")"
-                      << std::endl;
+    if (traceBackPackStatus) {
+        std::stringstream ss;
+        for (int i = n; i > 0; i--) {
+            ss << std::endl;
+            ss << "| " << std::setw(4) << "id"
+               << " | " << std::setw(4) << "head"
+               << " |" << std::endl;
+            ss << "| " << std::setw(4) << i << " | " << std::setw(4) << head[i]
+               << " |" << std::endl;
+            // Begin and end of item[i-1].
+            int begin = head[i];
+            int end = head[i - 1];
+
+            ss << "jump points:\n";
+            for (int j = begin; j < end; j++) {
+                ss << "| " << std::setw(4) << jp[j][0] << " | " << std::setw(4)
+                   << jp[j][1] << " |" << std::endl;
+            }
         }
+        std::cout << ss.str();
     }
 
     maxVal = jp[next - 1][1];
@@ -203,20 +213,23 @@ int main(int argc, char **argv) {
     } else {
         // Open default input file
         try {
-            char filename[] = "../samples/bag1.in";
+            char filename[] = "../samples/bag.in";
             fs.open(filename, std::ios_base::in);
         } catch (std::system_error &e) {
             std::cerr << e.code().message() << std::endl;
         }
     }
-
     assert(fs.is_open() == true);
 
     void *pJ = new char[sizeof(BackPackJumpPoint)];
-    BackPackJumpPoint *backPackJumpPoint = new (pJ) BackPackJumpPoint(fs, true);
+    bool verbose = false;
+    BackPackJumpPoint *backPackJumpPoint =
+        new (pJ) BackPackJumpPoint(fs, verbose);
     fs.close();
 
-    std::cout << backPackJumpPoint->constructorDebugString();
+    if (verbose) {
+        std::cout << backPackJumpPoint->constructorDebugString();
+    }
 
     auto begin = std::chrono::high_resolution_clock::now();
 
@@ -226,14 +239,15 @@ int main(int argc, char **argv) {
     auto elapsed =
         std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
     std::cout.precision(6);
-    std::cout << "[BackPack01DP] Time measured: " << elapsed.count() * 1e-9
+    std::cout << "[JumpPointBackPack] Time measured: " << elapsed.count() * 1e-9
               << " seconds.\n";
 
-    // char output_file_name[] = "samples/BackPack01.out";
-    // fs.open(output_file_name, std::ios_base::out);
+    char output_file_name[] = "samples/jump_bag.out";
+    fs.open(output_file_name, std::ios_base::out);
     // Print sorted numbers to output_file_name
+    fs << *backPackJumpPoint << std::endl;
     std::cout << *backPackJumpPoint << std::endl;
-    // fs.close();
+    fs.close();
 
     delete[] (char *)pJ;
     return 0;

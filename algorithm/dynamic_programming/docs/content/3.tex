@@ -1,0 +1,193 @@
+对一般方法和应用跳跃点优化的动态规划解0-1背包问题的程序执行环境和
+运行方式均相同, 包括其测试结果都在此一并介绍.
+
+\subsection{程序执行环境}
+在以下环境下进行过测试.
+
+\begin{description}
+	\item[操作系统] macOS 13.1 22C5044e arm64;
+	\item[编译器] clang-1400.0.29.102;
+	\item[构建和测试工具] GNU Make 3.81;
+	\item[文档编译工具] XeTeX 3.141592653-2.6-0.999994 (TeX Live 2022)
+	\item[文本编辑器] nvim v0.8.0
+\end{description}
+
+\subsection{程序运行方式}
+\subsubsection{排序程序的编译, 运行和测试方法}
+一般方法和应用跳跃点优化的动态规划解0-1背包问题都采用
+make进行统一构建和测试, 并使用diff命令将结果进行比较,
+以确保排序结果正确.\par
+
+程序(及文档)均使用make进行构建, 对于排序程序的构建, 在shell中执行以下命令:
+\begin{lstlisting}[language=bash]
+make
+\end{lstlisting}
+二进制文件 BackPack01, JumpPointBackPack 将被编译在build/目录下,
+如果要运行默认测试, 可以在shell中执行这条命令:
+\begin{lstlisting}[language=bash]
+make test
+\end{lstlisting}
+默认情况下会使用数据生成器data\_gen生成范围在0到100000范围内的500个数字进行测试.
+因为当数据太多的时候, 使用跳跃点方法进行计算的时候会发生溢出.\par
+
+其中, data\_gen生成的输入存储在samples/yet\_another\_sample.in中,
+程序的输出存储在samples/bag.out和samples/jump\_bag.out中. \par
+
+如果要使用数据生成器data\_gen生成指定范围内的均匀分布的随机数进行测试, 可以用
+这条命令:
+\begin{lstlisting}[language=bash]
+make test [from=<range start>] [to=<range end>] [amount=<number of random numbers>]
+# e.g. 
+# make test from=0 to=12345 amount=50
+\end{lstlisting}
+
+如果要使用自定义文件进行测试, 可以用这条命令:
+\begin{lstlisting}
+# 一般的0-1背包动态规划解法
+build/BackPack01 ${infilename} [${outfilename}]
+# 跳跃点优化的0-1背包动态规划解法
+build/JumpPointBackPack ${infilename} [${outfilename}]
+\end{lstlisting}
+其中, \$\{infilename\}是按第一章中的\textbf{输入格式}\ref{sec:iosample}组织的输入数据.
+默认情况下将同时输出到标准输出和samples/mergesort.out, 可选自定义输出到
+\$\{outfilename\}路径下. 输出格式为第一章中的\textbf{输出格式}\ref{sec:iosample}.
+
+\subsubsection{文档编译}
+除排序程序使用make管理之外, 本实验的课程报告使用latex进行编写, 因此同样可以
+使用make进行管理. 如果要编译文档, 运行这条命令:
+\begin{lstlisting}[language=bash]
+make docs
+\end{lstlisting}
+make将调用xelatex进行编译; 为了确保cross-referencing的正确工作, make将执行两遍
+xelatex编译.\par
+编译生成的中间文件及文档都保存在docs/build下, docs/report.pdf和docs/build/
+report.pdf均是生成的实验报告.
+
+\subsection{程序执行示例}
+\label{sec:dpBench}
+此处演示程序从构建到测试的过程.
+\begin{lstlisting}[language=bash]
+# user input
+make clean
+
+# console output
+rm -rf build/*
+/Library/Developer/CommandLineTools/usr/bin/make -C docs/ clean
+rm -rf build/*
+
+# user input
+make sort # Compile sort programs
+
+# console output
+clang++ -Wall -std=c++11 -O3 -c -g mergesort/mergesort.cpp -o build/mergesort.o
+clang++ -Wall -std=c++11 -O3 build/mergesort.o -o build/mergesort
+clang++ -Wall -std=c++11 -O3 -c -g quicksort/quicksort.cpp -o build/quicksort.o
+clang++ -Wall -std=c++11 -O3 build/quicksort.o -o build/quicksort
+clang++ -Wall -std=c++11 -O3 -c -g quicksort/quicksort_kthSmallest.cpp -o build/quicksort_kthSmallest.o
+clang++ -Wall -std=c++11 -O3 build/quicksort_kthSmallest.o -o build/quicksort_kthSmallest
+clang++ -Wall -std=c++11 -O3 data_gen/stdsort.cpp -o build/stdsort
+
+# user input
+make test # Run default test with sample given with assignment
+
+# samples/mergesort.in:
+# 5
+# 9 11 5 22 12
+
+# console output
+build/mergesort samples/mergesort.in
+[MergeSort] Time measured: 1.042e-06 seconds.
+build/quicksort samples/quicksort.in
+[QuickSort] Time measured: 7.08e-07 seconds.
+build/quicksort_kthSmallest samples/quicksort.in
+[QuickSort_kthSmallest] Time measured: 3.417e-06 seconds.
+build/stdsort samples/quicksort.in
+[StdSort] Time measured: 1.541e-06 seconds.
+diff samples/stdsort.out samples/mergesort.out
+diff samples/stdsort.out samples/quicksort.out
+diff samples/stdsort.out samples/quicksort_kthSmallest.out
+
+# user input
+# test with random number generator
+make testg # Compile data_gen and generate sample for test purpose
+
+# console output
+clang++ -Wall -std=c++11 -O3  data_gen/data_gen.cpp -o build/data_gen
+echo "[INFO]: generage 1000000 random numbers from -100000000 to 100000000."
+[INFO]: generage 1000000 random numbers from -100000000 to 100000000.
+build/data_gen -100000000 100000000 1000000
+build/mergesort samples/yet_another_sample.in
+[MergeSort] Time measured: 0.0442986 seconds.
+build/quicksort samples/yet_another_sample.in
+[QuickSort] Time measured: 0.0633752 seconds.
+build/quicksort_kthSmallest samples/yet_another_sample.in
+[QuickSort_kthSmallest] Time measured: 0.260368 seconds.
+build/stdsort
+[StdSort] Time measured: 0.0522087 seconds.
+diff samples/stdsort.out samples/mergesort.out
+diff samples/stdsort.out samples/quicksort.out
+diff samples/stdsort.out samples/quicksort_kthSmallest.out
+
+# user input
+make testg from=-100000000 to=100000000 amount=10000
+# It means generate 10000 random numbers ranging from -1e8 to 1e8.
+
+# console output
+echo "[INFO]: generage 10000 random numbers from -100000000 to 100000000."
+[INFO]: generage 10000 random numbers from -100000000 to 100000000.
+build/data_gen -100000000 100000000 10000
+build/mergesort samples/yet_another_sample.in
+[MergeSort] Time measured: 0.000659459 seconds.
+build/quicksort samples/yet_another_sample.in
+[QuickSort] Time measured: 0.000819 seconds.
+build/quicksort_kthSmallest samples/yet_another_sample.in
+[QuickSort_kthSmallest] Time measured: 0.00246375 seconds.
+build/stdsort
+[StdSort] Time measured: 0.000479917 seconds.
+diff samples/stdsort.out samples/mergesort.out
+diff samples/stdsort.out samples/quicksort.out
+diff samples/stdsort.out samples/quicksort_kthSmallest.out
+
+# user input
+make testg_ascend 
+# Generate ascending random numbers with date_gen
+# to test the performance of sorting algorighms on ascending
+# dateset.
+
+# console output
+echo "[INFO]: generage 1000000 random numbers from -100000000 to 100000000."
+[INFO]: generage 1000000 random numbers from -100000000 to 100000000.
+build/data_gen -100000000 100000000 1000000
+build/stdsort ascend
+cp samples/stdsort.out samples/yet_another_sample.in
+build/mergesort samples/yet_another_sample.in
+[MergeSort] Time measured: 0.0212245 seconds.
+build/quicksort samples/yet_another_sample.in
+[QuickSort] Time measured: 0.0133075 seconds.
+build/quicksort_kthSmallest samples/yet_another_sample.in
+[QuickSort_kthSmallest] Time measured: 0.0807739 seconds.
+build/stdsort
+[StdSort] Time measured: 0.000937209 seconds.
+
+# user input
+make testg_descend
+# Generate ascending random numbers with date_gen
+# to test the performance of sorting algorighms on ascending
+# dateset.
+
+# console output
+echo "[INFO]: generage 1000000 random numbers from -100000000 to 100000000."
+[INFO]: generage 1000000 random numbers from -100000000 to 100000000.
+build/data_gen -100000000 100000000 1000000
+build/stdsort descend
+cp samples/stdsort.out samples/yet_another_sample.in
+build/mergesort samples/yet_another_sample.in
+[MergeSort] Time measured: 0.0205804 seconds.
+build/quicksort samples/yet_another_sample.in
+[QuickSort] Time measured: 0.0150562 seconds.
+build/quicksort_kthSmallest samples/yet_another_sample.in
+[QuickSort_kthSmallest] Time measured: 0.149183 seconds.
+build/stdsort
+[StdSort] Time measured: 0.00165979 seconds.
+
+\end{lstlisting}

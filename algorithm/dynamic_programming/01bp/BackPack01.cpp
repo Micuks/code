@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
     } else {
         // Open default input file
         try {
-            char filename[] = "../samples/bag1.in";
+            char filename[] = "../samples/bag.in";
             fs.open(filename, std::ios_base::in);
         } catch (std::system_error &e) {
             std::cerr << e.code().message() << std::endl;
@@ -182,7 +182,7 @@ int main(int argc, char **argv) {
     assert(fs.is_open() == true);
 
     void *p = new char[sizeof(BackPack01)];
-    bool verbose = true;
+    bool verbose = false;
     BackPack01 *backPack01 = new (p) BackPack01(fs, verbose);
     fs.close();
 
@@ -201,11 +201,11 @@ int main(int argc, char **argv) {
     std::cout << "[BackPack01DP] Time measured: " << elapsed.count() * 1e-9
               << " seconds.\n";
 
-    // char output_file_name[] = "samples/BackPack01.out";
-    // fs.open(output_file_name, std::ios_base::out);
-    // // Print sorted numbers to output_file_name
-    // fs << *backPack01;
-    // fs.close();
+    char output_file_name[] = "samples/bag.out";
+    fs.open(output_file_name, std::ios_base::out);
+    // Print sorted numbers to output_file_name
+    fs << *backPack01 << std::endl;
+    fs.close();
 
     if (verbose) {
         backPack01->backTrace();
