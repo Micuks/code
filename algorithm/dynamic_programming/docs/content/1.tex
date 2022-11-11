@@ -1,0 +1,40 @@
+\subsection{0-1背包问题}
+\subsubsection{题目描述}
+有N件物品和一个容量为V的背包. 第i件物品的大小是$c_i$, 价值是$w_i$.
+求解将哪些物品装入背包可以让这些物品的大小总和不超过背包容量, 且价值总和最大.
+\subsubsection{输入格式}
+输入文件名为bag.in, 输入共两行.
+
+\begin{itemize}
+	\item 第一行有2个整数V和N, 用一个空格隔开, V代表背包容量, N代表物品数目.
+	\item 接下来的N行每行包括两个整数, 分别表示某件物品的大小和其价值.
+\end{itemize}
+
+\subsubsection{输出格式}
+输出文件名为bag.out, 输出共一行.
+第一行包含1个整数表示最大价值.
+\subsubsection{输入输出样例}
+\label{sec:iosample}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|l|}
+		\hline
+		bag.in & bag.out \\
+		\hline
+		70 3   & 3       \\
+		71 100 & ~       \\
+		69 1   & ~       \\
+		1 2    & ~       \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsubsection{数据范围}
+$0 < N \leq 2500$,
+$| V | \leq 2500$,
+$0 < c_i \leq 2500$,
+$0 < w_i \leq 100000$.
+
+\subsubsection{解法}
+分别使用基本的动态规划方法求解和应用跳跃点优化的动态规划方法求解.
+
