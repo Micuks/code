@@ -24,9 +24,8 @@ class Pack {
 class BackPackJumpPoint {
   public:
     BackPackJumpPoint(std::istream &is, bool verbose = false) {
-        // Initialize array that dp uses.
-        for (int i = 0; i < MAXN; i++) {
-            dp[i] = new int[MAXN];
+        for (int i = 0; i <= MAXN; i++) {
+            jp[i] = new int[2];
         }
 
         // Read data from is.
@@ -40,9 +39,8 @@ class BackPackJumpPoint {
     }
 
     BackPackJumpPoint(std::fstream &fs, bool verbose = false) {
-        // Initialize array that dp uses.
-        for (int i = 0; i < MAXN; i++) {
-            dp[i] = new int[MAXN];
+        for (int i = 0; i <= MAXN; i++) {
+            jp[i] = new int[2];
         }
 
         // Read data from is.
@@ -55,13 +53,13 @@ class BackPackJumpPoint {
     }
 
     ~BackPackJumpPoint() {
+        for (int i = 0; i <= n; i++) {
+            delete[] jp[i];
+        }
+        delete[] jp;
+
         delete[] w;
         delete[] val;
-
-        for (int i = 0; i < MAXN; i++) {
-            delete[] dp[i];
-        }
-        delete[] dp;
     }
 
     std::string constructorDebugString() {
@@ -100,88 +98,94 @@ class BackPackJumpPoint {
     int n;                            // Number of items.
 
     static const int MAXN = 2600;
-    int *w = new int[MAXN];   // Weight of items
-    int *val = new int[MAXN]; // Value of items
-    Pack pack[MAXN];
+    int *w = new int[MAXN];     // Weight of items
+    int *val = new int[MAXN];   // Value of items
+    int **jp = new int *[MAXN]; // Jump points
 
-    int **dp = new int *[MAXN]; // dp[MAXN][MAXN], dp[item][volume].
-
-    class BackPackState {
-      public:
-        BackPackState(int newItemID, int previousItemID, int previousVolume)
-            : newItem(newItemID),
-              previousState(std::make_pair(previousItemID, previousVolume)) {}
-
-        int newItem;
-        std::pair<int, int> previousState; // Link-list-like store method
-    };
-
-    class PairHasher {
-      public:
-        size_t operator()(const std::pair<int, int> &obj) const {
-            return (obj.first) * 10000 + (obj.second);
-            // return (obj.first);
-        }
-    };
-
-    std::unordered_map<std::pair<int, int>, BackPackState, PairHasher>
-        backPackStateMap; // backPackState(itemID, remainedVolume) =
-    // (itemJustInsertedID,
-    // previousBackPackState(itemID, remainedVolume)
     std::vector<int> itemsInMaxValBackPack;
 };
 
+std::ostream &operator<<(std::ostream &os, BackPackJumpPoint &bp) {
+    os << bp.maxVal;
+    return os;
+}
+
 void BackPackJumpPoint::JumpPointBackPackDP() {
-    std::priority_queue<Pack> pq;
-    std::queue<Pack> turn;
-    Pack initPack;
-    pq.push(initPack);
-    for (int i = 0; i < n; i++) {
-        std::priority_queue<Pack> newPq;
-        for (int j = 0; j < pq.size(); j++) {
-            Pack tmp;
-            tmp.weight = pq.top().weight + w[i];
-            tmp.val = pq.top().val + val[i];
-            newPq.push(pq.top());
-            newPq.push(tmp);
-            pq.pop();
-        }
-        while (!newPq.empty()) {
-            pq.push(newPq.top());
-            newPq.pop();
-        }
-    }
+    int *head = new int[n + 2]; // Track jump point start position.
+    head[n] = 0;
+    jp[0][0] = 0; // Store item weight
+    jp[0][1] = 0; // Store item value
 
-    int preWeight = 0;
-    int preVal = 0;
-    while (!pq.empty()) {
-        if ((preWeight != pq.top().weight || preWeight == 0) &&
-            pq.top().weight <= volume) {
-            if (preVal >= pq.top().val) {
-                pq.pop();
-                continue;
+    // Left points to first jump point of p[i+1], right points to last jump
+    // point of p[i+1]. Next is position where next jump point will store.
+    int left = 0, right = 0, next = 1;
+    head[n - 1] = 1; // Points to the position of first jump point of item[n-1].
+
+    for (int i = n - 1; i >= 0; i--) {
+        int k = left; // k points to jump points of p[], move k to
+                      // evaluate controlled points in p[] and
+                      // p[]+(w,v)
+        for (int j = left; j <= right; j++) {
+
+            if (jp[j][0] + w[i] > volume) {
+                // No enough backpack space to fit item[i] in, exit loop.
+                break;
             }
-            turn.push(pq.top());
-            preWeight = pq.top().weight;
-            preVal = pq.top().val;
+
+            // Compute new jump point as jp[]+(w,v).
+            int x = jp[j][0] + w[i];
+            int y = jp[j][1] + val[i];
+
+            // If jp[k][0] < x, then it must be a jump point of current
+            // item.
+            while (k <= right && jp[k][0] < x) {
+                jp[next][0] = jp[k][0];
+                jp[next++][1] = jp[k++][1];
+            }
+
+            // Clear controlled jump point.
+            if (k <= right && jp[k][0] == x) {
+                if (y < jp[k][1]) {
+                    y = jp[k][1];
+                }
+                k++;
+            }
+
+            if (y > jp[next - 1][1]) {
+                jp[next][0] = x;
+                jp[next++][1] = y;
+            }
+
+            while (k <= right && jp[k][1] <= jp[next - 1][1]) {
+                k++;
+            }
         }
-        pq.pop();
+
+        // Add remaining jump points.
+        while (k <= right) {
+            jp[next][0] = jp[k][0];
+            jp[next++][1] = jp[k++][1];
+        }
+
+        left = right + 1;
+        right = next - 1;
+
+        head[i - 1] = next;
     }
 
-    std::cout << "Jump points:" << std::endl;
-
-    std::stringstream ss;
-    ss << std::setw(6) << "Weight"
-       << " | " << std::setw(5) << "Value"
-       << " |" << std::endl;
-
-    while (!turn.empty()) {
-        auto &a = turn.front();
-        ss << std::setw(6) << a.weight << " | " << std::setw(5) << a.val << " |"
-           << std::endl;
-        turn.pop();
+    std::cout << "head:" << std::endl;
+    for (int i = 0; i <= n + 1; i++) {
+        std::cout << head[i] << ", ";
     }
-    std::cout << ss.str();
+    std::cout << "jump points:" << std::endl;
+    for (int i = 0; i < n + 1; i++) {
+        for (int j = head[i]; j < head[i] - 1; j++) {
+            std::cout << "(" << jp[i][0] << ", " << jp[i][1] << ")"
+                      << std::endl;
+        }
+    }
+
+    maxVal = jp[next - 1][1];
 }
 
 int main(int argc, char **argv) {
@@ -227,8 +231,8 @@ int main(int argc, char **argv) {
 
     // char output_file_name[] = "samples/BackPack01.out";
     // fs.open(output_file_name, std::ios_base::out);
-    // // Print sorted numbers to output_file_name
-    // fs << *backPack01;
+    // Print sorted numbers to output_file_name
+    std::cout << *backPackJumpPoint << std::endl;
     // fs.close();
 
     delete[] (char *)pJ;
