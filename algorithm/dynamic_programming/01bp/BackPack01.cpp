@@ -17,11 +17,14 @@ class BackPack01 {
         // Initialize array that dp uses.
         for (int i = 0; i < MAXN; i++) {
             dp[i] = new int[MAXN];
-            std::memset(dp[i], 0, MAXN * sizeof(int));
         }
 
         // Read data from is.
         is >> volume >> n;
+
+        for (int j = 0; j <= volume; j++) {
+            dp[n][j] = 0;
+        }
         for (int i = 0; i < n; i++) {
             is >> w[i] >> val[i];
         }
@@ -38,6 +41,11 @@ class BackPack01 {
 
         // Read data from is.
         fs >> volume >> n;
+
+        for (int j = 0; j <= volume; j++) {
+            dp[n][j] = 0;
+        }
+
         for (int i = 0; i < n; i++) {
             fs >> w[i] >> val[i];
         }
@@ -91,7 +99,7 @@ class BackPack01 {
     int n;                            // Number of items.
     std::vector<int> itemsInMaxValBackPack;
 
-    static const int MAXN = 2600;
+    static const int MAXN = 100000;
 
     int *w = new int[MAXN];   // Weight of items
     int *val = new int[MAXN]; // Value of items
@@ -100,16 +108,15 @@ class BackPack01 {
 };
 
 void BackPack01::backTrace() {
-    int i = n, j = volume;
+    int i = 0, j = volume;
     std::queue<int> q;
-    while (i > 0) {
+    while (i < n) {
         int curr = dp[i][j];
-        if (dp[i - 1][j] == curr) {
-            i--;
-        } else {
-            q.push(--i); // TODO: To verify.
+        if (dp[i + 1][j] != curr) {
+            q.push(i); // TODO: To verify.
             j -= w[i];
         }
+        i++;
     }
     while (!q.empty()) {
         itemsInMaxValBackPack.push_back(q.front());
@@ -179,7 +186,9 @@ int main(int argc, char **argv) {
     BackPack01 *backPack01 = new (p) BackPack01(fs, verbose);
     fs.close();
 
-    std::cout << backPack01->constructorDebugString();
+    if (verbose) {
+        std::cout << backPack01->constructorDebugString();
+    }
 
     auto begin = std::chrono::high_resolution_clock::now();
 
