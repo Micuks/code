@@ -97,7 +97,7 @@ class BackPackJumpPoint {
     int volume;                       // Volume of backpack.
     int n;                            // Number of items.
 
-    static const int MAXN = 2600;
+    static const int MAXN = 100000;
     int *w = new int[MAXN];     // Weight of items
     int *val = new int[MAXN];   // Value of items
     int **jp = new int *[MAXN]; // Jump points
