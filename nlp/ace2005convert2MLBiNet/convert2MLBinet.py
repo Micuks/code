@@ -23,12 +23,13 @@ def replace_bracket(word: str):
 def flatten(lists=[]):
     result = []
     for l in lists:
-        if len(l) == 1:
-            result = lists
-            break
-        else:
-            result = l
-            break
+        for i in l:
+            if isinstance(i, list):
+                result = flatten(l)
+                break
+            else:
+                result = lists
+                break
 
     return result
 
@@ -107,14 +108,15 @@ def preprocess(process_type, filename, debug=False):
         # Store output result line by line in list.
         # e.g. lines = ["A B O O O", "C D O O O"]
 
-        while --LINE_LIMIT:
+        while LINE_LIMIT:
+            LINE_LIMIT-=1
             # Parse json objects line by line.
             str_jsonobj = json_file.readline()
             if not str_jsonobj:
                 break
 
             if debug:
-                print(f"current_line: {str_jsonobj}")
+                print(f"current_line[{1000000-LINE_LIMIT}]: {str_jsonobj}")
 
             jsonobj = json.loads(str_jsonobj)
             sentence = jsonobj["sentence"]
