@@ -148,3 +148,15 @@ library-fa22
 
 algorithm/dynamic_programming/build
 algorithm/dynamic_programming/.idea
+algorithm/dynamic_programming/docs/report.aux
+algorithm/dynamic_programming/docs/report.fdb_latexmk
+algorithm/dynamic_programming/docs/report.fls
+algorithm/dynamic_programming/docs/report.log
+algorithm/dynamic_programming/docs/report.out
+algorithm/dynamic_programming/docs/report.synctex.gz
+algorithm/dynamic_programming/docs/report.toc
+algorithm/dynamic_programming/docs/report.xdv
+algorithm/dynamic_programming/samples/BackPack01.out
+algorithm/dynamic_programming/samples/bag.out
+algorithm/dynamic_programming/samples/bag3.out
+algorithm/dynamic_programming/samples/jump_bag.out
