@@ -42,8 +42,6 @@ test: $(gen_filename) backpack jump_point_backpack generate_yasample
 	$(BUILD_DIR)/$(backpack_filename) $(gen_sample)
 	$(BUILD_DIR)/$(jump_point_backpack_filename) $(gen_sample)
 
-	diff samples/bag.out samples/jump_bag.out
-
 generate_yasample:
 	echo "[INFO]: Generate $(amount) random numbers ranging from $(from) to $(to)."
 	$(gen_filename) $(from) $(to) $(amount)

@@ -182,13 +182,9 @@ int main(int argc, char **argv) {
     assert(fs.is_open() == true);
 
     void *p = new char[sizeof(BackPack01)];
-    bool verbose = false;
+    bool verbose = true;
     BackPack01 *backPack01 = new (p) BackPack01(fs, verbose);
     fs.close();
-
-    if (verbose) {
-        std::cout << backPack01->constructorDebugString();
-    }
 
     auto begin = std::chrono::high_resolution_clock::now();
 
