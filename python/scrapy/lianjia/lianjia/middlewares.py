@@ -101,3 +101,19 @@ class LianjiaDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+# Proxy Middleware
+
+
+class ProxiesMiddleware(object):
+    def __init__(self, settings):
+        pass
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.settings)
+
+    def process_request(self, request, spider):
+        custom_proxy = "http://127.0.0.1:8001"
+        print(f"Use proxy: {custom_proxy}")
+        request.meta['proxy'] = custom_proxy

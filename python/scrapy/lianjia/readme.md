@@ -38,4 +38,4 @@
 ### 防反爬策略
 
 - 随机User-Agent: 使用`scrapy-user-agents`来随机切换UA.
-- 使用代理: 在~/.bashrc中设置`http_proxy`和`https_proxy`为代理IP和Port.
+- 使用代理: 
