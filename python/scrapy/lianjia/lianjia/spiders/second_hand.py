@@ -7,10 +7,10 @@ class SecondHandSpider(scrapy.Spider):
     path_to_save_response = 'second_hand_house_response.html'
 
     def start_requests(self):
-        urls = [
-            'file:///Users/micuks/dev/mycode/python/scrapy/lianjia/second_hand_house_response.html']
-        # urls = ['https://bj.lianjia.com/ershoufang/pg' +
-        #         str(i)+'/' for i in range(3, 4, 1)]
+        # urls = [
+        #     'file:///Users/micuks/dev/mycode/python/scrapy/lianjia/second_hand_house_response.html']
+        urls = ['https://bj.lianjia.com/ershoufang/pg' +
+                str(i)+'/' for i in range(3, 8, 1)]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
