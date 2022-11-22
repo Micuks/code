@@ -8,7 +8,7 @@ class NewHouseSpider(scrapy.Spider):
     path_to_save_response = 'response.html'
 
     def start_requests(self):
-        urls = ['http://bj.fang.lianjia.com/pg' +
+        urls = ['http://bj.fang.lianjia.com/loupan/pg' +
                 str(i)+'/' for i in range(3, 8, 1)]
         # urls = ['file:///Users/micuks/dev/mycode/python/scrapy/lianjia/response.html']
         for url in urls:

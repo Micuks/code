@@ -115,5 +115,5 @@ class ProxiesMiddleware(object):
 
     def process_request(self, request, spider):
         custom_proxy = "http://127.0.0.1:8001"
-        print(f"Use proxy: {custom_proxy}")
+        print(f"Using proxy: {custom_proxy}")
         request.meta['proxy'] = custom_proxy
