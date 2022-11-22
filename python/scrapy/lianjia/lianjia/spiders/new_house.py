@@ -4,21 +4,16 @@ import scrapy
 class NewHouseSpider(scrapy.Spider):
     name = 'new_house'
     allowed_domains = ['bj.fang.lianjia.com']
-    current_page = 1
-    path_to_save_response = 'response.html'
+    path_to_save_response = 'new_hosue_response.html'
 
     def start_requests(self):
         urls = ['http://bj.fang.lianjia.com/loupan/pg' +
                 str(i)+'/' for i in range(3, 8, 1)]
-        # urls = ['file:///Users/micuks/dev/mycode/python/scrapy/lianjia/response.html']
+        # urls = ['file:///Users/micuks/dev/mycode/python/scrapy/lianjia/new_house_response.html']
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        # Ensure that proxy really returns the target page by checking the
-        # lianjia logo. If not, retry request with dont_filter=True
-        # if not response.xpath("//a[@class='logo']"):
-        #     yield scrapy.Request(url=response.url, dont_filter=True)
         # Write response to file for debugging
         with open(self.path_to_save_response, "w") as response_file:
             response_file.write(response.text)
@@ -57,7 +52,7 @@ class NewHouseSpider(scrapy.Spider):
                     ".//div[@class='resblock-price']/div[@class='second']/text()").get()
 
             def decode_unicode_str(str):
-                return str.encode('utf-8').decode('unicode_escape')
+                return str.encode('utf-8').decode('utf-8')
 
             def decode_unicode_list(lstr):
                 return [decode_unicode_str(s) for s in lstr]
