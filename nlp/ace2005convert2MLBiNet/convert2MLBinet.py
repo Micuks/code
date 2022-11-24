@@ -157,6 +157,10 @@ def preprocess(process_type, filename, debug=False):
                 # Append this record to lines.
                 lines.append(str_line)
 
+            # Append an empty line to the end of each sentence to fit the
+            # UNTOLD SENTENCE SPLITTING FORMAT OF MLBINET!
+            lines.append('\n')
+
             print("-"*10)
 
         assert LINE_LIMIT >= 0
