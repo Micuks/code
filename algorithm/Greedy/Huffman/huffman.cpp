@@ -27,12 +27,12 @@ string arrayToString(int *arr, int len) {
 class Node {
   public:
     int identifier;
-    int freq;
+    double freq;
     class Node *left, *right;
 };
 
 ostream &operator<<(ostream &os, Node node) {
-    os << "(" << setw(2) << node.identifier << ", " << setw(2) << node.freq
+    os << setw(2) << "(" << node.identifier << ", " << setw(2) << node.freq
        << ")";
     return os;
 }
@@ -43,7 +43,7 @@ class MinHeap {
     int capacity;
     int heapSize;
 
-    int comparator(Node *a, Node *b) { return (a->freq - b->freq); }
+    double comparator(Node *a, Node *b) { return (a->freq - b->freq); }
     int parent(int idx) { return (idx - 1) / 2; }
     int left(int idx) { return (idx * 2) + 1; }
     int right(int idx) { return (idx * 2) + 2; }
@@ -52,13 +52,13 @@ class MinHeap {
     // Constructor
     MinHeap(int capacity);
 
-    MinHeap(int identifiers[], int freq[], int size);
+    MinHeap(int identifiers[], double freq[], int size);
 
     MinHeap(MinHeap &minHeap)
         : harr(minHeap.harr), capacity(minHeap.capacity),
           heapSize(minHeap.heapSize) {}
 
-    Node *newNode(int identifier, int freq);
+    Node *newNode(int identifier, double freq);
 
     void minHeapify(int rootIdx);
 
@@ -81,7 +81,7 @@ MinHeap::MinHeap(int capacity) {
     this->harr = new Node *[capacity];
 }
 
-MinHeap::MinHeap(int identifiers[], int freq[], int size) {
+MinHeap::MinHeap(int identifiers[], double freq[], int size) {
     heapSize = 0;
     capacity = size;
     harr = new Node *[capacity];
@@ -94,7 +94,7 @@ MinHeap::MinHeap(int identifiers[], int freq[], int size) {
     buildMinHeap();
 }
 
-Node *MinHeap::newNode(int identifier, int freq) {
+Node *MinHeap::newNode(int identifier, double freq) {
     Node *tmp = new Node;
     tmp->left = tmp->right = NULL;
     tmp->identifier = identifier;
@@ -145,7 +145,6 @@ void MinHeap::buildMinHeap() {
 
 string MinHeap::toString() {
     stringstream ss;
-    cout << "heapSize: " << heapSize << endl;
     for (int i = 0; i < heapSize; i++) {
         ss << *harr[i] << " ";
     }
@@ -160,27 +159,30 @@ class Huffman {
 
   public:
     Huffman(MinHeap minHeap);
-    Huffman(int identifiers[], int freq[], int size);
+    Huffman(int identifiers[], double freq[], int size);
 
     // Separate build huffman tree alone to test how much time it costs.
     void buildHuffmanTree();
 
-    string minHeapToString() { return minHeap.toString(); }
+    double getExpectation(Node *root, double &exp, int top);
+
     string codesToString(Node *root, int arr[], int top);
     string codesToString(int arr[], int top);
 };
 
 Huffman::Huffman(MinHeap minHeap) : minHeap(minHeap) {}
 
-Huffman::Huffman(int identifiers[], int freq[], int size)
+Huffman::Huffman(int identifiers[], double freq[], int size)
     : minHeap(identifiers, freq, size) {}
 
 void Huffman::buildHuffmanTree() {
     Node *left, *right, *top;
+
     while (!(minHeap.getHeapSize() == 1)) {
         // Extract two minimum freq items from min heap.
         left = minHeap.extractMin();
         right = minHeap.extractMin();
+        // cout << *left << ", " << *right << endl;
 
         // Create a new internal node with frequency equal to the sum of the two
         // nodes' frequencies. Make the two extracted nodes as left and right
@@ -199,6 +201,7 @@ void Huffman::buildHuffmanTree() {
 
 string Huffman::codesToString(Node *root, int *arr, int top) {
     stringstream ss;
+
     if (root->left) {
         arr[top] = 0;
         ss << codesToString(root->left, arr, top + 1);
@@ -209,7 +212,7 @@ string Huffman::codesToString(Node *root, int *arr, int top) {
     }
     if (minHeap.isLeaf(root)) {
         ss << *root << ": ";
-        ss << arrayToString(arr + top, top);
+        ss << arrayToString(arr, top);
     }
 
     return ss.str();
@@ -217,6 +220,21 @@ string Huffman::codesToString(Node *root, int *arr, int top) {
 
 string Huffman::codesToString(int arr[], int top) {
     return codesToString(huffmanTree, arr, top);
+}
+
+// Get expectation of Huffman code length by adding each leaf's code length *
+// appearance frequnce recursively in DFS way.
+double Huffman::getExpectation(Node *root, double &exp, int top) {
+    if (root->left) {
+        exp += getExpectation(root->left, exp, top + 1);
+    }
+    if (root->right) {
+        exp += getExpectation(root->right, exp, top + 1);
+    }
+    if (minHeap.isLeaf(root)) {
+        return top * root->freq;
+    }
+    return 0.0;
 }
 
 // int fstream_main(int argc, char **argv) {
@@ -277,10 +295,9 @@ string Huffman::codesToString(int arr[], int top) {
 //     return 0;
 // }
 
-void huffmanCodes(int identifiers[], int freq[], int size) {
+void huffmanCodes(int identifiers[], double freq[], int size) {
     Huffman huffman(identifiers, freq, size);
     huffman.buildHuffmanTree();
-    huffman.minHeapToString();
 
     int huffmanArr[MAXN], top = 0;
     cout << huffman.codesToString(huffmanArr, top);
@@ -288,10 +305,11 @@ void huffmanCodes(int identifiers[], int freq[], int size) {
 
 int stdio_main(int argc, char **argv) {
     int identifiers[] = {1, 2, 3, 4, 5, 6};
-    int freq[] = {5, 9, 12, 13, 16, 45};
+    double freq[] = {5.0, 9.0, 12.0, 13.0, 16.0, 45.0};
+    // int identifiers[] = {1, 22, 333, 4};
+    // double freq[] = {0.1, 0.1, 0.2, 0.6};
     int size = sizeof(identifiers) / sizeof(identifiers[0]);
-    MinHeap minHeap(identifiers, freq, size);
-    cout << minHeap.toString();
+
     huffmanCodes(identifiers, freq, size);
 
     return 0;
