@@ -1,7 +1,10 @@
+#include "../utils/CLIParser.hpp"
 #include <cassert>
+#include <chrono>
 #include <climits>
 #include <cstdlib>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -53,6 +56,7 @@ class MinHeap {
     MinHeap(int capacity);
 
     MinHeap(int identifiers[], double freq[], int size);
+    MinHeap(double freq[], int size);
 
     MinHeap(MinHeap &minHeap)
         : harr(minHeap.harr), capacity(minHeap.capacity),
@@ -79,6 +83,18 @@ MinHeap::MinHeap(int capacity) {
     heapSize = 0;
     this->capacity = capacity;
     this->harr = new Node *[capacity];
+}
+
+MinHeap::MinHeap(double freq[], int size) {
+    int *identifiers = new int[size];
+    heapSize = 0;
+    capacity = size;
+    harr = new Node *[capacity];
+    for (int i = 0; i < capacity; i++) {
+        harr[i] = newNode(identifiers[i], freq[i]);
+        heapSize++;
+    }
+    buildMinHeap();
 }
 
 MinHeap::MinHeap(int identifiers[], double freq[], int size) {
@@ -160,10 +176,12 @@ class Huffman {
   public:
     Huffman(MinHeap minHeap);
     Huffman(int identifiers[], double freq[], int size);
+    Huffman(double freq[], int size);
 
     // Separate build huffman tree alone to test how much time it costs.
     void buildHuffmanTree();
 
+    double getExpectation(double &exp, int top);
     double getExpectation(Node *root, double &exp, int top);
 
     string codesToString(Node *root, int arr[], int top);
@@ -174,6 +192,7 @@ Huffman::Huffman(MinHeap minHeap) : minHeap(minHeap) {}
 
 Huffman::Huffman(int identifiers[], double freq[], int size)
     : minHeap(identifiers, freq, size) {}
+Huffman::Huffman(double freq[], int size) : minHeap(freq, size) {}
 
 void Huffman::buildHuffmanTree() {
     Node *left, *right, *top;
@@ -210,6 +229,7 @@ string Huffman::codesToString(Node *root, int *arr, int top) {
         arr[top] = 1;
         ss << codesToString(root->right, arr, top + 1);
     }
+
     if (minHeap.isLeaf(root)) {
         ss << *root << ": ";
         ss << arrayToString(arr, top);
@@ -220,6 +240,10 @@ string Huffman::codesToString(Node *root, int *arr, int top) {
 
 string Huffman::codesToString(int arr[], int top) {
     return codesToString(huffmanTree, arr, top);
+}
+
+double Huffman::getExpectation(double &exp, int top) {
+    return getExpectation(huffmanTree, exp, top);
 }
 
 // Get expectation of Huffman code length by adding each leaf's code length *
@@ -237,77 +261,78 @@ double Huffman::getExpectation(Node *root, double &exp, int top) {
     return 0.0;
 }
 
-// int fstream_main(int argc, char **argv) {
-//     // std::ios_base::sync_with_stdio(false);
-//     fstream fs;
-//     // Will attempt to open given file if received more then one
-//     // parameters.
-//     if (argc > 1) {
-//         try {
-//             fs.open(argv[1], std::ios_base::in);
-//         } catch (std::system_error &e) {
-//             std::cerr << e.code().message() << std::endl;
-//             exit(-1);
-//         }
-//     } else {
-//         // Open default input file
-//         try {
-//             char filename[] = "samples/bag.in";
-//             fs.open(filename, std::ios_base::in);
-//         } catch (std::system_error &e) {
-//             std::cerr << e.code().message() << std::endl;
-//         }
-//     }
-//
-//     assert(fs.is_open() == true);
-//
-//     void *p = new char[sizeof(Huffman)];
-//     bool verbose = true;
-//     Huffman *huffMan = new (p) Huffman(fs, verbose);
-//     fs.close();
-//
-//     auto begin = std::chrono::high_resolution_clock::now();
-//
-//     __huffman__();
-//
-//     auto end = std::chrono::high_resolution_clock::now();
-//     auto elapsed =
-//         std::chrono::duration_cast<std::chrono::nanoseconds>(end -
-//         begin);
-//     std::cout.precision(6);
-//     std::cout << "[BackPack01DP] Time measured: " << elapsed.count() *
-//     1e-9
-//               << " seconds.\n";
-//
-//     char output_file_name[] = "samples/bag.out";
-//     fs.open(output_file_name, std::ios_base::out);
-//     // Print sorted numbers to output_file_name
-//     fs << *backPack01 << std::endl;
-//     fs.close();
-//
-//     if (verbose) {
-//         backPack01->backTrace();
-//     }
-//     std::cout << *backPack01 << std::endl;
-//
-//     backPack01->~BackPack01();
-//     delete[] (char *)p;
-//     return 0;
-// }
+int fstream_main(int argc, char **argv) {
+    CLIParser cliParser(argc, argv);
+    cliParser.args["--in"] = "../data/huffman/huffman.in";
+    cliParser.args["--out"] = "../data/huffman/huffman.out";
+    cliParser.argParse();
+
+    fstream fs;
+    try {
+        fs.open(cliParser.args["--in"], ios_base::in);
+    } catch (std::system_error &e) {
+        // cerr<<e.code().message()<<std::endl;
+        cerr << e.what();
+        exit(-1);
+    }
+
+    assert(fs.is_open() == true);
+
+    int size;
+    fs >> size;
+
+    double freq[size];
+    for (int i = 0; i < size; i++) {
+        fs >> freq[i];
+    }
+    cout << "size: " << size << endl;
+    for (int i = 0; i < size; i++) {
+        cout << freq[i] << " ";
+    }
+    cout << endl;
+
+    Huffman huffman(freq, size);
+    fs.close();
+
+    double exp;
+    auto begin = std::chrono::high_resolution_clock::now();
+
+    huffman.getExpectation(exp, 0);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    std::cout.precision(6);
+    std::cout << "[BackPack01DP] Time measured: " << elapsed.count() * 1e-9
+              << " seconds.\n";
+
+    cout << exp << endl;
+
+    fs.open(cliParser.args["--out"], std::ios_base::out);
+    // Print sorted numbers to output_file_name
+    fs << exp << std::endl;
+    fs.close();
+
+    return 0;
+}
 
 void huffmanCodes(int identifiers[], double freq[], int size) {
     Huffman huffman(identifiers, freq, size);
     huffman.buildHuffmanTree();
 
-    int huffmanArr[MAXN], top = 0;
-    cout << huffman.codesToString(huffmanArr, top);
+    // int huffmanArr[MAXN], top = 0;
+    // cout << huffman.codesToString(huffmanArr, top);
+
+    double exp = 0;
+    huffman.getExpectation(exp, 0);
+    cout << "Expectation: " << exp << endl;
 }
 
 int stdio_main(int argc, char **argv) {
-    int identifiers[] = {1, 2, 3, 4, 5, 6};
-    double freq[] = {5.0, 9.0, 12.0, 13.0, 16.0, 45.0};
-    // int identifiers[] = {1, 22, 333, 4};
-    // double freq[] = {0.1, 0.1, 0.2, 0.6};
+    // int identifiers[] = {1, 2, 3, 4, 5, 6};
+    // double freq[] = {5.0, 9.0, 12.0, 13.0, 16.0, 45.0};
+    int identifiers[] = {1, 22, 333, 4};
+    double freq[] = {0.1, 0.1, 0.2, 0.6};
     int size = sizeof(identifiers) / sizeof(identifiers[0]);
 
     huffmanCodes(identifiers, freq, size);
@@ -316,6 +341,7 @@ int stdio_main(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    stdio_main(argc, argv);
+    // stdio_main(argc, argv);
+    fstream_main(argc, argv);
     return 0;
 }

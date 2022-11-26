@@ -1,9 +1,12 @@
-CCXX := clang++
+CC := g++
 from := 0
 to := 1000
 amount := 500
 
 BUILD_DIR := build
+
+cli_parser_dir := utils
+cli_parser_cpp := $(cli_parser_dir)/CLIParser.cpp
 
 huffman_src_dir := Huffman
 huffman_filename := Huffman
@@ -17,12 +20,13 @@ report := docs/report.tex
 content := $(wildcard docs/content/*.tex)
 docs := $(report) $(content)
 
-cxxflags := -Wall -std=c++17 -O3
+# cxxflags := -Wall -std=c++17 -O3
+cxxflags := -Wall -std=c++17 -g
 
 .PHONY: all
 all: mkdir huffman
 
-huffman: $(BUILD_DIR)/Huffman.o $(BUILD_DIR)/Huffman
+huffman: $(BUILD_DIR)/Huffman
 
 docs: $(docs)
 	# make docs
@@ -42,14 +46,17 @@ generate_yasample:
 
 # Data Generator
 $(gen_filename): $(gen_cpp)
-	$(CCXX) $(cxxflags)  $(gen_cpp) -o $(gen_filename)
+	$(CC) $(cxxflags)  $(gen_cpp) -o $(gen_filename)
 
 # Huffman
-$(BUILD_DIR)/Huffman: $(BUILD_DIR)/Huffman.o
-	$(CCXX) $(cxxflags) $(BUILD_DIR)/Huffman.o -o $(BUILD_DIR)/Huffman
+$(BUILD_DIR)/Huffman: $(BUILD_DIR)/Huffman.o $(BUILD_DIR)/CLIParser.o
+	$(CC) $(cxxflags) $(BUILD_DIR)/CLIParser.o $(BUILD_DIR)/Huffman.o -o $(BUILD_DIR)/Huffman
 
 $(BUILD_DIR)/Huffman.o: $(huffman_cpp)
-	$(CCXX) -c -g $(cxxflags) $(huffman_cpp) -o $(BUILD_DIR)/Huffman.o
+	$(CC) -c -g $(cxxflags) $(huffman_cpp) -o $(BUILD_DIR)/Huffman.o
+
+$(BUILD_DIR)/CLIParser.o: $(cli_parser_cpp)
+	$(CC) -c -g $(cxxflags) $(cli_parser_cpp) -o $(BUILD_DIR)/CLIParser.o
 
 mkdir:
 	$(shell mkdir -p $(BUILD_DIR))
