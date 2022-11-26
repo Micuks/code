@@ -53,10 +53,10 @@ $(BUILD_DIR)/Huffman: $(BUILD_DIR)/Huffman.o $(BUILD_DIR)/CLIParser.o
 	$(CC) $(cxxflags) $(BUILD_DIR)/CLIParser.o $(BUILD_DIR)/Huffman.o -o $(BUILD_DIR)/Huffman
 
 $(BUILD_DIR)/Huffman.o: $(huffman_cpp)
-	$(CC) -c -g $(cxxflags) $(huffman_cpp) -o $(BUILD_DIR)/Huffman.o
+	$(CC) -c $(cxxflags) $(huffman_cpp) -o $(BUILD_DIR)/Huffman.o
 
 $(BUILD_DIR)/CLIParser.o: $(cli_parser_cpp)
-	$(CC) -c -g $(cxxflags) $(cli_parser_cpp) -o $(BUILD_DIR)/CLIParser.o
+	$(CC) -c $(cxxflags) $(cli_parser_cpp) -o $(BUILD_DIR)/CLIParser.o
 
 mkdir:
 	$(shell mkdir -p $(BUILD_DIR))

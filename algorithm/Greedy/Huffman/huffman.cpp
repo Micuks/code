@@ -87,9 +87,13 @@ MinHeap::MinHeap(int capacity) {
 
 MinHeap::MinHeap(double freq[], int size) {
     int *identifiers = new int[size];
+    for (int i = 0; i < size; i++) {
+        identifiers[i] = i;
+    }
     heapSize = 0;
     capacity = size;
     harr = new Node *[capacity];
+
     for (int i = 0; i < capacity; i++) {
         harr[i] = newNode(identifiers[i], freq[i]);
         heapSize++;
@@ -276,7 +280,9 @@ int fstream_main(int argc, char **argv) {
         exit(-1);
     }
 
-    assert(fs.is_open() == true);
+    cout << cliParser.args["--in"] << endl;
+    cout << cliParser.args["--out"] << endl;
+    // assert(fs.is_open() == true);
 
     int size;
     fs >> size;
@@ -294,16 +300,17 @@ int fstream_main(int argc, char **argv) {
     Huffman huffman(freq, size);
     fs.close();
 
-    double exp;
+    double exp = 0;
     auto begin = std::chrono::high_resolution_clock::now();
 
+    huffman.buildHuffmanTree();
     huffman.getExpectation(exp, 0);
 
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed =
         std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
     std::cout.precision(6);
-    std::cout << "[BackPack01DP] Time measured: " << elapsed.count() * 1e-9
+    std::cout << "[Huffman] Time measured: " << elapsed.count() * 1e-9
               << " seconds.\n";
 
     cout << exp << endl;
