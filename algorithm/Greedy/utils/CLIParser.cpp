@@ -21,12 +21,12 @@ string CLIParser::helpStr() {
     string inDesc = "Input filename.";
     string outDesc = "Output filename.";
 
-    width = *max_element(arg_lengths.begin(), arg_lengths.end());
+    width = *max_element(arg_lengths.begin(), arg_lengths.end()) + 5;
     stringstream ss;
     ss << "Usage: ./Huffman [--help] [--in <filename>] [--out <filename>]\n"
-       << setw(width) << help << endl
-       << setw(width) << in << inDesc << endl
-       << setw(width) << out << outDesc << endl;
+       << left << setw(width) << help << endl
+       << left << setw(width) << in << inDesc << endl
+       << left << setw(width) << out << outDesc << endl;
 
     return ss.str();
 }
@@ -42,6 +42,7 @@ void CLIParser::hashArgs() {
     } else if (argc == 2) {
         if (string(argv[1]) == string("--help")) {
             cout << helpStr();
+            exit(0);
         }
     } else {
         throw invalid_argument("ERROR: Invalid argument. ALl args passed "
@@ -56,5 +57,8 @@ void CLIParser::argParse() {
     // Else parse and save args to hashmap.
     if (argc > 1) {
         hashArgs();
+    } else {
+        cout << helpStr();
+        exit(0);
     }
 }
