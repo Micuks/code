@@ -1,4 +1,16 @@
-use std::{collections::HashMap, fs::File, io::Read, path::Path};
+pub mod Dijkstra;
+pub mod Huffman;
+pub mod Kruskal;
+pub mod Prim;
+pub mod utils;
+
+use crate::utils::cli_parser;
+use std::{
+    collections::HashMap,
+    fs::File,
+    io::{self, Read, Write},
+    path::Path,
+};
 
 struct Node {
     identifier: Option<i32>,
@@ -86,13 +98,13 @@ fn load_freq_map_from_file(filename: String) -> HashMap<i32, f64> {
     file.read_to_string(&mut contents).unwrap();
     let mut lines = contents.lines();
 
-    let size: i32 = lines.next().unwrap().parse::<i32>().unwrap();
+    let size: usize = lines.next().unwrap().parse::<usize>().unwrap();
 
     // Read the file contents into freq_map.
-    let mut idx: i32 = 0;
-    for freq in lines.next().unwrap().split(" ") {
-        freq_map.insert(idx, freq.parse::<f64>().unwrap());
-        idx += 1;
+    let freqs: Vec<&str> = lines.next().unwrap().split(" ").collect();
+    for i in 0..size {
+        let freq: String = String::from(freqs[i]);
+        freq_map.insert(i.try_into().unwrap(), freq.parse::<f64>().unwrap());
     }
 
     assert!(freq_map.len() == size.try_into().unwrap());
@@ -102,8 +114,24 @@ fn load_freq_map_from_file(filename: String) -> HashMap<i32, f64> {
     freq_map
 }
 
+fn write_expectation_to_file(
+    filename: String,
+    expectation: f64,
+) -> io::Result<()> {
+    let path = Path::new(&filename);
+    let display = path.display();
+
+    println!("Write to file: {}", display);
+
+    let mut file = File::create(filename)?;
+    write!(file, "{}\n", expectation)
+}
+
 fn main() {
-    let in_file: String = "data/huffman/huffman.in".to_owned();
+    let in_file: String;
+    let out_file: String;
+    (in_file, out_file) = cli_parser();
+
     let mut freq_map = load_freq_map_from_file(in_file);
 
     // Put <k, v> from hashmap to vector.
@@ -130,9 +158,12 @@ fn main() {
     let mut code_map: HashMap<i32, String> = HashMap::new();
     assign_codes(&root, &mut code_map, "".to_string());
 
+    let exp = get_expectation(&mut freq_map, &mut code_map);
+
     println!("{}", codes_to_string(&mut freq_map, &mut code_map));
-    println!(
-        "Expectation: {}",
-        get_expectation(&mut freq_map, &mut code_map)
-    );
+    println!("Expectation: {}", exp);
+
+    // Write expectation to file.
+    let ok = write_expectation_to_file(out_file, exp);
+    ok.unwrap()
 }

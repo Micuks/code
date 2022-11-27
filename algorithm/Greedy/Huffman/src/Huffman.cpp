@@ -1,4 +1,4 @@
-#include "../utils/CLIParser.hpp"
+#include "utils/CLIParser.hpp"
 #include <cassert>
 #include <chrono>
 #include <climits>
