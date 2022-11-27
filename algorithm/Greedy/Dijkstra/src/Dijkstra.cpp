@@ -99,9 +99,16 @@ int Dijkstra::dijkstra() {
     while (!pq.empty()) {
         Node *node = pq.top();
         pq.pop();
+        // Skip nodes that has already visited.
         if (node->visited) {
             continue;
         }
+
+        // Return immediately once we reach the end node.
+        if (node->idx == end) {
+            return node->dis;
+        }
+
         node->visited = true;
         Edge *edge = node->head;
         // Iter through current node's edges.
@@ -118,6 +125,8 @@ int Dijkstra::dijkstra() {
         } while ((edge = edge->next) != nullptr);
     }
 
+    // This only returns when end node has never been visited. This it is always
+    // 0x7fffffff.
     return nodes.at(end)->dis;
 }
 
