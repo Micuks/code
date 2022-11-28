@@ -100,10 +100,10 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
 
     // adj_list[i] collects edges starting from node i.
     let mut adj_list: Vec<Vec<Edge>> = vec![vec![]; (v + 1) as usize];
-    println!("adj_list[{}]", adj_list.capacity());
+    // println!("adj_list[{}]", adj_list.capacity());
 
     for line in lines {
-        println!("{}", line);
+        // println!("{}", line);
 
         let vec: Vec<_> = line.split(" ").collect();
         if vec.len() < 3 {
@@ -126,13 +126,13 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
         })
     }
 
-    for i in 1..e {
-        println!("{}: edges:", i);
-        for &mut edge in &mut adj_list[i as usize] {
-            println!("To[{}], Len[{}]", edge.node, edge.dis);
-        }
-        println!("");
-    }
+    // for i in 1..e {
+    //     println!("{}: edges:", i);
+    //     for &mut edge in &mut adj_list[i as usize] {
+    //         println!("To[{}], Len[{}]", edge.node, edge.dis);
+    //     }
+    //     println!("");
+    // }
 
     (v, e, adj_list)
 }

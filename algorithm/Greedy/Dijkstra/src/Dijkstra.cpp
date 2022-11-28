@@ -163,7 +163,7 @@ int fstream_main(int argc, char **argv) {
 
     int V, E;
     fs >> V >> E;
-    cout << V << " " << E << endl;
+    // cout << V << " " << E << endl;
 
     vector<Node *> nodes;
     for (int i = 0; i <= V; i++) {
@@ -190,9 +190,9 @@ int fstream_main(int argc, char **argv) {
         node->linkEdge(tmp);
     }
 
-    for (int i = 1; i <= V; i++) {
-        cout << *nodes.at(i) << endl;
-    }
+    // for (int i = 1; i <= V; i++) {
+    //     cout << *nodes.at(i) << endl;
+    // }
 
     Dijkstra dij(1, V, nodes);
 
@@ -208,10 +208,6 @@ int fstream_main(int argc, char **argv) {
     std::cout.precision(6);
     std::cout << "[dijkstra] Time measured: " << elapsed.count() * 1e-9
               << " seconds.\n";
-
-    for (int i = 1; i <= V; i++) {
-        cout << *nodes.at(i) << endl;
-    }
 
     cout << result << endl;
 
