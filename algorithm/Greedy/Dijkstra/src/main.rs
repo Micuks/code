@@ -9,7 +9,7 @@ use std::{
 
 use crate::utils::cli_parser;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 struct Edge {
     node: i32,
     dis: i32,
@@ -93,10 +93,10 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
     let mut lines = contents.lines();
 
     let v: i32;
-    let _e: i32;
+    let e: i32;
     let first_line: Vec<&str> = lines.next().unwrap().split(" ").collect();
     v = first_line[0].parse::<i32>().unwrap();
-    _e = first_line[1].parse::<i32>().unwrap();
+    e = first_line[1].parse::<i32>().unwrap();
 
     // adj_list[i] collects edges starting from node i.
     let mut adj_list: Vec<Vec<Edge>> = vec![vec![]; (v + 1) as usize];
@@ -123,7 +123,15 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
         })
     }
 
-    (v, _e, adj_list)
+    for i in 1..e {
+        println!("{}: edges:", i);
+        for &mut edge in &mut adj_list[i as usize] {
+            println!("To[{}], Len[{}]", edge.node, edge.dis);
+        }
+        println!("");
+    }
+
+    (v, e, adj_list)
 }
 
 fn write_shortest_distance_to_file(
@@ -148,7 +156,8 @@ fn main() {
     println!("{:?}", result);
     let distance: i32;
     match result {
-        None => distance = 0x7fffffff,
+        // If node[e] cannot be reached from node[1], assign 1 to distance.
+        None => distance = -1,
         Some(result) => {
             distance = result;
         }
