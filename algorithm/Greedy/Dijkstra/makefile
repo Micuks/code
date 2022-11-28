@@ -30,7 +30,7 @@ cxxflags := -Wall -std=c++17 -g
 rustflags := -g --edition 2021
 
 .PHONY: all
-all: mkdir dijkstra 
+all: mkdir dijkstra dijkstra_rs
 
 dijkstra: $(BUILD_DIR)/Dijkstra
 
@@ -56,23 +56,23 @@ test: mkdir dijkstra_test
 # test: dijkstra_default_test
 
 # dijkstra Test
-dijkstra_default_test: dijkstra dijkstra_rs
+default_test: dijkstra dijkstra_rs
 	$(BUILD_DIR)/$(dijkstra_filename) --in data/dijkstra.in --out data/dijkstra.out
 	$(BUILD_DIR)/$(dijkstra_rs_filename) --in data/dijkstra.in --out data/dijkstra_rs.out
 	diff data/dijkstra.out data/dijkstra_rs.out
 
-dijkstra_test: $(dijkstra_gen_filename) dijkstra dijkstra_rs dijkstra_generate_yasample
+dijkstra_test: $(dijkstra_gen_filename) dijkstra dijkstra_rs generate_yasample
 	$(BUILD_DIR)/$(dijkstra_filename) --in $(dijkstra_gen_sample) --out $(dijkstra_gen_out)
 	$(BUILD_DIR)/$(dijkstra_rs_filename) --in $(dijkstra_gen_sample) --out $(dijkstra_rs_gen_out)
 	diff $(dijkstra_gen_out) $(dijkstra_rs_gen_out)
 
-dijkstra_generate_yasample: dijkstra_data_gen
+generate_yasample: data_gen
 	echo "[INFO]: Generate $(amount) random frequences sum to 1."
 	$(dijkstra_gen_filename) $(dijkstra_from) $(dijkstra_to) $(amount)
 
 # dijkstra Data Generator
 .PHONY: dijkstra_data_gen
-dijkstra_data_gen: $(dijkstra_gen_filename)
+data_gen: $(dijkstra_gen_filename)
 
 $(dijkstra_gen_filename): $(dijkstra_gen_cpp)
 	$(CC) $(cxxflags) $(dijkstra_gen_cpp) -o $(dijkstra_gen_filename)
