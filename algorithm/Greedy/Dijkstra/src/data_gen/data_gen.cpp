@@ -1,9 +1,11 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <random>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 using namespace std;
@@ -74,6 +76,22 @@ Parser::Parser(int argc, char **argv) : argc(argc), argv(argv) {
     }
 }
 
+class Edge {
+  public:
+    int nodeA;
+    int nodeB;
+};
+
+bool operator==(const Edge &a, const Edge &b) {
+    return ((a.nodeA == b.nodeB) && (a.nodeB == b.nodeA)) ||
+           ((a.nodeB == b.nodeA) && (a.nodeA == b.nodeB));
+}
+
+class EdgeEq {
+  public:
+    bool operator()(const Edge &a, const Edge &b) { return a == b; }
+};
+
 int main(int argc, char **argv) {
     Parser parser(argc, argv);
     int range_from = parser.get_range_from();
@@ -82,27 +100,47 @@ int main(int argc, char **argv) {
 
     random_device rand_dev;
     mt19937 generator(rand_dev());
+
+    // Distance random selector
     uniform_int_distribution<int> distr(range_from, range_to);
 
+    // Node index random selector
+    uniform_int_distribution<int> node_distr(1, amount_of_random_numbers);
+
     fstream fs;
-    string filename = "data/huffman_yasample.in";
+    string filename = "data/yasample.in";
     fs.open(filename, ios_base::out);
 
     vector<int> rawNumbers;
     long long sum = 0;
-    // Generate frequencies.
-    for (int i = 0; i < amount_of_random_numbers; i++) {
-        int tmp = distr(generator);
-        rawNumbers.push_back(tmp);
-        sum += (long long)tmp;
-    }
+
+    int tmp = distr(generator);
+
+    // Shuffle nodes to make random edges without overlapping.
+    shuffle(rawNumbers.begin(), rawNumbers.end(), distr);
+
+    unordered_set<Edge, std::hash<Edge>, EdgeEq> edges;
+
+    // Number of edges
+    int num_edges = distr(generator);
+
+    // Number of nodes
+    int num_nodes = amount_of_random_numbers;
 
     if (fs.is_open()) {
-        fs << amount_of_random_numbers << std::endl;
-        for (int i = 0; i < amount_of_random_numbers; i++) {
-            fs << (double)rawNumbers[i] / (double)sum << " ";
+        fs << num_nodes << " " << num_edges << endl;
+        for (int i = 0; i < num_edges; i++) {
+            int node_a = node_distr(generator);
+            int node_b = node_distr(generator);
+            int dis = distr(generator);
+
+            // If node_a == node_b, regenerate node_b.
+            while (node_a == node_b) {
+                node_b = node_distr(generator);
+            }
+
+            fs << node_a << " " << node_b << " " << dis << endl;
         }
-        fs << std::endl;
     }
     fs.close();
     return 0;
