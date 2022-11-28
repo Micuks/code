@@ -31,8 +31,8 @@ ostream &operator<<(ostream &os, const Edge &e) {
 
     // Print following edges.
     while (edge.next != nullptr) {
-        os << edge.to << ": " << edge.weight << endl;
         edge = *(edge.next);
+        os << edge.to << ": " << edge.weight << endl;
     }
 
     return os;
@@ -58,7 +58,7 @@ ostream &operator<<(ostream &os, const Vertex &ver) {
 
     // Print edges.
     if (ver.head != nullptr)
-        os << *ver.head;
+        os << *(ver.head);
 
     os << endl;
 
@@ -72,7 +72,7 @@ void Vertex::addEdge(Edge *&edge) {
     if (this->head == nullptr) {
         this->head = edge;
     } else {
-        auto &last_edge = this->head;
+        auto last_edge = this->head;
         // Find last edge in thistex a's adjacent list.
         while (last_edge->next != nullptr) {
             last_edge = last_edge->next;
@@ -114,7 +114,7 @@ const string Prim::vertices_to_string() const {
 const int Prim::prim_MST() {
     priority_queue<Vertex *, vector<Vertex *>, CmpVertexPtr> pq;
     // Initialize the distance between begin and begin to 0.
-    auto &ver = vertices.at(begin);
+    auto ver = vertices.at(begin);
     ver->distance = 0;
 
     // Initialize pq by pushing begin vertex into pq.
@@ -140,9 +140,14 @@ const int Prim::prim_MST() {
         weight_sum += ver->distance;
 
         // Iterate through ver's neighbor vertices.
-        auto &edge = ver->head;
+        auto edge = ver->head;
         while (edge != nullptr) {
-            auto &neighbor_ver = vertices[edge->to];
+            auto neighbor_ver = vertices[edge->to];
+            // Skip neighbor vertices that are already in MST.
+            if (neighbor_ver->inMST) {
+                edge = edge->next;
+                continue;
+            }
             // Update neighbor_ver's distance to begin vertex.
             if (neighbor_ver->distance > edge->weight) {
                 neighbor_ver->distance = edge->weight;
@@ -189,27 +194,22 @@ int fs_main(int argc, char **argv) {
         int idx_a, idx_b, weight;
         fs >> idx_a >> idx_b >> weight;
 
-        cout << idx_a << " " << idx_b << " " << weight << endl;
-
         // Initialize vertex a.
         auto ver = vertices.at(idx_a);
-        cout << "vertices[" << idx_a << "]: " << ver->idx << endl;
-        ver->idx = idx_a;
-        // assert(ver->idx == idx_a);
+        assert(ver->idx == idx_a);
         Edge *edge = new Edge(idx_b, weight);
         ver->addEdge(edge);
 
         // Initialize vertex b.
         ver = vertices.at(idx_b);
-        cout << "vertices[" << idx_b << "]: " << ver->idx << endl;
-        ver->idx = idx_b;
+        assert(ver->idx == idx_b);
         edge = new Edge(idx_a, weight);
         ver->addEdge(edge);
     }
 
     // Initialize Prim which treats vertex 1 as source of MST.
     Prim prim(vertices, 1);
-    cout << prim.vertices_to_string() << endl;
+    // cout << prim.vertices_to_string() << endl;
 
     // End of read and initialize prim.
     fs.close();
