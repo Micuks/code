@@ -92,6 +92,13 @@ class EdgeEq {
     bool operator()(const Edge &a, const Edge &b) { return a == b; }
 };
 
+class EdgeHash {
+  public:
+    size_t operator()(const Edge &edge) const {
+        return std::hash<int>()(edge.nodeA + edge.nodeB);
+    }
+};
+
 int main(int argc, char **argv) {
     Parser parser(argc, argv);
     int range_from = parser.get_range_from();
@@ -119,7 +126,7 @@ int main(int argc, char **argv) {
     // Shuffle nodes to make random edges without overlapping.
     shuffle(rawNumbers.begin(), rawNumbers.end(), distr);
 
-    unordered_set<Edge, std::hash<Edge>, EdgeEq> edges;
+    unordered_set<Edge, EdgeHash, EdgeEq> edges;
 
     // Number of edges
     int num_edges = distr(generator);
