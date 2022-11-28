@@ -16,7 +16,7 @@ dijkstra_src_dir := src/
 dijkstra_filename := Dijkstra
 dijkstra_rs_filename := DijkstraRS
 dijkstra_cpp := $(dijkstra_src_dir)/Dijkstra.cpp
-dijkstra_rs := $(dijkstra_src_dir)/mod.rs
+dijkstra_rs := $(dijkstra_src_dir)/main.rs
 
 dijkstra_gen_cpp := src/data_gen/dijkstra_data_gen.cpp
 dijkstra_gen_filename := $(BUILD_DIR)/dijkstra_data_gen
@@ -47,7 +47,7 @@ $(BUILD_DIR)/CLIParser.o: $(cli_parser_cpp)
 	$(CC) -c $(cxxflags) $(cli_parser_cpp) -o $(BUILD_DIR)/CLIParser.o
 
 # dijkstra Rust
-$(BUILD_DIR)/dijkstraRS: $(dijkstra_rs)
+$(BUILD_DIR)/DijkstraRS: $(dijkstra_rs)
 	$(RUSTC) $(rustflags) -o $(BUILD_DIR)/$(dijkstra_rs_filename) $(dijkstra_rs)
 
 # test
@@ -57,9 +57,9 @@ test: mkdir dijkstra_test
 
 # dijkstra Test
 dijkstra_default_test: dijkstra dijkstra_rs
-	$(BUILD_DIR)/$(dijkstra_filename) --in data/dijkstra/dijkstra.in --out data/dijkstra/dijkstra.out
-	$(BUILD_DIR)/$(dijkstra_rs_filename) --in data/dijkstra/dijkstra.in --out data/dijkstra/dijkstra_rs.out
-	diff data/dijkstra/dijkstra.out data/dijkstra/dijkstra_rs.out
+	$(BUILD_DIR)/$(dijkstra_filename) --in data/dijkstra.in --out data/dijkstra.out
+	$(BUILD_DIR)/$(dijkstra_rs_filename) --in data/dijkstra.in --out data/dijkstra_rs.out
+	diff data/dijkstra.out data/dijkstra_rs.out
 
 dijkstra_test: $(dijkstra_gen_filename) dijkstra dijkstra_rs dijkstra_generate_yasample
 	$(BUILD_DIR)/$(dijkstra_filename) --in $(dijkstra_gen_sample) --out $(dijkstra_gen_out)

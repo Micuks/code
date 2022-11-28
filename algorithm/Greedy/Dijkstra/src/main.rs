@@ -9,6 +9,7 @@ use std::{
 
 use crate::utils::cli_parser;
 
+#[derive(Clone)]
 struct Edge {
     node: i32,
     dis: i32,
@@ -92,15 +93,18 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
     let mut lines = contents.lines();
 
     let v: i32;
-    let e: i32;
+    let _e: i32;
     let first_line: Vec<&str> = lines.next().unwrap().split(" ").collect();
     v = first_line[0].parse::<i32>().unwrap();
-    e = first_line[1].parse::<i32>().unwrap();
+    _e = first_line[1].parse::<i32>().unwrap();
 
     // adj_list[i] collects edges starting from node i.
-    let mut adj_list: Vec<Vec<Edge>> =
-        Vec::with_capacity(v.try_into().unwrap());
+    let mut adj_list: Vec<Vec<Edge>> = vec![vec![]; (v + 1) as usize];
+    println!("adj_list[{}]", adj_list.capacity());
+
     for line in lines {
+        println!("{}", line);
+
         let vec: Vec<_> = line.split(" ").collect();
 
         let node_a: i32 = vec[0].parse::<i32>().unwrap();
@@ -119,7 +123,7 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
         })
     }
 
-    (v, e, adj_list)
+    (v, _e, adj_list)
 }
 
 fn write_shortest_distance_to_file(
@@ -139,7 +143,7 @@ fn main() {
     let mut in_file: String = "data/dijkstra.in".to_owned();
     let mut out_file: String = "data/dijkstra.out".to_owned();
     (in_file, out_file) = cli_parser(in_file, out_file);
-    let (v, e, adj_list) = read_graph_from_file(in_file);
+    let (v, _e, adj_list) = read_graph_from_file(in_file);
     let result = dijkstra(&adj_list, 1, v);
     println!("{:?}", result);
     write_shortest_distance_to_file(out_file, result.unwrap()).unwrap()
