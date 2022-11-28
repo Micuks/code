@@ -106,6 +106,9 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
         println!("{}", line);
 
         let vec: Vec<_> = line.split(" ").collect();
+        if vec.len() < 3 {
+            break;
+        }
 
         let node_a: i32 = vec[0].parse::<i32>().unwrap();
         let node_b: i32 = vec[1].parse::<i32>().unwrap();
