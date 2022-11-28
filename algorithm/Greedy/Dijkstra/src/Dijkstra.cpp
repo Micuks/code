@@ -56,6 +56,21 @@ class Node {
     Node(int node, int dis, bool visited = false)
         : idx(node), dis(dis), visited(visited){};
     bool operator<(const Node &y) const { return y.dis < dis; }
+    void linkEdge(Edge *&edge) {
+        if (this->head == nullptr) {
+            this->head = edge;
+        } else {
+            auto pEdge = this->head;
+            while (pEdge->next != nullptr) {
+                // cout << "[" << *pEdge << "]";
+                pEdge = pEdge->next;
+                // cout << ".nextEdge[" << *pEdge << "] ";
+            }
+            // now pEdge points to the last edge in current node's adjancent
+            // list.
+            pEdge->next = edge;
+        }
+    }
 };
 
 ostream &operator<<(ostream &os, Node &node) {
@@ -105,9 +120,9 @@ int Dijkstra::dijkstra() {
         }
 
         // Return immediately once we reach the end node.
-        if (node->idx == end) {
-            return node->dis;
-        }
+        // if (node->idx == end) {
+        //     return node->dis;
+        // }
 
         node->visited = true;
         Edge *edge = node->head;
@@ -125,9 +140,7 @@ int Dijkstra::dijkstra() {
         } while ((edge = edge->next) != nullptr);
     }
 
-    // This only returns when end node has never been visited. This it is always
-    // 0x7fffffff.
-    return nodes.at(end)->dis;
+    return (nodes.at(end)->dis == 0x7fffffff) ? -1 : nodes.at(end)->dis;
 }
 
 int fstream_main(int argc, char **argv) {
@@ -166,13 +179,15 @@ int fstream_main(int argc, char **argv) {
         Edge *tmp = new Edge(nodeB, dis);
         Node *node = nodes.at(nodeA);
         node->idx = nodeA;
-        node->head = tmp;
+        // Link new edge to nodeA's adjacent list.
+        node->linkEdge(tmp);
 
         // Add edge to nodeB
         tmp = new Edge(nodeA, dis);
         node = nodes.at(nodeB);
         node->idx = nodeB;
-        node->head = tmp;
+        // Link new edge to nodeB's adjacant list.
+        node->linkEdge(tmp);
     }
 
     for (int i = 1; i <= V; i++) {
@@ -193,6 +208,10 @@ int fstream_main(int argc, char **argv) {
     std::cout.precision(6);
     std::cout << "[dijkstra] Time measured: " << elapsed.count() * 1e-9
               << " seconds.\n";
+
+    for (int i = 1; i <= V; i++) {
+        cout << *nodes.at(i) << endl;
+    }
 
     cout << result << endl;
 

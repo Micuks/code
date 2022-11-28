@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <random>
@@ -80,6 +79,8 @@ class Edge {
   public:
     int nodeA;
     int nodeB;
+
+    Edge(int a, int b) : nodeA(a), nodeB(b){};
 };
 
 bool operator==(const Edge &a, const Edge &b) {
@@ -89,7 +90,7 @@ bool operator==(const Edge &a, const Edge &b) {
 
 class EdgeEq {
   public:
-    bool operator()(const Edge &a, const Edge &b) { return a == b; }
+    bool operator()(const Edge &a, const Edge &b) const { return a == b; }
 };
 
 class EdgeHash {
@@ -115,38 +116,41 @@ int main(int argc, char **argv) {
     uniform_int_distribution<int> node_distr(1, amount_of_random_numbers);
 
     fstream fs;
-    string filename = "data/yasample.in";
+    string filename = "data/dijkstra_yasample.in";
     fs.open(filename, ios_base::out);
 
-    vector<int> rawNumbers;
-    long long sum = 0;
-
-    int tmp = distr(generator);
-
-    // Shuffle nodes to make random edges without overlapping.
-    shuffle(rawNumbers.begin(), rawNumbers.end(), distr);
-
     unordered_set<Edge, EdgeHash, EdgeEq> edges;
-
-    // Number of edges
-    int num_edges = distr(generator);
 
     // Number of nodes
     int num_nodes = amount_of_random_numbers;
 
     if (fs.is_open()) {
-        fs << num_nodes << " " << num_edges << endl;
-        for (int i = 0; i < num_edges; i++) {
-            int node_a = node_distr(generator);
+        // Generate edges.
+        for (int i = 1; i <= num_nodes; i++) {
+            int node_a = i;
             int node_b = node_distr(generator);
-            int dis = distr(generator);
 
             // If node_a == node_b, regenerate node_b.
             while (node_a == node_b) {
                 node_b = node_distr(generator);
             }
 
-            fs << node_a << " " << node_b << " " << dis << endl;
+            Edge edge(node_a, node_b);
+            // Edge already exists. Regenerate one.
+            while (edges.find(edge) != edges.end()) {
+                edge.nodeB = node_distr(generator);
+            }
+
+            edges.insert(edge);
+        }
+
+        int num_edges = edges.size();
+        fs << num_nodes << " " << num_edges << endl;
+
+        // Generate distance and write edges to file.
+        for (auto &a : edges) {
+            int dis = distr(generator);
+            fs << a.nodeA << " " << a.nodeB << " " << dis << endl;
         }
     }
     fs.close();

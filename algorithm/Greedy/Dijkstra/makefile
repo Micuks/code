@@ -67,7 +67,7 @@ dijkstra_test: $(dijkstra_gen_filename) dijkstra dijkstra_rs generate_yasample
 	diff $(dijkstra_gen_out) $(dijkstra_rs_gen_out)
 
 generate_yasample: data_gen
-	echo "[INFO]: Generate $(amount) random frequences sum to 1."
+	echo "[INFO]: Generate $(amount) nodes."
 	$(dijkstra_gen_filename) $(dijkstra_from) $(dijkstra_to) $(amount)
 
 # dijkstra Data Generator
