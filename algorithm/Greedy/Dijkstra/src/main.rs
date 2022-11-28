@@ -146,5 +146,20 @@ fn main() {
     let (v, _e, adj_list) = read_graph_from_file(in_file);
     let result = dijkstra(&adj_list, 1, v);
     println!("{:?}", result);
-    write_shortest_distance_to_file(out_file, result.unwrap()).unwrap()
+    let distance: i32;
+    match result {
+        None => distance = 0x7fffffff,
+        Some(result) => {
+            distance = result;
+        }
+    }
+
+    let ok = write_shortest_distance_to_file(out_file.clone(), distance);
+    if ok.is_err() {
+        panic!(
+            "Panicked to write result[{}] to file[{}]",
+            distance,
+            out_file.clone()
+        );
+    }
 }
