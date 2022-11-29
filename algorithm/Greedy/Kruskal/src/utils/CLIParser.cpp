@@ -23,7 +23,7 @@ string CLIParser::helpStr() {
 
     width = *max_element(arg_lengths.begin(), arg_lengths.end()) + 5;
     stringstream ss;
-    ss << "Usage: ./Dijkstra [--help] [--in <filename>] [--out <filename>]\n"
+    ss << "Usage: ./Kruskal [--help] [--in <filename>] [--out <filename>]\n"
        << left << setw(width) << help << endl
        << left << setw(width) << in << inDesc << endl
        << left << setw(width) << out << outDesc << endl;
