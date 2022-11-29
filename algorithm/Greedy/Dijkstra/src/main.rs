@@ -155,8 +155,8 @@ fn main() {
     let mut out_file: String = "data/dijkstra.out".to_owned();
     (in_file, out_file) = cli_parser(in_file, out_file);
     let (v, _e, adj_list) = read_graph_from_file(in_file);
+    // TODO: Add timer.
     let result = dijkstra(&adj_list, 1, v);
-    println!("{:?}", result);
     let distance: i32;
     match result {
         // If node[e] cannot be reached from node[1], assign 1 to distance.
@@ -165,6 +165,7 @@ fn main() {
             distance = result;
         }
     }
+    println!("{}", distance);
 
     let ok = write_shortest_distance_to_file(out_file.clone(), distance);
     if ok.is_err() {
