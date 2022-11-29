@@ -27,12 +27,14 @@ class Edge {
 ostream &operator<<(ostream &os, const Edge &e) {
     auto edge = e;
     // Print first edge.
-    os << edge.to << ": " << edge.weight << endl;
+    os << "to[" << edge.to << "], "
+       << "weight[" << edge.weight << "]" << endl;
 
     // Print following edges.
     while (edge.next != nullptr) {
         edge = *(edge.next);
-        os << edge.to << ": " << edge.weight << endl;
+        os << "to[" << edge.to << "], "
+           << "weight[" << edge.weight << "]" << endl;
     }
 
     return os;
@@ -59,8 +61,6 @@ ostream &operator<<(ostream &os, const Vertex &ver) {
     // Print edges.
     if (ver.head != nullptr)
         os << *(ver.head);
-
-    os << endl;
 
     return os;
 }

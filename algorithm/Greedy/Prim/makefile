@@ -11,12 +11,13 @@ BUILD_DIR := ../build
 
 cli_parser_dir := src/utils
 cli_parser_cpp := $(cli_parser_dir)/CLIParser.cpp
+cli_parser_rs :=  $(cli_parser_dir)/mod.rs
 
 prim_src_dir := src/
 prim_filename := prim
 prim_rs_filename := primRS
 prim_cpp := $(prim_src_dir)/prim.cpp
-prim_rs := $(prim_src_dir)/main.rs
+prim_rs_src := $(prim_src_dir)/main.rs
 
 prim_gen_cpp := src/data_gen/prim_data_gen.cpp
 prim_gen_filename := $(BUILD_DIR)/prim_data_gen
@@ -47,8 +48,8 @@ $(BUILD_DIR)/CLIParser.o: $(cli_parser_cpp)
 	$(CC) -c $(cxxflags) $(cli_parser_cpp) -o $(BUILD_DIR)/CLIParser.o
 
 # prim Rust
-$(BUILD_DIR)/primRS: $(prim_rs)
-	$(RUSTC) $(rustflags) -o $(BUILD_DIR)/$(prim_rs_filename) $(prim_rs)
+$(BUILD_DIR)/primRS: $(prim_rs_src) $(cli_parser_rs)
+	$(RUSTC) $(rustflags) -o $(BUILD_DIR)/$(prim_rs_filename) $(prim_rs_src)
 
 # test
 .PHONY: test
