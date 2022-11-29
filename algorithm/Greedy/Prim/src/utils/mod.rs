@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 use std::env;
 fn help_str() -> String {
-    "Prim in Rust\n
-        If no args are passed, will use default infile and outfile.\n
-        usage:\n
-        --help           show help info.\n
-        --in <filename>  load from given file.\n
-        --out <filename> save output to given file.\n"
+    "Prim in Rust
+    If no args are passed, will use default infile and outfile.
+    usage:
+    --help           show help info.
+    --in <filename>  load from given file.
+    --out <filename> save output to given file."
         .to_string()
 }
 
