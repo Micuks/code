@@ -313,6 +313,8 @@ int fstream_main(int argc, char **argv) {
     std::cout << "[Huffman] Time measured: " << elapsed.count() * 1e-9
               << " seconds.\n";
 
+    // Max precision for double.
+    cout.precision(17);
     cout << exp << endl;
 
     fs.open(cliParser.args["--out"], std::ios_base::out);
