@@ -4,12 +4,6 @@
 #include <string>
 #include <unordered_map>
 
-// class invalid_argument : public std::exception {
-//   virtual const char* what() const throw() {
-//     return "Invalid argument"
-//   }
-// }
-
 /**
  * A simple tool to parse command line args passed to the program.
  */
