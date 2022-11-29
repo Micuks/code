@@ -1,16 +1,11 @@
-pub mod Dijkstra;
-pub mod Huffman;
-pub mod Kruskal;
-pub mod Prim;
 pub mod utils;
-
-use crate::utils::cli_parser;
 use std::{
     collections::HashMap,
     fs::File,
     io::{self, Read, Write},
     path::Path,
 };
+use utils::cli_parser;
 
 struct Node {
     identifier: Option<i32>,
@@ -109,7 +104,7 @@ fn load_freq_map_from_file(filename: String) -> HashMap<i32, f64> {
 
     assert!(freq_map.len() == size.try_into().unwrap());
 
-    println!("Freq_map loaded: {:?}", freq_map);
+    // println!("Freq_map loaded: {:?}", freq_map);
 
     freq_map
 }
@@ -128,9 +123,9 @@ fn write_expectation_to_file(
 }
 
 fn main() {
-    let in_file: String;
-    let out_file: String;
-    (in_file, out_file) = cli_parser();
+    let mut in_file: String = "data/huffman/huffman.in".to_owned();
+    let mut out_file: String = "data/huffman/huffman_rs.out".to_owned();
+    (in_file, out_file) = cli_parser(in_file, out_file);
 
     let mut freq_map = load_freq_map_from_file(in_file);
 
@@ -160,7 +155,7 @@ fn main() {
 
     let exp = get_expectation(&mut freq_map, &mut code_map);
 
-    println!("{}", codes_to_string(&mut freq_map, &mut code_map));
+    // println!("{}", codes_to_string(&mut freq_map, &mut code_map));
     println!("Expectation: {}", exp);
 
     // Write expectation to file.
