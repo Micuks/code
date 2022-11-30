@@ -168,9 +168,6 @@ Distance Kruskal::kruskal_MST() {
     // Use MinHeap to optimize.
     priority_queue<Edge, vector<Edge>, CmpEdge> heap;
 
-    // Set of vertices in MST at current.
-    unordered_set<Vertex, hash<Vertex>, equal_to<Vertex>> vertices_in_mst;
-
     /** Initialize all connected branches by treating all vertices as indepedent
      * connected branch.
      *
@@ -249,8 +246,8 @@ Distance Kruskal::kruskal_MST() {
          * edges with source vertex as one of its endpoints when source vertex
          * is already in the MST.
          *
-         * BUG: However, by doing so, the Kruskal algorithm can be proven to be
-         * wrong.
+         * WARNING: However, by doing so, the Kruskal algorithm can be proven to
+         * be wrong.
          *
          * TODO: Prove that it is illegal to provide Kruskal a specific source.
          */
@@ -387,12 +384,12 @@ int main(int argc, char **argv) {
          << " seconds.\n";
 
     // Print vertices in MST to debug.
-    cout << kruskal.ver_in_mst_to_string();
+    cout << kruskal.ver_in_mst_to_string() << endl;
     // Print edges in MST to debug.
     cout << kruskal.edges_in_mst_to_string();
 
     // Print weight sum of MST.
-    cout << distance << endl;
+    cout << "Weight sum of MST:\n" << distance << endl;
     // Write weight sum of MST to out file.
     try {
         fs.open(out_file, ios_base::out);

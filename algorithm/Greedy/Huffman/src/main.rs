@@ -4,6 +4,7 @@ use std::{
     fs::File,
     io::{self, Read, Write},
     path::Path,
+    time::Instant,
 };
 use utils::cli_parser;
 
@@ -45,6 +46,7 @@ fn assign_codes(p: &Box<Node>, h: &mut HashMap<i32, String>, s: String) {
 }
 
 // Convert huffman codes to string.
+#[allow(unused)]
 fn codes_to_string(
     freq_map: &mut HashMap<i32, f64>,
     code_map: &mut HashMap<i32, String>,
@@ -122,7 +124,7 @@ fn write_expectation_to_file(
     write!(file, "{}\n", expectation)
 }
 
-fn main() {
+fn main() -> io::Result<()> {
     let mut in_file: String = "data/huffman/huffman.in".to_owned();
     let mut out_file: String = "data/huffman/huffman_rs.out".to_owned();
     (in_file, out_file) = cli_parser(in_file, out_file);
@@ -153,12 +155,17 @@ fn main() {
     let mut code_map: HashMap<i32, String> = HashMap::new();
     assign_codes(&root, &mut code_map, "".to_string());
 
+    // Measure the elapsed time of Huffman algorithm.
+    let begin = Instant::now();
     let exp = get_expectation(&mut freq_map, &mut code_map);
+    let elapsed = begin.elapsed();
+
+    // Print the elapsed time of Huffman algorithm.
+    println!("[Huffman RUST] Time measured: {:?}", elapsed);
 
     // println!("{}", codes_to_string(&mut freq_map, &mut code_map));
     println!("Expectation: {}", exp);
 
     // Write expectation to file.
-    let ok = write_expectation_to_file(out_file, exp);
-    ok.unwrap()
+    write_expectation_to_file(out_file, exp)
 }
