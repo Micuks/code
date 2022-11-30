@@ -1,0 +1,121 @@
+     1                                  ; haribote-os
+     2                                  
+     3                                  ; Initial Program Loader
+     4                                  
+     5                                  cyls equ 10 ; number of cylinders to read
+     6                                  
+     7                                  org 0x7c00 ; The address where the program loads.
+     8                                  
+     9                                  ; For standard FAT12 soft disk
+    10 00000000 EB4E                    jmp entry ; jump instruction
+    11 00000002 90                      nop
+    12 00000003 68617269626F7465        db "haribote" ; 8-bit OEM Identifier
+    13 0000000B 0002                    dw 512 ; bytes per sector, must be 512 bytes.
+    14 0000000D 01                      db 1 ; Sectors per cluster, must be 1.
+    15 0000000E 0100                    dw 1 ; Number of sectors preserved in FAT (boot sector included)
+    16 00000010 02                      db 2 ; Number of FAT tables, usually 2.
+    17 00000011 E000                    dw 224 ; Max number of files under foot directory.
+    18 00000013 400B                    dw 2880 ; Number of sectors on disk. If zero, it means that there's more than
+    19                                  ; 65535 sectors, then use the number recorded at line 24.
+    20 00000015 F0                      db 0xf0 ; Type of disk. 0xf0 means 1.44MB soft disk.
+    21 00000016 0900                    dw 9 ; Length of per FAT, must be 9 sectors.
+    22 00000018 1200                    dw 18 ; Number of sectors belonging to a track, must be 18
+    23 0000001A 0200                    dw 2 ; Number of magnetic heads, must be 2.
+    24 0000001C 00000000                dd 0 ; Number of hidden sectors.
+    25 00000020 400B0000                dd 2880 ; Number or large volume sectors, use this number if line 18 is 0.
+    26 00000024 00                      db 0 ; Device ID of interrupt 0x13.
+    27 00000025 00                      db 0 ; Windows NT Identifier.
+    28 00000026 29                      db 0x29 ; Extended Boot ID
+    29 00000027 FFFFFFFF                dd 0xffffffff ; Volume sequential number
+    30 0000002B 68617269626F74656F-     db "hariboteos " ; Volune Identifier, 11 bytes.
+    30 00000034 7320               
+    31 00000036 4641543132202020        db "FAT12   " ; File system type, 8 bytes.
+    32 0000003E <res 12h>               resb 18 ; Leave 18 blank bytes reserved.
+    32          ******************       warning: uninitialized space declared in .text section: zeroing [-w+zeroing]
+    33                                  
+    34                                  ; Core of program
+    35                                  entry:
+    36 00000050 B80000                    mov ax, 0 ; Initialize registers.
+    37 00000053 8ED0                      mov ss, ax;
+    38 00000055 BC007C                    mov sp, 0x7c00
+    39 00000058 8ED8                      mov ds, ax
+    40                                  
+    41                                    ; Read data from disk
+    42 0000005A B82008                    mov ax, 0x0820
+    43 0000005D 8EC0                      mov es, ax
+    44 0000005F B500                      mov ch, 0 ; Cylinder 0
+    45 00000061 B600                      mov dh, 0 ; Magnetic head 0
+    46 00000063 B102                      mov cl, 2 ; Sector 2
+    47                                  
+    48                                  ; Read Loop
+    49                                  readloop:
+    50 00000065 BE0000                    mov si, 0 ; Register that records times of failures.
+    51                                  retry:
+    52 00000068 B402                      mov ah, 0x02 ; ah=0x02: Read disk
+    53 0000006A B001                      mov al, 1 ; 1 Sector
+    54 0000006C BB0000                    mov bx, 0
+    55 0000006F B200                      mov dl, 0x00 ; Driver A
+    56 00000071 CD13                      int 0x13 ; Call disk BIOS
+    57 00000073 7310                      jnc next ; Jump to next if there's no error.
+    58                                  
+    59 00000075 83C601                    add si, 1 ; Failure counter register auto-increment.
+    60 00000078 83FE05                    cmp si, 5 ; Determine whether the number of failures reaches 5 times.
+    61 0000007B 732E                      jae error ; If the number of failures reached 5 times, jump to error.
+    62 0000007D B400                      mov ah, 0x00 ; 
+    63 0000007F B200                      mov dl, 0x00 ; Driver A
+    64 00000081 CD13                      int 0x13 ; Reset driver A
+    65 00000083 EBE3                      jmp retry
+    66                                  
+    67                                  next:
+    68 00000085 8CC0                      mov ax, es ; Move the address back by 5 bits.
+    69 00000087 83C020                    add ax, 0x0020
+    70 0000008A 8EC0                      mov es, ax ; Implement ex += 0x0020
+    71                                  
+    72                                    ; Sectors range 1 to 18.
+    73 0000008C 80C101                    add cl, 1 ; Sector += 1.
+    74 0000008F 80F912                    cmp cl, 18 ; Determine whether sector 18 has been read.
+    75 00000092 76D1                      jbe readloop ; If current sector BLE sector 18, jump to readloop.
+    76                                  
+    77 00000094 B101                      mov cl, 1 ; Recover to sector 1
+    78                                    ; Magnetic head range 0 to 1 (front side 0, back side 1)
+    79 00000096 80C601                    add dh, 1
+    80 00000099 80FE02                    cmp dh, 2
+    81 0000009C 72C7                      jb readloop ; Read all both magnetic heads.
+    82                                  
+    83 0000009E B600                      mov dh, 0
+    84                                    ; Cylinder range 0 to 79
+    85 000000A0 80C501                    add ch, 1
+    86 000000A3 80FD0A                    cmp ch, cyls
+    87 000000A6 72BD                      jb readloop ; Read cylinders by jumping to readloop until the number of
+    88                                    ; clylinders read reaches CYLE.
+    89                                  
+    90                                    ; End of reading, print message.
+    91 000000A8 BE[AE00]                  mov si, msg
+    92                                  
+    93                                  error:
+    94 000000AB BE[DB00]                  mov si, error_msg
+    95                                  
+    96                                  msg:
+    97 000000AE 0A0A                      db 0x0a, 0x0a ; 2 newlines.
+    98 000000B0 68656C6C6F2C20776F-       db "hello, world"
+    98 000000B9 726C64             
+    99 000000BC 0A                        db 0x0a ; newline
+   100 000000BD 2D2D                      db "--" ; newline
+   101 000000BF 66726F6D2063757465-       db "from cute micuks' haribote"
+   101 000000C8 206D6963756B732720-
+   101 000000D1 68617269626F7465   
+   102 000000D9 0A                        db 0x0a ; newline
+   103 000000DA 00                        db 0
+   104                                  
+   105                                  error_msg:
+   106 000000DB 0A0A                      db 0x0a, 0x0a ; 2 newlines
+   107 000000DD 6C6F6164206572726F-       db "load error"
+   107 000000E6 72                 
+   108 000000E7 0A                        db 0x0a ; newline
+   109 000000E8 00                        db 0
+   110                                  
+   111                                  ; ------ END OF ASSEMBLY ------
+   112 000000E9 <res 115h>              RESB 0x1fe - ($-$$) ; Fill with byte 0x00 until 0x001fe
+   112          ******************       warning: uninitialized space declared in .text section: zeroing [-w+zeroing]
+   113                                  ; End of boot sector identifier, fixed to be 0xaa55 ( Little-endian)
+   114 000001FE 55                      db 0x55 0xaa
