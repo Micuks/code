@@ -21,6 +21,14 @@ typedef int Vertex;
 typedef int Distance;
 typedef int Weight;
 
+template <typename T> string set_to_string(unordered_set<T *> set) {
+    stringstream ss;
+    for (auto &a : set) {
+        ss << *a << " ";
+    }
+    return ss.str();
+}
+
 class ConnectedBranch {
   public:
     // Vertices in the connected branch.
@@ -37,6 +45,15 @@ class Edge {
     Edge(const Vertex &a, const Vertex &b, int weight)
         : a(a), b(b), weight(weight){};
 };
+
+ostream &operator<<(ostream &os, const Edge &edge) {
+    if (edge.a <= edge.b) {
+        os << "(" << edge.a << ", " << edge.b << "): " << edge.weight;
+    } else {
+        os << "(" << edge.b << ", " << edge.a << "): " << edge.weight;
+    }
+    return os;
+}
 
 bool operator==(const Edge &edge_a, const Edge &edge_b) {
     return ((edge_a.weight == edge_b.weight) &&
@@ -68,7 +85,17 @@ class EdgeEq {
 class CmpEdgePtr {
   public:
     bool operator()(const Edge *edge_a, const Edge *edge_b) const {
-        return edge_a->weight < edge_b->weight;
+        auto ge = [&](auto a, auto b) { return a > b; };
+        auto eq = [&](auto a, auto b) { return a == b; };
+
+        if (eq(edge_a->weight, edge_b->weight)) {
+            if (eq(edge_a->a, edge_b->a)) {
+                return ge(edge_a->b, edge_b->b);
+            } else {
+                return ge(edge_a->a, edge_b->a);
+            }
+        }
+        return edge_a->weight > edge_b->weight;
     }
 };
 
@@ -90,7 +117,29 @@ class Kruskal {
     Kruskal(Vertex source, int e, int v, vector<Edge *> &edges)
         : source(source), e(e), v(v), weight_sum(0), edges(edges){};
     Distance kruskal_MST();
+
+    // Debug strings.
+    string ver_in_mst_to_string() const;
+    string edges_in_mst_to_string() const;
 };
+
+string Kruskal::ver_in_mst_to_string() const {
+    stringstream ss;
+    ss << vertices_in_mst.size() << " Vertices in MST: \n";
+    for (auto &a : vertices_in_mst) {
+        ss << a << " ";
+    }
+    return ss.str();
+}
+
+string Kruskal::edges_in_mst_to_string() const {
+    stringstream ss;
+    ss << edges_in_mst.size() << " Edges in MST:\n";
+    for (auto &a : edges_in_mst) {
+        ss << a << endl;
+    }
+    return ss.str();
+}
 
 Distance Kruskal::kruskal_MST() {
     // Use MinHeap to optimize.
@@ -119,6 +168,12 @@ Distance Kruskal::kruskal_MST() {
         }
         return ss.str();
     };
+
+    // Detemine whether two vertices are in the same branch.
+    auto in_same_branch = [&](Vertex a, Vertex b) {
+        return (branches[a]->find(b) != branches[a]->end());
+    };
+
     // Merge two ConnectedBranched.
     auto merge_branches = [&](ConnectedBranch *&p_branch_a,
                               ConnectedBranch *&p_branch_b) {
@@ -126,23 +181,16 @@ Distance Kruskal::kruskal_MST() {
         merge(p_branch_a->begin(), p_branch_a->end(), p_branch_b->begin(),
               p_branch_b->end(), inserter(*new_branch, new_branch->begin()));
 
-        auto get_branch_index = [&](ConnectedBranch *br) {
-            return (find(branches.begin(), branches.end(), br) -
-                    branches.begin());
-        };
+        cout << "new branch: " << branch_to_string(*new_branch) << endl;
 
-        cout << "branch[" << get_branch_index(p_branch_a)
-             << "]: " << branch_to_string(*p_branch_a) << endl
-             << "branch[" << get_branch_index(p_branch_b)
-             << "]: " << branch_to_string(*p_branch_b) << endl
-             << "new branch: " << branch_to_string(*new_branch) << endl;
-
-        // Modify p_branch_a and p_branch_b to point to new_branch and free
-        // those two branches' memory.
+        // Modify branches in new_branch to point to new_branch and free
+        // p_branch_a and p_branch_b' memory. Assuming that the two branches are
+        // in different branches.
         delete p_branch_a;
         delete p_branch_b;
-        p_branch_a = new_branch;
-        p_branch_b = new_branch;
+        for (auto &ver : *new_branch) {
+            branches[ver] = new_branch;
+        }
     };
 
     for (Vertex i = 0; i <= v; i++) {
@@ -156,35 +204,39 @@ Distance Kruskal::kruskal_MST() {
         heap.push(e);
     }
 
+    // DEBUG: Print edges in heap.
+
     // Pick edges to build Minimal Spanning Tree until all vertices exist in
     // MST.
 
-    while (!(static_cast<int>(vertices_in_mst.size()) == v)) {
+    while ((static_cast<int>(vertices_in_mst.size()) < v) && !(heap.empty())) {
         // Pick edge with minimal weight from MinHeap.
         auto &e = heap.top();
         heap.pop();
+        cout << "Current edge: " << *e << endl;
 
-        auto in_mst = [&, this](Vertex v) {
+        auto in_mst = [&](Vertex v) {
             return (vertices_in_mst.find(v) != vertices_in_mst.end());
         };
 
-        auto in_edge = [&, this, e](Vertex v) {
-            return ((e->a == v) || (e->b == v));
-        };
+        auto in_edge = [&](Vertex v) { return ((e->a == v) || (e->b == v)); };
 
-        // TIPS: Considering the requirement of starting from source, skip the
+        // TODO: Considering the requirement of starting from source, skip the
         // edges with source vertex as one of its endpoints when source vertex
         // is already in the MST.
-        if (in_edge(source) && in_mst(source)) {
-            continue;
-        }
-
-        auto in_same_branch = [&](Vertex a, Vertex b) {
-            return branches[a]->find(b) != branches[a]->end();
-        };
+        // if (in_edge(source) && in_mst(source)) {
+        //     cout << "source[" << source << "] already in MST, "
+        //          << "skip edge: " << *e << endl;
+        //     continue;
+        // }
 
         // If neither of its two endpoints is already in MST, append this
         // edge and its two endpoints to MST.
+        cout << "branch[a: " << e->a
+             << "]: " << branch_to_string(*branches[e->a]) << endl;
+        cout << "branch[b: " << e->b
+             << "]: " << branch_to_string(*branches[e->b]) << endl;
+
         if (!in_same_branch(e->a, e->b)) {
             vertices_in_mst.insert(e->a);
             vertices_in_mst.insert(e->b);
@@ -193,6 +245,12 @@ Distance Kruskal::kruskal_MST() {
 
             // Merge two endpoints' connected branches.
             merge_branches(branches[e->a], branches[e->b]);
+            cout << "After merge:\n";
+            cout << "branch[a: " << e->a
+                 << "]: " << branch_to_string(*branches[e->a]) << endl;
+            cout << "branch[b: " << e->b
+                 << "]: " << branch_to_string(*branches[e->b]) << endl;
+            cout << "---" << endl;
 
             // Add current edge's weight to weight sum of MST.
             weight_sum += e->weight;
@@ -257,6 +315,8 @@ int main(int argc, char **argv) {
             return ((edge->a == v) || (edge->b == v));
         };
         stringstream ss;
+
+        // First, print edges in vertices' view.
         for (int i = 1; i <= v; i++) {
             ss << i << ":\n";
             for (auto &e : edges) {
@@ -265,6 +325,12 @@ int main(int argc, char **argv) {
                        << e->weight << "]\n";
                 }
             }
+        }
+        cout << endl << "Edges:" << endl;
+
+        // Second, print edges in edges' view.
+        for (auto &e : edges) {
+            ss << *e << endl;
         }
         return ss.str();
     };
@@ -289,6 +355,11 @@ int main(int argc, char **argv) {
     cout.precision(6);
     cout << "[Kruskal] Time measured: " << elapsed.count() * 1e-9
          << " seconds.\n";
+
+    // Print vertices in MST to debug.
+    cout << kruskal.ver_in_mst_to_string();
+    // Print edges in MST to debug.
+    cout << kruskal.edges_in_mst_to_string();
 
     // Print weight sum of MST.
     cout << distance << endl;
