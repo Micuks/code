@@ -1,4 +1,4 @@
-RUST_BACKTRACE := 1
+# RUST_BACKTRACE := 0
 
 CC := g++
 RUSTC := rustc
@@ -12,22 +12,6 @@ amount := 5000
 
 BUILD_DIR := build
 
-cli_parser_dir := src/utils
-cli_parser_cpp := $(cli_parser_dir)/CLIParser.cpp
-
-huffman_parent := Huffman/
-huffman_src_dir := src/Huffman
-huffman_filename := Huffman
-huffman_rs_filename := HuffmanRS
-huffman_cpp := $(huffman_src_dir)/Huffman.cpp
-huffman_rs := $(huffman_src_dir)/mod.rs
-
-huffman_gen_cpp := src/data_gen/huffman_data_gen.cpp
-huffman_gen_filename := build/huffman_data_gen
-huffman_gen_sample := data/huffman_yasample.in
-huffman_gen_out := data/huffman_yasample.out
-huffman_rs_gen_out := data/huffman_rs_yasample.out
-
 report := docs/report.tex
 content := $(wildcard docs/content/*.tex)
 docs := $(report) $(content)
@@ -38,11 +22,20 @@ cxxflags := -Wall -std=c++17 -g
 rustflags := -g --edition 2021
 
 .PHONY: all
-all: mkdir huffman
+all: mkdir huffman dijkstra prim kruskal
 
-.PHONY: huffman
-huffman: $(huffman_parent)/*
-	$(MAKE) -C $(huffman_parent)/ all
+.PHONY: huffman dijkstra prim kruskal
+huffman: Huffman/*
+	$(MAKE) -C Huffman/ all
+
+dijkstra: Dijkstra/*
+	$(MAKE) -C Dijkstra/ all
+
+prim: Prim/*
+	$(MAKE) -C Prim/ all
+
+kruskal: kruskal/*
+	$(MAKE) -C Kruskal/ all
 
 .PHONY: test
 test: huffman
