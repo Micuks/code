@@ -223,27 +223,15 @@ Distance Kruskal::kruskal_MST() {
     }
 
     // Inithalize MinHeap by pushing all edges in.
-    // BUG: Duplicate edge in edges.
-    // BUG: Duplicate edge in min heap.
-    // TODO: Change Edge* to Edge.
-    for (int i = 0; i < edges.size(); i++) {
-        cout << "Current edge: " << edges.at(i) << endl;
-        heap.push(edges.at(i));
+    for (auto &e : edges) {
+        // Copy construct when push.
+        heap.push(e);
     }
-    cout << "edges[" << edges.size() << "], heap[" << heap.size() << "]"
-         << endl;
-
-    // DEBUG: Print edges in heap.
-    // while (!heap.empty()) {
-    //     auto top = heap.top();
-    //     heap.pop();
-    //     cout << top << endl;
-    // }
-    // return 0;
+    // cout << "edges[" << edges.size() << "], heap[" << heap.size() << "]"
+    //      << endl;
 
     // Pick edges to build Minimal Spanning Tree until all vertices exist in
     // MST.
-
     while ((static_cast<int>(vertices_in_mst.size()) < v) && !(heap.empty())) {
         // Pick edge with minimal weight from MinHeap.
         auto e = heap.top();
@@ -256,12 +244,19 @@ Distance Kruskal::kruskal_MST() {
 
         auto in_edge = [&](Vertex v) { return ((e.a == v) || (e.b == v)); };
 
-        // TODO: Considering the requirement of starting from source, skip the
-        // edges with source vertex as one of its endpoints when source vertex
-        // is already in the MST.
+        /**
+         * TODO: Considering the requirement of starting from source, skip the
+         * edges with source vertex as one of its endpoints when source vertex
+         * is already in the MST.
+         *
+         * BUG: However, by doing so, the Kruskal algorithm can be proven to be
+         * wrong.
+         *
+         * TODO: Prove that it is illegal to provide Kruskal a specific source.
+         */
         // if (in_edge(source) && in_mst(source)) {
         //     cout << "source[" << source << "] already in MST, "
-        //          << "skip edge: " << *e << endl;
+        //          << "skip edge: " << e << endl;
         //     continue;
         // }
 
@@ -404,6 +399,7 @@ int main(int argc, char **argv) {
     } catch (exception &e) {
         cerr << "Error occurred during writing result to file:\n" << e.what();
     }
+    fs << distance << endl;
     fs.close();
 
     return 0;
