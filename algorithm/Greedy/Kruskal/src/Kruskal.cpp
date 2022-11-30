@@ -44,6 +44,7 @@ class Edge {
     Weight weight;
     Edge(const Vertex &a, const Vertex &b, int weight)
         : a(a), b(b), weight(weight){};
+    Edge(const Edge &e) : a(e.a), b(e.b), weight(e.weight){};
 };
 
 ostream &operator<<(ostream &os, const Edge &edge) {
@@ -99,6 +100,28 @@ class CmpEdgePtr {
     }
 };
 
+/**
+ * Edge comparator for priority_queue
+ */
+class CmpEdge {
+  public:
+    bool operator()(const Edge eda, const Edge edb) const {
+        if (eda.weight == edb.weight) {
+            if (eda == edb) {
+                return false;
+            } else {
+                if (eda.a == edb.a) {
+                    return eda.b > edb.b;
+                } else {
+                    return eda.a > edb.a;
+                }
+            }
+        } else {
+            return eda.weight > edb.weight;
+        }
+    }
+};
+
 class Kruskal {
   public:
     Vertex source;
@@ -112,9 +135,9 @@ class Kruskal {
     unordered_set<Edge, EdgeHash, EdgeEq> edges_in_mst;
     unordered_set<Vertex, hash<Vertex>, equal_to<Vertex>> vertices_in_mst;
 
-    vector<Edge *> edges;
+    vector<Edge> edges;
 
-    Kruskal(Vertex source, int e, int v, vector<Edge *> &edges)
+    Kruskal(Vertex source, int e, int v, vector<Edge> &edges)
         : source(source), e(e), v(v), weight_sum(0), edges(edges){};
     Distance kruskal_MST();
 
@@ -143,7 +166,7 @@ string Kruskal::edges_in_mst_to_string() const {
 
 Distance Kruskal::kruskal_MST() {
     // Use MinHeap to optimize.
-    priority_queue<Edge *, vector<Edge *>, CmpEdgePtr> heap;
+    priority_queue<Edge, vector<Edge>, CmpEdge> heap;
 
     // Set of vertices in MST at current.
     unordered_set<Vertex, hash<Vertex>, equal_to<Vertex>> vertices_in_mst;
@@ -202,18 +225,19 @@ Distance Kruskal::kruskal_MST() {
     // Inithalize MinHeap by pushing all edges in.
     // BUG: Duplicate edge in edges.
     // BUG: Duplicate edge in min heap.
-    for (auto &e : edges) {
-        cout << "Current edge: " << *e << endl;
-        heap.push(e);
+    // TODO: Change Edge* to Edge.
+    for (int i = 0; i < edges.size(); i++) {
+        cout << "Current edge: " << edges.at(i) << endl;
+        heap.push(edges.at(i));
     }
     cout << "edges[" << edges.size() << "], heap[" << heap.size() << "]"
          << endl;
 
     // DEBUG: Print edges in heap.
     // while (!heap.empty()) {
-    //     auto &top = heap.top();
+    //     auto top = heap.top();
     //     heap.pop();
-    //     cout << *top << endl;
+    //     cout << top << endl;
     // }
     // return 0;
 
@@ -222,15 +246,15 @@ Distance Kruskal::kruskal_MST() {
 
     while ((static_cast<int>(vertices_in_mst.size()) < v) && !(heap.empty())) {
         // Pick edge with minimal weight from MinHeap.
-        auto &e = heap.top();
+        auto e = heap.top();
         heap.pop();
-        cout << "Current edge: " << *e << endl;
+        cout << "Current edge: " << e << endl;
 
         auto in_mst = [&](Vertex v) {
             return (vertices_in_mst.find(v) != vertices_in_mst.end());
         };
 
-        auto in_edge = [&](Vertex v) { return ((e->a == v) || (e->b == v)); };
+        auto in_edge = [&](Vertex v) { return ((e.a == v) || (e.b == v)); };
 
         // TODO: Considering the requirement of starting from source, skip the
         // edges with source vertex as one of its endpoints when source vertex
@@ -243,28 +267,28 @@ Distance Kruskal::kruskal_MST() {
 
         // If neither of its two endpoints is already in MST, append this
         // edge and its two endpoints to MST.
-        cout << "branch[a: " << e->a
-             << "]: " << branch_to_string(*branches[e->a]) << endl;
-        cout << "branch[b: " << e->b
-             << "]: " << branch_to_string(*branches[e->b]) << endl;
+        cout << "branch[a: " << e.a << "]: " << branch_to_string(*branches[e.a])
+             << endl;
+        cout << "branch[b: " << e.b << "]: " << branch_to_string(*branches[e.b])
+             << endl;
 
-        if (!in_same_branch(e->a, e->b)) {
-            vertices_in_mst.insert(e->a);
-            vertices_in_mst.insert(e->b);
+        if (!in_same_branch(e.a, e.b)) {
+            vertices_in_mst.insert(e.a);
+            vertices_in_mst.insert(e.b);
             // Collect edges in MST for debug purpose.
-            edges_in_mst.insert(*e);
+            edges_in_mst.insert(e);
 
             // Merge two endpoints' connected branches.
-            merge_branches(branches[e->a], branches[e->b]);
+            merge_branches(branches[e.a], branches[e.b]);
             cout << "After merge:\n";
-            cout << "branch[a: " << e->a
-                 << "]: " << branch_to_string(*branches[e->a]) << endl;
-            cout << "branch[b: " << e->b
-                 << "]: " << branch_to_string(*branches[e->b]) << endl;
+            cout << "branch[a: " << e.a
+                 << "]: " << branch_to_string(*branches[e.a]) << endl;
+            cout << "branch[b: " << e.b
+                 << "]: " << branch_to_string(*branches[e.b]) << endl;
             cout << "---" << endl;
 
             // Add current edge's weight to weight sum of MST.
-            weight_sum += e->weight;
+            weight_sum += e.weight;
         }
     }
 
@@ -304,7 +328,7 @@ int main(int argc, char **argv) {
     }
 
     // Initialize edges.
-    vector<Edge *> edges;
+    vector<Edge> edges;
     // Considering that vertex index in sample starts from 1.
     for (int i = 0; i < e; i++) {
         Vertex a, b;
@@ -316,14 +340,14 @@ int main(int argc, char **argv) {
             exit(-1);
         }
 
-        Edge *edge = new Edge(a, b, w);
+        Edge edge = Edge(a, b, w);
         edges.emplace_back(edge);
     }
 
     // Print edges for debug.
-    auto edges_to_string = [&](vector<Edge *> edges) {
-        auto in_edge = [&](Vertex v, Edge *edge) {
-            return ((edge->a == v) || (edge->b == v));
+    auto edges_to_string = [&](vector<Edge> edges) {
+        auto in_edge = [&](Vertex v, Edge edge) {
+            return ((edge.a == v) || (edge.b == v));
         };
         stringstream ss;
 
@@ -332,8 +356,8 @@ int main(int argc, char **argv) {
             ss << i << ":\n";
             for (auto &e : edges) {
                 if (in_edge(i, e)) {
-                    ss << "to[" << ((e->a == i) ? e->b : e->a) << "], weight["
-                       << e->weight << "]\n";
+                    ss << "to[" << ((e.a == i) ? e.b : e.a) << "], weight["
+                       << e.weight << "]\n";
                 }
             }
         }
@@ -341,7 +365,7 @@ int main(int argc, char **argv) {
 
         // Second, print edges in edges' view.
         for (auto &e : edges) {
-            ss << *e << endl;
+            ss << e << endl;
         }
         return ss.str();
     };
