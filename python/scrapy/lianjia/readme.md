@@ -13,7 +13,7 @@ data: November 22, 2022
 
 # 内容
 
-制作了两个爬虫new_house和second_hand, 分别爬取链家的新房和二手房信息.
+制作了两个爬虫`new_house`和`second_hand`在文件夹lianjia下, 分别爬取链家的新房和二手房信息.
 
 由于Scrapy默认保存的json文件中使用了escape-unicode字符格式, 且一个json条目放在一行,
 让人类无法阅读. 为了解决这个问题,
@@ -33,7 +33,6 @@ Python 3.11.0, Scrapy 2.7.1, Clang 14.0.4, macOS 13.1 22C5050e arm64; 使用neov
 # store them in json format.
 scrapy crawl new_house -O new_house.json
 scrapy crawl second_hand -O second_hand.json
-
 # The data crawled are stored in new_house.json and second_hand.json.
 
 # Considering that they are difficult for human to read, convert them into more
@@ -59,3 +58,5 @@ py unicode2str.py
 - 设置并行请求数CONCURRENT_REQUESTS_PER_DOMAIN = 2,
     CONCURRENT_REQUESTS_PER_IP = 2.
 - 不使用cookie: COOKIES_ENABLED = False.
+
+项目仓库:[Github](https://github.com/Micuks/code/tree/master/python/scrapy/lianjia)
