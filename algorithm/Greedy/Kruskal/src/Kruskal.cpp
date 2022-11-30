@@ -85,14 +85,14 @@ class EdgeEq {
 class CmpEdgePtr {
   public:
     bool operator()(const Edge *edge_a, const Edge *edge_b) const {
-        auto ge = [&](auto a, auto b) { return a > b; };
+        auto greater = [&](auto a, auto b) { return a > b; };
         auto eq = [&](auto a, auto b) { return a == b; };
 
         if (eq(edge_a->weight, edge_b->weight)) {
             if (eq(edge_a->a, edge_b->a)) {
-                return ge(edge_a->b, edge_b->b);
+                return greater(edge_a->b, edge_b->b);
             } else {
-                return ge(edge_a->a, edge_b->a);
+                return greater(edge_a->a, edge_b->a);
             }
         }
         return edge_a->weight > edge_b->weight;
@@ -203,18 +203,19 @@ Distance Kruskal::kruskal_MST() {
     // BUG: Duplicate edge in edges.
     // BUG: Duplicate edge in min heap.
     for (auto &e : edges) {
+        cout << "Current edge: " << *e << endl;
         heap.push(e);
     }
     cout << "edges[" << edges.size() << "], heap[" << heap.size() << "]"
          << endl;
 
     // DEBUG: Print edges in heap.
-    while (!heap.empty()) {
-        auto &top = heap.top();
-        heap.pop();
-        cout << *top << endl;
-    }
-    return 0;
+    // while (!heap.empty()) {
+    //     auto &top = heap.top();
+    //     heap.pop();
+    //     cout << *top << endl;
+    // }
+    // return 0;
 
     // Pick edges to build Minimal Spanning Tree until all vertices exist in
     // MST.
@@ -305,7 +306,7 @@ int main(int argc, char **argv) {
     // Initialize edges.
     vector<Edge *> edges;
     // Considering that vertex index in sample starts from 1.
-    for (int i = 0; i <= e; i++) {
+    for (int i = 0; i < e; i++) {
         Vertex a, b;
         Weight w;
         try {
