@@ -111,12 +111,31 @@ Distance Kruskal::kruskal_MST() {
     typedef unordered_set<Vertex> ConnectedBranch;
     vector<ConnectedBranch *> branches;
 
+    // Print ConectedBranch for debug.
+    auto branch_to_string = [&](ConnectedBranch &branch) {
+        stringstream ss;
+        for (auto v : branch) {
+            ss << v << " ";
+        }
+        return ss.str();
+    };
     // Merge two ConnectedBranched.
-    auto merge_branches = [&](ConnectedBranch *p_branch_a,
-                              ConnectedBranch *p_branch_b) {
+    auto merge_branches = [&](ConnectedBranch *&p_branch_a,
+                              ConnectedBranch *&p_branch_b) {
         auto new_branch = new ConnectedBranch;
         merge(p_branch_a->begin(), p_branch_a->end(), p_branch_b->begin(),
               p_branch_b->end(), inserter(*new_branch, new_branch->begin()));
+
+        auto get_branch_index = [&](ConnectedBranch *br) {
+            return (find(branches.begin(), branches.end(), br) -
+                    branches.begin());
+        };
+
+        cout << "branch[" << get_branch_index(p_branch_a)
+             << "]: " << branch_to_string(*p_branch_a) << endl
+             << "branch[" << get_branch_index(p_branch_b)
+             << "]: " << branch_to_string(*p_branch_b) << endl
+             << "new branch: " << branch_to_string(*new_branch) << endl;
 
         // Modify p_branch_a and p_branch_b to point to new_branch and free
         // those two branches' memory.
@@ -231,6 +250,25 @@ int main(int argc, char **argv) {
         Edge *edge = new Edge(a, b, w);
         edges.emplace_back(edge);
     }
+
+    // Print edges for debug.
+    auto edges_to_string = [&](vector<Edge *> edges) {
+        auto in_edge = [&](Vertex v, Edge *edge) {
+            return ((edge->a == v) || (edge->b == v));
+        };
+        stringstream ss;
+        for (int i = 1; i <= v; i++) {
+            ss << i << ":\n";
+            for (auto &e : edges) {
+                if (in_edge(i, e)) {
+                    ss << "to[" << ((e->a == i) ? e->b : e->a) << "], weight["
+                       << e->weight << "]\n";
+                }
+            }
+        }
+        return ss.str();
+    };
+    cout << edges_to_string(edges) << endl;
 
     // End of data loading, close filestream.
     fs.close();

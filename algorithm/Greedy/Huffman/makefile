@@ -16,7 +16,7 @@ huffman_src_dir := src
 huffman_filename := Huffman
 huffman_rs_filename := HuffmanRS
 huffman_cpp := $(huffman_src_dir)/Huffman.cpp
-huffman_rs := $(huffman_src_dir)/mod.rs
+huffman_rs := $(huffman_src_dir)/main.rs
 
 huffman_gen_cpp := src/data_gen/huffman_data_gen.cpp
 huffman_gen_filename := $(BUILD_DIR)/huffman_data_gen
