@@ -200,11 +200,21 @@ Distance Kruskal::kruskal_MST() {
     }
 
     // Inithalize MinHeap by pushing all edges in.
+    // BUG: Duplicate edge in edges.
+    // BUG: Duplicate edge in min heap.
     for (auto &e : edges) {
         heap.push(e);
     }
+    cout << "edges[" << edges.size() << "], heap[" << heap.size() << "]"
+         << endl;
 
     // DEBUG: Print edges in heap.
+    while (!heap.empty()) {
+        auto &top = heap.top();
+        heap.pop();
+        cout << *top << endl;
+    }
+    return 0;
 
     // Pick edges to build Minimal Spanning Tree until all vertices exist in
     // MST.
