@@ -233,9 +233,12 @@ Distance Kruskal::kruskal_MST() {
 
 #endif // DEBUG
 
+    // Count merge times.
+    int merge_cnt = 0;
+
     // Pick edges to build Minimal Spanning Tree until all vertices exist in
     // MST.
-    while ((static_cast<int>(vertices_in_mst.size()) < v) && !(heap.empty())) {
+    while ((merge_cnt < v - 1) && !(heap.empty())) {
         // Pick edge with minimal weight from MinHeap.
         auto e = heap.top();
         heap.pop();
@@ -269,6 +272,7 @@ Distance Kruskal::kruskal_MST() {
 
             // Merge two endpoints' connected branches.
             merge_branches(branches[e.a], branches[e.b]);
+            merge_cnt++;
 
             // Add current edge's weight to weight sum of MST.
             weight_sum += e.weight;

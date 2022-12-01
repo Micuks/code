@@ -48,9 +48,15 @@ endif
 # Default, release mode.
 .PHONY: all
 all: mkdir prim prim_rs
+
+.PHONY: last_test
+last_test: mkdir prim prim_rs
 	$(BUILD_DIR)/$(prim_filename) --in $(prim_gen_sample) --out $(prim_gen_out)
-	echo "-------------------------------------------------------------------"
+	@echo "--------------------END OF C++ OUTPUT-----------------------"
+	@echo "------------------------------------------------------------"
+	@echo "-------------------BEGIN OF RUST OUTPUT---------------------"
 	$(BUILD_DIR)/$(prim_rs_filename) --in $(prim_gen_sample) --out $(prim_rs_gen_out)
+	@echo "--------------------END OF RUST OUTPUT----------------------"
 
 .PHONY: prim
 prim: $(BUILD_DIR)/prim
@@ -89,7 +95,7 @@ prim_test: $(prim_gen_filename) prim prim_rs generate_yasample
 	diff $(prim_gen_out) $(prim_rs_gen_out)
 
 generate_yasample: data_gen
-	echo "[INFO]: Generate $(amount) nodes."
+	@echo "[INFO]: Generate $(amount) nodes."
 	$(prim_gen_filename) $(prim_from) $(prim_to) $(amount)
 
 # prim Data Generator
