@@ -315,7 +315,7 @@ int fstream_main(int argc, char **argv) {
 
     // Max precision for double.
     cout.precision(17);
-    cout << exp << endl;
+    cout << "Expectation:\n" << exp << endl;
 
     fs.open(cliParser.args["--out"], std::ios_base::out);
     // Print sorted numbers to output_file_name
@@ -338,20 +338,7 @@ void huffmanCodes(int identifiers[], double freq[], int size) {
     cout << "Expectation:\n" << exp << endl;
 }
 
-int stdio_main(int argc, char **argv) {
-    // int identifiers[] = {1, 2, 3, 4, 5, 6};
-    // double freq[] = {5.0, 9.0, 12.0, 13.0, 16.0, 45.0};
-    int identifiers[] = {1, 22, 333, 4};
-    double freq[] = {0.1, 0.1, 0.2, 0.6};
-    int size = sizeof(identifiers) / sizeof(identifiers[0]);
-
-    huffmanCodes(identifiers, freq, size);
-
-    return 0;
-}
-
 int main(int argc, char **argv) {
-    // stdio_main(argc, argv);
     fstream_main(argc, argv);
     return 0;
 }
