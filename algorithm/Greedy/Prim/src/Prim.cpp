@@ -187,6 +187,8 @@ int Prim::prim_MST() {
             // Iterate next edge in vertex's adjacent list.
             edge = edge->next;
         }
+        // Update prevVer.
+        prevVer = ver;
     }
 
     return weight_sum;
