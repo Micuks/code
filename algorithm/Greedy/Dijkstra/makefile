@@ -11,6 +11,7 @@ BUILD_DIR := ../build
 
 cli_parser_dir := src/utils
 cli_parser_cpp := $(cli_parser_dir)/CLIParser.cpp
+cli_parser_rs := $(cli_parser_dir)/mod.rs
 
 dijkstra_src_dir := src/
 dijkstra_filename := Dijkstra
@@ -24,10 +25,19 @@ dijkstra_gen_sample := data/dijkstra_yasample.in
 dijkstra_gen_out := data/dijkstra_yasample.out
 dijkstra_rs_gen_out := data/dijkstra_rs_yasample.out
 
-# cxxflags := -Wall -std=c++17 -O3
-cxxflags := -Wall -std=c++17 -g
-# rustflass := -O
-rustflags := -g --edition 2021
+###################
+# Debug flag zone #
+###################
+
+# DEBUG flag default to be 0
+DEBUG ?= 0
+ifeq ($(DEBUG),1)
+	cxxflags := -Wall -Werror -Wextra -std=c++17 -O0 -DDEBUG
+	rustflags := -g --edition 2021 --cfg 'feature="debug"'
+else
+	cxxflags := -Wall -std=c++17 -O3 -DNDEBUG
+	rustflags := -O --edition 2021 --cfg 'feature=""'
+endif
 
 .PHONY: all
 all: mkdir dijkstra dijkstra_rs
@@ -52,22 +62,40 @@ $(BUILD_DIR)/DijkstraRS: $(dijkstra_rs)
 
 # test
 .PHONY: test
-test: mkdir dijkstra_test
-# test: dijkstra_default_test
+test: clean mkdir dijkstra_test
 
 # dijkstra Test
-default_test: dijkstra dijkstra_rs
+default_test: clean dijkstra dijkstra_rs
 	$(BUILD_DIR)/$(dijkstra_filename) --in data/dijkstra.in --out data/dijkstra.out
+	@echo "--------------------END OF C++ OUTPUT-----------------------"
+	@echo "------------------------------------------------------------"
+	@echo "-------------------BEGIN OF RUST OUTPUT---------------------"
 	$(BUILD_DIR)/$(dijkstra_rs_filename) --in data/dijkstra.in --out data/dijkstra_rs.out
+	@echo "--------------------END OF RUST OUTPUT----------------------"
 	diff data/dijkstra.out data/dijkstra_rs.out
+
+# Rerun previous test. Require an existing $(kruskal_gen_sample).
+.PHONY: last_test
+last_test: clean mkdir kruskal kruskal_rs $(kruskal_gen_sample)
+	$(BUILD_DIR)/$(kruskal_filename) --in $(kruskal_gen_sample) --out $(kruskal_gen_out)
+	@echo "--------------------END OF C++ OUTPUT-----------------------"
+	@echo "------------------------------------------------------------"
+	@echo "-------------------BEGIN OF RUST OUTPUT---------------------"
+	$(BUILD_DIR)/$(kruskal_rs_filename) --in $(kruskal_gen_sample) --out $(kruskal_rs_gen_out)
+	@echo "--------------------END OF RUST OUTPUT----------------------"
+	diff $(kruskal_gen_out) $(kruskal_rs_gen_out)
 
 dijkstra_test: $(dijkstra_gen_filename) dijkstra dijkstra_rs generate_yasample
 	$(BUILD_DIR)/$(dijkstra_filename) --in $(dijkstra_gen_sample) --out $(dijkstra_gen_out)
+	@echo "--------------------END OF C++ OUTPUT-----------------------"
+	@echo "------------------------------------------------------------"
+	@echo "-------------------BEGIN OF RUST OUTPUT---------------------"
 	$(BUILD_DIR)/$(dijkstra_rs_filename) --in $(dijkstra_gen_sample) --out $(dijkstra_rs_gen_out)
+	@echo "--------------------END OF RUST OUTPUT----------------------"
 	diff $(dijkstra_gen_out) $(dijkstra_rs_gen_out)
 
 generate_yasample: data_gen
-	echo "[INFO]: Generate $(amount) nodes."
+	@echo "[INFO]: Generate $(amount) nodes."
 	$(dijkstra_gen_filename) $(dijkstra_from) $(dijkstra_to) $(amount)
 
 # dijkstra Data Generator
@@ -79,3 +107,6 @@ $(dijkstra_gen_filename): $(dijkstra_gen_cpp)
 
 mkdir:
 	$(shell mkdir -p $(BUILD_DIR))
+
+clean:
+	rm -rf $(BUILD_DIR)/dijkstra*
