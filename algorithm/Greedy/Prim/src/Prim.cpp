@@ -228,7 +228,7 @@ int fs_main(int argc, char **argv) {
     cout << "[Prim] Time measured: " << elapsed.count() * 1e-9 << " seconds.\n";
 
     // print vertces for debug purpose.
-    cout << prim.vertices_to_string();
+    // cout << prim.vertices_to_string();
 
     // Print result for debug purpose.
     cout << result << endl;

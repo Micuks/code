@@ -4,6 +4,7 @@ use std::{
     fs::File,
     io::{self, Read, Write},
     path::Path,
+    time::Instant,
 };
 
 use crate::utils::cli_parser;
@@ -43,10 +44,10 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
 
     // adj_list[i] collects edges starting from vertex i.
     let mut adj_list: Vec<Vec<Edge>> = vec![vec![]; (v + 1) as usize];
-    println!("adj_list[{}]", adj_list.capacity());
+    // println!("adj_list[{}]", adj_list.capacity());
 
     for line in lines {
-        println!("{}", line);
+        // println!("{}", line);
 
         let vec: Vec<&str> = line.split(" ").collect();
         // Stop reading when line doesn't match the input requirement.
@@ -79,13 +80,13 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
     }
 
     // Print adjacent lists to debug.
-    for i in 1..e {
-        println!("{}: edges:", i);
-        // Borrow edge from adj_list.
-        for &edge in &adj_list[i as usize] {
-            println!("to[{}], weight[{}]", edge.to, edge.weight);
-        }
-    }
+    // for i in 1..e {
+    //     println!("{}: edges:", i);
+    //     // Borrow edge from adj_list.
+    //     for &edge in &adj_list[i as usize] {
+    //         println!("to[{}], weight[{}]", edge.to, edge.weight);
+    //     }
+    // }
 
     (v, e, adj_list)
 }
@@ -183,7 +184,12 @@ fn main() {
     // Compute Prim MST cost whose source is vertex 1.
     let source: i32 = 1;
 
+    // Measure the time elapsed of prim algorithm.
+    let begin = Instant::now();
     let (_end, distance) = prim(&adj_list, source, v);
+    // Record the elapsed time in seconds.
+    let elapsed = begin.elapsed().as_secs_f64();
+    println!("[Prim RUST] Time measured: {:?} seconds.", elapsed);
     // Error handler
     println!("{}", distance);
 
