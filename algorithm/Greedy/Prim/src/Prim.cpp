@@ -9,6 +9,7 @@
 #include <queue>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -96,11 +97,21 @@ class Prim {
     int target;
     int weight_sum;
 
+    vector<pair<Vertex *, Edge *>> edges_in_MST;
     const string vertices_to_string() const;
-    const int prim_MST();
+    const string edges_in_mst_to_string() const;
+    int prim_MST();
     Prim(vector<Vertex *> &vers, int begin)
         : vertices(vers), begin(begin), target(begin), weight_sum(0){};
 };
+
+const string Prim::edges_in_mst_to_string() const {
+    stringstream ss;
+    for (auto a : edges_in_MST) {
+        ss << "From[" << a.first->idx << "], " << *a.second;
+    }
+    return ss.str();
+}
 
 const string Prim::vertices_to_string() const {
     stringstream ss;
@@ -111,7 +122,7 @@ const string Prim::vertices_to_string() const {
     return ss.str();
 }
 
-const int Prim::prim_MST() {
+int Prim::prim_MST() {
     priority_queue<Vertex *, vector<Vertex *>, CmpVertexPtr> pq;
     // Initialize the distance between begin and begin to 0.
     auto ver = vertices.at(begin);
@@ -119,6 +130,21 @@ const int Prim::prim_MST() {
 
     // Initialize pq by pushing begin vertex into pq.
     pq.push(ver);
+
+    // To keep track of edges in MST by maintaining previous vertex.
+    Vertex *prevVer = ver;
+
+    // Find edge whose two endpoints are u and v.
+    auto find_edge = [&](const Vertex *u, const Vertex *v) {
+        auto edge = u->head;
+        while (edge != nullptr && edge->to != v->idx) {
+            edge = edge->next;
+        }
+
+        // If edge found, return pointer pointing to the edge. Else return
+        // nullptr.
+        return edge;
+    };
 
     // Build MST using MinHeap.
     while (!pq.empty()) {
@@ -129,6 +155,10 @@ const int Prim::prim_MST() {
         // Skip current vertex if it is already in MST.
         if (ver->inMST) {
             continue;
+        }
+
+        if (auto edge = find_edge(ver, prevVer)) {
+            edges_in_MST.push_back(make_pair(ver, edge));
         }
 
         // Target vertex is the last vertex to be included in the MST.
@@ -228,7 +258,8 @@ int fs_main(int argc, char **argv) {
     cout << "[Prim] Time measured: " << elapsed.count() * 1e-9 << " seconds.\n";
 
     // print vertces for debug purpose.
-    // cout << prim.vertices_to_string();
+    cout << prim.edges_in_MST.size() << " edges in MST.\n";
+    cout << prim.edges_in_mst_to_string();
 
     // Print result for debug purpose.
     cout << result << endl;

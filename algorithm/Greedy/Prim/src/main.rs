@@ -107,13 +107,17 @@ impl PartialOrd for State {
     }
 }
 
-fn prim(adj: &Vec<Vec<Edge>>, source: i32, v: i32) -> (i32, i32) {
+// Return end vertex ,weight sum and edges in Prim MST.
+fn prim(adj: &Vec<Vec<Edge>>, source: i32, v: i32) -> (i32, i32, Vec<Edge>) {
     type Vertex = i32;
     type Distance = i32;
     // Memorize end vertex in MST.
     let mut end: Vertex = source;
     // Accumulate MST weight sum.
     let mut weight_sum: i32 = 0;
+
+    // Edges in Prim MST for debug.
+    let mut edges_in_mst: Vec<Edge> = Vec::new();
 
     // Initialize states of all vertices.
     let mut dists: Vec<Distance> = Vec::new();

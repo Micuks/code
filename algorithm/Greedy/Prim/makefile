@@ -3,6 +3,10 @@
 CC := g++
 RUSTC := rustc
 
+# Debug flag
+CXX_DBGFLAGS = -O0 -g -DDEBUG
+RUST_DBGFLAGS = -g
+
 prim_from := 0
 prim_to := 1000
 amount := 5000
@@ -25,16 +29,32 @@ prim_gen_sample := data/prim_yasample.in
 prim_gen_out := data/prim_yasample.out
 prim_rs_gen_out := data/prim_rs_yasample.out
 
-# cxxflags := -Wall -std=c++17 -O3
-cxxflags := -Wall -std=c++17 -g
-# rustflass := -O
-rustflags := -g --edition 2021
+cxxflags := -Wall -std=c++17 -O3
+rustflags := -O --edition 2021
 
+###################
+# Debug flag zone #
+###################
+
+DEBUG ?= 0
+ifeq ($(DEBUG), 1)
+	cxxflags := -Wall -Werror -Wextra -std=c++17 -O0 -DDEBUG
+	rustflags := -g --edition 2021
+else
+	cxxflags := -Wall -std=c++17 -O3 -DNDEBUG
+	rustflags := -O --edition 2021
+endif
+
+# Default, release mode.
 .PHONY: all
 all: mkdir prim prim_rs
+	$(BUILD_DIR)/$(prim_filename) --in $(prim_gen_sample) --out $(prim_gen_out)
+	$(BUILD_DIR)/$(prim_rs_filename) --in $(prim_gen_sample) --out $(prim_rs_gen_out)
 
+.PHONY: prim
 prim: $(BUILD_DIR)/prim
 
+.PHONY: prim_rs
 prim_rs: $(BUILD_DIR)/primRS
 
 # prim
@@ -78,5 +98,10 @@ data_gen: $(prim_gen_filename)
 $(prim_gen_filename): $(prim_gen_cpp)
 	$(CC) $(cxxflags) $(prim_gen_cpp) -o $(prim_gen_filename)
 
+.PHONY: mkdir
 mkdir:
 	$(shell mkdir -p $(BUILD_DIR))
+
+.PHONY: clean
+clean:
+	rm -rf $(BUILD_DIR)/prim*
