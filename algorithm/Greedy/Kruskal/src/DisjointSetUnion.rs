@@ -1,3 +1,5 @@
+use std::mem;
+
 use crate::Vertex;
 
 pub struct DSUVertex {
@@ -47,5 +49,23 @@ impl DisjointSetUnion {
         } else {
             Some(v)
         }
+    }
+
+    // Merge two disjoint sets. Return the origin ancestor of the new set. Or return Vertex::MAX if the
+    // two sets to merge are the same.
+    pub fn merge(&mut self, u: Vertex, v: Vertex) -> Vertex {
+        let mut a = self.find_set(u).expect("Disjoint set not found.");
+        let mut b = self.find_set(v).expect("Disjoint set not found.");
+        if a == b {
+            return Vertex::MAX;
+        }
+        if self.vertices[a as usize].size < self.vertices[b as usize].size {
+            mem::swap(&mut a, &mut b);
+        }
+
+        self.vertices[b as usize].parent = a;
+        self.vertices[a as usize].size += self.vertices[b as usize].size;
+
+        a
     }
 }
