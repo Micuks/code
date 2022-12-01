@@ -15,7 +15,7 @@ impl DisjointSetUnion {
     // Create n+1 sets [0, n]
     pub fn new(n: usize) -> Self {
         // Reserve memory space for n+1 vertices.
-        let vertices: Vec<DSUVertex> = Vec::new();
+        let mut vertices: Vec<DSUVertex> = Vec::new();
         vertices.reserve_exact(n + 1);
 
         // Initialize n+1 disjoint set unions.

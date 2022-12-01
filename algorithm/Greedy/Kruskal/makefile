@@ -31,7 +31,7 @@ cxxflags := -Wall -std=c++17 -g
 rustflags := -g --edition 2021
 
 .PHONY: all
-all: mkdir kruskal
+all: mkdir kruskal kruskal_rs
 
 kruskal: $(BUILD_DIR)/kruskal
 

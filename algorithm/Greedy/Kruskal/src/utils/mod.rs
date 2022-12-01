@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 use std::env;
 fn help_str() -> String {
-    "Kruskal in Rust
+    "Kruskal written in Rust.
     If no args are passed, will use default infile and outfile.
     usage:
     --help           show help info.
     --in <filename>  load from given file.
-    --out <filename> save output to given file."
+    --out <filename> save output to given file.\n"
         .to_string()
 }
 

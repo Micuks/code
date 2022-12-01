@@ -1,9 +1,15 @@
-pub mod DisjointSetUnion;
+pub mod disjoint_set_union;
 pub mod utils;
 
+use disjoint_set_union::DisjointSetUnion;
 use std::{
-    cmp::Ordering, collections::BinaryHeap, fmt::Display, fs::File, io::Read,
-    path::Path, time::Instant,
+    cmp::Ordering,
+    collections::BinaryHeap,
+    fmt::Display,
+    fs::File,
+    io::{self, Read, Write},
+    path::Path,
+    time::Instant,
 };
 #[allow(unused)]
 use utils::cli_parser;
@@ -11,7 +17,7 @@ use utils::cli_parser;
 type Weight = i32;
 type Vertex = i32;
 
-#[derive(PartialEq, Eq, Ord)]
+#[derive(PartialEq, Eq, Ord, Clone)]
 struct Edge {
     a: Vertex,
     b: Vertex,
@@ -85,20 +91,36 @@ impl Kruskal {
         }
     }
 
-    pub fn kruskal_mst(&self) -> i32 {
+    pub fn kruskal_mst(&mut self) -> i32 {
         let mut heap: BinaryHeap<Edge> = BinaryHeap::new();
-        let &edges = &self.edges;
 
         // Push all edges into MinHeap.
-        for e in self.edges {
-            heap.push(e);
+        for e in &self.edges {
+            heap.push(e.clone());
         }
+
+        let mut connected_branches = DisjointSetUnion::new(self.v as usize);
+
+        // Merge time counter.
+        let mut merge_cnt = 0;
+        while !heap.is_empty() && merge_cnt < self.v - 1 {
+            let e = heap.pop().expect("Failed to pop from min heap.");
+
+            // Two endpoints of e doesn't in the same connected branches.
+            if connected_branches.merge(e.a, e.b) < Vertex::MAX {
+                // Increase merge count, Add weight of edge to MST's weight sum.
+                merge_cnt += 1;
+                self.weight_sum += e.weight;
+            }
+        }
+
+        self.weight_sum
     }
 }
 
 fn read_edges_from_file(filename: String) -> Option<(i32, i32, Vec<Edge>)> {
-    let mut v: i32;
-    let mut e: i32;
+    let v: i32;
+    let e: i32;
     let mut edges: Vec<Edge> = Vec::new();
 
     let path = Path::new(&filename);
@@ -153,14 +175,24 @@ fn read_edges_from_file(filename: String) -> Option<(i32, i32, Vec<Edge>)> {
     Some((v, e, edges))
 }
 
-// TODO:
-// fn write_weight_sum_to_file(filename: String) -> io::Result<()> {
-//     None
-// }
+fn write_weight_sum_to_file(
+    filename: String,
+    kruskal: &Kruskal,
+) -> io::Result<()> {
+    let path = Path::new(&filename);
+    let display = path.display();
+
+    println!("Write to file: {}", display);
+
+    // Write to file, then return write result.
+    let mut file = File::create(&filename)?;
+
+    write!(file, "{}\n", kruskal.weight_sum)
+}
 
 fn main() {
     let mut in_file: String = "data/kruskal.in".to_string();
-    let mut out_file: String = "data/kruskal.out".to_string();
+    let mut out_file: String = "data/kruskal_rs.out".to_string();
     (in_file, out_file) = cli_parser(in_file, out_file);
     let (e, v, edges) = read_edges_from_file(in_file)
         .expect("Error occurred during unpacking e, v and edges from file.");
@@ -169,16 +201,23 @@ fn main() {
     #[allow(unused)]
     let source = 1;
 
-    let kruskal = Kruskal::new(v, e, edges);
+    let mut kruskal = Kruskal::new(v, e, edges);
     // Measure the elapsed time of kruskal algorithm.
     let begin = Instant::now();
     let distance = kruskal.kruskal_mst();
     let duration = begin.elapsed();
     println!("[Kruskal RUST] Time measured: {:?}", duration);
 
+    // Print the edges in MST.
+    println!("{} edges in Kruskal MST:", &kruskal.edges_in_mst.len());
+    for e in &kruskal.edges_in_mst {
+        println!("{}", e);
+    }
+
     // Print the weight sum of Kruskal MST.
     println!("{}", distance);
 
     // Write the weight sum to out file.
-    // let ok = write_weight_sum_to_file(out_file, distance);
+    write_weight_sum_to_file(out_file, &kruskal)
+        .expect("Failed to write weight sum to file.");
 }
