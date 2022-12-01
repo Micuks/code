@@ -8,24 +8,24 @@ use std::{
     time::Instant,
 };
 
+use crate::utils::cli_parser;
+
 /**
- * Marcos written for debug purpose.
+ * Macros written for debug purpose.
  *
  * If debug output is needed, add --features debug flag in compilation.
  */
 #[cfg(feature = "debug")]
 macro_rules! debug {
-    ($($args:expr),*) => {
+    ($($args: expr), *) => {
         println!($($args), *);
     };
 }
 
 #[cfg(not(feature = "debug"))]
 macro_rules! debug {
-    ($($args:expr),*) => {};
+    ($($args: expr), *) => {};
 }
-
-use crate::utils::cli_parser;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 struct Edge {
