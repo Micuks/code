@@ -291,11 +291,11 @@ int fstream_main(int argc, char **argv) {
     for (int i = 0; i < size; i++) {
         fs >> freq[i];
     }
-    cout << "size: " << size << endl;
-    for (int i = 0; i < size; i++) {
-        cout << freq[i] << " ";
-    }
-    cout << endl;
+    // cout << "size: " << size << endl;
+    // for (int i = 0; i < size; i++) {
+    //     cout << freq[i] << " ";
+    // }
+    // cout << endl;
 
     Huffman huffman(freq, size);
     fs.close();
@@ -319,6 +319,7 @@ int fstream_main(int argc, char **argv) {
 
     fs.open(cliParser.args["--out"], std::ios_base::out);
     // Print sorted numbers to output_file_name
+    fs.precision(17);
     fs << exp << std::endl;
     fs.close();
 
