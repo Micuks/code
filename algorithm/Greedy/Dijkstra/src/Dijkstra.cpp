@@ -219,7 +219,7 @@ int fstream_main(int argc, char **argv) {
     return 0;
 }
 
-int stdio_main(int argc, char **argv) {
+int stdio_main() {
     int V, E;
     cin >> V >> E;
     vector<Node *> nodes;
@@ -251,7 +251,7 @@ int stdio_main(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    // stdio_main(argc, argv);
+    // stdio_main();
     fstream_main(argc, argv);
     return 0;
 }

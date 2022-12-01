@@ -13,9 +13,9 @@ const int default_amount_of_random_numbers = 50;
 class Parser {
   public:
     Parser(int argc, char **argv);
-    const int get_range_from() const { return range_from; }
-    const int get_range_to() const { return range_to; }
-    const int get_amount_of_random_numbers() const {
+    int get_range_from() const { return range_from; }
+    int get_range_to() const { return range_to; }
+    int get_amount_of_random_numbers() const {
         return amount_of_random_numbers;
     }
 
