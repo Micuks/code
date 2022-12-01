@@ -164,7 +164,7 @@ fn main() -> io::Result<()> {
     println!("[Huffman RUST] Time measured: {:?}", elapsed);
 
     // println!("{}", codes_to_string(&mut freq_map, &mut code_map));
-    println!("Expectation: {}", exp);
+    println!("Expectation:\n{}", exp);
 
     // Write expectation to file.
     write_expectation_to_file(out_file, exp)

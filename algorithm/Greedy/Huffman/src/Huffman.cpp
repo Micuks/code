@@ -335,7 +335,7 @@ void huffmanCodes(int identifiers[], double freq[], int size) {
 
     double exp = 0;
     huffman.getExpectation(exp, 0);
-    cout << "Expectation: " << exp << endl;
+    cout << "Expectation:\n" << exp << endl;
 }
 
 int stdio_main(int argc, char **argv) {
