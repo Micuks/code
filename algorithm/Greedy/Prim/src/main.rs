@@ -1,4 +1,5 @@
 pub mod utils;
+use core::fmt;
 use std::{
     collections::{BinaryHeap, HashSet},
     fs::File,
@@ -9,10 +10,35 @@ use std::{
 
 use crate::utils::cli_parser;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 struct Edge {
+    from: i32,
     to: i32,
     weight: i32,
+}
+
+impl PartialOrd for Edge {
+    // Partial Comparator for Edge. First compare weight, then compare from vertex, finally compare to vertex.
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        if self.weight == other.weight {
+            if self.from == other.from {
+                return self.to.partial_cmp(&other.to);
+            }
+            return self.from.partial_cmp(&other.from);
+        }
+
+        self.weight.partial_cmp(&other.weight)
+    }
+}
+
+impl fmt::Display for Edge {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "From[{}], To[{}], Weight[{}]",
+            self.from, self.to, self.weight
+        )
+    }
 }
 
 fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
@@ -68,12 +94,14 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
         // Create edge and append to vertex a's adjacent list.
         let edges_a = &mut adj_list[ver_a as usize];
         edges_a.push(Edge {
+            from: ver_a,
             to: ver_b,
             weight: wei,
         });
 
         // Create edge and append to vertex b's adjacent list.
         adj_list[ver_b as usize].push(Edge {
+            from: ver_b,
             to: ver_a,
             weight: wei,
         });
@@ -91,7 +119,7 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
     (v, e, adj_list)
 }
 
-#[derive(PartialEq, Eq, Ord)]
+#[derive(Copy, Clone, PartialEq, Eq, Ord)]
 struct State {
     distance: i32,
     vertex: i32,
@@ -139,14 +167,43 @@ fn prim(adj: &Vec<Vec<Edge>>, source: i32, v: i32) -> (i32, i32, Vec<Edge>) {
     // Build MST.
     while !heap.is_empty() {
         // stat gets top vertex's ownership.
-        let stat = heap.pop().expect("Error picking top vertex from heap.");
+        let stat = heap.pop().expect("Error picking top state from heap.");
 
         // Skip vertices already in MST.
         if mst.contains(&(stat.vertex)) {
             continue;
         }
 
+        // Insert current vertex into MST.
         mst.insert(stat.vertex);
+
+        // Function used to find edge that one endpoint is u, the other endpoint has already been
+        // in MST.
+        // stat.distance == edge.weight and edge.to in MST.
+        let find_edge = |s: State| -> Option<Edge> {
+            for e in &adj[s.vertex as usize] {
+                // println!("Current edge: {}", e);
+                if mst.contains(&e.to) {
+                    return Some(*e);
+                }
+            }
+
+            // Return None if edge not fount.
+            None
+        };
+
+        // Add current edge to edges_in_mst for debug purpose.
+        // Skip if current vertex is source.
+        if stat.vertex != source {
+            let edge_curr = find_edge(stat).unwrap_or_else(|| {
+                panic!(
+                    "Failed to find edge from {} that are already in MST.",
+                    stat.vertex
+                )
+            });
+            edges_in_mst.push(edge_curr);
+        }
+
         // Memorize the end vertex.
         end = stat.vertex;
         weight_sum += stat.distance as i32;
@@ -166,7 +223,7 @@ fn prim(adj: &Vec<Vec<Edge>>, source: i32, v: i32) -> (i32, i32, Vec<Edge>) {
         }
     }
 
-    (end, weight_sum)
+    (end, weight_sum, edges_in_mst)
 }
 
 fn write_distance_to_file(filename: &String, distence: &i32) -> io::Result<()> {
@@ -190,10 +247,14 @@ fn main() {
 
     // Measure the time elapsed of prim algorithm.
     let begin = Instant::now();
-    let (_end, distance) = prim(&adj_list, source, v);
+    let (_end, distance, edges_in_mst) = prim(&adj_list, source, v);
     // Record the elapsed time in seconds.
     let elapsed = begin.elapsed().as_secs_f64();
     println!("[Prim RUST] Time measured: {:?} seconds.", elapsed);
+
+    for e in edges_in_mst {
+        println!("{}", e);
+    }
     // Error handler
     println!("{}", distance);
 
