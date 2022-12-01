@@ -129,7 +129,7 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
         debug!("{}: edges:", i);
         // Borrow edge from adj_list.
         for &_edge in &adj_list[i as usize] {
-            debug!("to[{}], weight[{}]", edge.to, edge.weight);
+            debug!("to[{}], weight[{}]", _edge.to, _edge.weight);
         }
     }
 
@@ -270,7 +270,7 @@ fn main() {
     println!("[Prim RUST] Time measured: {:?} seconds.", elapsed);
 
     for _e in edges_in_mst {
-        debug!("{}", e);
+        debug!("{}", _e);
     }
     // Error handler
     println!("{}", distance);
