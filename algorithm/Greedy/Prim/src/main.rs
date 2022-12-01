@@ -8,6 +8,23 @@ use std::{
     time::Instant,
 };
 
+/**
+ * Marcos written for debug purpose.
+ *
+ * If debug output is needed, add --features debug flag in compilation.
+ */
+#[cfg(feature = "debug")]
+macro_rules! debug {
+    ($($args:expr),*) => {
+        println!($($args), *);
+    };
+}
+
+#[cfg(not(feature = "debug"))]
+macro_rules! debug {
+    ($($args:expr),*) => {};
+}
+
 use crate::utils::cli_parser;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -108,13 +125,13 @@ fn read_graph_from_file(filename: String) -> (i32, i32, Vec<Vec<Edge>>) {
     }
 
     // Print adjacent lists to debug.
-    // for i in 1..e {
-    //     println!("{}: edges:", i);
-    //     // Borrow edge from adj_list.
-    //     for &edge in &adj_list[i as usize] {
-    //         println!("to[{}], weight[{}]", edge.to, edge.weight);
-    //     }
-    // }
+    for i in 1..e {
+        debug!("{}: edges:", i);
+        // Borrow edge from adj_list.
+        for &_edge in &adj_list[i as usize] {
+            debug!("to[{}], weight[{}]", edge.to, edge.weight);
+        }
+    }
 
     (v, e, adj_list)
 }
@@ -252,8 +269,8 @@ fn main() {
     let elapsed = begin.elapsed().as_secs_f64();
     println!("[Prim RUST] Time measured: {:?} seconds.", elapsed);
 
-    for e in edges_in_mst {
-        println!("{}", e);
+    for _e in edges_in_mst {
+        debug!("{}", e);
     }
     // Error handler
     println!("{}", distance);

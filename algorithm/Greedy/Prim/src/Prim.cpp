@@ -8,6 +8,7 @@
 #include <iostream>
 #include <queue>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,25 +19,20 @@ const int INF = 0x7fffffff;
 
 class Edge {
   public:
+    int from;
     int to;
     int weight;
     Edge *next;
 
-    Edge(int to, int weight) : to(to), weight(weight), next(nullptr){};
+    Edge(int from, int to, int weight)
+        : from(from), to(to), weight(weight), next(nullptr){};
 };
 
 ostream &operator<<(ostream &os, const Edge &e) {
     auto edge = e;
     // Print first edge.
-    os << "to[" << edge.to << "], "
+    os << "from[" << edge.from << "], to[" << edge.to << "], "
        << "weight[" << edge.weight << "]" << endl;
-
-    // Print following edges.
-    while (edge.next != nullptr) {
-        edge = *(edge.next);
-        os << "to[" << edge.to << "], "
-           << "weight[" << edge.weight << "]" << endl;
-    }
 
     return os;
 }
@@ -57,12 +53,7 @@ class Vertex {
 ostream &operator<<(ostream &os, const Vertex &ver) {
     os << ver.idx << ": "
        << "distance[" << ver.distance << "], parent[" << ver.parent
-       << "], inMST[" << ver.inMST << "], edges:" << endl;
-
-    // Print edges.
-    if (ver.head != nullptr)
-        os << *(ver.head);
-
+       << "], inMST[" << ver.inMST << "]";
     return os;
 }
 
@@ -85,8 +76,14 @@ void Vertex::addEdge(Edge *&edge) {
 
 class CmpVertexPtr {
   public:
+    /**
+     * First, compare distance of vertices. Then, compare their index.
+     */
     bool operator()(const Vertex *a, const Vertex *b) const {
-        return a->distance < b->distance;
+        if (a->distance == b->distance) {
+            return a->idx > b->idx;
+        }
+        return a->distance > b->distance;
     }
 };
 
@@ -97,7 +94,7 @@ class Prim {
     int target;
     int weight_sum;
 
-    vector<pair<Vertex *, Edge *>> edges_in_MST;
+    vector<Edge *> edges_in_MST;
     const string vertices_to_string() const;
     const string edges_in_mst_to_string() const;
     int prim_MST();
@@ -108,7 +105,7 @@ class Prim {
 const string Prim::edges_in_mst_to_string() const {
     stringstream ss;
     for (auto a : edges_in_MST) {
-        ss << "From[" << a.first->idx << "], " << *a.second;
+        ss << *a;
     }
     return ss.str();
 }
@@ -131,13 +128,12 @@ int Prim::prim_MST() {
     // Initialize pq by pushing begin vertex into pq.
     pq.push(ver);
 
-    // To keep track of edges in MST by maintaining previous vertex.
-    Vertex *prevVer = ver;
-
-    // Find edge whose two endpoints are u and v.
-    auto find_edge = [&](const Vertex *u, const Vertex *v) {
+    // Find edge whose two endpoints contains u and the other endpoint already
+    // in MST.
+    auto find_edge = [&](const Vertex *u) {
         auto edge = u->head;
-        while (edge != nullptr && edge->to != v->idx) {
+        // Iterate through u's edges until edge.to are already in MST.
+        while (edge != nullptr && !(vertices.at(edge->to)->inMST)) {
             edge = edge->next;
         }
 
@@ -157,14 +153,24 @@ int Prim::prim_MST() {
             continue;
         }
 
-        if (auto edge = find_edge(ver, prevVer)) {
-            edges_in_MST.push_back(make_pair(ver, edge));
+        // Find the edge corresponding to current vertex. Skip source vertex.
+        if (ver->idx != begin) {
+            if (auto last_edge = find_edge(ver)) {
+                edges_in_MST.push_back(last_edge);
+            } else {
+                // Corresponding edge not found. Throw exception.
+                stringstream ss;
+                ss << "Failed to fild the edge that are just inserted to MST. "
+                      "Current Vertex["
+                   << ver->idx << "]";
+                throw std::runtime_error(ss.str());
+            }
         }
 
         // Target vertex is the last vertex to be included in the MST.
-        // By using this, we can find targe vertex. Thus can print the MST with
-        // the help of Vertex.parent.
-        // Compute the sum of weights when building MST.
+        // By using this, we can find targe vertex. Thus can print the MST
+        // with the help of Vertex.parent. Compute the sum of weights when
+        // building MST.
         ver->inMST = true;
         target = ver->idx;
         weight_sum += ver->distance;
@@ -182,13 +188,17 @@ int Prim::prim_MST() {
             if (neighbor_ver->distance > edge->weight) {
                 neighbor_ver->distance = edge->weight;
             }
+
+#ifdef DEBUG
+            cout << "Current edge: " << *edge
+                 << "Neighbor vertex: " << *neighbor_ver << endl;
+
+#endif // DEBUG
             pq.push(neighbor_ver);
 
-            // Iterate next edge in vertex's adjacent list.
+            // Next edge in vertex's adjacent list.
             edge = edge->next;
         }
-        // Update prevVer.
-        prevVer = ver;
     }
 
     return weight_sum;
@@ -229,13 +239,13 @@ int fs_main(int argc, char **argv) {
         // Initialize vertex a.
         auto ver = vertices.at(idx_a);
         assert(ver->idx == idx_a);
-        Edge *edge = new Edge(idx_b, weight);
+        Edge *edge = new Edge(idx_a, idx_b, weight);
         ver->addEdge(edge);
 
         // Initialize vertex b.
         ver = vertices.at(idx_b);
         assert(ver->idx == idx_b);
-        edge = new Edge(idx_a, weight);
+        edge = new Edge(idx_b, idx_a, weight);
         ver->addEdge(edge);
     }
 
@@ -259,9 +269,12 @@ int fs_main(int argc, char **argv) {
     cout.precision(6);
     cout << "[Prim] Time measured: " << elapsed.count() * 1e-9 << " seconds.\n";
 
+#ifdef DEBUG
     // print vertces for debug purpose.
     cout << prim.edges_in_MST.size() << " edges in MST.\n";
     cout << prim.edges_in_mst_to_string();
+
+#endif // DEBUG
 
     // Print result for debug purpose.
     cout << result << endl;
