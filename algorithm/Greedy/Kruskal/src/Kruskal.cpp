@@ -180,16 +180,6 @@ Distance Kruskal::kruskal_MST() {
     typedef unordered_set<Vertex> ConnectedBranch;
     vector<ConnectedBranch *> branches;
 
-    // Print ConectedBranch for debug.
-    auto branch_to_string = // Print connected branch.
-        [&](ConnectedBranch &branch) {
-            stringstream ss;
-            for (auto v : branch) {
-                ss << v << " ";
-            }
-            return ss.str();
-        };
-
     // Detemine whether two vertices are in the same branch.
     auto in_same_branch = [&](Vertex a, Vertex b) {
         return (branches[a]->find(b) != branches[a]->end());
@@ -331,6 +321,7 @@ int main(int argc, char **argv) {
         edges.emplace_back(edge);
     }
 
+#ifdef DEBUG
     auto edges_to_string = [&](vector<Edge> edges) { // Print edges.
         auto in_edge = [&](Vertex v, Edge edge) {
             return ((edge.a == v) || (edge.b == v));
@@ -355,7 +346,7 @@ int main(int argc, char **argv) {
         }
         return ss.str();
     };
-#ifdef DEBUG
+
     cout << edges_to_string(edges) << endl;
 
 #endif // DEBUG

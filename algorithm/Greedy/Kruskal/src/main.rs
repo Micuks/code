@@ -5,12 +5,15 @@ use disjoint_set_union::DisjointSetUnion;
 use std::{
     cmp::Ordering,
     collections::BinaryHeap,
-    fmt::{Display, Write as fmtWrite},
+    fmt::Display,
     fs::File,
     io::{self, Read, Write as IoWrite},
     path::Path,
     time::Instant,
 };
+
+#[cfg(feature = "debug")]
+use std::fmt::Write as fmtWrite;
 
 #[allow(unused)]
 use utils::cli_parser;
@@ -29,9 +32,7 @@ macro_rules! debug {
 
 #[cfg(not(feature = "debug"))]
 macro_rules! debug {
-    ($($args: expr), *) => {
-        println!($($args), *);
-    };
+    ($($args: expr), *) => {};
 }
 
 type Weight = i32;
@@ -140,6 +141,7 @@ impl Kruskal {
         self.weight_sum
     }
 
+    #[cfg(feature = "debug")]
     pub fn edges_in_mst_to_string(&self) -> String {
         let mut s: String = String::new();
         for e in &self.edges_in_mst {
