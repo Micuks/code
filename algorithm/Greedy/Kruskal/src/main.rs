@@ -11,8 +11,28 @@ use std::{
     path::Path,
     time::Instant,
 };
+
 #[allow(unused)]
 use utils::cli_parser;
+
+/**
+ * Macros written for debug purpose.
+ *
+ * If debug output is needed, add --features debug flag in rustc compilation.
+ */
+#[cfg(feature = "debug")]
+macro_rules! debug {
+    ($($args: expr), *) => {
+        println!($($args), *);
+    };
+}
+
+#[cfg(not(feature = "debug"))]
+macro_rules! debug {
+    ($($args: expr), *) => {
+        println!($($args), *);
+    };
+}
 
 type Weight = i32;
 type Vertex = i32;
@@ -73,7 +93,7 @@ impl Default for Edge {
 
 struct Kruskal {
     v: i32,
-    e: i32,
+    _e: i32,
     weight_sum: Weight,
     edges: Vec<Edge>,
     edges_in_mst: Vec<Edge>,
@@ -84,7 +104,7 @@ impl Kruskal {
     pub fn new(v: i32, e: i32, edges: Vec<Edge>) -> Self {
         Self {
             v,
-            e,
+            _e: e,
             weight_sum: 0,
             edges,
             edges_in_mst: Vec::new(),
@@ -121,15 +141,10 @@ impl Kruskal {
     }
 
     pub fn edges_in_mst_to_string(&self) -> String {
-        let mut sorted_edges = self.edges_in_mst.clone();
-        sorted_edges.sort_by(|a, b| a.weight.cmp(&b.weight));
-
         let mut s: String = String::new();
-        for e in sorted_edges {
-            if e.a < e.b {
-                write!(s, "({}, {}): {}\n", e.a, e.b, e.weight)
-                    .expect("Error writing edges in mst to string.");
-            }
+        for e in &self.edges_in_mst {
+            write!(s, "({}, {}): {}\n", e.a, e.b, e.weight)
+                .expect("Error writing edges in mst to string.");
         }
 
         s
@@ -227,11 +242,11 @@ fn main() {
     println!("[Kruskal RUST] Time measured: {:?} seconds.", duration);
 
     // Print the edges in MST.
-    println!("{} edges in Kruskal MST:", &kruskal.edges_in_mst.len());
-    println!("{}", kruskal.edges_in_mst_to_string());
+    debug!("{} edges in Kruskal MST:", &kruskal.edges_in_mst.len());
+    debug!("{}", kruskal.edges_in_mst_to_string());
 
     // Print the weight sum of Kruskal MST.
-    println!("{}", distance);
+    println!("Weight sum of MST:\n{}", distance);
 
     // Write the weight sum to out file.
     write_weight_sum_to_file(out_file, &kruskal)

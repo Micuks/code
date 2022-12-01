@@ -25,16 +25,41 @@ kruskal_gen_sample := data/kruskal_yasample.in
 kruskal_gen_out := data/kruskal_yasample.out
 kruskal_rs_gen_out := data/kruskal_rs_yasample.out
 
-# cxxflags := -Wall -std=c++17 -O3
-cxxflags := -Wall -std=c++17 -g
-# rustflass := -O
-rustflags := -g --edition 2021
+cxxflags := -Wall -std=c++17 -O3
+rustflags := -O --edition 2021
+
+###################
+# Debug flag zone #
+###################
+
+# DEBUG flag default to be 0
+DEBUG ?= 0
+ifeq ($(DEBUG),1)
+	cxxflags := -Wall -Werror -Wextra -std=c++17 -O0 -DDEBUG
+	rustflags := -g --edition 2021 --cfg 'feature="debug"'
+else
+	cxxflags := -Wall -std=c++17 -O3 -DNDEBUG
+	rustflags := -O --edition 2021 --cfg 'feature=""'
+endif
 
 .PHONY: all
 all: mkdir kruskal kruskal_rs
 
+# Rerun previous test. Require an existing $(kruskal_gen_sample).
+.PHONY: last_test
+last_test: mkdir kruskal kruskal_rs $(kruskal_gen_sample)
+	$(BUILD_DIR)/$(kruskal_filename) --in $(kruskal_gen_sample) --out $(kruskal_gen_out)
+	@echo "--------------------END OF C++ OUTPUT-----------------------"
+	@echo "------------------------------------------------------------"
+	@echo "-------------------BEGIN OF RUST OUTPUT---------------------"
+	$(BUILD_DIR)/$(kruskal_rs_filename) --in $(kruskal_gen_sample) --out $(kruskal_rs_gen_out)
+	@echo "--------------------END OF RUST OUTPUT----------------------"
+	diff $(kruskal_gen_out) $(kruskal_rs_gen_out)
+
+.PHONY: kruskal
 kruskal: $(BUILD_DIR)/kruskal
 
+.PHONY: kruskal_rs
 kruskal_rs: $(BUILD_DIR)/kruskalRS
 
 # kruskal
@@ -54,7 +79,6 @@ $(BUILD_DIR)/kruskalRS: $(kruskal_rs_src) $(cli_parser_rs)
 # test
 .PHONY: test
 test: mkdir kruskal_test
-# test: kruskal_default_test
 
 # kruskal Test
 default_test: kruskal kruskal_rs
@@ -68,7 +92,7 @@ kruskal_test: $(kruskal_gen_filename) kruskal kruskal_rs generate_yasample
 	diff $(kruskal_gen_out) $(kruskal_rs_gen_out)
 
 generate_yasample: data_gen
-	echo "[INFO]: Generate $(amount) nodes."
+	@echo "[INFO]: Generate $(amount) nodes."
 	$(kruskal_gen_filename) $(kruskal_from) $(kruskal_to) $(amount)
 
 # kruskal Data Generator
@@ -78,8 +102,10 @@ data_gen: $(kruskal_gen_filename)
 $(kruskal_gen_filename): $(kruskal_gen_cpp)
 	$(CC) $(cxxflags) $(kruskal_gen_cpp) -o $(kruskal_gen_filename)
 
+.PHONY: mkdir
 mkdir:
 	$(shell mkdir -p $(BUILD_DIR))
 
+.PHONY: clean
 clean:
-	$(MAKE) -C ../ clean
+	rm -rf $(BUILD_DIR)/kruskal*
