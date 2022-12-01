@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
     uniform_int_distribution<int> node_distr(1, amount_of_random_numbers);
 
     fstream fs;
-    string filename = "data/dijkstra_yasample.in";
+    string filename = "data/prim_yasample.in";
     fs.open(filename, ios_base::out);
 
     unordered_set<Edge, EdgeHash, EdgeEq> edges;
