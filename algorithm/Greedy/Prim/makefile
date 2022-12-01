@@ -5,7 +5,7 @@ RUSTC := rustc
 
 # Debug flag
 CXX_DBGFLAGS = -O0 -g -DDEBUG
-RUST_DBGFLAGS = -g
+RUST_DBGFLAGS = -g --features debug
 
 prim_from := 0
 prim_to := 1000
@@ -39,16 +39,17 @@ rustflags := -O --edition 2021
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
 	cxxflags := -Wall -Werror -Wextra -std=c++17 -O0 -DDEBUG
-	rustflags := -g --edition 2021
+	rustflags := -g --edition 2021 --cfg 'feature="debug"'
 else
 	cxxflags := -Wall -std=c++17 -O3 -DNDEBUG
-	rustflags := -O --edition 2021
+	rustflags := -O --edition 2021 --cfg 'feature=""'
 endif
 
 # Default, release mode.
 .PHONY: all
 all: mkdir prim prim_rs
 	$(BUILD_DIR)/$(prim_filename) --in $(prim_gen_sample) --out $(prim_gen_out)
+	echo "-------------------------------------------------------------------"
 	$(BUILD_DIR)/$(prim_rs_filename) --in $(prim_gen_sample) --out $(prim_rs_gen_out)
 
 .PHONY: prim
