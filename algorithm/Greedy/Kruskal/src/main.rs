@@ -5,9 +5,9 @@ use disjoint_set_union::DisjointSetUnion;
 use std::{
     cmp::Ordering,
     collections::BinaryHeap,
-    fmt::Display,
+    fmt::{Display, Write as fmtWrite},
     fs::File,
-    io::{self, Read, Write},
+    io::{self, Read, Write as IoWrite},
     path::Path,
     time::Instant,
 };
@@ -111,10 +111,28 @@ impl Kruskal {
                 // Increase merge count, Add weight of edge to MST's weight sum.
                 merge_cnt += 1;
                 self.weight_sum += e.weight;
+
+                // Append newly inserted edge to edges_in_mst for Debug.
+                self.edges_in_mst.push(e);
             }
         }
 
         self.weight_sum
+    }
+
+    pub fn edges_in_mst_to_string(&self) -> String {
+        let mut sorted_edges = self.edges.clone();
+        sorted_edges.sort_by(|a, b| a.weight.cmp(&b.weight));
+
+        let mut s: String = String::new();
+        for e in sorted_edges {
+            if e.a < e.b {
+                write!(s, "({}, {}): {}\n", e.a, e.b, e.weight)
+                    .expect("Error writing edges in mst to string.");
+            }
+        }
+
+        s
     }
 }
 
@@ -148,7 +166,7 @@ fn read_edges_from_file(filename: String) -> Option<(i32, i32, Vec<Edge>)> {
     // Read edges line by line.
     for line in lines {
         // Print line for debug.
-        println!("{}", line);
+        // println!("{}", line);
         let vec: Vec<&str> = line.split(" ").collect();
 
         // Stop reading lines when there's not enough values.
@@ -167,9 +185,9 @@ fn read_edges_from_file(filename: String) -> Option<(i32, i32, Vec<Edge>)> {
         edges.push(edge);
 
         // Print edges for debugging.
-        for edge in &edges {
-            println!("{}", edge);
-        }
+        // for edge in &edges {
+        //     println!("{}", edge);
+        // }
     }
 
     Some((v, e, edges))
@@ -205,14 +223,12 @@ fn main() {
     // Measure the elapsed time of kruskal algorithm.
     let begin = Instant::now();
     let distance = kruskal.kruskal_mst();
-    let duration = begin.elapsed();
-    println!("[Kruskal RUST] Time measured: {:?}", duration);
+    let duration = begin.elapsed().as_secs_f64();
+    println!("[Kruskal RUST] Time measured: {:?} seconds.", duration);
 
     // Print the edges in MST.
     println!("{} edges in Kruskal MST:", &kruskal.edges_in_mst.len());
-    for e in &kruskal.edges_in_mst {
-        println!("{}", e);
-    }
+    // println!("{}", kruskal.edges_in_mst_to_string());
 
     // Print the weight sum of Kruskal MST.
     println!("{}", distance);
