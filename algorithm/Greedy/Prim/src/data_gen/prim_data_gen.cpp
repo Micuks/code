@@ -127,18 +127,25 @@ int main(int argc, char **argv) {
     if (fs.is_open()) {
         // Generate edges.
         for (int i = 1; i <= num_nodes; i++) {
-            int node_a = i;
-            int node_b = node_distr(generator);
 
-            // If node_a == node_b, regenerate node_b.
-            while (node_a == node_b) {
-                node_b = node_distr(generator);
-            }
+            // Generate new node that has no conflict with node_a.
+            auto new_node = [&](const int node_a) {
+                int new_node = node_distr(generator);
+                // If node_a == node_b, regenerate node_b.
+                while (node_a == new_node) {
+                    new_node = node_distr(generator);
+                }
+
+                return new_node;
+            };
+
+            int node_a = i;
+            int node_b = new_node(node_a);
 
             Edge edge(node_a, node_b);
-            // Edge already exists. Regenerate one.
+            // If edge already exists. Regenerate one.
             while (edges.find(edge) != edges.end()) {
-                edge.nodeB = node_distr(generator);
+                edge.nodeB = new_node(node_a);
             }
 
             edges.insert(edge);
