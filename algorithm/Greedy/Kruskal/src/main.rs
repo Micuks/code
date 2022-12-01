@@ -121,7 +121,7 @@ impl Kruskal {
     }
 
     pub fn edges_in_mst_to_string(&self) -> String {
-        let mut sorted_edges = self.edges.clone();
+        let mut sorted_edges = self.edges_in_mst.clone();
         sorted_edges.sort_by(|a, b| a.weight.cmp(&b.weight));
 
         let mut s: String = String::new();
@@ -228,7 +228,7 @@ fn main() {
 
     // Print the edges in MST.
     println!("{} edges in Kruskal MST:", &kruskal.edges_in_mst.len());
-    // println!("{}", kruskal.edges_in_mst_to_string());
+    println!("{}", kruskal.edges_in_mst_to_string());
 
     // Print the weight sum of Kruskal MST.
     println!("{}", distance);
