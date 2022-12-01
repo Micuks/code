@@ -24,10 +24,19 @@ huffman_gen_sample := data/huffman_yasample.in
 huffman_gen_out := data/huffman_yasample.out
 huffman_rs_gen_out := data/huffman_rs_yasample.out
 
-# cxxflags := -Wall -std=c++17 -O3
-cxxflags := -Wall -std=c++17 -g
-# rustflass := -O
-rustflags := -g --edition 2021
+###################
+# Debug flag zone #
+###################
+
+# Debug flag default to be 0
+DEBUG ?= 0
+ifeq ($(DEBUG), 1)
+	cxxflags := -Wall -Werror -Wextra -std=c++17 -O0 -DDEBUG
+	rustflags := -g --edition 2021 --cfg 'feature="debug"'
+else
+	cxxflags := -Wall -std=c++17 -O3 -DNDEBUG
+	rustflags := -O --edition 2021 --cfg 'feature=""'
+endif
 
 .PHONY: all
 all: mkdir huffman huffman_rs
@@ -53,21 +62,39 @@ $(BUILD_DIR)/HuffmanRS: $(huffman_rs)
 # test
 .PHONY: test
 test: mkdir huffman_test
-# test: huffman_default_test
 
 # Huffman Test
 huffman_default_test: huffman huffman_rs
 	$(BUILD_DIR)/$(huffman_filename) --in data/huffman/huffman.in --out data/huffman/huffman.out
+	@echo "--------------------END OF C++ OUTPUT-----------------------"
+	@echo "------------------------------------------------------------"
+	@echo "-------------------BEGIN OF RUST OUTPUT---------------------"
 	$(BUILD_DIR)/$(huffman_rs_filename) --in data/huffman/huffman.in --out data/huffman/huffman_rs.out
+	@echo "--------------------END OF RUST OUTPUT----------------------"
 	diff data/huffman/huffman.out data/huffman/huffman_rs.out
+
+# Rerun previous test. Require an existing $(huffman_gen_sample).
+.PHONY: last_test
+last_test: mkdir huffman huffman_rs $(huffman_gen_sample)
+	$(BUILD_DIR)/$(huffman_filename) --in $(huffman_gen_sample) --out $(huffman_gen_out)
+	@echo "--------------------END OF C++ OUTPUT-----------------------"
+	@echo "------------------------------------------------------------"
+	@echo "-------------------BEGIN OF RUST OUTPUT---------------------"
+	$(BUILD_DIR)/$(huffman_rs_filename) --in $(huffman_gen_sample) --out $(huffman_rs_gen_out)
+	@echo "--------------------END OF RUST OUTPUT----------------------"
+	diff $(huffman_gen_out) $(huffman_rs_gen_out)
 
 huffman_test: $(huffman_gen_filename) huffman huffman_rs huffman_generate_yasample
 	$(BUILD_DIR)/$(huffman_filename) --in $(huffman_gen_sample) --out $(huffman_gen_out)
+	@echo "--------------------END OF C++ OUTPUT-----------------------"
+	@echo "------------------------------------------------------------"
+	@echo "-------------------BEGIN OF RUST OUTPUT---------------------"
 	$(BUILD_DIR)/$(huffman_rs_filename) --in $(huffman_gen_sample) --out $(huffman_rs_gen_out)
+	@echo "--------------------END OF RUST OUTPUT----------------------"
 	diff $(huffman_gen_out) $(huffman_rs_gen_out)
 
 huffman_generate_yasample: huffman_data_gen
-	echo "[INFO]: Generate $(amount) random frequences sum to 1."
+	@echo "[INFO]: Generate $(amount) random frequences sum to 1."
 	$(huffman_gen_filename) $(huffman_from) $(huffman_to) $(amount)
 
 # Huffman Data Generator
@@ -79,3 +106,6 @@ $(huffman_gen_filename): $(huffman_gen_cpp)
 
 mkdir:
 	$(shell mkdir -p $(BUILD_DIR))
+
+clean:
+	rm -rf $(BUILD_DIR)/huffman*
