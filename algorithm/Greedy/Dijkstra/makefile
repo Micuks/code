@@ -109,4 +109,5 @@ mkdir:
 	$(shell mkdir -p $(BUILD_DIR))
 
 clean:
-	rm -rf $(BUILD_DIR)/dijkstra*
+	rm -rf $(BUILD_DIR)/Dijkstra*
+	rm -rf $(BUILD_DIR)/CLIParser.o

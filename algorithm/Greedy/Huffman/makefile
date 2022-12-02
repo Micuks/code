@@ -109,3 +109,4 @@ mkdir:
 
 clean:
 	rm -rf $(BUILD_DIR)/Huffman*
+	rm -rf $(BUILD_DIR)/CLIParser.o
