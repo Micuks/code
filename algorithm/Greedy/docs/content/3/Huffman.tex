@@ -1,0 +1,192 @@
+Huffman编码算法分别使用C++与Rust进行编写, 在具体的实现方式上,
+C++方法使用了二叉最小堆,
+而Rust版在每次插入操作结束后都对数组重新进行排序.以通过对比输出结果来验证算法正确性.
+
+\subsection{程序执行环境}
+在以下环境下进行过测试.
+
+\begin{description}
+	\item[操作系统] macOS 13.1 22C5044e arm64;
+	\item[C++编译器] g++ (Homebrew GCC 12.2.0) 12.2.0;
+	\item[Rust编译器] rustc 1.65.0 (897e37553 2022-11-02)
+	\item[构建和测试工具] GNU Make 3.81;
+	\item[文档编译工具] XeTeX 3.141592653-2.6-0.999994 (TeX Live 2022)
+	\item[文本编辑器] nvim v0.8.1
+\end{description}
+
+\subsection{程序运行方式}
+\subsubsection{Huffman编码程序的编译, 运行和测试方法}
+C++版本和Rust版本均使用 make进行统一构建和测试, 并使用diff命令将结果进行比较,
+以确保排序结果正确.\par
+
+程序(及文档)均使用make进行构建, 对于Huffman编码程序的构建, 在Huffman/文件夹下的shell中执行以下命令:
+\begin{lstlisting}[language=bash]
+make
+\end{lstlisting}
+二进制文件 Huffman和HuffmanRS 将被编译在../build/目录下, 其中,
+Huffman为C++版的编译输出, 而HuffmanRS为Rust版的编译输出.
+如果要运行样例测试, 可以在shell中执行这条命令:
+\begin{lstlisting}[language=bash]
+make huffman_default_test
+\end{lstlisting}
+程序输出将存储在data/huffman/huffman[\_rs].out中.\par
+
+如果要自定义生成数据进行测试, 如下
+\begin{lstlisting}[language=bash]
+make test
+\end{lstlisting}
+默认情况下会使用数据生成器data\_gen生成范围在0到1000范围内的5000个数字进行测试.\par
+
+程序同样支持\textbf{debug模式}编译. 在debug模式下, 会输出更多的运行信息.
+指定DEBUG变量如下:
+\begin{lstlisting}[language=bash]
+make test DEBUG=1
+\end{lstlisting}
+
+其中, huffman\_data\_gen生成的输入存储在data/huffman\_yasample.in中,
+程序的输出存储在data/huffman\_yasample.out和data/huffman\_rs\_yasample.out中. \par
+
+如果要使用数据生成器data\_gen生成指定范围内的均匀分布的随机数进行测试, 可以用
+这条命令:
+\begin{lstlisting}[language=bash]
+make test [from=<range start>] [to=<range end>] [amount=<number of random numbers>]
+# e.g. 
+# make test from=0 to=12345 amount=50
+\end{lstlisting}
+
+由于分别使用c++和rust实现了命令行参数处理工具, 因此如果要使用自定义文件进行测试,
+可以用这条命令:
+\begin{lstlisting}
+# c++版
+../build/Huffman --in ${infilename} --out [${outfilename}]
+\end{lstlisting}
+其中, \$\{infilename\}是按第一章中的\textbf{输入格式}\ref{sec:iosample}组织的输入数据.
+默认情况下将同时输出到标准输出和samples/mergesort.out, 可选自定义输出到
+\$\{outfilename\}路径下. 输出格式为第一章中的\textbf{输出格式}\ref{sec:iosample}.
+
+\subsubsection{文档编译}
+除排序程序使用make管理之外, 本实验的课程报告使用latex进行编写, 因此同样可以
+使用make进行管理. 如果要编译文档, 运行这条命令:
+\begin{lstlisting}[language=bash]
+make docs
+\end{lstlisting}
+make将调用xelatex进行编译; 为了确保cross-referencing的正确工作, make将执行两遍
+xelatex编译.\par
+编译生成的中间文件及文档都保存在docs/build下, docs/report.pdf和docs/build/
+report.pdf均是生成的实验报告.
+
+\subsection{程序执行示例}
+\label{sec:dpBench}
+此处演示程序从构建到测试的过程.
+\begin{lstlisting}[language=bash]
+# in Huffman/ directory
+# user input
+make clean
+
+# console output
+rm -rf ../build/Huffman*
+
+# user input
+make # Compile backpack programs
+
+# console output
+g++ -c -Wall -std=c++17 -O3 -DNDEBUG src/Huffman.cpp -o ../build/Huffman.o
+g++ -Wall -std=c++17 -O3 -DNDEBUG ../build/CLIParser.o ../build/Huffman.o -o ../build/Huffman
+rustc -O --edition 2021 --cfg 'feature=""' -o ../build/HuffmanRS src/main.rs
+
+# user input
+# Run default test with sample given in *DEBUG* mode
+make clean huffman_default_test DEBUG=1
+# or use `make clean huffman_default_test` to run in *RELEASE* mode
+
+# data/huffman/huffman.in:
+4
+0.100 0.100 0.200 0.600
+
+# console output
+rm -rf ../build/Huffman*
+g++ -c -Wall -Werror -Wextra -std=c++17 -O0 -DDEBUG src/Huffman.cpp -o ../build/Huffman.o
+g++ -Wall -Werror -Wextra -std=c++17 -O0 -DDEBUG ../build/CLIParser.o ../build/Huffman.o -o ../build/Huffman
+rustc -g --edition 2021 --cfg 'feature="debug"' -o ../build/HuffmanRS src/main.rs
+../build/Huffman --in data/huffman/huffman.in --out data/huffman/huffman.out
+data/huffman/huffman.in
+data/huffman/huffman.out
+[Huffman] Time measured: 5e-06 seconds.
+Expectation:
+1.600
+ (2, 0.2): 00
+ (0, 0.1): 010
+ (1, 0.1): 011
+ (3, 0.6): 1
+--------------------END OF C++ OUTPUT-----------------------
+------------------------------------------------------------
+-------------------BEGIN OF RUST OUTPUT---------------------
+../build/HuffmanRS --in data/huffman/huffman.in --out data/huffman/huffman_rs.out
+Load from file: data/huffman/huffman.in
+(1, 0.1): 000
+(0, 0.1): 001
+(2, 0.2): 01
+(3, 0.6): 1
+
+[Huffman RUST] Time measured: 0.00018425 seconds.
+Expectation:
+1.600
+Write to file: data/huffman/huffman_rs.out
+--------------------END OF RUST OUTPUT----------------------
+diff data/huffman/huffman.out data/huffman/huffman_rs.out
+
+# user input
+# test with random number generator
+make clean test # Compile data_gen and generate sample to test
+
+# console output
+rm -rf ../build/Huffman*
+g++ -c -Wall -std=c++17 -O3 -DNDEBUG src/Huffman.cpp -o ../build/Huffman.o
+g++ -Wall -std=c++17 -O3 -DNDEBUG ../build/CLIParser.o ../build/Huffman.o -o ../build/Huffman
+rustc -O --edition 2021 --cfg 'feature=""' -o ../build/HuffmanRS src/main.rs
+[INFO]: Generate 5000 random frequences sum to 1.
+../build/huffman_data_gen 0 1000 5000
+../build/Huffman --in data/huffman_yasample.in --out data/huffman_yasample.out
+data/huffman_yasample.in
+data/huffman_yasample.out
+[Huffman] Time measured: 0.00162 seconds.
+Expectation:
+12.045
+--------------------END OF C++ OUTPUT-----------------------
+------------------------------------------------------------
+-------------------BEGIN OF RUST OUTPUT---------------------
+../build/HuffmanRS --in data/huffman_yasample.in --out data/huffman_rs_yasample.out
+Load from file: data/huffman_yasample.in
+[Huffman RUST] Time measured: 0.036416875 seconds.
+Expectation:
+12.045
+Write to file: data/huffman_rs_yasample.out
+--------------------END OF RUST OUTPUT----------------------
+diff data/huffman_yasample.out data/huffman_rs_yasample.out
+
+# user input
+make test from=0 to=1000 amount=500
+# It means generate 500 random numbers ranging from 0 to 1000.
+
+# console output
+[INFO]: Generate 500 random frequences sum to 1.
+../build/huffman_data_gen 0 1000 500
+../build/Huffman --in data/huffman_yasample.in --out data/huffman_yasample.out
+data/huffman_yasample.in
+data/huffman_yasample.out
+[Huffman] Time measured: 0.00019 seconds.
+Expectation:
+8.729
+--------------------END OF C++ OUTPUT-----------------------
+------------------------------------------------------------
+-------------------BEGIN OF RUST OUTPUT---------------------
+../build/HuffmanRS --in data/huffman_yasample.in --out data/huffman_rs_yasample.out
+Load from file: data/huffman_yasample.in
+[Huffman RUST] Time measured: 0.000185541 seconds.
+Expectation:
+8.729
+Write to file: data/huffman_rs_yasample.out
+--------------------END OF RUST OUTPUT----------------------
+diff data/huffman_yasample.out data/huffman_rs_yasample.out
+
+\end{lstlisting}
