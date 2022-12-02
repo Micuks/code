@@ -59,15 +59,18 @@ make test [from=<range start>] [to=<range end>] [amount=<number of random number
 \begin{lstlisting}
 # c++版
 ../build/Huffman --in ${infilename} --out [${outfilename}]
+# Rust版
+../build/HuffmanRS --in ${infilename} --out [${outfilename}]
 \end{lstlisting}
 其中, \$\{infilename\}是按第一章中的\textbf{输入格式}\ref{sec:iosample}组织的输入数据.
-默认情况下将同时输出到标准输出和samples/mergesort.out, 可选自定义输出到
+默认情况下将同时输出到标准输出和data/huffman\_yasample.out, 可选自定义输出到
 \$\{outfilename\}路径下. 输出格式为第一章中的\textbf{输出格式}\ref{sec:iosample}.
 
 \subsubsection{文档编译}
 除排序程序使用make管理之外, 本实验的课程报告使用latex进行编写, 因此同样可以
-使用make进行管理. 如果要编译文档, 运行这条命令:
+使用make进行管理. 如果要编译文档, 在Greedy/目录下, 运行这条命令:
 \begin{lstlisting}[language=bash]
+# cwd = Greddy/
 make docs
 \end{lstlisting}
 make将调用xelatex进行编译; 为了确保cross-referencing的正确工作, make将执行两遍

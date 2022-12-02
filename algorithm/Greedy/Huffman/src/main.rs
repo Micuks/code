@@ -32,6 +32,7 @@ struct Node {
 }
 
 impl Node {
+    #[allow(unused)]
     pub fn to_string(&self) -> String {
         let mut sstream = "".to_string();
         match self.identifier {
@@ -76,7 +77,7 @@ fn assign_codes(p: &Box<Node>, s: String) -> String {
     if let Some(ref r) = p.right {
         sstream += &(assign_codes(r, s.clone() + "1"));
     }
-    if let Some(identifier) = p.identifier {
+    if let Some(_identifier) = p.identifier {
         sstream.push_str(&p.to_string());
         sstream += ": ";
         sstream.push_str(&s);
@@ -93,6 +94,7 @@ fn assign_codes(_p: &Box<Node>, _s: String) -> String {
 
 // Convert huffman codes to string.
 #[cfg(feature = "debug")]
+#[allow(unused)]
 fn codes_to_string(
     freq_map: &HashMap<i32, f64>,
     code_map: &mut HashMap<i32, String>,
@@ -112,6 +114,7 @@ fn codes_to_string(
 }
 
 // Calculate huffman code length expectation
+#[allow(unused)]
 #[cfg(feature = "debug")]
 fn get_expectation_from_maps(
     freq_map: &mut HashMap<i32, f64>,
@@ -226,8 +229,8 @@ fn main() -> io::Result<()> {
         .unwrap_or_else(|| panic!("Failed to get huffman root."));
 
     // Create the huffman code.
-    let code_string = assign_codes(&root, "".to_string());
-    debug!("{}", code_string);
+    let _code_string = assign_codes(&root, "".to_string());
+    debug!("{}", _code_string);
 
     let mut exp: f64 = 0.0;
     exp = get_expectation(&freq_map, &root, 0, &mut exp);
