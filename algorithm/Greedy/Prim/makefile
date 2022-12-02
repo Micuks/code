@@ -112,3 +112,4 @@ mkdir:
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)/prim*
+	rm -rf $(BUILD_DIR)/CLIParser.o
