@@ -1,6 +1,6 @@
 Dijkstra算法分别使用C++与Rust进行编写, 在邻接表具体的实现方式上,
 C++方法使用了链表,
-而Rust版使用了二位可变长数组Vec<>.以通过对比输出结果来验证算法正确性.
+而Rust版使用了二维可变长数组Vec<>.以通过对比输出结果来验证算法正确性.
 
 \subsection{程序执行环境}
 在以下环境下进行过测试.
@@ -85,7 +85,7 @@ make clean
 rm -rf ../build/Dijkstra*
 
 # user input
-make # Compile backpack programs
+make # Compile Rust and C++ programs
 
 # console output
 g++ -c -Wall -std=c++17 -O3 -DNDEBUG src//Dijkstra.cpp -o ../build/dijkstra.o
