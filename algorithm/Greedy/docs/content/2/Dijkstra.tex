@@ -17,19 +17,6 @@ Dijkstra算法每次从V-S中取出具有最短特殊路径长度的顶点u, 将
 同时更新影响到的顶点所对应的最短特殊路径长度. 一旦S中包含了所有V中的顶点,
 就已经完成了从源到其他顶点之间的最短路径长度.
 
-\subsubsection{单源最短路径问题的的最优子结构性质}
-对图$G(V, E)$, 源点v, 问题从以下三方面描述:
-\begin{enumerate}
-	\item 源点v, 途中顶点集合V在算法的迭代过程中均保持不变;
-	\item 用于构造最短路径的当前顶点集合$S_i$, 不断增加, 定义不同规模的子问题;
-	\item 指标: 相对于现有的$S_i$, 对各顶点u, 记录其到源点的距离u.distance.
-\end{enumerate}
-
-不同的$S_i$, 定义了不同规模的子问题; 当$S_i = V$的时候, 算法迭代结束,
-此时$u.distance, \every u \in V$表示途中任意顶点到源的距离.\par
-
-对越小的$S_i$, 问题越简单, 故自下而上求解.
-
 \subsubsection{Dijkstra算法的贪心选择性质}
 \begin{description}
 	\item[贪心选择策略] 在每步迭代的时候, 从$V-S$
@@ -75,6 +62,18 @@ Dijkstra算法每次从V-S中取出具有最短特殊路径长度的顶点u, 将
 故贪心选择策略正确.
 
 \subsubsection{Dijkstra的最优子结构性质}
+对图$G(V, E)$, 源点v, 问题从以下三方面描述:
+\begin{enumerate}
+	\item 源点v, 途中顶点集合V在算法的迭代过程中均保持不变;
+	\item 用于构造最短路径的当前顶点集合$S_i$, 不断增加, 定义不同规模的子问题;
+	\item 指标: 相对于现有的$S_i$, 对各顶点u, 记录其到源点的距离u.distance.
+\end{enumerate}
+
+不同的$S_i$, 定义了不同规模的子问题; 当$S_i = V$的时候, 算法迭代结束,
+此时$u.distance, \every u \in V$表示途中任意顶点到源的距离.\par
+
+对越小的$S_i$, 问题越简单, 故自下而上求解.\par
+
 对顶点i$(i | \every i \in V-U)$, 考察将u加入到S前后, i.dist的变化.
 \begin{enumerate}
 	\item 假设添加u后, 出现了一条从v到V-U中另一个节点i的新路,

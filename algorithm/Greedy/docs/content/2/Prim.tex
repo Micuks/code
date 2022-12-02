@@ -45,7 +45,6 @@ Prim算法和Kruskal算法都属于最小生成树算法.
 \subsubsection{算法类别}
 Prim算法属于贪心算法.
 
-% TODO: Write the following sections.
 \subsubsection{问题描述}
 设$G=(V,E)$是连通带权图, $V=\{1,2,\dots,n\}$. 求节~\ref{sub:MST}所描述的最小生成树.
 
@@ -68,6 +67,13 @@ U为ES生成的最小生成树, 其中的边与ES有尽可能长的重合前缀.
 设$e_i=(x,y)$为Prim算法选出来的边序列中第一条不在U中的边,
 W为在$(x,y)$选择之前的点集合.
 易知U包含边$e_1,e_2,\cdots,e_{i-1}$但不包含边$e_{i}$.\par
+
+\begin{wrapfigure}{r}{width=0.5\textwidth}
+	\begin{center}
+		\includegraphics[width=0.48\textwidth]{prim-proof.png}
+	\end{center}
+	\label{fig:prim-proof}
+\end{wrapfigure}
 
 在U中一定有一条路径$x\arrowvert y\in U$, 使得(a,b)是这条路径上的第一条边,
 且一个顶点在W中, 另一个顶点在W外.
@@ -111,7 +117,8 @@ W为在$(x,y)$选择之前的点集合.
 
 \subsubsection{算法时间及空间复杂性分析}
 \paragraph{空间复杂度分析}
-使用邻接表存图, 空间复杂度为$O(V+E)$.
+使用邻接表存图, 空间复杂度为$O(V+E)$. 使用二叉最小堆维护顶点集合,
+空间复杂度为$O(V)$.
 
 \paragraph{时间复杂度分析}
 由于使用了二叉最小堆, 堆的初始化开销为$O(|V|lg|V|)$.
@@ -122,4 +129,4 @@ Decrease-Key开销为$O(|E|lg|E|$. 总计为
 	T = & O(|V|\lg |V|) + O(\lg |V|) + O(|V|\lg |V|) + O(|E|\lg |E|)  \nonumber \\
 	=   & O(E \lg V) \nonumber
 \end{align}
-由于图G是联通的, 故$\lg |E| = \Omega (\lg |V|)$, 时间复杂度为$O(E\lg V)$.
+由于图G是联通的, 故$\lg |E| = \Theta (\lg |V|)$, 时间复杂度为$O(E\lg V)$.
