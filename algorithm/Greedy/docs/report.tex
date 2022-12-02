@@ -4,7 +4,6 @@
 
 % Pseudo-code
 \usepackage{algorithm}
-\usepackage{algorithmic}
 \usepackage{algpseudocode}
 
 % Wrap-figure
@@ -58,34 +57,34 @@
   language=C++
   % backgroundcolor=\color{black!5},
 }
-\lstset{
-  autogobble,
-  columns=fullflexible,
-  showspaces=false,
-  showtabs=false,
-  breaklines=true,
-  showstringspaces=false,
-  breakatwhitespace=true,
-  escapeinside={(*@}{@*)},
-  commentstyle=\color{greencomments},
-  keywordstyle=\color{bluekeywords},
-  stringstyle=\color{redstrings},
-  numberstyle=\color{graynumbers},
-  basicstyle=\ttfamily\footnotesize,
-  frame=l,
-  framesep=12pt,
-  xleftmargin=12pt,
-  tabsize=4,
-  captionpos=b
-  language=rust
-  % backgroundcolor=\color{black!5},
-}
-
-\includegraphics{{figures/}{figures/prim/}{figures/huffman/}{figures/dijkstra/}{figures/kruskal/}}
+% \lstset{
+%   autogobble,
+%   columns=fullflexible,
+%   showspaces=false,
+%   showtabs=false,
+%   breaklines=true,
+%   showstringspaces=false,
+%   breakatwhitespace=true,
+%   escapeinside={(*@}{@*)},
+%   commentstyle=\color{greencomments},
+%   keywordstyle=\color{bluekeywords},
+%   stringstyle=\color{redstrings},
+%   numberstyle=\color{graynumbers},
+%   basicstyle=\ttfamily\footnotesize,
+%   frame=l,
+%   framesep=12pt,
+%   xleftmargin=12pt,
+%   tabsize=4,
+%   captionpos=b
+%   language=rust
+%   % backgroundcolor=\color{black!5},
+% }
 
 % show paragraphs in table of contentes
 \setcounter{tocdepth}{4}
 \setcounter{secnumdepth}{4}
+
+\graphicspath{{figures/}{figures/prim/}{figures/huffman/}{figures/dijkstra/}{figures/kruskal/}}
 
 \setlength{\parskip}{0.5em}
 \title{贪心算法设计与分析实验报告}
@@ -103,6 +102,7 @@
 \fancyfoot{} % clear all footer fileds
 \fancyfoot[CE, CO]{\thepage}
 
+
 \section{实验题目}
 \input{content/1/1.tex}
 \section{实验过程}
@@ -112,7 +112,7 @@
 \section{实验总结}
 \input{content/4/4.tex}
 \section{算法源代码}
-\input{content/5.tex}
+\input{content/5/5.tex}
 \section{附录}
 代码仓库: \href
 {https://github.com/Micuks/code/tree/master/algorithm/Greedy/Huffman}

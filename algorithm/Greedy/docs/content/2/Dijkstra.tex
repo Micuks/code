@@ -51,7 +51,7 @@ Dijkstra算法每次从V-S中取出具有最短特殊路径长度的顶点u, 将
 由式~\ref{equ:dijPro1}和式~\ref{equ:dijPro2}得,
 \begin{equation}
 	x.dist = d(v, x) \leq d(v, u) < u.dist
-	\label{eq:dijPro3}
+	\label{equ:dijPro3}
 \end{equation}
 但是, 由假设得, 顶点u是V-U中u.dist最小的顶点,
 否则不会是dijkstra算法中选择的下一个V-U中的顶点, 即有
@@ -70,11 +70,11 @@ Dijkstra算法每次从V-S中取出具有最短特殊路径长度的顶点u, 将
 \end{enumerate}
 
 不同的$S_i$, 定义了不同规模的子问题; 当$S_i = V$的时候, 算法迭代结束,
-此时$u.distance, \every u \in V$表示途中任意顶点到源的距离.\par
+此时$u.distance, u \in V$表示途中任意顶点到源的距离.\par
 
 对越小的$S_i$, 问题越简单, 故自下而上求解.\par
 
-对顶点i$(i | \every i \in V-U)$, 考察将u加入到S前后, i.dist的变化.
+对顶点i$(i | i \in V-U)$, 考察将u加入到S前后, i.dist的变化.
 \begin{enumerate}
 	\item 假设添加u后, 出现了一条从v到V-U中另一个节点i的新路,
 	      该路径从v经过$S_{old}$中的顶点到达u, 再经过u的一条直接边到达i,
@@ -87,26 +87,29 @@ Dijkstra算法每次从V-S中取出具有最短特殊路径长度的顶点u, 将
 \end{enumerate}
 因此, 无论算法中i.dist的值是否变化, 它总是关于当前顶点集合S到顶点u的最短路径.
 即对加入u之前和之后的$S_{old}$和$S_{new}$对应的两个子问题,
-算法的执行过程保证了$(i.dist | \every i)$始终是i的最优解.
+算法的执行过程保证了$(i.dist | i)$始终是i的最优解.
 \subsubsection{关键函数及代码段的描述}
 其伪代码描述如下:
 \begin{algorithm}
 	\caption{Dijkstra's algorithm}\label{alg:dijkstra}
-	\begin{algorithmic}{1}
+	\begin{algorithmic}
 		\Require $(G, w, s)$
 		\State $S = \emptyset$
 		\State $Q = G.V$
 		\While{$Q \neq \emptyset$}
 		\State $u = Extract-Min(Q)$
-		\State S = S \cup \{u\}
+		\State $S = S \cup \{u\}$
 		\For{$each vertex v \in G.Adj[u]$}
 		\State Relax(u, v, w)
 		\EndFor
 		\EndWhile
 	\end{algorithmic}
+\end{algorithm}
 
-	\begin{algorithmic}{1}
-		Require $(u, v, w)$
+\begin{algorithm}
+	\caption{Relax(x)}
+	\begin{algorithmic}
+		\Require $(u, v, w)$
 		\If{$v.d > u.d + w(u, v)$}
 		\State $v.d = u.d + w(u, v)$
 		\EndIf
