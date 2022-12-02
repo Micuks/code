@@ -75,7 +75,7 @@ huffman_default_test: huffman huffman_rs
 
 # Rerun previous test. Require an existing $(huffman_gen_sample).
 .PHONY: last_test
-last_test: mkdir huffman huffman_rs $(huffman_gen_sample)
+last_test: clean mkdir huffman huffman_rs $(huffman_gen_sample)
 	$(BUILD_DIR)/$(huffman_filename) --in $(huffman_gen_sample) --out $(huffman_gen_out)
 	@echo "--------------------END OF C++ OUTPUT-----------------------"
 	@echo "------------------------------------------------------------"
@@ -108,4 +108,4 @@ mkdir:
 	$(shell mkdir -p $(BUILD_DIR))
 
 clean:
-	rm -rf $(BUILD_DIR)/huffman*
+	rm -rf $(BUILD_DIR)/Huffman*

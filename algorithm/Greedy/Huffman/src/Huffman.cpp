@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
+#include <ios>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -21,7 +22,7 @@ template <typename T> void swap(T *a, T *b) {
 string arrayToString(int *arr, int len) {
     stringstream ss;
     for (int i = 0; i < len; i++) {
-        ss << arr[i] << " ";
+        ss << arr[i];
     }
     ss << std::endl;
     return ss.str();
@@ -275,14 +276,12 @@ int fstream_main(int argc, char **argv) {
     try {
         fs.open(cliParser.args["--in"], ios_base::in);
     } catch (std::system_error &e) {
-        // cerr<<e.code().message()<<std::endl;
         cerr << e.what();
         exit(-1);
     }
 
     cout << cliParser.args["--in"] << endl;
     cout << cliParser.args["--out"] << endl;
-    // assert(fs.is_open() == true);
 
     int size;
     fs >> size;
@@ -291,11 +290,6 @@ int fstream_main(int argc, char **argv) {
     for (int i = 0; i < size; i++) {
         fs >> freq[i];
     }
-    // cout << "size: " << size << endl;
-    // for (int i = 0; i < size; i++) {
-    //     cout << freq[i] << " ";
-    // }
-    // cout << endl;
 
     Huffman huffman(freq, size);
     fs.close();
@@ -314,28 +308,20 @@ int fstream_main(int argc, char **argv) {
               << " seconds.\n";
 
     // Max precision for double.
-    cout.precision(17);
-    cout << "Expectation:\n" << exp << endl;
+    cout << "Expectation:\n" << fixed << setprecision(3) << exp << endl;
+
+#ifdef DEBUG
+    int huffmanArr[MAXN], top = 0;
+    cout << huffman.codesToString(huffmanArr, top);
+
+#endif // DEBUG
 
     fs.open(cliParser.args["--out"], std::ios_base::out);
     // Print sorted numbers to output_file_name
-    fs.precision(17);
-    fs << exp << std::endl;
+    fs << fixed << setprecision(3) << exp << std::endl;
     fs.close();
 
     return 0;
-}
-
-void huffmanCodes(int identifiers[], double freq[], int size) {
-    Huffman huffman(identifiers, freq, size);
-    huffman.buildHuffmanTree();
-
-    // int huffmanArr[MAXN], top = 0;
-    // cout << huffman.codesToString(huffmanArr, top);
-
-    double exp = 0;
-    huffman.getExpectation(exp, 0);
-    cout << "Expectation:\n" << exp << endl;
 }
 
 int main(int argc, char **argv) {
