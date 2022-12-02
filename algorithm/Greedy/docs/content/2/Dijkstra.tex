@@ -1,12 +1,12 @@
 \subsubsection{算法类别}
 Dijkstra单源最短路径算法属于贪心算法.
 
-\paragraph{问题描述}
+\subsubsection{问题描述}
 给定带权有向图$G=(V,E)$, 其中每条边的权是\textbf{非负实数}. 另外, 还给定V中的一个顶点,
 称为源. 现在要计算从源到所有其他各顶点的最短路长度.
 此处的最短路长度指路上各边权之和. 这个问题通常称为\textbf{单源最短路径问题}.
 
-\paragraph{Dijkstra算法的基本思路}
+\subsubsection{Dijkstra算法的基本思路}
 求解的基本思路是, 设置顶点集合S并不断地进行贪心选择来扩充这个集合.
 一个顶点属于集合S当且仅当从源到该顶点的最短路径长度已知.\par
 
@@ -17,7 +17,7 @@ Dijkstra算法每次从V-S中取出具有最短特殊路径长度的顶点u, 将
 同时更新影响到的顶点所对应的最短特殊路径长度. 一旦S中包含了所有V中的顶点,
 就已经完成了从源到其他顶点之间的最短路径长度.
 
-\paragraph{单源最短路径问题的的最优子结构性质}
+\subsubsection{单源最短路径问题的的最优子结构性质}
 对图$G(V, E)$, 源点v, 问题从以下三方面描述:
 \begin{enumerate}
 	\item 源点v, 途中顶点集合V在算法的迭代过程中均保持不变;
@@ -30,7 +30,7 @@ Dijkstra算法每次从V-S中取出具有最短特殊路径长度的顶点u, 将
 
 对越小的$S_i$, 问题越简单, 故自下而上求解.
 
-\paragraph{Dijkstra算法的贪心选择性质}
+\subsubsection{Dijkstra算法的贪心选择性质}
 \begin{description}
 	\item[贪心选择策略] 在每步迭代的时候, 从$V-S$
 		中选择具有最短特殊路径u.dist的顶点u, 加入S.
@@ -74,7 +74,7 @@ Dijkstra算法每次从V-S中取出具有最短特殊路径长度的顶点u, 将
 这与式~\ref{equ:dijPro3}中的$x.dist < u.dist$矛盾.\par
 故贪心选择策略正确.
 
-\paragraph{Dijkstra的最优子结构性质}
+\subsubsection{Dijkstra的最优子结构性质}
 对顶点i$(i | \every i \in V-U)$, 考察将u加入到S前后, i.dist的变化.
 \begin{enumerate}
 	\item 假设添加u后, 出现了一条从v到V-U中另一个节点i的新路,
