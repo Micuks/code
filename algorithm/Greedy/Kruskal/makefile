@@ -45,17 +45,6 @@ endif
 .PHONY: all
 all: mkdir kruskal kruskal_rs
 
-# Rerun previous test. Require an existing $(kruskal_gen_sample).
-.PHONY: last_test
-last_test: mkdir kruskal kruskal_rs $(kruskal_gen_sample)
-	$(BUILD_DIR)/$(kruskal_filename) --in $(kruskal_gen_sample) --out $(kruskal_gen_out)
-	@echo "--------------------END OF C++ OUTPUT-----------------------"
-	@echo "------------------------------------------------------------"
-	@echo "-------------------BEGIN OF RUST OUTPUT---------------------"
-	$(BUILD_DIR)/$(kruskal_rs_filename) --in $(kruskal_gen_sample) --out $(kruskal_rs_gen_out)
-	@echo "--------------------END OF RUST OUTPUT----------------------"
-	diff $(kruskal_gen_out) $(kruskal_rs_gen_out)
-
 .PHONY: kruskal
 kruskal: $(BUILD_DIR)/kruskal
 
@@ -83,8 +72,23 @@ test: mkdir kruskal_test
 # kruskal Test
 default_test: kruskal kruskal_rs
 	$(BUILD_DIR)/$(kruskal_filename) --in data/kruskal.in --out data/kruskal.out
+	@echo "--------------------END OF C++ OUTPUT-----------------------"
+	@echo "------------------------------------------------------------"
+	@echo "-------------------BEGIN OF RUST OUTPUT---------------------"
 	$(BUILD_DIR)/$(kruskal_rs_filename) --in data/kruskal.in --out data/kruskal_rs.out
+	@echo "--------------------END OF RUST OUTPUT----------------------"
 	diff data/kruskal.out data/kruskal_rs.out
+
+# Rerun previous test. Require an existing $(kruskal_gen_sample).
+.PHONY: last_test
+last_test: mkdir kruskal kruskal_rs $(kruskal_gen_sample)
+	$(BUILD_DIR)/$(kruskal_filename) --in $(kruskal_gen_sample) --out $(kruskal_gen_out)
+	@echo "--------------------END OF C++ OUTPUT-----------------------"
+	@echo "------------------------------------------------------------"
+	@echo "-------------------BEGIN OF RUST OUTPUT---------------------"
+	$(BUILD_DIR)/$(kruskal_rs_filename) --in $(kruskal_gen_sample) --out $(kruskal_rs_gen_out)
+	@echo "--------------------END OF RUST OUTPUT----------------------"
+	diff $(kruskal_gen_out) $(kruskal_rs_gen_out)
 
 kruskal_test: $(kruskal_gen_filename) kruskal kruskal_rs generate_yasample
 	$(BUILD_DIR)/$(kruskal_filename) --in $(kruskal_gen_sample) --out $(kruskal_gen_out)
