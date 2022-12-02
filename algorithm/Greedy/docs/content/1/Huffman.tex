@@ -1,0 +1,42 @@
+\subsubsection{题目描述}
+对给出的字符设计Huffman编码, 计算期望:
+\begin{equation}
+	W = \sum_1^n{P_i \times L_i}
+	\label{eq:huf-exp}
+\end{equation}
+\subsubsection{输入格式}
+\begin{itemize}
+	\item 输入文件名为huffman.in, 输入共两行.
+	\item 第一行一个正整数n, 代表字符个数.
+	\item 第二行包含n个三位小数$P_i$, 代表第i个字符的出现概率,
+	      两个数字之间用空格隔开.
+\end{itemize}
+
+\subsubsection{输出格式}
+\begin{itemize}
+	\item 输出文件名为huffman.out, 输出共一行.
+	\item 第一行包含一个\textbf{三位}小数W, 为最后的期望.
+\end{itemize}
+
+\subsubsection{输入输出样例}
+\label{sec:iosample}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|l|}
+		\hline
+		huffman.in              & huffman.out \\
+		\hline
+		4                       & 1.600       \\
+		0.100 0.100 0.200 0.600 & ~           \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsubsection{数据范围}
+$0 < n \leq 10^6$,
+$0<P_i \leq 1$.
+
+\subsubsection{解法}
+使用两种方法实现. C++版使用最小堆算法实现建树, Rust版使用不稳定排序算法实现建树,
+用以对比不同算法的速度, 以及验证正确性.
+
