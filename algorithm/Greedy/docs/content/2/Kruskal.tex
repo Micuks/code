@@ -81,9 +81,51 @@ Find-Set()和Union()为disjoint-union set数据结构的三个操作.
 		\EndFor
 		\return A
 	\end{algorithmic}
+	\caption{Kruskal算法}
 \end{algorithm}
 
 %TODO: Disjoint-set union.
+\begin{algorithm}
+	\begin{algorithmic}{1}
+		\Require x
+		\State x.p = x
+		\State x.rank = 0
+	\end{algorithmic}
+	\caption{Disjoint-set union的Make-Set算法}
+\end{algorithm}
+
+\begin{algorithm}
+	\begin{algorithmic}{1}
+		\Require $(x, y)$
+		\State $Link(Find-Set(x), Find-Set(y))$
+	\end{algorithmic}
+	\caption{Disjoint-set union的Union算法}
+\end{algorithm}
+
+\begin{algorithm}
+	\begin{algorithmic}{1}
+		\Require $(x, y)$
+		\If{$x.rank > y.rank$}
+		\State y.p = x
+		\Else $x.p = y$
+		\If{$x.rank == y.rank$}
+		y.rank = y.rank+1
+		\EndIf
+		\EndIf
+	\end{algorithmic}
+	\caption{Disjoint-set union的Link算法}
+\end{algorithm}
+
+\begin{algorithm}
+	\begin{algorithmic}{1}
+		\Require $x$
+		\If{$x \neq x.p$}
+		\State x.p = Find-Set(x.p)
+		\EndIf
+		\Return x.p
+	\end{algorithmic}
+	\caption{Disjoint-set union的Find-Set算法}
+\end{algorithm}
 
 其核心代码实现如下:
 
