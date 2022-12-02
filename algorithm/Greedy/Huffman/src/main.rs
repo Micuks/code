@@ -8,12 +8,47 @@ use std::{
 };
 use utils::cli_parser;
 
+/**
+ * Marcros written for debug log.
+ */
+#[cfg(feature = "debug")]
+macro_rules! debug {
+    ($($args: expr), *) => {
+        println!($($args), *);
+    };
+}
+
+#[cfg(not(feature = "debug"))]
+macro_rules! debug {
+    ($($args: expr), *) => {};
+}
+
 struct Node {
     identifier: Option<i32>,
     freq: f64,
     // Use option to represent null node equal to NULL in C++.
     left: Option<Box<Node>>,
     right: Option<Box<Node>>,
+}
+
+impl Node {
+    pub fn to_string(&self) -> String {
+        let mut sstream = "".to_string();
+        match self.identifier {
+            Some(_) => {
+                sstream += &("(".to_string()
+                    + &self.identifier.unwrap().to_string()
+                    + ", "
+                    + &self.freq.to_string()
+                    + ")");
+            }
+            None => {
+                sstream += "<NULL>";
+            }
+        }
+
+        sstream
+    }
 }
 
 fn new_node(f: f64, iden: Option<i32>) -> Node {
@@ -30,25 +65,36 @@ fn new_box(n: Node) -> Box<Node> {
 }
 
 // Assign huffman code to leaves in huffman tree.
-fn assign_codes(p: &Box<Node>, h: &mut HashMap<i32, String>, s: String) {
+#[cfg(feature = "debug")]
+fn assign_codes(p: &Box<Node>, s: String) -> String {
+    let mut sstream = "".to_string();
     // If the char field of a node is not None, then it is a leaf node.
     // Insert it and its huffman code to the HashMap.
-    if let Some(identifier) = p.identifier {
-        h.insert(identifier, s);
-    } else {
-        if let Some(ref l) = p.left {
-            assign_codes(l, h, s.clone() + "0");
-        }
-        if let Some(ref r) = p.right {
-            assign_codes(r, h, s.clone() + "1");
-        }
+    if let Some(ref l) = p.left {
+        sstream += &(assign_codes(l, s.clone() + "0"));
     }
+    if let Some(ref r) = p.right {
+        sstream += &(assign_codes(r, s.clone() + "1"));
+    }
+    if let Some(identifier) = p.identifier {
+        sstream.push_str(&p.to_string());
+        sstream += ": ";
+        sstream.push_str(&s);
+        sstream += "\n";
+    }
+
+    sstream
+}
+
+#[cfg(not(feature = "debug"))]
+fn assign_codes(_p: &Box<Node>, _s: String) -> String {
+    _s
 }
 
 // Convert huffman codes to string.
-#[allow(unused)]
+#[cfg(feature = "debug")]
 fn codes_to_string(
-    freq_map: &mut HashMap<i32, f64>,
+    freq_map: &HashMap<i32, f64>,
     code_map: &mut HashMap<i32, String>,
 ) -> String {
     let mut s = String::new();
@@ -66,7 +112,8 @@ fn codes_to_string(
 }
 
 // Calculate huffman code length expectation
-fn get_expectation(
+#[cfg(feature = "debug")]
+fn get_expectation_from_maps(
     freq_map: &mut HashMap<i32, f64>,
     code_map: &mut HashMap<i32, String>,
 ) -> f64 {
@@ -77,6 +124,28 @@ fn get_expectation(
     }
 
     exp
+}
+
+fn get_expectation(
+    freq_map: &HashMap<i32, f64>,
+    root: &Box<Node>,
+    depth: i32,
+    exp: &mut f64,
+) -> f64 {
+    // If the char field of a node is node None, then it is a leaf node.
+    // Accumulate the value calculated by multiplying its frequency and code length.
+    if let Some(_) = root.identifier {
+        *exp += depth as f64 * root.freq;
+    } else {
+        if let Some(ref l) = root.left {
+            get_expectation(freq_map, l, depth + 1, exp);
+        }
+        if let Some(ref r) = root.right {
+            get_expectation(freq_map, r, depth + 1, exp);
+        }
+    }
+
+    *exp
 }
 
 fn load_freq_map_from_file(filename: String) -> HashMap<i32, f64> {
@@ -121,7 +190,7 @@ fn write_expectation_to_file(
     println!("Write to file: {}", display);
 
     let mut file = File::create(filename)?;
-    write!(file, "{}\n", expectation)
+    write!(file, "{:.3}\n", expectation)
 }
 
 fn main() -> io::Result<()> {
@@ -129,7 +198,7 @@ fn main() -> io::Result<()> {
     let mut out_file: String = "data/huffman/huffman_rs.out".to_owned();
     (in_file, out_file) = cli_parser(in_file, out_file);
 
-    let mut freq_map = load_freq_map_from_file(in_file);
+    let freq_map = load_freq_map_from_file(in_file);
 
     // Put <k, v> from hashmap to vector.
     let mut p: Vec<Box<Node>> = freq_map
@@ -137,9 +206,12 @@ fn main() -> io::Result<()> {
         .map(|x| new_box(new_node(*(x.1), Some(*(x.0)))))
         .collect();
 
+    // Measure the elapsed time of Huffman algorithm.
+    let begin = Instant::now();
+
     // Build the huffman tree.
     while p.len() > 1 {
-        p.sort_by(|a, b| (b.freq).partial_cmp(&(a.freq)).unwrap());
+        p.sort_unstable_by(|a, b| (b.freq).partial_cmp(&(a.freq)).unwrap());
         let a = p.pop().unwrap();
         let b = p.pop().unwrap();
         let mut c = new_box(new_node(a.freq + b.freq, None));
@@ -149,22 +221,23 @@ fn main() -> io::Result<()> {
     }
 
     // Get root of huffman tree.
-    let root = p.pop().unwrap();
+    let root = p
+        .pop()
+        .unwrap_or_else(|| panic!("Failed to get huffman root."));
 
     // Create the huffman code.
-    let mut code_map: HashMap<i32, String> = HashMap::new();
-    assign_codes(&root, &mut code_map, "".to_string());
+    let code_string = assign_codes(&root, "".to_string());
+    debug!("{}", code_string);
 
-    // Measure the elapsed time of Huffman algorithm.
-    let begin = Instant::now();
-    let exp = get_expectation(&mut freq_map, &mut code_map);
-    let elapsed = begin.elapsed();
+    let mut exp: f64 = 0.0;
+    exp = get_expectation(&freq_map, &root, 0, &mut exp);
+    let elapsed = begin.elapsed().as_secs_f64();
 
     // Print the elapsed time of Huffman algorithm.
-    println!("[Huffman RUST] Time measured: {:?}", elapsed);
+    println!("[Huffman RUST] Time measured: {}", elapsed);
 
     // println!("{}", codes_to_string(&mut freq_map, &mut code_map));
-    println!("Expectation:\n{}", exp);
+    println!("Expectation:\n{:.3}", exp);
 
     // Write expectation to file.
     write_expectation_to_file(out_file, exp)
