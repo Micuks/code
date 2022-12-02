@@ -44,7 +44,36 @@ T的平均码长$B(T)$可以用子树T的平均码长$B(T')$来表示:
 则由式~\ref{equ:huffman最优子结构递推式}得, $B(T''') < B(T)$, T'''的码长比T更短,
 与T是最优解矛盾. 故子问题是最优的.
 % paragraph Huffman算法的最优子结构性质 (end)
+\subsubsection{关键函数及代码段的描述}
+其伪代码描述如下:
+\begin{algorithm}
+	\caption{Huffman algorithm}\label{alg:huffman}
+	\begin{algorithmic}{1}
+		\Require $C$
+		\State $n = |C|$
+		\State Q = C
+		\For{i=1 to n-1}
+		allocate a new node $\mathit{z}$
+		\State $\mathit{z}.left = x = Extract-Min(Q)$
+		\State $\mathit{z}.right = y = Extract-Min(Q)$
+		\State $\mathit{z}.freq = x.freq + y.freq$
+		\State $Insert(Q, \mathit{z})$
+		\EndFor
+		\Return Extract-Min(Q) // Return the root of the tree
+	\end{algorithmic}
+\end{algorithm}
 
 % TODO: 算法的时间复杂性和空间复杂性分析.
 \paragraph{Huffman算法的时间复杂性分析}
+使用二叉最小堆进行建树, 堆中最多需要存放|C|个顶点, 空间复杂度为$O(C)$.
+
 \paragraph{Huffman算法的空间复杂性分析}
+对|C|个字符, 进行|C|-1次合并后可以得到Huffman树. 因此,
+代码段~\ref{alg:huffman}中的循环进行n-1次. 在每次循环中,
+需要执行两次Extra-Min操作, 由于使用了二叉最小堆, 每次操作的时间复杂度为$O(lgC)$.
+执行一次Insert操作, 时间复杂度也为$O(lgC)$. 据此可得
+\begin{equation}
+	T = O(C) \times O(lgC) = O(ClogC)
+	\label{eq:huffmanTimeComplexity}
+\end{equation}
+故总的时间复杂度为$O(ClogC)$.
