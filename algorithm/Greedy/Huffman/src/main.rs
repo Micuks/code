@@ -234,7 +234,7 @@ fn main() -> io::Result<()> {
     let elapsed = begin.elapsed().as_secs_f64();
 
     // Print the elapsed time of Huffman algorithm.
-    println!("[Huffman RUST] Time measured: {}", elapsed);
+    println!("[Huffman RUST] Time measured: {} seconds.", elapsed);
 
     // println!("{}", codes_to_string(&mut freq_map, &mut code_map));
     println!("Expectation:\n{:.3}", exp);

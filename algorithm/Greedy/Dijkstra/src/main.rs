@@ -5,6 +5,7 @@ use std::{
     fs::File,
     io::{self, Read, Write},
     path::Path,
+    time::Instant,
 };
 
 use crate::utils::cli_parser;
@@ -156,7 +157,10 @@ fn main() {
     (in_file, out_file) = cli_parser(in_file, out_file);
     let (v, _e, adj_list) = read_graph_from_file(in_file);
     // TODO: Add timer.
+    let begin = Instant::now();
     let result = dijkstra(&adj_list, 1, v);
+    let elapsed = begin.elapsed().as_secs_f64();
+    println!("[Dijkstra Rust] Time measured: {} seconds.", elapsed);
     let distance: i32;
     match result {
         // If node[e] cannot be reached from node[1], assign 1 to distance.
