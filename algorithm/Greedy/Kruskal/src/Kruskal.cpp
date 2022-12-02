@@ -192,10 +192,6 @@ Distance Kruskal::kruskal_MST() {
         merge(p_branch_a->begin(), p_branch_a->end(), p_branch_b->begin(),
               p_branch_b->end(), inserter(*new_branch, new_branch->begin()));
 
-#ifdef DEBUG
-        cout << "new branch: " << branch_to_string(*new_branch) << endl;
-#endif // DEBUG
-
         // Modify branches in new_branch to point to new_branch and free
         // p_branch_a and p_branch_b' memory. Assuming that the two branches are
         // in different branches.
