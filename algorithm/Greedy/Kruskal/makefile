@@ -113,3 +113,4 @@ mkdir:
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)/kruskal*
+	rm -rf $(BUILD_DIR)/CLIParser.o

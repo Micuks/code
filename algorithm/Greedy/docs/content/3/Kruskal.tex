@@ -1,0 +1,219 @@
+Kruskal算法分别使用C++与Rust进行编写, 连通分支的模拟上,
+C++版使用了unordered_set进行操作, 而Rust版本使用\textbf{disjoint-set
+	union}进行优化. 以通过对比输出结果来验证算法正确性, 以及比较disjoint-set
+union带来的提升.
+
+\subsection{程序执行环境}
+在以下环境下进行过测试.
+
+\begin{description}
+	\item[操作系统] macOS 13.1 22C5044e arm64;
+	\item[C++编译器] g++ (Homebrew GCC 12.2.0) 12.2.0;
+	\item[Rust编译器] rustc 1.65.0 (897e37553 2022-11-02)
+	\item[构建和测试工具] GNU Make 3.81;
+	\item[文档编译工具] XeTeX 3.141592653-2.6-0.999994 (TeX Live 2022)
+	\item[文本编辑器] nvim v0.8.1
+\end{description}
+
+\subsection{程序运行方式}
+\subsubsection{Kruskal编码程序的编译, 运行和测试方法}
+C++版本和Rust版本均使用 make进行统一构建和测试, 并使用diff命令将结果进行比较,
+以确保排序结果正确.\par
+
+程序(及文档)均使用make进行构建, 对于Huffman编码程序的构建, 在Huffman/文件夹下的shell中执行以下命令:
+\begin{lstlisting}[language=bash]
+make
+\end{lstlisting}
+二进制文件 kruskal和kruskalRS 将被编译在../build/目录下, 其中,
+kruskal为C++版的编译输出, 而kruskalRS为Rust版的编译输出.
+如果要运行样例测试, 可以在shell中执行这条命令:
+
+\begin{lstlisting}[language=bash]
+make default_test
+\end{lstlisting}
+程序输出将存储在data/kruskal[\_rs].out中.\par
+
+程序同样支持\textbf{debug模式}编译. 在debug模式下, 会输出更多的运行信息.
+例如, 在默认测试中, 指定DEBUG变量如下:
+\begin{lstlisting}[language=bash]
+make default_test DEBUG=1
+\end{lstlisting}
+
+如果要自定义生成数据进行测试, 如下
+\begin{lstlisting}[language=bash]
+make test
+\end{lstlisting}
+默认情况下会使用数据生成器data\_gen生成范围在0到1000范围内的5000个数字进行测试.\par
+
+自定义数据同样支持\textbf{debug模式}编译. 在debug模式下, 会输出更多的运行信息.
+指定DEBUG变量如下:
+\begin{lstlisting}[language=bash]
+make test DEBUG=1
+\end{lstlisting}
+
+其中, kruskal\_data\_gen生成的输入存储在data/kruskal\_yasample.in中,
+程序的输出存储在data/kruskal\_yasample.out和data/kruskal\_rs\_yasample.out中. \par
+
+如果要使用数据生成器kruskal\_data\_gen生成指定范围内的均匀分布的随机数进行测试, 可以用
+这条命令:
+\begin{lstlisting}[language=bash]
+make test [from=<range start>] [to=<range end>] [amount=<number of random numbers>]
+# e.g. 
+# make test from=0 to=12345 amount=50 DEBUG=[01]
+\end{lstlisting}
+
+由于分别使用c++和rust实现了命令行参数处理工具, 因此如果要使用自定义文件进行测试,
+可以用这条命令:
+\begin{lstlisting}
+# c++版
+../build/Kruskal --in ${infilename} --out [${outfilename}]
+# Rust版
+../build/KruskalRS --in ${infilename} --out [${outfilename}]
+\end{lstlisting}
+其中, \$\{infilename\}是按第一章中的\textbf{输入格式}\ref{sec:iosample}组织的输入数据.
+默认情况下将同时输出到标准输出和data/kruskal_yasample.out, 可选自定义输出到
+\$\{outfilename\}路径下. 输出格式为第一章中的\textbf{输出格式}\ref{sec:iosample}.
+
+\subsection{程序执行示例}
+\label{sec:dpBench}
+此处演示程序从构建到测试的过程.
+\begin{lstlisting}[language=bash]
+# cwd = Kruskal/ directory
+# user input
+make clean
+
+# console output
+rm -rf ../build/kruskal*
+rm -rf ../build/CLIParser.o
+
+# user input
+make # Compile Rust and C++ programs
+
+# console output
+g++ -c -Wall -std=c++17 -O3 -DNDEBUG src//kruskal.cpp -o ../build/kruskal.o
+g++ -c -Wall -std=c++17 -O3 -DNDEBUG src/utils/CLIParser.cpp -o ../build/CLIParser.o
+g++ -Wall -std=c++17 -O3 -DNDEBUG ../build/CLIParser.o ../build/kruskal.o -o ../build/kruskal
+rustc -O --edition 2021 --cfg 'feature=""' -o ../build/kruskalRS src//main.rs
+
+# user input
+# Run default test with sample given in *DEBUG* mode
+make clean default_test DEBUG=1
+# or use `make clean huffman_default_test` to run in *RELEASE* mode
+
+# data/kruskal.in:
+4 5
+1 2 2
+1 3 2
+1 4 3
+2 3 4
+3 4 3
+
+# console output
+rm -rf ../build/kruskal*
+rm -rf ../build/CLIParser.o
+g++ -c -Wall -Werror -Wextra -std=c++17 -O0 -DDEBUG src//kruskal.cpp -o ../build/kruskal.o
+g++ -c -Wall -Werror -Wextra -std=c++17 -O0 -DDEBUG src/utils/CLIParser.cpp -o ../build/CLIParser.o
+g++ -Wall -Werror -Wextra -std=c++17 -O0 -DDEBUG ../build/CLIParser.o ../build/kruskal.o -o ../build/kruskal
+rustc -g --edition 2021 --cfg 'feature="debug"' -o ../build/kruskalRS src//main.rs
+../build/kruskal --in data/kruskal.in --out data/kruskal.out
+Load data from: data/kruskal.in
+Write data to: data/kruskal.out
+
+Edges:
+1:
+to[2], weight[2]
+to[3], weight[2]
+to[4], weight[3]
+2:
+to[1], weight[2]
+to[3], weight[4]
+3:
+to[1], weight[2]
+to[2], weight[4]
+to[4], weight[3]
+4:
+to[1], weight[3]
+to[3], weight[3]
+(1, 2): 2
+(1, 3): 2
+(1, 4): 3
+(2, 3): 4
+(3, 4): 3
+
+edges[5], heap[5]
+[Kruskal] Time measured: 2.9e-05 seconds.
+4 Vertices in MST:
+4 3 2 1
+3 Edges in MST:
+(1, 4): 3
+(1, 3): 2
+(1, 2): 2
+Weight sum of MST:
+7
+--------------------END OF C++ OUTPUT-----------------------
+------------------------------------------------------------
+-------------------BEGIN OF RUST OUTPUT---------------------
+../build/kruskalRS --in data/kruskal.in --out data/kruskal_rs.out
+Load edges from file: data/kruskal.in
+[Kruskal RUST] Time measured: 1.4333e-5 seconds.
+3 edges in Kruskal MST:
+(1, 2): 2
+(1, 3): 2
+(1, 4): 3
+
+Weight sum of MST:
+7
+Write to file: data/kruskal_rs.out
+--------------------END OF RUST OUTPUT----------------------
+diff data/kruskal.out data/kruskal_rs.out
+
+# user input
+# test with random number generator
+make clean test # Compile data_gen and generate sample to test
+
+# console output
+rm -rf ../build/kruskal*
+rm -rf ../build/CLIParser.o
+g++ -Wall -std=c++17 -O3 -DNDEBUG src/data_gen/kruskal_data_gen.cpp -o ../build/kruskal_data_gen
+g++ -c -Wall -std=c++17 -O3 -DNDEBUG src//kruskal.cpp -o ../build/kruskal.o
+g++ -c -Wall -std=c++17 -O3 -DNDEBUG src/utils/CLIParser.cpp -o ../build/CLIParser.o
+g++ -Wall -std=c++17 -O3 -DNDEBUG ../build/CLIParser.o ../build/kruskal.o -o ../build/kruskal
+rustc -O --edition 2021 --cfg 'feature=""' -o ../build/kruskalRS src//main.rs
+[INFO]: Generate 5000 nodes.
+../build/kruskal_data_gen 0 1000 5000
+../build/kruskal --in data/kruskal_yasample.in --out data/kruskal_yasample.out
+Load data from: data/kruskal_yasample.in
+Write data to: data/kruskal_yasample.out
+[Kruskal] Time measured: 0.027958 seconds.
+Weight sum of MST:
+2510558
+../build/kruskalRS --in data/kruskal_yasample.in --out data/kruskal_rs_yasample.out
+Load edges from file: data/kruskal_yasample.in
+[Kruskal RUST] Time measured: 0.001215166 seconds.
+Weight sum of MST:
+2510558
+Write to file: data/kruskal_rs_yasample.out
+diff data/kruskal_yasample.out data/kruskal_rs_yasample.out
+
+# user input
+make test from=0 to=1000 amount=500
+# It means generate 500 random numbers ranging from 0 to 1000.
+
+# console output
+[INFO]: Generate 500 nodes.
+../build/kruskal_data_gen 0 1000 500
+../build/kruskal --in data/kruskal_yasample.in --out data/kruskal_yasample.out
+Load data from: data/kruskal_yasample.in
+Write data to: data/kruskal_yasample.out
+[Kruskal] Time measured: 0.000755 seconds.
+Weight sum of MST:
+251140
+../build/kruskalRS --in data/kruskal_yasample.in --out data/kruskal_rs_yasample.out
+Load edges from file: data/kruskal_yasample.in
+[Kruskal RUST] Time measured: 5.9375e-5 seconds.
+Weight sum of MST:
+251140
+Write to file: data/kruskal_rs_yasample.out
+diff data/kruskal_yasample.out data/kruskal_rs_yasample.out
+\end{lstlisting}
+
