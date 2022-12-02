@@ -7,8 +7,10 @@
 #include <iomanip>
 #include <ios>
 #include <iostream>
+#include <queue>
 #include <sstream>
 #include <string>
+#include <vector>
 
 const int MAXN = 1 << 20;
 using namespace std;
@@ -32,7 +34,10 @@ class Node {
   public:
     int identifier;
     double freq;
-    class Node *left, *right;
+    Node *left, *right;
+    Node(int identifier = -10, double freq = 0.0, Node *left = nullptr,
+         Node *right = nullptr)
+        : identifier(identifier), freq(freq), left(left), right(right) {}
 };
 
 ostream &operator<<(ostream &os, Node node) {
@@ -173,6 +178,13 @@ string MinHeap::toString() {
     return ss.str();
 }
 
+class CmpNodePtrs {
+  public:
+    bool operator()(const Node *lhs, const Node *rhs) const {
+        return lhs->freq > rhs->freq;
+    }
+};
+
 class Huffman {
   private:
     MinHeap minHeap;
@@ -185,6 +197,7 @@ class Huffman {
 
     // Separate build huffman tree alone to test how much time it costs.
     void buildHuffmanTree();
+    void priority_queue_huild_huffman_tree();
 
     double getExpectation(double &exp, int top);
     double getExpectation(Node *root, double &exp, int top);
@@ -221,6 +234,25 @@ void Huffman::buildHuffmanTree() {
 
     // The remaining node is the root node. Now the huffman tree is complete.
     huffmanTree = minHeap.extractMin();
+}
+
+void Huffman::priority_queue_huild_huffman_tree() {
+    priority_queue<Node *, vector<Node *>, CmpNodePtrs> pqHeap;
+    while (minHeap.getHeapSize()) {
+        pqHeap.push(minHeap.extractMin());
+    }
+
+    while (pqHeap.size() > 1) {
+        auto left = pqHeap.top();
+        pqHeap.pop();
+        auto right = pqHeap.top();
+        pqHeap.pop();
+
+        auto new_node = new Node(-10, left->freq + right->freq, left, right);
+        pqHeap.push(new_node);
+    }
+
+    huffmanTree = pqHeap.top();
 }
 
 string Huffman::codesToString(Node *root, int *arr, int top) {
@@ -297,7 +329,9 @@ int fstream_main(int argc, char **argv) {
     double exp = 0;
     auto begin = std::chrono::high_resolution_clock::now();
 
-    huffman.buildHuffmanTree();
+    // BUG: Bug in self-implemented Min Heap.
+    // huffman.buildHuffmanTree();
+    huffman.priority_queue_huild_huffman_tree();
     huffman.getExpectation(exp, 0);
 
     auto end = std::chrono::high_resolution_clock::now();
