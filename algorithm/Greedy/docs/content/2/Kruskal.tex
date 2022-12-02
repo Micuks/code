@@ -65,7 +65,7 @@ Kruskal算法的正确性得证.
 Find-Set()和Union()为disjoint-union set数据结构的三个操作.
 %TODO: Pseudo-code here.
 \begin{algorithm}
-	\begin{algorithmic}{1}
+	\begin{algorithmic}
 		\Require $(G,w)$
 		\State $A = \emptyset$
 		\For{each vertex $\mathit{v}\in G.V$}
@@ -79,14 +79,14 @@ Find-Set()和Union()为disjoint-union set数据结构的三个操作.
 		\State $Union(\mathit{u,v})$
 		\EndIf
 		\EndFor
-		\return A
+		return A
 	\end{algorithmic}
 	\caption{Kruskal算法}
 \end{algorithm}
 
 %TODO: Disjoint-set union.
 \begin{algorithm}
-	\begin{algorithmic}{1}
+	\begin{algorithmic}
 		\Require x
 		\State x.p = x
 		\State x.rank = 0
@@ -95,7 +95,7 @@ Find-Set()和Union()为disjoint-union set数据结构的三个操作.
 \end{algorithm}
 
 \begin{algorithm}
-	\begin{algorithmic}{1}
+	\begin{algorithmic}
 		\Require $(x, y)$
 		\State $Link(Find-Set(x), Find-Set(y))$
 	\end{algorithmic}
@@ -103,7 +103,7 @@ Find-Set()和Union()为disjoint-union set数据结构的三个操作.
 \end{algorithm}
 
 \begin{algorithm}
-	\begin{algorithmic}{1}
+	\begin{algorithmic}
 		\Require $(x, y)$
 		\If{$x.rank > y.rank$}
 		\State y.p = x
@@ -117,7 +117,7 @@ Find-Set()和Union()为disjoint-union set数据结构的三个操作.
 \end{algorithm}
 
 \begin{algorithm}
-	\begin{algorithmic}{1}
+	\begin{algorithmic}
 		\Require $x$
 		\If{$x \neq x.p$}
 		\State x.p = Find-Set(x.p)

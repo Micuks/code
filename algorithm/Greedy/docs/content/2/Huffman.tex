@@ -36,19 +36,18 @@ y具有最小频率, 所以$f(x)\leq f(b), f(y)\leq f(c)$. 之后进行如下操
 T的平均码长$B(T)$可以用子树T的平均码长$B(T')$来表示:
 \begin{equation}
 	B(T) = B(T') + 1\times f(x) + 1\times f(y)
-	\label{equ:huffman最优子结构递推式}
 \end{equation}
 可以证明, T'所表示的C'的前缀码的码长$B(T')$是最优的. 反证法证明:\par
 假设还有另外一个T'', 是子问题C'的最优前缀码, 即$B(T') > B(T'')$.
 节点z在T''还是一个叶节点, 在T''中将其替换为其子节点x, y, 得到T'''.
-则由式~\ref{equ:huffman最优子结构递推式}得, $B(T''') < B(T)$, T'''的码长比T更短,
+则由式huffman最优子结构递推式得, $B(T''') < B(T)$, T'''的码长比T更短,
 与T是最优解矛盾. 故子问题是最优的.
 % paragraph Huffman算法的最优子结构性质 (end)
 \subsubsection{关键函数及代码段的描述}
 其伪代码描述如下:
 \begin{algorithm}
 	\caption{Huffman algorithm}\label{alg:huffman}
-	\begin{algorithmic}{1}
+	\begin{algorithmic}
 		\Require $C$
 		\State $n = |C|$
 		\State Q = C

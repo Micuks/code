@@ -1,5 +1,5 @@
 Kruskal算法分别使用C++与Rust进行编写, 连通分支的模拟上,
-C++版使用了unordered_set进行操作, 而Rust版本使用\textbf{disjoint-set
+C++版使用了unordered\_set进行操作, 而Rust版本使用\textbf{disjoint-set
 	union}进行优化. 以通过对比输出结果来验证算法正确性, 以及比较disjoint-set
 union带来的提升.
 
@@ -70,12 +70,11 @@ make test [from=<range start>] [to=<range end>] [amount=<number of random number
 # Rust版
 ../build/KruskalRS --in ${infilename} --out [${outfilename}]
 \end{lstlisting}
-其中, \$\{infilename\}是按第一章中的\textbf{输入格式}\ref{sec:iosample}组织的输入数据.
-默认情况下将同时输出到标准输出和data/kruskal_yasample.out, 可选自定义输出到
-\$\{outfilename\}路径下. 输出格式为第一章中的\textbf{输出格式}\ref{sec:iosample}.
+其中, \$\{infilename\}是按第一章中的\textbf{输入格式}组织的输入数据.
+默认情况下将同时输出到标准输出和data/kruskal\_yasample.out, 可选自定义输出到
+\$\{outfilename\}路径下. 输出格式为第一章中的\textbf{输出格式}.
 
 \subsection{程序执行示例}
-\label{sec:dpBench}
 此处演示程序从构建到测试的过程.
 \begin{lstlisting}[language=bash]
 # cwd = Kruskal/ directory

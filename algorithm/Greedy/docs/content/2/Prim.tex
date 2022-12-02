@@ -68,7 +68,7 @@ U为ES生成的最小生成树, 其中的边与ES有尽可能长的重合前缀.
 W为在$(x,y)$选择之前的点集合.
 易知U包含边$e_1,e_2,\cdots,e_{i-1}$但不包含边$e_{i}$.\par
 
-\begin{wrapfigure}{r}{width=0.5\textwidth}
+\begin{wrapfigure}{r}{0.5\textwidth}
 	\begin{center}
 		\includegraphics[width=0.48\textwidth]{prim-proof.png}
 	\end{center}
@@ -94,17 +94,17 @@ W为在$(x,y)$选择之前的点集合.
 
 \subsubsection{关键函数及代码段的描述}
 \begin{algorithm}
-	\begin{algorithmic}{1}
+	\begin{algorithmic}
 		\Require $(G, w, r)$
-		\For{each u \in G.V}
+		\For{$each u \in G.V$}
 		\State $u.distance = \infty$
 		\EndFor
 		\State r.distance = 0
 		\State Q = G.V
 		\While{$Q \neq \emptyset$}
 		\State $u = Extract-Min(Q)$
-		\For{each v \in G.Adj[u]}
-		\If{v\in Q and w(u, v) < v.distance}
+		\For{$each v \in G.Adj[u]$}
+		\If{$v\in Q and w(u, v) < v.distance$}
 		\State v.distance = w(u,v)
 		\EndIf`
 		\EndFor
