@@ -1,0 +1,45 @@
+\subsubsection{题目描述}
+使用\textbf{Kruskal算法}计算给定无向图上  以顶点1为根的最小生成树的边权和.
+\subsubsection{输入格式}
+\begin{itemize}
+	\item 输入文件名为kruskal.in.
+	\item 第一行包含两个正整数V, E, 分别代表顶点数和边数.
+	\item 接下来E行包含三个正整数u, v, w, 代表u和v之间存在一条权值为w的无向边.
+\end{itemize}
+
+\subsubsection{输出格式}
+\begin{itemize}
+	\item 输出文件名为kruskal.out, 输出共一行.
+	\item 第一行包含一个整数代表最小生成树的权值和.
+\end{itemize}
+
+\subsubsection{输入输出样例}
+\label{sec:iosample}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|l|}
+		\hline
+		kruskal.in & kruskal.out \\
+		\hline
+		4 5        & 7           \\
+		1 2 2      & ~           \\
+		1 3 2      & ~           \\
+		1 4 3      & ~           \\
+		2 3 4      & ~           \\
+		3 4 3      & ~           \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsubsection{数据范围}
+$0 < V \leq 5000$,
+$0 < E \leq 2\times 10^5$,
+$0 < u,v \leq V$,
+$0 < w \leq 2\times 10^5$.
+
+\subsubsection{解法}
+使用两种数据结构实现联通分支connected branch.
+C++版使用HashSet实现联通分支的创建, 合并和存储,
+Rust版使用disjoint set union来模拟联通分支. 用以通过比较来验证算法的正确性,
+并比较两种数据结构的效率.
+
