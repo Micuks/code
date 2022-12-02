@@ -1,0 +1,42 @@
+\subsubsection{题目描述}
+求出给定顶点1与顶点V之间的最短路.
+\subsubsection{输入格式}
+\begin{itemize}
+	\item 输入文件名为dijkstra.in.
+	\item 第一行有两个正整数V, E, 分别代表顶点数, 边数.
+	\item 接下来E行包含三个正整数u, v, w, 代表u和v之间存在一条权值为w的\textbf{无向边}.
+\end{itemize}
+
+\subsubsection{输出格式}
+\begin{itemize}
+	\item 输出文件名为dijkstra.out, 输出共一行.
+	\item 第一行包含一个整数, 为最短路上权值之和, 若顶点1与顶点V不连通, 输出-1.
+\end{itemize}
+
+\subsubsection{输入输出样例}
+\label{sec:iosample}
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|l|l|}
+		\hline
+		dijkstra.in & dijkstra.out \\
+		\hline
+		3 3         & 2            \\
+		1 2 5       & ~            \\
+		2 3 5       & ~            \\
+		3 1 2       & ~            \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsubsection{数据范围}
+$0 < V \leq 5000$,
+$0 < E \leq 2\times 10^5$,
+$0 < u,v \leq V$,
+$0 < w \leq 2\times 10^5$.
+
+\subsubsection{解法}
+使用两种数据结构实现图. C++版使用链表实现邻接表来存图,
+Rust版使用二维可变数组实现邻接表来存图, 用以对比不同数据结构对速度的影响,
+以及对比正确性.
+

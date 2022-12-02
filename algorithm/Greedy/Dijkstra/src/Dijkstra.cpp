@@ -205,7 +205,6 @@ int fstream_main(int argc, char **argv) {
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed =
         std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-    std::cout.precision(6);
     std::cout << "[dijkstra] Time measured: " << elapsed.count() * 1e-9
               << " seconds.\n";
 
