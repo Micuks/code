@@ -1,0 +1,46 @@
+\subsubsection{算法类别}
+此处介绍的Huffman编码是一种贪心算法.
+
+\subsubsection{算法思路}
+\paragraph{Huffman算法的贪心选择性质}
+即证明Huffman算法中, 让出现频率越低的字符的编码越长可以得到最优的前缀码,
+即让平均码长最短.
+
+\begin{itemize}
+	\item 设字符集C的一个最优前缀码表示为二叉树T. 采用一定的方法, 将T修改得到新树T',
+	      且互为兄弟.
+	\item T'还是C的最优前缀. 这样x, y在最优前缀码T'中只有最后一位不同.
+\end{itemize}
+
+假设: b, c是T中最深的叶子且互为兄弟, $f(b)\leq f(c)$.\par
+已知: C中2个最小频率字符$f(x)\leq f(y)$, 但是在T中, x, y可能不是最深节点. 由于x,
+y具有最小频率, 所以$f(x)\leq f(b), f(y)\leq f(c)$. 之后进行如下操作:
+\begin{enumerate}
+	\item 在T中交换b和x的位置得到T1.
+	\item 在T1中交换c和y的位置得到T'.
+\end{enumerate}
+
+易得, 由于$B(T) - B(T1)\leq 0$, 故第一步交换不会增加平均码长; 由于$B(T1) -
+	B(T')\leq 0$, 故第二步交换也不会增加平均码长. 故T'的码长仍旧是最短的,
+即T'是最优前缀码, 且其最小频率的x, y具有最深的深度, 对应的哈弗曼编码也是最长的,
+且只有最后一位不同. 因此, Huffman算法的贪心选择性质得证.
+
+\paragraph{Huffman算法的最优子结构性质} % (fold)
+\label{par:Huffman算法的最优子结构性质}
+即证明给定字符集C和其对应的最优前缀码T,
+可以从中得到子问题C'(C的子集)及其对应的最优前缀子树T'.\par
+构造性证明: 对T中2个互为兄弟的叶节点x和y, z为其父节点.
+将z看做频率为$f(z)=f(x)+f(y)$的字符,
+则$T'=T-\{x,y\}$是子问题$C'=(C-\{x,y\}\cup \{z\})$的最优编码.
+得到子问题的最优编码后, 原问题的最优编码也自然知道了. \par
+T的平均码长$B(T)$可以用子树T的平均码长$B(T')$来表示:
+\begin{equation}
+	B(T) = B(T') + 1\times f(x) + 1\times f(y)
+	\label{equ:huffman最优子结构递推式}
+\end{equation}
+可以证明, T'所表示的C'的前缀码的码长$B(T')$是最优的. 反证法证明:\par
+假设还有另外一个T'', 是子问题C'的最优前缀码, 即$B(T') > B(T'')$.
+节点z在T''还是一个叶节点, 在T''中将其替换为其子节点x, y, 得到T'''.
+则由式~\ref{equ:huffman最优子结构递推式}得, $B(T''') < B(T)$, T'''的码长比T更短,
+与T是最优解矛盾. 故子问题是最优的.
+% paragraph Huffman算法的最优子结构性质 (end)
