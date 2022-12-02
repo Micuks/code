@@ -1,0 +1,107 @@
+\subsubsection{算法类别}
+Kruskal算法属于贪心算法.
+
+% TODO: Write the following sections.
+\subsubsection{问题描述}
+设$G=(V,E)$是连通带权图, $V=\{1,2,\dots,n\}$. 求节~\ref{sub:MST}所描述的最小生成树.
+
+\subsubsection{Kruskal算法的基本思路}
+\begin{enumerate}
+	\item 将G的n个顶点看做n个孤立的联通分支.
+	\item 将所有的边按权从小到大排序.
+	\item 从权最小的第一条边开始, 依边权递增的顺序查看每一条边(v, w),
+	      并按下述方法链接2个不同的联通分支:\par
+	      当查看到第k条边(v,w)的时候,
+	      \begin{enumerate}
+		      \item
+		            如果端点v和w分别是当前2个不同的联通分支$T_1$和$T_2$中的顶点的时候,
+		            用边$(v,w)$将$T_1$和$T_2$合并成一个联通分支,
+		            然后继续查看后续第$k+1$条边.
+		      \item 如果端点v和w已经属于当前的同一个联通分支中, 不允许将$(v,w)$加入,
+		            否则会产生回路. 此时, 直接查看后续第k$k+1$条边.
+		      \item 重复上述过程, 直到只剩下一个联通分支, 即最小生成树.
+	      \end{enumerate}
+\end{enumerate}
+
+\subsubsection{Kruskal算法的正确性证明}
+即证明: 如果T是Kruskal算法从图$G=(V,E)$中选择的生成树, 则T是G的最小生成树.\par
+首先, T是一棵生成树.
+\begin{description}
+	\item[T是森林] 由联通分支的连接方式可知, 在T中没有环生成.
+	\item[T是生成的] 假设有一个顶点$v \in G$不在T中的边中.
+		则v作为顶点的边一定在算法的某一步被考虑过.
+		有且仅有以v为顶点的最小的边应该已经被包括了, 否则有环, 与T的定义冲突.
+	\item[T是连通的] 假设T不是联通的, 则T由两个或更多的联通分支. 由于G是联通的,
+		过这些联通分支一定会被G中不在T中的边连接.
+		这些边中有且仅有最小的一个应该已经被T包含了, 因为T中不能有环,
+		否则与T的定义矛盾.
+\end{description}
+其次, T是最小生成树. 使用归纳法证明. 让$T^*$是一棵最小生成树, 如果$T=T^*$,
+则T是最小生成树. 如果$T\neq T^*$, 则$\exists e\in
+	T^*$\textbf{有最小权重}且不在T中. 因此, $T\cup e$有一个环$C$使得
+\begin{itemize}
+	\item 由Kruskal算法建立T的过程知, C中的每条边的全都小于$w(e)$,
+	      否则e将在C的建立过程中的某一步被考虑.
+	\item $\exists f\in C$使得f不在$T^*$中. (因为$T^*$没有环$C$).
+\end{itemize}
+考虑树$T_2=T-f+e$:
+\begin{enumerate}
+	\item $T_2$是生成树.
+	\item 相比$T$, $T_2$与$T^*$共有的边更多.
+	\item $w(T_2)\geq w(T)$. (我们将T中的边f与$T^*$中的边e进行了交换, 而$w(f) <
+		      w(e)$).
+\end{enumerate}
+
+重复上面的过程, 每次用相同方法替换一条边, 直到达到T*. 有
+\begin{equation}
+	w(T)\leq w(T_2)\leq w(T_3)\leq \cdots \leq w(T^*)
+\end{equation}
+
+由于$T^*$是最小生成树, 这些不等号必须相等. 因此, T也是最小生成树.
+Kruskal算法的正确性得证.
+
+\subsubsection{关键函数及代码段的描述}
+使用\textbf{disjoint-union set}数据结构来模拟联通分支对Kruskal算法进行优化. Make-Set(),
+Find-Set()和Union()为disjoint-union set数据结构的三个操作.
+%TODO: Pseudo-code here.
+\begin{algorithm}
+	\begin{algorithmic}{1}
+		\Require $(G,w)$
+		\State $A = \emptyset$
+		\For{each vertex $\mathit{v}\in G.V$}
+		\State $Make-Set(\mathit(v))$
+		sort the edges of G.E into non-decreasing order by weight $\mathit{w}$
+		\EndFor
+		\For{each edge $(\mathit{u,v}\in G.E$, taken in non-deecreasing order by
+			weight}
+		\If{$Find-Set(\mathit{u})\neq Find-Set(\mathit{v})$}
+		\State $A = A\cup \{(\mathit{u,v})\}$
+		\State $Union(\mathit{u,v})$
+		\EndIf
+		\EndFor
+		\return A
+	\end{algorithmic}
+\end{algorithm}
+
+%TODO: Disjoint-set union.
+
+其核心代码实现如下:
+
+% TODO: Add code here
+
+\subsubsection{算法时间及空间复杂性分析}
+\paragraph{空间复杂度分析}
+使用邻接表存图, 空间复杂度为$O(V+E)$. 借用二叉最小堆的初始化过程进行排序,
+空间复杂度为$O(E)$. 使用Disjoint-set union来维护联通分支, 空间复杂度为$O(E)$.
+综上, 空间复杂度为$O(E)$.
+
+\paragraph{时间复杂度分析}
+由于使用了二叉最小堆对边进行排序, 堆的初始化开销为$O(|E|lg|E|)$. 在for循环中,
+在disjoint-set森林中执行了$O(E)$次Find-Set和Union操作, 还有$|V|$次Make-Set操作,
+共计花费了$O((V+E)\alpha (V))$时间, 其中$\alpha$是disjoint-set
+union数据结构中一个增长非常缓慢的函数. 由于假设G是联通的, 有$|E|\geq |V|-1$,
+因此disjoint-set操作花费$O(E\alpha (V))$时间. 此外, 由于$\alpha(|V|) = O(\lg V)
+	= O(\lg E)$, Kruskal算法的总时间复杂度为$O(E\lg E)$. 注意到$|E|\leq |V|^2$,
+有$\lg |E| = O(\lg V)$, 因此可以将Kruskal算法的时间复杂度表述为$O(E\lg V)$.
+
+
