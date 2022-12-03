@@ -1,4 +1,20 @@
+# macOS Finder dotfile
 **/.DS_Store
+
+# IDE and editor dotfolder
+**/.idea
+**/.vscode
+
+# python cahce
+**/__pycache__
+
+# Latex cache
+**/*.aux
+**/*.toc
+**/*.log
+**/*.symctex.gz
+**/*.xdv
+
 cs231n_assignments/assignment3/cs231n/datasets/coco_captioning
 cs231n_assignments/assignment3/cs231n/datasets/imagenet_val_25.npz
 
@@ -160,3 +176,41 @@ algorithm/dynamic_programming/samples/BackPack01.out
 algorithm/dynamic_programming/samples/bag.out
 algorithm/dynamic_programming/samples/bag3.out
 algorithm/dynamic_programming/samples/jump_bag.out
+algorithm/2020211323-2020211597-吴清柳.pdf
+algorithm/2020211323-2020211597-吴清柳.zip
+nlp/ace2005convert2MLBiNet/ace-event
+nlp/ace2005convert2MLBiNet/output
+python/scrapy/lianjia/lianjia/__pycache__
+python/scrapy/lianjia/lianjia/spiders/__pycache__
+python/scrapy/tutorial
+python/scrapy/lianjia/new_house_response.html
+python/scrapy/lianjia/second_hand_house_response.html
+algorithm/Greedy/build
+algorithm/Greedy/.vscode
+algorithm/Greedy/Huffman/huffman.dSYM/Contents
+algorithm/Greedy/Huffman/huffman
+algorithm/Greedy/target
+algorithm/Greedy/Dijkstra/.vscode
+algorithm/Greedy/Dijkstra/src/Dijkstra.dSYM/Contents
+algorithm/Greedy/Dijkstra/target
+algorithm/Greedy/Dijkstra/data/kruskal.in
+algorithm/Greedy/Dijkstra/data/prim.in
+algorithm/Greedy/Kruskal/.vscode
+algorithm/Greedy/Prim/.vscode
+algorithm/Greedy/Prim/data/kruskal.in
+algorithm/Greedy/Prim/target
+
+algorithm/Greedy/Huffman/target
+python/scrapy/2020211597-吴清柳/lianjia
+python/scrapy/lianjia/docs/readme.pdf
+python/scrapy/lianjia/实验报告-2020211597-吴清柳.pdf
+algorithm/Greedy/Kruskal/target
+algorithm/Greedy/docs/report.fdb_latexmk
+algorithm/Greedy/docs/report.fls
+algorithm/Greedy/docs/report.out
+algorithm/Greedy/docs/report.synctex.gz
+algorithm/Greedy/docs/report.pdf
+algorithm/2020211323-2020211597-吴清柳
+algorithm/Greedy/docs/build
+upper_2/.DS_Store
+.DS_Store
