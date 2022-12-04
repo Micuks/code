@@ -2,14 +2,15 @@ import argparse
 import json
 import csv
 import re
+from plot_drawer import plot_drawer
 
 
 class json2csv:
     def __init__(self, in_file, out_file):
         self.in_file = in_file
         self.out_file = out_file
-        self.raw_data=[]
-        self.processed_data=[]
+        self.raw_data = []
+        self.processed_data = []
 
         # Load data.
         self.load_data()
@@ -18,19 +19,19 @@ class json2csv:
         self._data_process()
 
     def load_data(self):
-        '''
+        """
         Load data from in_file, store in dictionary self.data
-        '''
-        in_file=self.in_file
+        """
+        in_file = self.in_file
         with open(in_file) as json_file:
             print("Load data from {}".format(in_file))
             self.raw_data = json.load(json_file)
 
     def _data_process(self):
-        '''
+        """
         Process the data crawled by Spyder in json format.
 
-        Only preserve those keys: house_name: 名称, resblock_location:
+        Only preserve those keys: house_name: 名称, resblock_type: 类型, resblock_location:
         地理位置, resblock_room: 房型, resblock_area: 面积, house_total_price:
         总价(万元, integer), house_avg_price: 均价(元, integer), store them in
         new dict.
@@ -39,20 +40,20 @@ class json2csv:
         - Remove trailing whitespaces in *house_name*.
         - Split *resblock_location* into three level.
         - Convert *house_total_price* and *house_avg_price* into integer.
-        '''
+        """
         raw_data = self.raw_data
         processed_data = self.processed_data
 
         for dict in raw_data:
-            tmpdict={}
+            tmpdict = {}
             # Remove triling whitespace in string.
             rmtri = lambda s: s.strip()
 
             # Update {key: value} into tmpdict. If value is string, remove
             # triling whitespaces.
-            upd = lambda key, value: tmpdict.update({key: rmtri(value) if
-                                                     isinstance(value, str) else
-                                                     value})
+            upd = lambda key, value: tmpdict.update(
+                {key: rmtri(value) if isinstance(value, str) else value}
+            )
 
             # Extract the first integer from string.
             int_re = re.compile(r"^[\D]*(\d+)[\D]*(\d+)?")
@@ -60,14 +61,19 @@ class json2csv:
             # Extract the *average* if there's at least *two numbers* else the
             # *min*.
             def extract_price(s):
+                if s is None:
+                    return -1
                 match_rslt = int_re.match(s)
                 # print(match_rslt.groups())
 
-                return int((int(match_rslt.group(1))+int(match_rslt.group(2)))/2) \
-                if match_rslt.group(2) is not None else int(match_rslt.group(1))
-
+                return (
+                    int((int(match_rslt.group(1)) + int(match_rslt.group(2))) / 2)
+                    if match_rslt.group(2) is not None
+                    else int(match_rslt.group(1))
+                )
 
             upd("名称", dict["house_name"])
+            upd("类型", dict["resblock_type"])
             upd("顶级地理位置", dict["resblock_location"][0])
             upd("次级地理位置", dict["resblock_location"][1])
             upd("末级地理位置", dict["resblock_location"][2])
@@ -79,19 +85,18 @@ class json2csv:
             processed_data.append(tmpdict)
 
         # Debug: Print processed_data
-        jsonobj=json.dumps(processed_data,indent=4, ensure_ascii=False)
+        jsonobj = json.dumps(processed_data, indent=4, ensure_ascii=False)
         print(jsonobj)
-        
 
     def data_to_string(self):
         print(self.raw_data)
 
     def write_data(self):
-        '''
+        """
         Write self.processed_data to csv_file
-        '''
+        """
         out_file = self.out_file
-        csv_file = open(out_file, 'w', newline='')
+        csv_file = open(out_file, "w", newline="")
         csv_writer = csv.writer(csv_file)
 
         count = 0
@@ -135,5 +140,11 @@ if __name__ == "__main__":
     in_file = args.infile
     out_file = args.outfile
 
-    processor = json2csv(in_file,out_file)
-    processor.write_data()
+    # Load and process data stored in json.
+    processor = json2csv(in_file, out_file)
+    # Write data to csv.
+    # processor.write_data()
+
+    # Draw plot.
+    drawer = plot_drawer(processor.processed_data)
+    drawer.draw_price_scatter_plot()
