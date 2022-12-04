@@ -1,13 +1,21 @@
 import argparse
 import json
 import csv
+import re
 
 
 class json2csv:
     def __init__(self, in_file, out_file):
         self.in_file = in_file
         self.out_file = out_file
-        self.data=[]
+        self.raw_data=[]
+        self.processed_data=[]
+
+        # Load data.
+        self.load_data()
+
+        # Process data.
+        self._data_process()
 
     def load_data(self):
         '''
@@ -16,21 +24,78 @@ class json2csv:
         in_file=self.in_file
         with open(in_file) as json_file:
             print("Load data from {}".format(in_file))
-            self.data = json.load(json_file)
+            self.raw_data = json.load(json_file)
+
+    def _data_process(self):
+        '''
+        Process the data crawled by Spyder in json format.
+
+        Only preserve those keys: house_name: 名称, resblock_location:
+        地理位置, resblock_room: 房型, resblock_area: 面积, house_total_price:
+        总价(万元, integer), house_avg_price: 均价(元, integer), store them in
+        new dict.
+
+        The detailed tasks are as follows.
+        - Remove trailing whitespaces in *house_name*.
+        - Split *resblock_location* into three level.
+        - Convert *house_total_price* and *house_avg_price* into integer.
+        '''
+        raw_data = self.raw_data
+        processed_data = self.processed_data
+
+        for dict in raw_data:
+            tmpdict={}
+            # Remove triling whitespace in string.
+            rmtri = lambda s: s.strip()
+
+            # Update {key: value} into tmpdict. If value is string, remove
+            # triling whitespaces.
+            upd = lambda key, value: tmpdict.update({key: rmtri(value) if
+                                                     isinstance(value, str) else
+                                                     value})
+
+            # Extract the first integer from string.
+            int_re = re.compile(r"^[\D]*(\d+)[\D]*(\d+)?")
+
+            # Extract the *average* if there's at least *two numbers* else the
+            # *min*.
+            def extract_price(s):
+                match_rslt = int_re.match(s)
+                # print(match_rslt.groups())
+
+                return int((int(match_rslt.group(1))+int(match_rslt.group(2)))/2) \
+                if match_rslt.group(2) is not None else int(match_rslt.group(1))
+
+
+            upd("名称", dict["house_name"])
+            upd("顶级地理位置", dict["resblock_location"][0])
+            upd("次级地理位置", dict["resblock_location"][1])
+            upd("末级地理位置", dict["resblock_location"][2])
+            upd("房型", dict["resblock_room"])
+            upd("面积", extract_price(dict["resblock_area"]))
+            upd("总价", extract_price(dict["house_total_price"]))
+            upd("均价", extract_price(dict["house_avg_price"]))
+
+            processed_data.append(tmpdict)
+
+        # Debug: Print processed_data
+        jsonobj=json.dumps(processed_data,indent=4, ensure_ascii=False)
+        print(jsonobj)
+        
 
     def data_to_string(self):
-        print(self.data)
+        print(self.raw_data)
 
     def write_data(self):
         '''
-        Write self.data to csv_file
+        Write self.processed_data to csv_file
         '''
         out_file = self.out_file
         csv_file = open(out_file, 'w', newline='')
         csv_writer = csv.writer(csv_file)
 
         count = 0
-        for section in self.data:
+        for section in self.processed_data:
             if count == 0:
                 header = section.keys()
                 csv_writer.writerow(header)
@@ -71,6 +136,4 @@ if __name__ == "__main__":
     out_file = args.outfile
 
     processor = json2csv(in_file,out_file)
-    processor.load_data()
-    # processor.data_to_string()
     processor.write_data()
