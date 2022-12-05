@@ -1,0 +1,73 @@
+利用python的json库和csv库,
+将Scrapy爬取的保存在json格式中的链家新房数据转为csv格式.\par
+
+\subsection{输入的json格式}
+由于Scrapy爬取的数据已经被我做过后处理, 因此看起来比较整洁. 具体格式如下:
+\begin{lstlisting}[language=json]
+[
+    {
+        "house_name": "尊悦日坛", // 楼盘名称
+        "resblock_type": "商业类", // 类型
+        "resblock_location": [ // 地理位置
+            "朝阳",
+            "朝阳门外",
+            "日坛北路19号"
+        ],
+        "resblock_room": "1室", // 房型
+        "resblock_area": "建面 45-135㎡", // 面积
+        "house_avg_price": "63000", // 均价
+        "house_total_price": "总价350-1200(万/套)" // 总价
+    },
+    {
+        "house_name": "天恒摩墅",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "房山",
+            "房山其它",
+            "周口店镇政府东200米"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 140-160㎡",
+        "house_avg_price": "23000",
+        "house_total_price": "总价320-530(万/套)"
+    },
+    
+    ...
+]
+\end{lstlisting}
+
+\subsection{处理过程}
+要进行处理的关键步骤罗列如下,
+详细实现在data\_process.py中类json2csv中的函数\_data\_process()中:
+\begin{itemize}
+    \item 去掉字符串字段中的空格, 由于去掉的是前后空格, 使用strip()实现.
+    \item 面积和总价所给是一个范围, 将其求\textbf{平均值}并取整. 对于范围的提取和处理,
+        使用正则表达式配合对None的判断进行. 正则表达式如下.
+        \begin{lstlisting}[language=python]
+            # Extract the first one or two integer(s) from string.
+            int_re = re.compile(r"^[\D]*(\d+)[\D]*(\d+)?")
+        \end{lstlisting}
+    \item 对缺失数据, 不进行处理.
+\end{itemize}
+
+\paragraph{求平均值的理由} % (fold)
+\label{par:求平均值的理由}
+相比于最小值和最大值, 平均值更能代表数据的一般特征. 采用面积和总价的最小值的话,
+最终得到的统计结果会明显偏小与实际值, 难以合理反应数据分布的影响. 例如,
+最小值相同的两份数据A和B, A中可能几乎都是接近最小值的数值,
+而B中可能只有寥寥几个数值接近最小值. 使用最小值就难以对此进行表现.\par
+因此, 这里采用了对面积和总价求平均的方式.
+% paragraph 求平均值的理由 (end)
+
+\subsection{csv数据格式}
+对json文件读取并进行上述处理后, 转换到作业所要求的字段名称, 并写入csv文件.
+函数为data\_process.py中类json2csv的函数write\_data()中.
+csv文件格式如下.
+\begin{lstlisting}
+名称,类型,行政区,次级地理位置,末级地理位置,房型,面积,总价,均价
+尊悦日坛,商业类,朝阳,朝阳门外,日坛北路19号,1室,90,775,63000
+天恒摩墅,别墅,房山,房山其它,周口店镇政府东200米,3室,150,425,23000
+鲁能·格拉斯小镇,别墅,通州,通州其它,北京市通州区宋庄镇格拉斯小镇营销中心,3室,317,1762,62000
+
+...
+\end{lstlisting}
