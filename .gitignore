@@ -215,3 +215,8 @@ algorithm/Greedy/docs/build
 upper_2/.DS_Store
 .DS_Store
 python/data_process/.env
+python/data_process/docs/report.pdf
+python/data_process/docs/report.synctex.gz
+python/data_process/docs/report.out
+python/data_process/docs/report.fls
+python/data_process/docs/report.fdb_latexmk

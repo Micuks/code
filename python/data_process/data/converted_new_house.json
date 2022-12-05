@@ -1,0 +1,652 @@
+[
+    {
+        "house_name": "尊悦日坛",
+        "resblock_type": "商业类",
+        "resblock_location": [
+            "朝阳",
+            "朝阳门外",
+            "日坛北路19号"
+        ],
+        "resblock_room": "1室",
+        "resblock_area": "建面 45-135㎡",
+        "house_avg_price": "63000",
+        "house_total_price": "总价350-1200(万/套)"
+    },
+    {
+        "house_name": "天恒摩墅",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "房山",
+            "房山其它",
+            "周口店镇政府东200米"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 140-160㎡",
+        "house_avg_price": "23000",
+        "house_total_price": "总价320-530(万/套)"
+    },
+    {
+        "house_name": "鲁能·格拉斯小镇",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "通州",
+            "通州其它",
+            "北京市通州区宋庄镇格拉斯小镇营销中心"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 246-388㎡",
+        "house_avg_price": "62000",
+        "house_total_price": "总价1365-2160(万/套)"
+    },
+    {
+        "house_name": "兴创荣墅",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "大兴",
+            "大兴新机场洋房别墅区",
+            "北京市大兴区育胜街"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 188-573㎡",
+        "house_avg_price": "25000",
+        "house_total_price": "总价470-1800(万/套)"
+    },
+    {
+        "house_name": "丽都壹号",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "朝阳",
+            "酒仙桥",
+            "将台路与驼房营路交叉口向北150米, 将府家园北里"
+        ],
+        "resblock_room": "1室",
+        "resblock_area": "建面 61-122㎡",
+        "house_avg_price": "95000",
+        "house_total_price": "总价580-1170(万/套)"
+    },
+    {
+        "house_name": "韩建·观山源墅",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "房山",
+            "良乡",
+            "阳光北大街与多宝路交汇处西南（理工大学北校区西侧）"
+        ],
+        "resblock_room": "4室",
+        "resblock_area": "建面 93-150㎡",
+        "house_avg_price": "40000",
+        "house_total_price": "总价550-565(万/套)"
+    },
+    {
+        "house_name": "北辰墅院1900",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "顺义",
+            "马坡",
+            "顺兴街11号院望尊园"
+        ],
+        "resblock_room": "2室",
+        "resblock_area": "建面 83-136㎡",
+        "house_avg_price": "36000",
+        "house_total_price": "总价350-585(万/套)"
+    },
+    {
+        "house_name": "润泽御府",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "朝阳",
+            "北苑",
+            "北京市朝阳区北五环顾家庄桥向北约2.6公里"
+        ],
+        "resblock_room": "4室",
+        "resblock_area": "建面 630-1600㎡",
+        "house_avg_price": "120000",
+        "house_total_price": "总价7219(万/套)"
+    },
+    {
+        "house_name": "中骏西山天璟",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "门头沟",
+            "城子",
+            "西山永定楼北300米"
+        ],
+        "resblock_room": "4室",
+        "resblock_area": "建面 117-190㎡",
+        "house_avg_price": "65000",
+        "house_total_price": "总价700-860(万/套)"
+    },
+    {
+        "house_name": "兴创国际中心",
+        "resblock_type": "写字楼",
+        "resblock_location": [
+            "大兴",
+            "西红门",
+            "西红门镇欣宁街与宏康路交叉口向西500米"
+        ],
+        "resblock_room": "0室",
+        "resblock_area": "建面 1450㎡",
+        "house_avg_price": "38000",
+        "house_total_price": "总价5075(万/套)"
+    },
+    {
+        "house_name": "达美中心广场",
+        "resblock_type": "写字楼",
+        "resblock_location": [
+            "朝阳",
+            "朝青",
+            "姚家园路甲118号, 青年路7号院"
+        ],
+        "resblock_room": null,
+        "resblock_area": null,
+        "house_avg_price": "48000",
+        "house_total_price": "总价1200(万/套)"
+    },
+    {
+        "house_name": "燕西华府",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "丰台",
+            "丰台其它",
+            "王佐镇青龙湖公园东1500米, 泉湖西路1号院（七区）, 泉湖西路1号院（六区）"
+        ],
+        "resblock_room": "0室",
+        "resblock_area": "建面 195-851㎡",
+        "house_avg_price": "52000",
+        "house_total_price": "总价1380-5500(万/套)"
+    },
+    {
+        "house_name": "京西悦府",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "房山",
+            "阎村",
+            "燕房线阎村地铁站东南角约189米"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 120-135㎡",
+        "house_avg_price": "33000",
+        "house_total_price": "总价400-490(万/套)"
+    },
+    {
+        "house_name": "合景寰汇公馆",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "通州",
+            "武夷花园",
+            "北京市通州区滨河中路西侧（合景寰汇公馆）"
+        ],
+        "resblock_room": "2室",
+        "resblock_area": "建面 77-117㎡",
+        "house_avg_price": "42000",
+        "house_total_price": "总价320-530(万/套)"
+    },
+    {
+        "house_name": "K2十里春风",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "通州",
+            "通州其它",
+            "北京市通州区"
+        ],
+        "resblock_room": "2室",
+        "resblock_area": "建面 74-89㎡",
+        "house_avg_price": "24500",
+        "house_total_price": "总价195-222(万/套)"
+    },
+    {
+        "house_name": "K2十里春风",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "通州",
+            "通州其它",
+            "北京市通州区"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 155-156㎡",
+        "house_avg_price": "28000",
+        "house_total_price": "总价426-436(万/套)"
+    },
+    {
+        "house_name": "玺萌壹號院",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "丰台",
+            "草桥",
+            "西南三环嘉园路与镇国寺北街交叉口"
+        ],
+        "resblock_room": "5室",
+        "resblock_area": "建面 320-464㎡",
+        "house_avg_price": "90000",
+        "house_total_price": "总价2880-4200(万/套)"
+    },
+    {
+        "house_name": "北京书院",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "朝阳",
+            "惠新西街",
+            "北京市朝阳区北土城东路辅路"
+        ],
+        "resblock_room": "1室",
+        "resblock_area": "建面 67-139㎡",
+        "house_avg_price": "145000",
+        "house_total_price": "总价971-2200(万/套)"
+    },
+    {
+        "house_name": "旭辉26号街区",
+        "resblock_type": "商业",
+        "resblock_location": [
+            "顺义",
+            "顺义其它",
+            "临空经济核心区南法信地铁站南300米, 信中北街16号院"
+        ],
+        "resblock_room": "1室",
+        "resblock_area": "建面 27㎡",
+        "house_avg_price": "27000",
+        "house_total_price": "总价77(万/套)"
+    },
+    {
+        "house_name": "金隅上城郡",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "昌平",
+            "北七家",
+            "北亚花园东路50米"
+        ],
+        "resblock_room": "4室",
+        "resblock_area": "建面 212-403㎡",
+        "house_avg_price": "45000",
+        "house_total_price": "总价930-1650(万/套)"
+    },
+    {
+        "house_name": "中铁华侨城和园",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "大兴",
+            "瀛海",
+            "南五环南海子公园西侧约500米"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 154-184㎡",
+        "house_avg_price": "60000",
+        "house_total_price": "总价950(万/套)"
+    },
+    {
+        "house_name": "顺鑫颐和天璟",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "顺义",
+            "顺义其它",
+            "新城右堤路与昌金路交汇处向北200米"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 110-220㎡",
+        "house_avg_price": "33000",
+        "house_total_price": "总价340-560(万/套)"
+    },
+    {
+        "house_name": "顺鑫颐和天璟",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "顺义",
+            "顺义其它",
+            "新城右堤路与昌金路交汇处向北200米"
+        ],
+        "resblock_room": "4室",
+        "resblock_area": "建面 278-486㎡",
+        "house_avg_price": "33000",
+        "house_total_price": "总价950-1200(万/套)"
+    },
+    {
+        "house_name": "未来公元",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "昌平",
+            "北七家",
+            "京承高速北七家出口800米路南"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 104-169㎡",
+        "house_avg_price": "61183",
+        "house_total_price": "总价620-1000(万/套)"
+    },
+    {
+        "house_name": "北京城建北京合院",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "顺义",
+            "顺义其它",
+            "燕京街与通顺路交汇口东800米(仁和公园南)"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 95-130㎡",
+        "house_avg_price": "47000",
+        "house_total_price": "总价556-570(万/套)"
+    },
+    {
+        "house_name": "复地运河公馆",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "通州",
+            "武夷花园",
+            "通州运河核心区临滨河西路"
+        ],
+        "resblock_room": "2室",
+        "resblock_area": "建面 89-145㎡",
+        "house_avg_price": "43000",
+        "house_total_price": "总价400-650(万/套)"
+    },
+    {
+        "house_name": "北京城建北京合院",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "顺义",
+            "顺义其它",
+            "燕京街与通顺路交汇口东800米(仁和公园南)"
+        ],
+        "resblock_room": "4室",
+        "resblock_area": "建面 210-330㎡",
+        "house_avg_price": "45000",
+        "house_total_price": "总价900-1300(万/套)"
+    },
+    {
+        "house_name": "月亮河七星公馆",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "通州",
+            "武夷花园",
+            "通燕高速耿庄桥出口南200米月亮河，河滨路1号"
+        ],
+        "resblock_room": "1室",
+        "resblock_area": "建面 55-109㎡",
+        "house_avg_price": "68000",
+        "house_total_price": "总价374-800(万/套)"
+    },
+    {
+        "house_name": "天润福熙大道",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "朝阳",
+            "北苑",
+            "清河营东路1号院, 清河营东路3号院"
+        ],
+        "resblock_room": "1室",
+        "resblock_area": "建面 65-488㎡",
+        "house_avg_price": "120000",
+        "house_total_price": "总价750-3554(万/套)"
+    },
+    {
+        "house_name": "元熙华府",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "丰台",
+            "宋家庄",
+            "东南三环东铁营桥向南600米"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 126-146㎡",
+        "house_avg_price": "87000",
+        "house_total_price": "总价1113-1300(万/套)"
+    },
+    {
+        "house_name": "京贸国际公馆",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "通州",
+            "九棵树(家乐福)",
+            "怡乐中路299号院（广渠快速路二期出口向南1000米）"
+        ],
+        "resblock_room": "1室",
+        "resblock_area": "建面 72-147㎡",
+        "house_avg_price": "64000",
+        "house_total_price": "总价495-950(万/套)"
+    },
+    {
+        "house_name": "凯德麓语",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "昌平",
+            "昌平其它",
+            "兴寿镇京承高速G11出口向西怀昌路北侧"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 280-863㎡",
+        "house_avg_price": "35000",
+        "house_total_price": "总价750-3450(万/套)"
+    },
+    {
+        "house_name": "京贸国际城·峰景",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "通州",
+            "武夷花园",
+            "芙蓉东路1号（通燕高速耿庄桥北出口向南300米）"
+        ],
+        "resblock_room": "1室",
+        "resblock_area": "建面 69-140㎡",
+        "house_avg_price": "68000",
+        "house_total_price": "总价460-930(万/套)"
+    },
+    {
+        "house_name": "观唐云鼎",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "密云",
+            "溪翁庄镇",
+            "溪翁庄镇密溪路39号院（云佛山度假村对面）"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 357-613㎡",
+        "house_avg_price": "30000",
+        "house_total_price": "总价1068-1850(万/套)"
+    },
+    {
+        "house_name": "檀香府",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "门头沟",
+            "门头沟其它",
+            "京潭大街与潭柘十街交叉口"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 124-170㎡",
+        "house_avg_price": "43000",
+        "house_total_price": "总价530-750(万/套)"
+    },
+    {
+        "house_name": "金樾和著",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "房山",
+            "房山其它",
+            "房山区良常路官道路口西800米"
+        ],
+        "resblock_room": "4室",
+        "resblock_area": "建面 127㎡",
+        "house_avg_price": "29000",
+        "house_total_price": "总价360(万/套)"
+    },
+    {
+        "house_name": "尊悦光华",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "朝阳",
+            "CBD",
+            "北京市朝阳区光华东里甲1号院3号楼"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 133-171㎡",
+        "house_avg_price": "150000",
+        "house_total_price": "总价2600-2680(万/套)"
+    },
+    {
+        "house_name": "中海云筑",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "大兴",
+            "大兴新机场",
+            "北京市大兴区团结路"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 89-230㎡",
+        "house_avg_price": "340-430",
+        "house_total_price": null
+    },
+    {
+        "house_name": "中海云筑",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "大兴",
+            "大兴新机场",
+            "京开高速庞各庄桥西1500米，团结路北（庞各庄镇宏轩饺子馆儿对面）"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 266㎡",
+        "house_avg_price": "28000",
+        "house_total_price": "总价750(万/套)"
+    },
+    {
+        "house_name": "远洋五里春秋",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "石景山",
+            "石景山其它",
+            "五里坨黑石头路前行500m"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 290㎡",
+        "house_avg_price": "52024",
+        "house_total_price": "总价1000(万/套)"
+    },
+    {
+        "house_name": "首创·河著",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "顺义",
+            "顺义其它",
+            "京承高速11出口（昌金路）向东900 米路北"
+        ],
+        "resblock_room": "4室",
+        "resblock_area": "建面 248-310㎡",
+        "house_avg_price": "41000",
+        "house_total_price": "总价1200-1900(万/套)"
+    },
+    {
+        "house_name": "华萃西山",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "门头沟",
+            "门头沟其它",
+            "永定镇地铁S1号线石厂西南700米"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 83-126㎡",
+        "house_avg_price": "48000",
+        "house_total_price": "总价560-600(万/套)"
+    },
+    {
+        "house_name": "京西悦府",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "房山",
+            "阎村",
+            "北京市房山区燕房线阎村地铁站东南角约189米"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 175-176㎡",
+        "house_avg_price": "40000",
+        "house_total_price": "总价666-761(万/套)"
+    },
+    {
+        "house_name": "中粮天恒天悦壹号",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "丰台",
+            "新宫",
+            "南四环地铁新宫站南500米"
+        ],
+        "resblock_room": "4室",
+        "resblock_area": "建面 220-340㎡",
+        "house_avg_price": "80000",
+        "house_total_price": "总价1800-2800(万/套)"
+    },
+    {
+        "house_name": "龙湾别墅",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "顺义",
+            "中央别墅区",
+            "后沙峪镇龙湾别墅"
+        ],
+        "resblock_room": "4室",
+        "resblock_area": "建面 218-317㎡",
+        "house_avg_price": "70000",
+        "house_total_price": "总价2300(万/套)"
+    },
+    {
+        "house_name": "京投发展·锦悦府",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "密云",
+            "鼓楼街道",
+            "檀营乡檀东路西侧"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 79-90㎡",
+        "house_avg_price": "25607",
+        "house_total_price": "总价220(万/套)"
+    },
+    {
+        "house_name": "远洋五里春秋",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "石景山",
+            "石景山其它",
+            "五里坨黑石头路前行500m"
+        ],
+        "resblock_room": "4室",
+        "resblock_area": "建面 330-500㎡",
+        "house_avg_price": "54625",
+        "house_total_price": "总价1350-1480(万/套)"
+    },
+    {
+        "house_name": "公园十七区",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "顺义",
+            "后沙峪",
+            "顺义区后沙峪火沙路和裕庆路交汇口北500米"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 90-290㎡",
+        "house_avg_price": "42000",
+        "house_total_price": "总价750-1200(万/套)"
+    },
+    {
+        "house_name": "金辰府",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "昌平",
+            "北七家",
+            "北京市昌平区北七家镇政府东南100米"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 89-143㎡",
+        "house_avg_price": "55000",
+        "house_total_price": "总价490-790(万/套)"
+    },
+    {
+        "house_name": "龙湖熙湖悦著",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "房山",
+            "房山其它",
+            "大苑村收费站出口（良坨路桥）左行200米"
+        ],
+        "resblock_room": "2室",
+        "resblock_area": "建面 73-353㎡",
+        "house_avg_price": "37000",
+        "house_total_price": "总价280-820(万/套)"
+    }
+]

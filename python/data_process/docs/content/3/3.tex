@@ -1,0 +1,60 @@
+\subsection{代码结构}
+\subsubsection{数据处理部分}
+数据处理部分的代码实现在src/data\_process.py中的json2csv类中.
+该类主要完成如下三个任务:
+\begin{description}
+    \item[数据读取] 从Scrapy后处理得到的json文件中读取楼盘信息.
+        实现在成员函数load\_data()中.
+    \item[数据处理] 按照作业要求处理读入的储存在dict中的数据,
+        将处理后的数据保存在成员processed\_data中,
+        等待写入csv或数据可视化处理时调用.
+    \item[写入csv] 将处理后数据写入csv中. 在成员函数write\_data()实现.
+\end{description}
+
+\subsubsection{数据可视化部分}
+数据可视化部分的代码实现在src/plot\_drawer.py中的plot\_drawer类中.
+该类主要完成如下任务:
+
+\begin{description}
+    \item[绘图参数初始化] 在函数\_add\_zh\_cn\_support()中添加中文支持,
+        在\_customize\_colors()中自定义图表用到的颜色,
+        在\_customize\_plot()函数中设置其他绘图默认参数.
+    \item[绘制楼盘价格分布散点图]
+        在函数draw\_price\_scatter\_plot()中绘制楼盘价格分布.
+    \item[绘制平均均价直方图]
+        在函数draw\_avg\_of\_avg\_price\_bar\_figure()中绘制行政区楼盘平均均价直方图.
+    \item[绘制平均总价直方图]
+        在函数draw\_avg\_of\_total\_price\_bar\_figure()中绘制行政区楼盘平均总价直方图.
+    \item[绘制楼盘分布饼图]
+        在函数draw\_estate\_distribution\_pie\_figure()中绘制楼盘分布饼图.
+    \item[绘制均价和总价比较直方图]
+        在函数draw\_compare\_avg\_and\_total\_price\_plot()
+        中绘制比较各行政区楼盘均价和总价的直方图.
+\end{description}
+
+\subsection{代码运行}
+为脚本添加了命令行参数处理. 使用如下命令可查看帮助:
+\begin{lstlisting}[language=shell]
+# cwd: src/
+$ python data_process.py --help
+
+# output
+usage: python data_process.py [-h] [-i INFILE] [-o OUTFILE]
+
+A script to process lianjia data crawled from Linajia.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INFILE, --infile INFILE
+                        Json file to procecss.
+  -o OUTFILE, --outfile OUTFILE
+                        Path to output processed csv.
+
+author: 2020211323-2020211597 吴清柳
+\end{lstlisting}
+
+除在命令行参数中手动指定输入输出文件外, 还制作了运行脚本run.sh,
+运行如下命令即可读取楼盘新楼数据, 转换对应的csv, 同时输出可视化结果.
+\begin{lstlisting}[language=shell]
+bash run.sh
+\end{lstlisting}
