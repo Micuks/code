@@ -308,3 +308,65 @@ class plot_drawer:
 
         plt.show()
 
+
+    # TODO: draw compare average and total price bar plot.
+    def draw_compare_avg_and_total_price_bar_plot(self):
+        '''
+        Draw a bar figure comparing average and total price of real estates per
+        district in bar plot.
+        '''
+        # Get administrative districts.
+        adm_districts = [x["行政区"] for x in self.data]
+        unique_adm_districts = list(set(adm_districts))
+
+        print(adm_districts, len(adm_districts))
+        print(unique_adm_districts, len(unique_adm_districts))
+
+        # Compute the average price and number of real estates in each
+        # admistrative district.
+        num_districts = len(unique_adm_districts)
+
+        def get_num_of_real_estates_per_district():
+            tmp = np.zeros(num_districts, dtype=np.int32)
+            for item in adm_districts:
+                tmp[unique_adm_districts.index(item)] += 1;
+
+            return tmp
+
+
+        num_estates_per_district = get_num_of_real_estates_per_district()
+
+        num_estates = len(adm_districts)
+
+
+        def get_avg_price_per_adm_district():
+            sum = np.zeros(num_districts, dtype=np.float64)
+
+            for item in self.data:
+                avg_price = item["均价"]
+                district = item["行政区"]
+
+                sum[unique_adm_districts.index(district)] += avg_price
+
+            return np.asarray([sum[i]/num_estates_per_district[i] for i in
+                               range(num_districts)])
+
+
+        avg_price_per_adm_district = get_avg_price_per_adm_district()
+
+        # Draw bar plot. 
+        # x axis is name of estates.
+        # y axis of bar is average of average price of estates in the
+        # same admistrative district; 
+        # Width of bar is the number of estates in each admistrative district.
+        for i in range(num_districts):
+            plt.bar(unique_adm_districts[i], avg_price_per_adm_district[i], 
+                    5*(num_estates_per_district[i] / num_estates))
+
+        # Configure axes and figure.
+        plt.rcParams["axes.grid"] = False
+        plt.title("行政区楼盘平均均价")
+        plt.xlabel("行政区")
+        plt.ylabel("均价(元)")
+
+        plt.show()
