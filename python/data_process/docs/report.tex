@@ -1,0 +1,96 @@
+\documentclass[12pt, twoside]{article}
+\setlength{\headheight}{14.49998pt}
+\usepackage{xeCJK}
+
+% Pseudo-code
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% Wrap-figure
+\usepackage{wrapfig}
+
+\usepackage{listings}
+\usepackage{lstautogobble} % Fix relative indenting
+\usepackage{xcolor}
+\usepackage{multirow}
+
+\usepackage[a4paper, left=3.17cm, right=3.17cm, top=2.54cm, bottom=2.54cm]{geometry}
+\usepackage{fancyhdr} % header and footer
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{chemformula}
+\usepackage{cite}
+\usepackage[colorlinks, linkcolor=black, anchorcolor=black, citecolor=black]{hyperref}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\setCJKmainfont{Songti SC}
+\setCJKmonofont{Songti SC}
+
+% Define colors for code listing
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.9,0,0}
+\definecolor{graynumbers}{rgb}{0.5,0.5,0.5}
+
+\lstset{
+  autogobble,
+  columns=fullflexible,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  commentstyle=\color{greencomments},
+  keywordstyle=\color{bluekeywords},
+  stringstyle=\color{redstrings},
+  numberstyle=\color{graynumbers},
+  basicstyle=\ttfamily\footnotesize,
+  frame=l,
+  framesep=12pt,
+  xleftmargin=12pt,
+  tabsize=4,
+  captionpos=b
+  language=python
+  % backgroundcolor=\color{black!5},
+}
+
+% show paragraphs in table of contentes
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+
+\graphicspath{{figures/}}
+
+\setlength{\parskip}{0.5em}
+\title{数据预处理和可视化作业-1}
+\author{\textup{吴清柳}}
+\begin{document}
+\input{title/title.tex}
+\tableofcontents
+\newpage
+
+% set page stype to fancy then decorate it
+\pagestyle{fancy}
+\fancyhead{} % clear all header fields
+\fancyhead[LE, RO]{吴清柳 2020211597}
+\fancyhead[LO, RE]{数据预处理和可视化作业-1}
+\fancyfoot{} % clear all footer fileds
+\fancyfoot[CE, CO]{\thepage}
+
+
+\section{数据预处理}
+\input{content/1/1.tex}
+\section{数据可视化}
+\input{content/2/2.tex}
+\section{附录}
+代码仓库: \href
+{https://github.com/Micuks/code/tree/master/python/data\_process}
+{Github}
+
+% \bibliographystyle{ieeetrans}
+% \bibliography{Assignment_Ref}
+
+\end{document}
