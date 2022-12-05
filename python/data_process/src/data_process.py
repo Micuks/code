@@ -13,12 +13,12 @@ class json2csv:
         self.processed_data = []
 
         # Load data.
-        self.load_data()
+        self._load_data()
 
         # Process data.
         self._data_process()
 
-    def load_data(self):
+    def _load_data(self):
         """
         Load data from in_file, store in dictionary self.data
         """
@@ -55,7 +55,7 @@ class json2csv:
                 {key: rmtri(value) if isinstance(value, str) else value}
             )
 
-            # Extract the first integer from string.
+            # Extract the first one or two integer(s) from string.
             int_re = re.compile(r"^[\D]*(\d+)[\D]*(\d+)?")
 
             # Extract the *average* if there's at least *two numbers* else the
@@ -115,11 +115,10 @@ class json2csv:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog="Lianjia house data \
-    processor.",
+        prog="python data_process.py",
         description="A script to process lianjia data crawled from \
     Linajia.",
-        epilog="This is epilog.",
+        epilog="author: 2020211323-2020211597 吴清柳",
     )
     parser.add_argument(
         "-i",
@@ -143,12 +142,12 @@ if __name__ == "__main__":
     # Load and process data stored in json.
     processor = json2csv(in_file, out_file)
     # Write data to csv.
-    # processor.write_data()
+    processor.write_data()
 
     # Draw plot.
     drawer = plot_drawer(processor.processed_data)
     drawer.draw_price_scatter_plot()
     drawer.draw_estate_distribution_pie_figure()
-    # drawer.draw_avg_of_avg_price_bar_figure()
-    # drawer.draw_avg_of_total_price_bar_figure()
+    drawer.draw_avg_of_avg_price_bar_figure()
+    drawer.draw_avg_of_total_price_bar_figure()
     drawer.draw_compare_avg_and_total_price_plot()

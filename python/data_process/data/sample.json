@@ -1,0 +1,67 @@
+[
+    {
+        "house_name": "  尊悦日坛  ",
+        "resblock_type": "商业类",
+        "resblock_location": [
+            "朝阳",
+            "朝阳门外",
+            "日坛北路19号"
+        ],
+        "resblock_room": "1室",
+        "resblock_area": "建面 45-135㎡",
+        "house_avg_price": "63000",
+        "house_total_price": "总价350-1200(万/套)"
+    },
+    {
+        "house_name": "天恒摩墅",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "房山",
+            "房山其它",
+            "周口店镇政府东200米"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 140-160㎡",
+        "house_avg_price": "23000",
+        "house_total_price": "总价320-530(万/套)"
+    },
+    {
+        "house_name": "鲁能·格拉斯小镇",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "通州",
+            "通州其它",
+            "北京市通州区宋庄镇格拉斯小镇营销中心"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 246-388㎡",
+        "house_avg_price": "62000",
+        "house_total_price": "总价1365-2160(万/套)"
+    },
+    {
+        "house_name": "兴创荣墅",
+        "resblock_type": "别墅",
+        "resblock_location": [
+            "大兴",
+            "大兴新机场洋房别墅区",
+            "北京市大兴区育胜街"
+        ],
+        "resblock_room": "3室",
+        "resblock_area": "建面 188-573㎡",
+        "house_avg_price": "25000",
+        "house_total_price": "总价470-1800(万/套)"
+    },
+    {
+        "house_name": "丽都壹号",
+        "resblock_type": "住宅",
+        "resblock_location": [
+            "朝阳",
+            "酒仙桥",
+            "将台路与驼房营路交叉口向北150米, 将府家园北里"
+        ],
+        "resblock_room": "1室",
+        "resblock_area": "建面 61-122㎡",
+        "house_avg_price": "95000",
+        "house_total_price": "总价580-1170(万/套)"
+    }
+]
