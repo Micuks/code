@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import numpy as np
 import seaborn as sns
 
 
@@ -38,7 +39,7 @@ class plot_drawer:
 
     def _customize_plot(self):
         sns.set(
-            font=["Songti SC", "Franklin Gothic Book"],
+            font=["Songti SC", "Helvetica"],
             rc={
                 "axes.axisbelow": False,
                 "axes.edgecolor": "lightgrey",
@@ -68,6 +69,10 @@ class plot_drawer:
         )
 
     def draw_price_scatter_plot(self):
+        # Create figure and axes
+        fig = plt.figure()
+        ax = plt.axes()
+        
         avg_price = list()
         tot_price = list()
         resblock_type = list()
@@ -126,3 +131,77 @@ class plot_drawer:
         plt.legend(loc="lower right")
 
         plt.show()
+
+    
+    def draw_avg_of_avg_price_bar_figure(self):
+        '''
+        Draw the bar figure of all administrative district real estates.
+
+        - One bar per administrative district. Height is average of average
+          price of estates in each district;
+        - width is the number of real estates in the administrative district.
+        '''
+        # Get administrative districts.
+        adm_districts = [x["行政区"] for x in self.data]
+        unique_adm_districts = list(set(adm_districts))
+
+        print(adm_districts)
+
+        # Compute the average price and number of real estates in each
+        # admistrative district.
+        num_districts = len(unique_adm_districts)
+
+        def get_num_of_real_estates_per_district():
+            tmp = np.zeros(num_districts, dtype=np.int32)
+            for item in adm_districts:
+                tmp[unique_adm_districts.index(item)] += 1;
+
+            return tmp
+
+
+        num_estates_per_district = \
+        get_num_of_real_estates_per_district()
+
+        num_estates = len(adm_districts)
+
+
+        def get_avg_price_per_adm_district():
+            sum = np.zeros((1, num_districts), dtype=np.float64)
+
+            for item in self.data:
+                avg_price = item["均价"]
+                district = item["行政区"]
+
+                sum[unique_adm_districts.index(district)] += avg_price
+
+            return np.asarray([sum[i]/num_estates_per_district[i] for i in
+                               range(num_districts)])
+
+
+        avg_price_per_adm_district = get_avg_price_per_adm_district()
+
+        # Draw bar plot. 
+        # x axis is name of estates.
+        # y axis of bar is average of average price of estates in the
+        # same admistrative district; 
+        # Width of bar is the number of estates in each admistrative district.
+        plt.bar(unique_adm_districts, avg_price_per_adm_district, 
+                float(num_estates_per_district / num_estates), ha='center',
+                va='bottom', fontsize=7)
+
+        # Configure axes and figure.
+        plt.title("行政区楼盘均价")
+        plt.xlabel("行政区")
+        plt.ylabel("均价(元)")
+
+        plt.show()
+
+    def draw_avg_of_total_price_bar_figure(self):
+        '''
+        Draw another bar figure of all administrative district real estates.
+
+        - One bar ber administrative districe. Height is total price;
+        - width is the number of real estates in the administrative district.
+        '''
+        pass
+

@@ -74,7 +74,7 @@ class json2csv:
 
             upd("名称", dict["house_name"])
             upd("类型", dict["resblock_type"])
-            upd("顶级地理位置", dict["resblock_location"][0])
+            upd("行政区", dict["resblock_location"][0])
             upd("次级地理位置", dict["resblock_location"][1])
             upd("末级地理位置", dict["resblock_location"][2])
             upd("房型", dict["resblock_room"])
@@ -147,4 +147,5 @@ if __name__ == "__main__":
 
     # Draw plot.
     drawer = plot_drawer(processor.processed_data)
-    drawer.draw_price_scatter_plot()
+    # drawer.draw_price_scatter_plot()
+    drawer.draw_avg_of_avg_price_bar_figure()
