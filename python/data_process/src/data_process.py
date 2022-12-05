@@ -143,10 +143,11 @@ if __name__ == "__main__":
     # Load and process data stored in json.
     processor = json2csv(in_file, out_file)
     # Write data to csv.
-    processor.write_data()
+    # processor.write_data()
 
     # Draw plot.
     drawer = plot_drawer(processor.processed_data)
-    drawer.draw_price_scatter_plot()
-    drawer.draw_avg_of_avg_price_bar_figure()
-    drawer.draw_avg_of_total_price_bar_figure()
+    # drawer.draw_price_scatter_plot()
+    # drawer.draw_avg_of_avg_price_bar_figure()
+    # drawer.draw_avg_of_total_price_bar_figure()
+    drawer.draw_estate_distribution_pie_figure()
