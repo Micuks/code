@@ -250,4 +250,61 @@ class plot_drawer:
         plt.show()
 
 
+    def draw_estate_distribution_pie_figure(self):
+        '''
+        Draw a pie plot showing the proportion of read estates in each
+        administrative region.
+        '''
+        adm_districts = [x["行政区"] for x in self.data]
+        unique_adm_districts = list(set(adm_districts))
+        num_districts = len(unique_adm_districts)
+
+        def get_num_of_real_estates_per_district():
+            tmp = np.zeros(num_districts, dtype=np.int32)
+            for item in adm_districts:
+                tmp[unique_adm_districts.index(item)] += 1
+
+            return tmp
+
+
+        num_estates_per_district = get_num_of_real_estates_per_district()
+        num_estates = len(adm_districts)
+
+        # Draw pie plot.
+        '''
+        Inputs:
+        - num_estates_per_district: Number of real estates per administrative
+          district.
+        - labels=unqiue_adm_districts: Labels of all administrative districts.
+        - labeldistance: Distance between label text and the center of pie.
+          1.1 means 1.1*radius.
+        - autopct="%1.1f%%": Text format inside pie plot. Auto compute
+          percentage of each district.
+        - shadow=False: Config whether shadow is enables.
+        - startangle: Start angle. Default to begin from 0, counterclockwise.
+        - pctdistance: Set distence between text inside pie and center of pie.
+
+        Returns:
+        - patches: An array containing slices of the pie part.
+        - texts: An array containing label instances. Labels are text outside
+          the pie.
+        - autotexts: An array containing data label instances. Data label
+          instances mean the text inside pie plot. Better display effect can be
+          get by setting the autotexts return value.
+        '''
+
+        patches, texts, autotexts = plt.pie(num_estates_per_district,
+                                            labels=unique_adm_districts,
+                                            labeldistance=1.1,
+                                            autopct="%1.1f%%",
+                                            shadow=False,startangle=180,pctdistance=0.7)
+
+        # Modify parameters of the pie plot.
+        # plt.rcParams["axes.grid"] = False
+        plt.title("各行政区楼盘占比")
+        plt.rcParams["axes.edgecolor"]="b"
+        plt.rcParams["axes.labelcolor"] = "b"
+        plt.rcParams["xtick.color"]="b"
+
+        plt.show()
 
