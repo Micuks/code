@@ -3,7 +3,7 @@
 
 \subsection{输入的json格式}
 由于Scrapy爬取的数据已经被我做过后处理, 因此看起来比较整洁. 具体格式如下:
-\begin{lstlisting}[language=json]
+\begin{lstlisting}[language=c++]
 [
     {
         "house_name": "尊悦日坛", // 楼盘名称
@@ -50,8 +50,8 @@
     \item 对缺失数据, 不进行处理.
 \end{itemize}
 
-\paragraph{求平均值的理由} % (fold)
-\label{par:求平均值的理由}
+\subsubsection{求平均值的理由} % (fold)
+\label{sec:求平均值的理由}
 相比于最小值和最大值, 平均值更能代表数据的一般特征. 采用面积和总价的最小值的话,
 最终得到的统计结果会明显偏小与实际值, 难以合理反应数据分布的影响. 例如,
 最小值相同的两份数据A和B, A中可能几乎都是接近最小值的数值,
@@ -71,3 +71,5 @@ csv文件格式如下.
 
 ...
 \end{lstlisting}
+
+其中, 第一行为csv表头, 后面每一行对应json格式中的一个楼盘信息.
