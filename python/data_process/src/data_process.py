@@ -147,7 +147,8 @@ if __name__ == "__main__":
 
     # Draw plot.
     drawer = plot_drawer(processor.processed_data)
-    # drawer.draw_price_scatter_plot()
+    drawer.draw_price_scatter_plot()
+    drawer.draw_estate_distribution_pie_figure()
     # drawer.draw_avg_of_avg_price_bar_figure()
     # drawer.draw_avg_of_total_price_bar_figure()
-    drawer.draw_estate_distribution_pie_figure()
+    drawer.draw_compare_avg_and_total_price_plot()
