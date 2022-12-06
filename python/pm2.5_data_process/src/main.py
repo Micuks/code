@@ -2,18 +2,6 @@ from data_process import DataProcessor
 import pandas as pd
 import argparse
 
-class TestDataProcessor:
-    '''
-    Class to test data processor implementation.
-    '''
-    def __init__(self, in_file: str, out_file: str) -> None:
-        self.processor = DataProcessor(in_file, out_file)
-
-    def test_load_data(self):
-        raw_data = self.processor.raw_data
-        # Print raw_data for test.
-        raw_data.info()
-
 
 class Parser:
     '''
@@ -67,6 +55,18 @@ if __name__ == "__main__":
 
     parser = Parser()
     in_file, out_file = parser.get_arguments()
-    test_processor = TestDataProcessor(in_file, out_file)
-    # Test data loading.
-    test_processor.test_load_data()
+    processor = DataProcessor(in_file, out_file)
+
+    # Print raw_data for dev.
+    # df.info()
+    print(processor.raw_df.head())
+
+    # show quick statistic
+    # print(df.describe())
+
+    # linear interpolate and truncate values in HUMI, PRES and TEMP that larget than
+    # 3*sigma+mean.
+    processor.linear_interpolate()
+
+    df = processor.processed_df
+    print(df.head(15))
