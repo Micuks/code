@@ -68,6 +68,23 @@ class DataProcessor:
 
         self.processed_df = df
 
+    def handle_values_over_500(self):
+        '''
+        Replace values over 500 with 500 on column PM_Dongsi, PM_Dongsihuan and
+        PM_Nongzhanguan.
+
+        Don't process NaN values.
+        '''
+        df = self.processed_df
+        def process(col):
+            col[col > 500] = 500
+
+            return col
+
+        df["PM_Dongsi"] = process(df["PM_Dongsi"])
+        df["PM_Dongsihuan"] = process(df["PM_Dongsihuan"])
+        df["PM_Nongzhanguan"] = process(df["PM_Nongzhanguan"])
+
 
     def data_to_string(self):
         print(self.raw_df)
