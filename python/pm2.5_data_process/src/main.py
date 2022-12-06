@@ -67,6 +67,7 @@ if __name__ == "__main__":
     # linear interpolate and truncate values in HUMI, PRES and TEMP that larget than
     # 3*sigma+mean.
     processor.linear_interpolate()
+    processor.handle_values_over_500()
 
     df = processor.processed_df
-    print(df.head(15))
+    print(df.head(100))
