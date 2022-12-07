@@ -105,17 +105,23 @@ class DataProcessor:
 
         # Normalize column DEMP to [0, 1].
         df = self.processed_df
-        # for col in df["DEWP"]:
-        #     df[col] = (df[col] - df[col].min()) / (df[col].max() - df[col].min())
 
         min = df["DEWP"].min()
         max = df["DEWP"].max()
 
-        norm = lambda x, min, max: (x - min) / (max - min)
-        normalize_col = lambda col:[norm(col[i], min, max) for i in
+        norm01 = lambda x, min, max: (x - min) / (max - min)
+        norm01_col = lambda col:[norm01(col[i], min, max) for i in
                                     range(len(col))]
 
-        df["DEWP"] = normalize_col(df["DEWP"])
+        df["DEWP"] = norm01_col(df["DEWP"])
+
+        # Normalize column TEMP with Z-Score
+        norm_z = lambda x, mean, std: (x - mean) / std
+        mean = df["TEMP"].mean()
+        std = df["TEMP"].std()
+        norm_z_col = lambda col: [norm_z(col[i], mean, std) for i in
+                                  range(len(col))]
+        df["TEMP"] = norm_z_col(df["TEMP"])
 
 
     def data_to_string(self):
