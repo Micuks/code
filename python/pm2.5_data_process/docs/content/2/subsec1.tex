@@ -11,7 +11,9 @@ linear\_interpolate()中.\par
         method="linear", limit_direction="forward")
 \end{lstlisting}
 
-由于pandas是numpy的扩展, 所以很好的继承了numpy的广播特性. 对数据中超出三倍标准差的数据, 通过如下方式截断为三倍标准差:
+由于pandas是numpy的扩展, 所以很好的继承了numpy的特性, 例如下面用到的Boolean
+Array.
+对数据中超出三倍标准差的数据, 通过如下方式截断为三倍标准差:
 \begin{lstlisting}
     # Process highly anomalous data that exceeds 3 standard deviations.
     std = column.std()
@@ -23,7 +25,7 @@ linear\_interpolate()中.\par
 \subsection{处理结果}
 使用样例数据进行测试. 测试结果中省略了不相关的列:
 \begin{lstlisting}
-    # Raw data
+    # Raw data before process.
                          No  season  ...  DEWP   HUMI  PRES  TEMP ...
     Date
     2010-01-01 00:00:00   1       4  ...   -21   43.0  1021   -11 ...
@@ -37,6 +39,7 @@ linear\_interpolate()中.\par
     2010-01-01 08:00:00   9       4  ...   -19   44.0  1017    -9 ...
     2010-01-01 09:00:00  10       4  ...   -20   37.0  1017    -8 ...
 
+    # Run log.
     Linear interpolate and process highly anomalous data in HUMI.
     Modified 1 cells.
     Linear interpolate and process highly anomalous data in PRES.
