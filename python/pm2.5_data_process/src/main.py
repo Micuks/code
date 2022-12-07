@@ -59,8 +59,9 @@ if __name__ == "__main__":
     processor = DataProcessor(in_file, out_file)
 
     # Print raw_data for dev.
-    # df.info()
-    print(processor.raw_df.head(100))
+    print("--- Input data statistics:")
+    processor.raw_df.info()
+    print(processor.raw_df.head(10))
 
     # show quick statistic
     # print(df.describe())
@@ -74,7 +75,8 @@ if __name__ == "__main__":
     processor.discretize_aqi()
 
     df = processor.processed_df
-    print(df.head(100))
 
-    # processor.visualize_normalized_data()
+    processor.visualize_normalized_data()
     processor.visualize_AQI()
+    
+    processor.write_data()
