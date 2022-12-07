@@ -1,4 +1,5 @@
 import argparse
+import numpy as np
 from datetime import datetime
 import pandas as pd
 import json
@@ -27,29 +28,28 @@ class DataProcessor:
         print("Load data from {}".format(in_file))
         # Read csv using pandas and store data in self.raw_dat and store data in
         # self.raw_data.
-        dataset = pd.read_csv(in_file, 
-                              parse_dates= {"Date": ['year','month','day','hour']},
-                              date_parser = lambda x: \
-                              datetime.strptime(x, "%Y %m %d %H"),
-                              infer_datetime_format=True,
-                              index_col='Date',
-                              na_values=['NaN', '?']
-                              )
+        dataset = pd.read_csv(
+            in_file,
+            parse_dates={"Date": ["year", "month", "day", "hour"]},
+            date_parser=lambda x: datetime.strptime(x, "%Y %m %d %H"),
+            infer_datetime_format=True,
+            index_col="Date",
+            na_values=["NaN", "?"],
+        )
         self.raw_df = dataset
 
-
     def linear_interpolate(self):
-        '''
+        """
         - Process linear interpolate on column HUMI, PRES and TEMP.
         - For data above or below mean +(-) 3*sigma, truncate them to
           mean +(-) 3*sigma.
-        '''
+        """
         df = self.raw_df.copy()
+
         def process(column):
             # Linear interpolate
             # print(column)
-            column = column.interpolate(method='linear',
-                                        limit_direction='forward')
+            column = column.interpolate(method="linear", limit_direction="forward")
 
             # Process highly anomalous data that exceeds 3 standard deviations.
             std = column.std()
@@ -69,13 +69,14 @@ class DataProcessor:
         self.processed_df = df
 
     def handle_values_over_500(self):
-        '''
+        """
         Replace values over 500 with 500 on column PM_Dongsi, PM_Dongsihuan and
         PM_Nongzhanguan.
 
         Don't process NaN values.
-        '''
+        """
         df = self.processed_df
+
         def process(col):
             col[col > 500] = 500
 
@@ -84,6 +85,37 @@ class DataProcessor:
         df["PM_Dongsi"] = process(df["PM_Dongsi"])
         df["PM_Dongsihuan"] = process(df["PM_Dongsihuan"])
         df["PM_Nongzhanguan"] = process(df["PM_Nongzhanguan"])
+
+    def modify_cbwd(self):
+        '''
+        Fill the cells whose value is 'cv' in the cbwd column with the following
+        cell data.
+        '''
+        df = self.processed_df
+
+        cbwd = df["cbwd"]
+        for i in range(len(cbwd.index)-1):
+            cbwd[i] = cbwd[i+1] if cbwd[i] == "cv" else cbwd[i]
+
+    def normalize_process(self):
+        '''
+        - Normalize column DEWP with 0-1 normalization.
+        - Normalize column TEMP with Z-Score normalization.
+        '''
+
+        # Normalize column DEMP to [0, 1].
+        df = self.processed_df
+        # for col in df["DEWP"]:
+        #     df[col] = (df[col] - df[col].min()) / (df[col].max() - df[col].min())
+
+        min = df["DEWP"].min()
+        max = df["DEWP"].max()
+
+        norm = lambda x, min, max: (x - min) / (max - min)
+        normalize_col = lambda col:[norm(col[i], min, max) for i in
+                                    range(len(col))]
+
+        df["DEWP"] = normalize_col(df["DEWP"])
 
 
     def data_to_string(self):
