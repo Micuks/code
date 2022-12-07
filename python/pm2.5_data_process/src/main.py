@@ -71,6 +71,10 @@ if __name__ == "__main__":
     processor.handle_values_over_500()
     processor.modify_cbwd()
     processor.normalize_process()
+    processor.discretize_aqi()
 
     df = processor.processed_df
     print(df.head(100))
+
+    # processor.visualize_normalized_data()
+    processor.visualize_AQI()
