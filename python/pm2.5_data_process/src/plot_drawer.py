@@ -7,18 +7,18 @@ class plot_drawer:
     def __init__(self, data):
         self.data = data
         # Customize colors.
-        self._customize_colors()
+        self.customize_colors()
         # Curtomize plot.
-        self._customize_plot()
+        self.customize_plot()
         # Set default Chinese font.
-        self._add_zh_cn_support()
+        self.add_zh_cn_support()
 
-    def _add_zh_cn_support(self):
+    def add_zh_cn_support():
         # Set default Chinese font.
         plt.rcParams["font.sans-serif"] = ["Songti SC"]
         plt.rcParams["axes.unicode_minus"] = False
 
-    def _customize_colors(self):
+    def customize_colors(self):
         # Customize colors.
         CB91_Blue = "#2CBDFE"
         CB91_Green = "#47DBCD"
@@ -37,7 +37,7 @@ class plot_drawer:
         plt.rcParams["axes.prop_cycle"] = plt.cycler(color=color_list)
         self.colors = color_list
 
-    def _customize_plot(self):
+    def customize_plot(self):
         sns.set(
             font=["Songti SC", "Helvetica"],
             rc={
