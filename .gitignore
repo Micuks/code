@@ -222,3 +222,8 @@ python/data_process/docs/report.fls
 python/data_process/docs/report.fdb_latexmk
 python/pm2.5_data_process/.env
 python/pm2.5_data_process/data/pm2.5_data.zip
+python/pm2.5_data_process/docs/report.fdb_latexmk
+python/pm2.5_data_process/docs/report.fls
+python/pm2.5_data_process/docs/report.out
+python/pm2.5_data_process/docs/report.pdf
+python/pm2.5_data_process/docs/report.synctex.gz
