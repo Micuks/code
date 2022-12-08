@@ -3,26 +3,26 @@
 对线性插值和高度异常数据(超过3倍标准差)的数据的处理, 在类DataProcess中的函数
 linear\_interpolate()中.\par
 
-\subsection{实现介绍}
+\subsubsection{实现介绍}
 使用pandas的函数interpolate()对数据进行线性插值处理如下:
-\begin{lstlisting}
+\begin{python}
     # Linear interpolate
     new_col = column.interpolate(
         method="linear", limit_direction="forward")
-\end{lstlisting}
+\end{python}
 
 由于pandas是numpy的扩展, 所以很好的继承了numpy的特性, 例如下面用到的Boolean
 Array.
 对数据中超出三倍标准差的数据, 通过如下方式截断为三倍标准差:
-\begin{lstlisting}
+\begin{python}
     # Process highly anomalous data that exceeds 3 standard deviations.
     std = column.std()
     mean = column.mean()
     new_col[column > mean + 3 * std] = 3 * std + mean
     new_col[column < mean - 3 * std] = 3 * std - mean
-\end{lstlisting}
+\end{python}
 
-\subsection{处理结果}
+\subsubsection{处理结果}
 使用样例数据进行测试. 测试结果中省略了不相关的列:
 \begin{lstlisting}
     # Raw data before process.

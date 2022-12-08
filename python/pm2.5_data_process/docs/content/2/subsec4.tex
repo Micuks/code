@@ -1,7 +1,7 @@
 本节对DEWP和TEMP两列分别使用Pandas进行了0-1归一化和Z-Score归一化处理,
 并将结果使用matplotlib绘制饼图进行可视化处理.
 
-\subsection{实现介绍}
+\subsubsection{实现介绍}
 0-1正规化, 将原始数据缩放到[0, 1]区间内:
 \begin{equation}
     \frac{x-\min}{\max - \min}
@@ -14,7 +14,7 @@ z-Score, 将原始数据转换为标准正态分布:
 \end{equation}
 但是缺点是对原始数据的分布有要求, 即原始数据的分布必须是近似正态分布的.
 
-\begin{lstlisting}[language=Python]
+\begin{python}
     min = df["DEWP"].min()
     max = df["DEWP"].max()
 
@@ -34,9 +34,9 @@ z-Score, 将原始数据转换为标准正态分布:
                                  range(len(col))]
     df["TEMP"] = norm_z_col(df["TEMP"])
     print(f"z-score normalized column 'TEMP'.") 
-\end{lstlisting}
+\end{python}
 
-\subsection{处理结果}
+\subsubsection{处理结果}
 \begin{lstlisting}
                          No  season  ...  DEWP   HUMI  PRES  TEMP ...
     Date
@@ -69,7 +69,7 @@ z-Score, 将原始数据转换为标准正态分布:
 \end{lstlisting}
 可以看到DEWP中数据被0-1正规化, 而TEMP中数据被z-score正规化.
 
-\subsection{可视化结果}
+\subsubsection{可视化结果}
 由于测试集的数据规模较小, 不能很好的体现正规化后的特征,
 因此使用北京PM完整数据集对0-1正规化和z-score正规化的数据使用散点图进行展示如图.
 \begin{figure}

@@ -1,0 +1,47 @@
+\subsection{代码结构}
+数据处理和数据可视化的代码实现在src/data\_process.py中的DataProcessor类中.
+该类主要完成如下三个任务:
+\begin{description}
+    \item[数据读取] 从csv文件中读取北京的PM空气质量数据, 并进行预处理.
+    \item[数据处理] 按照作业要求使用pandas等工具处理读入的保存在self.raw\_data中的数据,
+        将处理后的数据保存在成员processed\_data中.
+    \item[写入csv] 将处理后数据写入csv中. 在成员函数write\_data()实现.
+\end{description}
+
+其中, 数据处理部分如下:
+\begin{description}
+    \item[线性插值处理] 在函数linear\_interpolate()中.
+    \item[PM指数异常值处理] 在函数handle\_values\_over\_500()中.
+    \item[后项数据填充] 在函数modify\_cbwd()中.
+    \item[归一化处理和散点图表示] 在函数normalize\_process()中进行归一化处理, 在函
+        数visualize\_normalized\_data()中将归一化处理后的数据以散点图表示.
+    \item[空气质量数据离散化] 在函数discretize\_aqi()中进行空气质量数据离散化,
+        在函数visualize\_AQI()中将离散化后的空气质量数据以饼图进行可视化.
+\end{description}
+
+\subsection{代码运行}
+为脚本添加了命令行参数处理在main.py中的类Parser中. 使用如下命令可查看帮助:
+\begin{lstlisting}[language=bash]
+# cwd: src/
+$ python data_process.py --help
+
+# output
+usage: python main.py [-h] [-i INFILE] [-o OUTFILE]
+
+Scripts to process Beijing PM2.5 data and visulizethe data.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INFILE, --infile INFILE
+                        CSV file to process.
+  -o OUTFILE, --outfile OUTFILE
+                        Path to save processed data.
+
+Author: 2020211323-2020211597-吴清柳
+\end{lstlisting}
+
+除在命令行参数中手动指定输入输出文件外, 还制作了运行脚本run.sh,
+运行如下命令即可读取北京PM空气质量数据, 进行数据处理和可视化, 并保存到csv文件中.
+\begin{lstlisting}[language=bash]
+bash run.sh
+\end{lstlisting}

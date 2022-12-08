@@ -1,17 +1,17 @@
 % TODO: Finished this part.
 本节介绍对cbwd中值为"cv"的单元格使用后项数据填充.
 
-\subsection{实现介绍}
+\subsubsection{实现介绍}
 关键代码段如下:
-\begin{lstlisting}[language=Python]
+\begin{python}
     for i in range(len(cbwd.index), 1, -1):
         if cbwd[i-1] == 'cv':
             cnt += 1
         cbwd[i-1] = cbwd[i] if cbwd[i-1] == "cv" else cbwd[i-1]
-\end{lstlisting}
+\end{python}
 由于是从后往前替换, 所以即便是多个相连的cv, 也能完成替换.
 
-\subsection{处理结果}
+\subsubsection{处理结果}
 使用样例数据进行测试, 测试结果中省略了不相关的列:
 \begin{lstlisting}
                          No  season  ... cbwd    Iws  precipitation  Iprec

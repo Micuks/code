@@ -66,7 +66,7 @@ class DataProcessor:
 
     def _load_data(self):
         """
-        Load data from in_file, store in dictionary self.data
+        Load data from in_file, store in dictionary self.raw_data
         """
         in_file = self.in_file
 
@@ -95,7 +95,6 @@ class DataProcessor:
         def process(column):
             cnt = 0
             # Linear interpolate
-            # print(column)
             new_col = column.interpolate(
                 method="linear", limit_direction="forward")
 
@@ -135,7 +134,6 @@ class DataProcessor:
             cp = col.copy()
             print(f"Handled {len([x for x in cp[cp > 500]])} values")
             cp[cp > 500] = 500
-
             return cp
 
         print(f"Handle values larger than 500 in PM_Dongsi.")
@@ -197,6 +195,9 @@ class DataProcessor:
         df = self.processed_df
 
         df.info()
+        self.add_zh_cn_support()
+        self.customize_colors()
+        self.customize_plot()
         df.plot(x="DEWP", y="TEMP", kind='scatter')
         plt.show()
 
@@ -364,9 +365,6 @@ class DataProcessor:
         draw_sub_pie(data_us, 1, 1)
         ax.set_title("US Post PM AQI")
         plt.show()
-
-    def data_to_string(self):
-        print(self.raw_df)
 
     def write_data(self):
         """

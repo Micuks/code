@@ -1,18 +1,18 @@
 本节介绍对PM\_Dongsi, PM\_Dongsihuan和PM\_Nongzhanguan三列中PM指数超过500的异常
 数据进行处理. 处理方法为将其截断为500.\par
 
-\subsection{实现介绍}
+\subsubsection{实现介绍}
 类似上一节中提到的方式, 使用pandas中DataFrame的Boolean Array对每一列col中的异常数据进行处理:
-\begin{lstlisting}
+\begin{python}
     def process(col):
         cp = col.copy()
         print(f"Handled {len([x for x in cp[cp > 500]])} values")
         cp[cp > 500] = 500
 
         return cp
-\end{lstlisting}
+\end{python}
 
-\subsection{处理结果}
+\subsubsection{处理结果}
 对样例数据进行测试, 测试结果中省略了不相关的列:
 \begin{lstlisting}
     # Raw data before process.
