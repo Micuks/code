@@ -61,10 +61,7 @@ if __name__ == "__main__":
     # Print raw_data for dev.
     print("--- Input data statistics:")
     processor.raw_df.info()
-    print(processor.raw_df.head(10))
-
-    # show quick statistic
-    # print(df.describe())
+    print(processor.raw_df.head(15))
 
     # linear interpolate and truncate values in HUMI, PRES and TEMP that larget than
     # 3*sigma+mean.
@@ -74,9 +71,10 @@ if __name__ == "__main__":
     processor.normalize_process()
     processor.discretize_aqi()
 
-    df = processor.processed_df
-
     processor.visualize_normalized_data()
     processor.visualize_AQI()
+    
+    # Print processed data for dev.
+    print(processor.processed_df.head(15))
     
     processor.write_data()

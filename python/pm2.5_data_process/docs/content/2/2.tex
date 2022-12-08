@@ -1,5 +1,5 @@
 \subsection{概述}
-本节分为5部分, 分别介绍数据预处理, 以及对数据进行的五项数据处理, 并在部分章节中对数据进行了数据
+本节各部分分别介绍数据预处理, 以及对数据进行的五项数据处理, 并在部分章节中对数据进行了数据
 可视化. 所有的代码都在src/data\_process.py中的类DataProcess中.
 \begin{enumerate}
     \item 对HUMI, PRES, TEMP三列, 进行线性插值处理. 并对其中超过3倍标准差的高度异常
@@ -34,7 +34,7 @@
 \_load\_data()中. 由于pandas的read\_csv()可以方便的对读入数据的日期进
 行处理, 所以使用如下代码进行处理, 将数据的日期作为索引, 并让pandas自主推断日期格
 式. 此外, 对数据中的NaN值进行了规定, 让Pandas可以正确读取NaN值, 而不是读成字符串.
-\begin{lstlisting}
+\begin{python}
     self.raw_df = dataset
     # Read csv using pandas and store data in self.raw_dat and store data in
     # self.raw_data.
@@ -47,7 +47,7 @@
         na_values=["NaN", "?"],
     )
     self.raw_df = dataset
-\end{lstlisting}
+\end{python}
 
 输入的数据格式如下:
 \begin{lstlisting}

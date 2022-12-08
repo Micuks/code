@@ -1,7 +1,7 @@
 本节介绍将北京的空气质量数据进行离散化, 按照空气质量分级表存, 计算出每个级别对应
 的挺熟, 并将结果以饼图的形式进行可视化. 对每一个PM来源均分别进行饼图可视化, 以便于比较.
 
-\subsection{空气质量分级标准}
+\subsubsection{空气质量分级标准}
 参考如表~\ref{tab:空气质量分级标准}空气质量分级标准:
 \begin{table}[ht!]
     \centering
@@ -22,9 +22,9 @@
     \label{tab:空气质量分级标准}
 \end{table}
 
-\subsection{实现介绍}
+\subsubsection{实现介绍}
 由于不同观测数据来源的PM数据有差异, 故使用如下函数对各站点PM数据分别进行离散化.
-\begin{lstlisting}[language=Python]
+\begin{python}
     # Discretize PM_Dongsi into PM_Dongsi_AQI:
     def discretize_pm(column, discretized_column):
         for row in column:
@@ -43,10 +43,10 @@
             else:
                 # Handle NaN value.
                 discretized_column.append(row)
-\end{lstlisting}
+\end{python}
 
 数据可视化部分, 首先统计了各空气质量等级的天数:
-\begin{lstlisting}[language=Python]
+\begin{python}
     classes = [self.aqicategories.excellent._value_,
     self.aqicategories.good._value_,
     self.aqicategories.lightly_polluted._value_,
@@ -63,10 +63,10 @@
      if row in classes:
          rslt[classes.index(row)] += 1
     return rslt
-\end{lstlisting}
+\end{python}
 
 然后对数据绘制饼图进行可视化:
-\begin{lstlisting}[language=Python]
+\begin{python}
     data_dongsi = count(df["PM_Dongsi_AQI"])
     data_dongsihuan = count(df["PM_Dongsihuan_AQI"])
     data_nongzhanguan = count(df["PM_Nongzhanguan_AQI"])
@@ -110,9 +110,9 @@
     plt.show()
     
     ...
-\end{lstlisting}
+\end{python}
 
-\subsection{处理结果}
+\subsubsection{处理结果}
 在样例数据上进行处理得到的结果如下, 由于新增四列后表格太宽, 所以进行了换行:
 \begin{lstlisting}
     ...  PM_Dongsi  PM_Dongsihuan  PM_Nongzhanguan  PM_US Post  ...    
@@ -178,7 +178,7 @@ PM_US Post statistics:
     Severely Polluted[2057]
 \end{lstlisting}
 
-\subsection{可视化结果}
+\subsubsection{可视化结果}
 PM\_Dongsi的可视化结果如图~\ref{fig:PMDongsi的AQI离散化}.
 
 \begin{figure}[ht!]
