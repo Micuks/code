@@ -32,7 +32,7 @@ ShmData *shm_at(int shm_id);
  * @param shm_ptr
  * @return int
  */
-int shm_detach(ShmData *shm_ptr);
+int shm_detach(void *shm_ptr);
 
 /**
  * @brief Deallocate memory
