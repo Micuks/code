@@ -1,3 +1,7 @@
+# Java files
+**/*.class
+**/*.jar
+
 # macOS Finder dotfile
 **/.DS_Store
 
@@ -227,3 +231,6 @@ python/pm2.5_data_process/docs/report.fls
 python/pm2.5_data_process/docs/report.out
 python/pm2.5_data_process/docs/report.pdf
 python/pm2.5_data_process/docs/report.synctex.gz
+postgresqlJDBC/postgresql-42.5.1.jar
+postgresqlJDBC/postgresqlAccess.class
+python/pm2.5_data_process/data
