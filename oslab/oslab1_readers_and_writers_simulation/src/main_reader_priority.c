@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     int *readers_counter_data;
     long *stat_data;
     pid_t pid;
-    int read_id, write_id, counter_id, print_id;
+    int read_mutex, write_mutex, counter_mutex, print_mutex;
 
     if (argc != 4) {
         printf("Error: not enough arguments passed to program: Only %d/3 "
@@ -93,10 +93,10 @@ int main(int argc, char *argv[]) {
     pid_t child_pid[peers];
 
     // Initialize semaphores.
-    read_id = sem_init((key_t)10001, shm_size);
-    write_id = sem_init((key_t)20001, shm_size);
-    counter_id = sem_init((key_t)30001, shm_size);
-    print_id = sem_init((key_t)40001, shm_size);
+    read_mutex = sem_init((key_t)10001, shm_size);
+    write_mutex = sem_init((key_t)20001, shm_size);
+    counter_mutex = sem_init((key_t)30001, shm_size);
+    print_mutex = sem_init((key_t)40001, shm_size);
 
     // Initialize counters for statistics.
     struct timeval stop, start;
@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
                 /**
                  * CRITICAL SECTION OF WRITER
                  */
-                sem_down(write_id, entry);
+                sem_down(write_mutex, entry);
                 printf("%s Child[%d](writer) accessing shared_memory[%d].\n",
                        log_time(), getpid(), entry);
 
@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
 
                 shmData[entry].writes++;
 
-                sem_up(write_id, entry);
+                sem_up(write_mutex, entry);
                 printf("%s Child[%d](writer) exited shared_memory[%d].\n",
                        log_time(), getpid(), entry);
                 /**
@@ -181,18 +181,18 @@ int main(int argc, char *argv[]) {
 
                 gettimeofday(&start, NULL);
                 // Update counter.
-                sem_down(counter_id, entry);
+                sem_down(counter_mutex, entry);
                 readers_counter_data[entry]++;
                 if (readers_counter_data[entry] == 1) {
                     // Prevent writer from entering critical section.
-                    sem_down(write_id, entry);
+                    sem_down(write_mutex, entry);
                 }
-                sem_up(counter_id, entry);
+                sem_up(counter_mutex, entry);
 
                 /**
                  * CRITICAL SECTION OF READER
                  */
-                sem_down(read_id, entry);
+                sem_down(read_mutex, entry);
                 printf("%s Child[%d](reader) accessing shared_memory[%d].\n",
                        log_time(), getpid(), entry);
 
@@ -209,7 +209,7 @@ int main(int argc, char *argv[]) {
                 usleep(sleeptime);
                 shmData[entry].reads++;
 
-                sem_up(read_id, entry);
+                sem_up(read_mutex, entry);
                 printf("%s Child[%d](reader) exited shared_memory[%d].\n",
                        log_time(), getpid(), entry);
                 /**
@@ -217,13 +217,13 @@ int main(int argc, char *argv[]) {
                  */
 
                 // Update counter.
-                sem_down(counter_id, entry);
+                sem_down(counter_mutex, entry);
                 readers_counter_data[entry]--;
                 if (readers_counter_data[entry] == 0) {
                     // Release writer lock.
-                    sem_up(write_id, entry);
+                    sem_up(write_mutex, entry);
                 }
-                sem_up(counter_id, entry);
+                sem_up(counter_mutex, entry);
 
                 // Update timer.
                 total_time_reader += curr_time;
@@ -242,7 +242,7 @@ int main(int argc, char *argv[]) {
         /**
          * STATISTICS PRINTER CRITICAL ZONE
          */
-        sem_down(print_id, 0);
+        sem_down(print_mutex, 0);
         fprintf(log_file, "%s Child[%d]:\n", log_time(), getpid());
         fprintf(
             log_file,
@@ -259,7 +259,7 @@ int main(int argc, char *argv[]) {
         stat_data[1] += total_time_reader / 10;
         stat_data[2] += total_time / 10;
 
-        sem_up(print_id, 0);
+        sem_up(print_mutex, 0);
         /**
          * EXIT STATISTICS PRINTER CRITICAL ZONE
          */
@@ -292,7 +292,7 @@ int main(int argc, char *argv[]) {
         /**
          * ENTER STATISTIC PRINTER CRITICAL ZONE.
          */
-        sem_down(print_id, 0);
+        sem_down(print_mutex, 0);
         printf("%s Parent[%d] Writing statistics log.\n", log_time(), pid);
         fprintf(log_file, "\n VALIDATING RESULTS \n");
         for (size_t i = 0; i < (size_t)shm_size; i++) {
@@ -313,7 +313,7 @@ int main(int argc, char *argv[]) {
         // Print statistics in log_stat.
         fprintf(log_stat, "%ld, %ld, %ld\n", (long)(stat_data[2] / 1e3),
                 (long)(stat_data[1] / 1e3), (long)(stat_data[0] / 1e3));
-        sem_up(print_id, 0);
+        sem_up(print_mutex, 0);
         /**
          * EXIT STATISTIC PRINTER CRITICAL ZONE
          */
@@ -326,10 +326,10 @@ int main(int argc, char *argv[]) {
     }
 
     // Delete semaphores.
-    sem_del(read_id);
-    sem_del(write_id);
-    sem_del(counter_id);
-    sem_del(print_id);
+    sem_del(read_mutex);
+    sem_del(write_mutex);
+    sem_del(counter_mutex);
+    sem_del(print_mutex);
 
     // Free allocated shared memory.
     shm_delete(shm_stat_id);
