@@ -21,7 +21,7 @@ int sem_init(key_t key, int sem_num);
  * @param sem_num
  * @return int
  */
-int sem_del(int sem_id, int sem_num);
+int sem_del(int sem_id);
 
 /**
  * @brief Semaphore up.
