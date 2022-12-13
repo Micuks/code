@@ -7,18 +7,39 @@ typedef struct shm_data {
     int reads;
     int writes;
     long double avg_time;
-};
+} shm_data;
 
-// Initialize shared memory.
+/**
+ * @brief Initialize shared memory.
+ * 
+ * @param key 
+ * @param size 
+ * @return int 
+ */
 int shm_init(key_t key, int size);
 
-// Return a pointer to memory.
+/**
+ * @brief Return a pointer to memory.
+ * 
+ * @param shm_id 
+ * @return shm_data* 
+ */
 shm_data *shm_at(int shm_id);
 
-// Detach memory
+/**
+ * @brief Detach memory
+ * 
+ * @param shm_ptr 
+ * @return int 
+ */
 int shm_detach(shm_data *shm_ptr);
 
-// Deallocate memory
+/**
+ * @brief Deallocate memory
+ * 
+ * @param shm_id 
+ * @return int 
+ */
 int shm_delete(int shm_id);
 
 #endif
