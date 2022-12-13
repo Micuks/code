@@ -12,7 +12,7 @@ int shm_init(key_t key, int size) {
 
 ShmData *shm_at(int shm_id) { return (ShmData *)shmat(shm_id, 0, 0); }
 
-int shm_detach(ShmData *shm_ptr) {
+int shm_detach(void *shm_ptr) {
     if (shmdt(shm_ptr) == -1) {
         printf("Error: memory detach failed %p \n", shm_ptr);
 

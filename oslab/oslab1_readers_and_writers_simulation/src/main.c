@@ -186,5 +186,109 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    if (pid == 0) {
+        // Let parent process print statistics.
+        avg_time_writer = (writes) ? ((double)total_time_writer / writes) : 0;
+        avg_time_reader = (reads) ? ((double)total_time_reader / reads) : 0;
+        avg_time =
+            (reads + writes) ? ((double)total_time / (reads + writes)) : 0;
+
+        /**
+         * STATISTICS PRINTER CRITICAL ZONE
+         */
+        sem_down(print_id, 0);
+        fprintf(log_file, "Child[%d]:\n", getpid());
+        fprintf(log_file, "Total write time: %ld; average write time: %f\n",
+                total_time_writer, avg_time_writer);
+        fprintf(log_file, "Total read time: %ld; average read time: %f\n",
+                total_time_reader, avg_time_reader);
+        fprintf(log_file, "\n");
+
+        // Shared statistics
+        stat_data[0] += total_time_writer / 10;
+        stat_data[1] += total_time_reader / 10;
+        stat_data[2] += total_time / 10;
+
+        sem_up(print_id, 0);
+        /**
+         * EXIT STATISTICS PRINTER CRITICAL ZONE
+         */
+    }
+
+    // Exit processes.
+    if (pid != 0) {
+        // Parent process,
+        // Terminate child process.
+        int status;
+        pid_t child_terminated_pid;
+
+        // Close all child processes.
+        for (size_t i = 0; i < peers; i++) {
+            child_terminated_pid = waitpid(child_pid[i], &status, 0);
+            printf("Child[%d] has finished.\n", child_terminated_pid);
+            if (WIFEXITED(status)) {
+                printf("Child exited with code %d\n", status);
+            } else {
+                printf("Child terminated abnormally %d\n", status);
+            }
+        }
+
+        // Validate results.
+        int sum_readers = 0;
+        int sum_writers = 0;
+
+        /**
+         * ENTER STATISTIC PRINTER CRITICAL ZONE.
+         */
+        sem_down(print_id, 0);
+        fprintf(log_file, "\n VALIDATING RESULTS \n");
+        for (size_t i = 0; i < shm_size; i++) {
+            fprintf(log_file, "shared[%zu]: readers[%d], writers[%d]\n", i,
+                    shmData[i].reads, shmData[i].writes);
+            sum_readers += shmData[i].reads;
+            sum_writers += shmData[i].writes;
+        }
+        fprintf(log_file, "--------------------\n");
+        fprintf(log_file, "total: readers[%d], writers[%d]\n", sum_readers,
+                sum_writers);
+        fprintf(log_file, "Total should be equal to (peers * LOOPS)[%d]\n",
+                peers * LOOPS);
+        if (peers * LOOPS == sum_writers + sum_readers) {
+            fprintf(log_file, "Result is right!\n");
+        }
+
+        // Print statistics in log_stat.
+        fprintf(log_stat, "%ld, %ld, %ld\n", (long)(stat_data[2] / 1e3),
+                (long)(stat_data[1] / 1e3), (long)(stat_data[0] / 1e3));
+        sem_up(print_id, 0);
+        /**
+         * EXIT STATISTIC PRINTER CRITICAL ZONE
+         */
+    } else {
+        // Child process,
+        // Exit.
+        exit(0);
+    }
+
+    // Delete semaphores.
+    sem_del(read_id, shm_size);
+    sem_del(write_id, shm_size);
+    sem_del(counter_id, shm_size);
+    sem_del(print_id, 0);
+
+    // Free allocated shared memory.
+    shm_delete(shm_stat_id);
+    shm_detach(stat_data);
+
+    shm_delete(readers_counter_id);
+    shm_detach(readers_counter_data);
+
+    shm_delete(shm_id);
+    shm_detach((ShmData *)shmData);
+
+    // Close files.
+    fclose(log_file);
+    fclose(log_stat);
+
     return 0;
 }
