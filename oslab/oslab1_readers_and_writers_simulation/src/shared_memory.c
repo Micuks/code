@@ -10,11 +10,11 @@ int shm_init(key_t key, int size) {
     return shm_id;
 }
 
-shm_data *shm_at(int shm_id) { return (shm_data *)shmat(shm_id, 0, 0); }
+ShmData *shm_at(int shm_id) { return (ShmData *)shmat(shm_id, 0, 0); }
 
-int shm_detach(shm_data *shm_ptr) {
+int shm_detach(ShmData *shm_ptr) {
     if (shmdt(shm_ptr) == -1) {
-        printf("Error: memory detatch failed %p \n", shm_ptr);
+        printf("Error: memory detach failed %p \n", shm_ptr);
 
         return 0;
     }
