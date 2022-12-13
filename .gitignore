@@ -234,3 +234,8 @@ python/pm2.5_data_process/docs/report.synctex.gz
 postgresqlJDBC/postgresql-42.5.1.jar
 postgresqlJDBC/postgresqlAccess.class
 python/pm2.5_data_process/data
+nlp/ace2005convert2MLBiNet
+nlp/text_to_table
+nlp/DocED
+nlp/MLBiNetWithDataset.tar.gz
+nlp/txt2table.tar.gz
