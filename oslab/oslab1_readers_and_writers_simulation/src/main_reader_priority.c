@@ -1,3 +1,7 @@
+/**
+ * Reader-Preference readers and writers simulation.
+ */
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
