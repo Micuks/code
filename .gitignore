@@ -239,3 +239,4 @@ nlp/text_to_table
 nlp/DocED
 nlp/MLBiNetWithDataset.tar.gz
 nlp/txt2table.tar.gz
+oslab/oslab1_readers_and_writers_simulation/build

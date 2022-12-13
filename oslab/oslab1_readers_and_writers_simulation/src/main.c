@@ -12,19 +12,21 @@ const int LOOPS = 10;
 
 double u(int x) { return (double)(x + 1) / 10; }
 double exp_time() {
-    int x = rand() % 10 / 100;
-    return (-(log(u(x))) * 1e6);
+    int x = rand() % 10;
+    double sleeptime = (-(log(u(x))) * 1e6);
+
+    return sleeptime;
 }
 
 int main(int argc, char *argv[]) {
-    int rw_ratio, shm_size, peers, max_readers = 3;
+    int rw_ratio, shm_size, peers;
     ShmData *shmData;
     int shm_id, shm_stat_id;
     int readers_counter_id;
     int *readers_counter_data;
     long *stat_data;
     pid_t pid;
-    int read_id, write_id, sem_id, mutex_id, counter_id, print_id;
+    int read_id, write_id, counter_id, print_id;
 
     if (argc != 4) {
         printf("Error: not enough CLI arguments %d\n ", argc);
@@ -33,13 +35,13 @@ int main(int argc, char *argv[]) {
     peers = atoi(argv[1]);
     // For inputs between 1 and 100 -> between 1% and 100%.
     rw_ratio = atoi(argv[2]) - 1;
+    shm_size = atoi(argv[3]);
 
     srand(getpid());
 
     // Initialize the shared matrix.
     // Allocate shared memory for ShmData.
-    key_t shm_key = 597;
-    shm_id = shm_init(shm_key, sizeof(ShmData) * shm_size);
+    shm_id = shm_init(597, sizeof(ShmData) * shm_size);
     shmData = shm_at(shm_id);
     for (int i = 0; i < shm_size; i++) {
         shmData[i].avg_time = 0;
@@ -122,14 +124,25 @@ int main(int argc, char *argv[]) {
                  * CRITICAL SECTION OF WRITER
                  */
                 sem_down(write_id, entry);
+                printf("Child[%d](writer) accessing shared_memory[%d].\n", pid,
+                       entry);
 
                 gettimeofday(&stop, NULL);
                 curr_time = (stop.tv_sec - start.tv_sec) * 1e6 + stop.tv_usec -
                             start.tv_usec;
-                usleep(exp_time());
+                printf("Child[%d](writer) waited for %lf seconds.\n", pid,
+                       (double)curr_time / (double)1e6);
+
+                // Sleep to occupy symaphore.
+                double sleeptime = exp_time();
+                printf("Sleep for %lf seconds.\n", (double)sleeptime / 1e6);
+                usleep(sleeptime);
+
                 shmData[entry].writes++;
 
                 sem_up(write_id, entry);
+                printf("Child[%d](writer) exited shared_memory[%d].\n", pid,
+                       entry);
                 /**
                  * EXIT CRITICAL SECTION OF WRITER
                  */
@@ -157,15 +170,24 @@ int main(int argc, char *argv[]) {
                  * CRITICAL SECTION OF READER
                  */
                 sem_down(read_id, entry);
+                printf("Child[%d](reader) accessing shared_memory[%d].\n", pid,
+                       entry);
 
                 gettimeofday(&stop, NULL);
                 curr_time = (stop.tv_sec - start.tv_sec) * 1e6 + stop.tv_usec -
                             start.tv_usec;
-                // Wait exponential time.
-                usleep(exp_time());
+                printf("Child[%d](reader) waited for %lf seconds.\n", pid,
+                       (double)curr_time / 1e6);
+
+                // Sleep to occupy symaphore.
+                double sleeptime = exp_time();
+                printf("Sleep for %lf seconds.\n", (double)sleeptime / 1e6);
+                usleep(sleeptime);
                 shmData[entry].reads++;
 
                 sem_up(read_id, entry);
+                printf("Child[%d](reader) exited shared_memory[%d].\n", pid,
+                       entry);
                 /**
                  * EXIT CRITICAL ZONE OF READER.
                  */
@@ -198,10 +220,14 @@ int main(int argc, char *argv[]) {
          */
         sem_down(print_id, 0);
         fprintf(log_file, "Child[%d]:\n", getpid());
-        fprintf(log_file, "Total write time: %ld; average write time: %f\n",
-                total_time_writer, avg_time_writer);
-        fprintf(log_file, "Total read time: %ld; average read time: %f\n",
-                total_time_reader, avg_time_reader);
+        fprintf(
+            log_file,
+            "Total write time: %lf seconds; average write time: %lf seconds.\n",
+            (double)total_time_writer / 1e6, (double)avg_time_writer / 1e6);
+        fprintf(log_file, "Total read time: %lf; average read time: %lf\n",
+                (double)total_time_reader / 1e6, (double)avg_time_reader / 1e6);
+        fprintf(log_file, "Total time: %lf, total average time: %lf\n",
+                (double)total_time / 1e6, (double)avg_time / 1e6);
         fprintf(log_file, "\n");
 
         // Shared statistics
@@ -223,7 +249,7 @@ int main(int argc, char *argv[]) {
         pid_t child_terminated_pid;
 
         // Close all child processes.
-        for (size_t i = 0; i < peers; i++) {
+        for (size_t i = 0; i < (size_t)peers; i++) {
             child_terminated_pid = waitpid(child_pid[i], &status, 0);
             printf("Child[%d] has finished.\n", child_terminated_pid);
             if (WIFEXITED(status)) {
@@ -242,7 +268,7 @@ int main(int argc, char *argv[]) {
          */
         sem_down(print_id, 0);
         fprintf(log_file, "\n VALIDATING RESULTS \n");
-        for (size_t i = 0; i < shm_size; i++) {
+        for (size_t i = 0; i < (size_t)shm_size; i++) {
             fprintf(log_file, "shared[%zu]: readers[%d], writers[%d]\n", i,
                     shmData[i].reads, shmData[i].writes);
             sum_readers += shmData[i].reads;
@@ -267,14 +293,16 @@ int main(int argc, char *argv[]) {
     } else {
         // Child process,
         // Exit.
+        // pid = getpid();
+        printf("Process with pid %d exitting...\n", pid);
         exit(0);
     }
 
     // Delete semaphores.
-    sem_del(read_id, shm_size);
-    sem_del(write_id, shm_size);
-    sem_del(counter_id, shm_size);
-    sem_del(print_id, 0);
+    sem_del(read_id);
+    sem_del(write_id);
+    sem_del(counter_id);
+    sem_del(print_id);
 
     // Free allocated shared memory.
     shm_delete(shm_stat_id);
