@@ -60,16 +60,76 @@ public class postgresqlAccess {
         try {
             rs = stmt.executeQuery(sql);
         } catch (PSQLException e) {
-            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
         System.out.println("Insert value statement executed.");
+
+        insertResult();
     }
-    
+
     public static void insertResult() throws SQLException {
         System.out.println("Check if inserted successfully.");
         String sql = "select * from nation where n_nationkey=25";
         rs = stmt.executeQuery(sql);
         // Print query reqult.
+        printQueryResult();
+    }
+
+    /**
+     * Update the record inserted in last step.
+     * 
+     * @exception SQLException
+     */
+    public static void updateNation() throws SQLException {
+        String sql;
+        sql = "update nation set n_regionkey=2 where n_nationkey=25";
+        try {
+            rs = stmt.executeQuery(sql);
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        // Print update result.
+        System.out.println("Print updated record.");
+        sql = "select * from nation where n_nationkey=25";
+        try {
+            rs = stmt.executeQuery(sql);
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        printQueryResult();
+    }
+
+    /**
+     * Delete the record inserted, and check if successfully delted via n_nationkey.
+     * SQL statement:
+     * delete from nation
+     * where n_nationkey=25;
+     * 
+     * select * from nation
+     * where n_nationkey=25;
+     * 
+     * @throws SQLException
+     */
+    public static void deleteRecord() throws SQLException {
+        String sql;
+        sql = "delete from nation where n_nationkey=25;";
+        try {
+            rs = stmt.executeQuery(sql);
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        System.out.println("Check if the record is deleted successfully.");
+        sql = "select count(*) from nation where n_nationkey=25";
+        try {
+            rs = stmt.executeQuery(sql);
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        rs.next();
+        int count = rs.getInt(1);
+        System.out.println("Number of records with n_nationkey=25: " + count);
         printQueryResult();
     }
 
@@ -84,10 +144,17 @@ public class postgresqlAccess {
             System.out.println("Instantiate Statement object");
             stmt = conn.createStatement();
 
+            // Query operation.
             // queryNation();
+
+            // Insert operation.
             // insertToNation();
-            // Print insert result.
-            insertResult();
+
+            // Update operation.
+            // updateNation();
+
+            // Delete record.
+            deleteRecord();
 
             // Close after finished.
             rs.close();
