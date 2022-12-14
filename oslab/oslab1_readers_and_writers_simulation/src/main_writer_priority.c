@@ -46,7 +46,14 @@ int main(int argc, char *argv[]) {
     int *readers_counter_data;
     long *stat_data;
     pid_t pid;
-    int read_mutex, write_mutex, counter_mutex, print_mutex;
+    int read_mutex, write_mutex, reader_counter_mutex, print_mutex;
+
+    // For writer priority.
+    int writers_counter_id;
+    int *writers_counter_data;
+    int writer_counter_mutex;
+    // Queue mutex
+    int queue_mutex;
 
     if (argc != 4) {
         printf("Error: not enough arguments passed to program: Only %d/3 "
@@ -74,8 +81,15 @@ int main(int argc, char *argv[]) {
     // Initialize shared counter for readers
     readers_counter_id = shm_init((key_t)211, shm_size * sizeof(int));
     readers_counter_data = (int *)shm_at(readers_counter_id);
-    for (int i = 0; i < shm_size; i++) {
+    for (size_t i = 0; i < (size_t)shm_size; i++) {
         readers_counter_data[i] = 0;
+    }
+
+    // Initialize shared counter for writers
+    writers_counter_id = shm_init((key_t)212, shm_size * sizeof(int));
+    writers_counter_data = (int *)shm_at(writers_counter_id);
+    for (size_t i = 0; i < (size_t)shm_size; i++) {
+        writers_counter_data[i] = 0;
     }
 
     /** Initialize shared memory to keep stats
@@ -95,7 +109,9 @@ int main(int argc, char *argv[]) {
     // Initialize semaphores.
     read_mutex = sem_init((key_t)10001, shm_size);
     write_mutex = sem_init((key_t)20001, shm_size);
-    counter_mutex = sem_init((key_t)30001, shm_size);
+    reader_counter_mutex = sem_init((key_t)30001, shm_size);
+    writer_counter_mutex = sem_init((key_t)30002, shm_size);
+    queue_mutex = sem_init((key_t)50001, shm_size);
     print_mutex = sem_init((key_t)40001, shm_size);
 
     // Initialize counters for statistics.
@@ -142,6 +158,15 @@ int main(int argc, char *argv[]) {
                 writes++;
                 gettimeofday(&start, NULL);
 
+                // Update counter.
+                sem_down(writer_counter_mutex, entry);
+                writers_counter_data[entry]++;
+                if (writers_counter_data[entry] == 1) {
+                    // Prevent the following readers from entering queue.
+                    sem_down(queue_mutex, entry);
+                }
+                sem_up(writer_counter_mutex, entry);
+
                 /**
                  * CRITICAL SECTION OF WRITER
                  */
@@ -155,7 +180,7 @@ int main(int argc, char *argv[]) {
                 printf("%s Child[%d](writer) waited for %lf seconds.\n",
                        log_time(), getpid(), (double)curr_time / (double)1e6);
 
-                // Sleep to occupy symaphore.
+                // Sleep to occupy critical section.
                 double sleeptime = exp_time();
                 printf("%s Sleep for %lf seconds.\n", log_time(),
                        (double)sleeptime / 1e6);
@@ -169,6 +194,15 @@ int main(int argc, char *argv[]) {
                 /**
                  * EXIT CRITICAL SECTION OF WRITER
                  */
+                // Update counter.
+                sem_down(writer_counter_mutex, entry);
+                writers_counter_data[entry]--;
+                if (writers_counter_data[entry] == 0) {
+                    // No writers waiting. Allow the following readers to
+                    // enqueue.
+                    sem_up(queue_mutex, entry);
+                }
+                sem_up(writer_counter_mutex, entry);
 
                 // Update statistic data.
                 total_time_writer += curr_time;
@@ -180,18 +214,27 @@ int main(int argc, char *argv[]) {
                 reads++;
 
                 gettimeofday(&start, NULL);
+
+                // Wait for queue mutex.
+                sem_down(queue_mutex, entry);
+
                 // Update counter.
-                sem_down(counter_mutex, entry);
+                sem_down(reader_counter_mutex, entry);
                 readers_counter_data[entry]++;
                 if (readers_counter_data[entry] == 1) {
                     // Prevent writer from entering critical section.
                     sem_down(write_mutex, entry);
                 }
-                sem_up(counter_mutex, entry);
+
+                // Release queue mutex.
+                sem_up(queue_mutex, entry);
+                // Release reader counter mutex.
+                sem_up(reader_counter_mutex, entry);
 
                 /**
                  * CRITICAL SECTION OF READER
                  */
+                // Wait for read mutex.
                 sem_down(read_mutex, entry);
                 printf("%s Child[%d](reader) accessing shared_memory[%d].\n",
                        log_time(), getpid(), entry);
@@ -217,13 +260,13 @@ int main(int argc, char *argv[]) {
                  */
 
                 // Update counter.
-                sem_down(counter_mutex, entry);
+                sem_down(reader_counter_mutex, entry);
                 readers_counter_data[entry]--;
                 if (readers_counter_data[entry] == 0) {
                     // Release writer lock.
                     sem_up(write_mutex, entry);
                 }
-                sem_up(counter_mutex, entry);
+                sem_up(reader_counter_mutex, entry);
 
                 // Update timer.
                 total_time_reader += curr_time;
@@ -294,7 +337,7 @@ int main(int argc, char *argv[]) {
          */
         sem_down(print_mutex, 0);
         printf("%s Parent[%d] Writing statistics log.\n", log_time(), pid);
-        fprintf(log_file, "\n VALIDATING RESULTS \n");
+        fprintf(log_file, "\n---------VALIDATING RESULTS---------\n");
         for (size_t i = 0; i < (size_t)shm_size; i++) {
             fprintf(log_file, "shared[%zu]: readers[%d], writers[%d]\n", i,
                     shmData[i].reads, shmData[i].writes);
@@ -321,14 +364,16 @@ int main(int argc, char *argv[]) {
         // Child process,
         // Exit.
         // pid = getpid();
-        printf("%s Process with pid %d exitting...\n", log_time(), getpid());
+        printf("%s Process with pid %d exiting...\n", log_time(), getpid());
         exit(0);
     }
 
     // Delete semaphores.
     sem_del(read_mutex);
     sem_del(write_mutex);
-    sem_del(counter_mutex);
+    sem_del(queue_mutex);
+    sem_del(reader_counter_mutex);
+    sem_del(writer_counter_mutex);
     sem_del(print_mutex);
 
     // Free allocated shared memory.
@@ -337,6 +382,9 @@ int main(int argc, char *argv[]) {
 
     shm_delete(readers_counter_id);
     shm_detach(readers_counter_data);
+
+    shm_delete(writers_counter_id);
+    shm_detach(writers_counter_data);
 
     shm_delete(shm_id);
     shm_detach((ShmData *)shmData);
