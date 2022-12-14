@@ -1,4 +1,4 @@
 #! /bin/bash
 
 make
-build/main 10 90 10
+build/writer_priority 10 90 10
