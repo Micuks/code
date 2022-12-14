@@ -3,25 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern VMemTable *tlbTable;
-extern VMemTable *pageTable;
-extern int **dram;
-
-extern ReplacementMethod replace_method;
-extern DisplayOption display_option;
-
-extern FILE *address_file;
-extern char *secondary_storage_name;
-extern FILE *secondary_storage;
-
-extern int virtual_addr;
-extern int page_number;
-extern int offset_number;
-
-extern int translation_count;
-
-extern char *algo_name;
-
 char address_read_buf[MAX_ADDR_LEN];
 
 int main(int argc, char *argv[]) {
@@ -40,6 +21,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Open secondary storage file.
+    printf("Attempt to open secondary storage file %s", secondary_storage_name);
     secondary_storage = fopen(secondary_storage_name, "rb");
     if (secondary_storage == NULL) {
         fprintf(stderr, "Error opening %s\n", secondary_storage_name);
@@ -69,14 +51,19 @@ int main(int argc, char *argv[]) {
 
     do {
         printf("\nDisplay all physical addresses? [y/n]: ");
-        scanf("%u", &display_option);
+        if ((display_option = getchar()) == '\n' || display_option == ' ') {
+            display_option = getchar();
+        }
     } while (display_option != 'n' && display_option != 'y');
 
     do {
         printf("Chose TLB replacement method: \n");
         printf("1: FIFO\n");
         printf("2: LRU\n");
-        scanf("%u", &replace_method);
+        if ((replace_method = getchar()) == '\n' || replace_method == ' ') {
+            replace_method = getchar();
+        }
+
     } while (replace_method != '1' && replace_method != '2');
 
     // Read through the input file and print virtual addresses.
@@ -90,15 +77,15 @@ int main(int argc, char *argv[]) {
         offset_number = get_offset(OFFSET_MASK, virtual_addr);
 
         // Get physical address and translated value stored at that address.
-        translate_address(replace_method);
+        translate_address();
         translation_count++;
     }
 
     // Set stdout replacement method name.
     algo_name = (replace_method == FIFO) ? "FIFO" : "LRU";
 
-    printf("\n------VIRTUAL MEMORY STATISTICS------\n");
-    printf("\nReplacement method: %s", algo_name);
+    printf("\n\n------VIRTUAL MEMORY STATISTICS------\n");
+    printf("Replacement method: %s\n", algo_name);
     printf("Number of addresses translated: %d\n", translation_count);
     double pf_rate = (double)pageTable->page_fault_count / translation_count;
     double tlb_rate = (double)tlbTable->tlb_hit_count / translation_count;
