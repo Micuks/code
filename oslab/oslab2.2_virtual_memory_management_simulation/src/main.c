@@ -24,9 +24,6 @@ extern char *algo_name;
 
 char address_read_buf[MAX_ADDR_LEN];
 
-// The buffer containing reads from backing store.
-signed char file_read_buf[PAGE_READ_SIZE];
-
 int main(int argc, char *argv[]) {
 
     /**

@@ -1,4 +1,5 @@
 #include "vmem_sim.h"
+#include <stdio.h>
 #include <time.h>
 
 // Generating length of time for a function.
@@ -33,6 +34,9 @@ VMemTable *tlbTable;  // The TLB struct.
 VMemTable *pageTable; // The Page Table.
 int translation_count = 0;
 char *algo_name;
+
+// The buffer containing reads from backing store.
+signed char file_read_buf[PAGE_READ_SIZE];
 
 void translate_address() {
     // Try to find page in TLB.
@@ -103,8 +107,69 @@ void translate_address() {
     }
 }
 
-void read_from_store(int page_number) {}
-void tlb_fifo_insert(int page_number, int frame_number);
-void tlb_lru_insert(int page_number, int frame_number);
+void read_from_store(int page_number) {
+    // Seek to byte PAGE_READ_SIZE in secondary storage.
+    // SEEL_SET lets fseek() to seek from the beginning of file.
+    if (fseek(secondary_storage, page_number * PAGE_READ_SIZE, SEEK_SET) != 0) {
+        fprintf(stderr, "Error seeking in secondary storage.\n");
+    }
+
+    // Now read PAGE_READ_SIZE bytes from secondary storage to file_read_buf.
+    if (fread(file_read_buf, sizeof(signed char), PAGE_READ_SIZE,
+              secondary_storage) == 0) {
+        fprintf(stderr, "Error reading secondary storage.\n");
+    }
+
+    // Load bytes into the first available fram in the physical memory 2D array.
+    for (int i = 0; i < PAGE_READ_SIZE; i++) {
+        dram[next_frame][i] = file_read_buf[i];
+    }
+
+    // Load the frame number into page table in the next page.
+    pageTable->page_num_arr[next_page] = page_number;
+    pageTable->frame_num_arr[next_page] = next_frame;
+
+    // Increment counters to track the next available frame.
+    next_frame++;
+    next_page++;
+}
+
+// Circular queue to implement FIFO.
+void tlb_fifo_insert(int page_number, int frame_number) {
+    int i = 0;
+    // Break if page already in TLB.
+    for (i = 0; i < next_tlb_entry; i++) {
+        if (tlbTable->page_num_arr[i] == page_number) {
+            break;
+        }
+    }
+
+    // Page not found in TLB.
+    if (i == next_tlb_entry) {
+        tlbTable->page_num_arr[next_tlb_entry % TLB_SIZE] = page_number;
+        tlbTable->frame_num_arr[next_tlb_entry % TLB_SIZE] = frame_number;
+    } else {
+        // If another frame with the same page index already in TLB.
+        for (; i < next_tlb_entry; i++) {
+            tlbTable->page_num_arr[i] = tlbTable->page_num_arr[i + 1];
+            tlbTable->frame_num_arr[i] = tlbTable->frame_num_arr[i + 1];
+        }
+
+        // Append page to end of TLB.
+        tlbTable->page_num_arr[next_tlb_entry % TLB_SIZE] = page_number;
+        tlbTable->frame_num_arr[next_tlb_entry % TLB_SIZE] = frame_number;
+    }
+
+    // Next tlb entry in circular queue.
+    next_tlb_entry = (next_tlb_entry + 1) % TLB_SIZE;
+}
+
+void tlb_lru_insert(int page_number, int frame_number) {
+    Boolean free_spot_found = False;
+    Boolean already_here = False;
+    int replace_index = -1;
+
+    // Find the index to replace and increment age for all other entries.
+}
 int get_oldest_entry(int tlb_size);
 double get_avg_time_in_secondary_storage();
