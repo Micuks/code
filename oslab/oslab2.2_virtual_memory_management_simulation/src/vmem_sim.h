@@ -21,6 +21,25 @@ typedef enum { YES = 'y', NO = 'n' } DisplayOption;
 
 typedef enum { True = 0, False = 1 } Boolean;
 
+extern VMemTable *tlbTable;
+extern VMemTable *pageTable;
+extern int **dram;
+
+extern ReplacementMethod replace_method;
+extern DisplayOption display_option;
+
+extern FILE *address_file;
+extern char secondary_storage_name[];
+extern FILE *secondary_storage;
+
+extern int virtual_addr;
+extern int page_number;
+extern int offset_number;
+
+extern int translation_count;
+
+extern char *algo_name;
+
 /**
  * Translate virtual memory address into physical memory address, retrieve the
  * translated value stored.

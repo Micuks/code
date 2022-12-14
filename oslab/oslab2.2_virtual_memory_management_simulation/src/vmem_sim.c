@@ -96,12 +96,12 @@ void translate_address() {
     translated_value = dram[frame_number][offset_number];
 
     // Debug.
-    printf("\n Frame number[%d], offset[%d]\n", frame_number, offset_number);
+    printf("Frame number[%04d], offset[%04d]\n", frame_number, offset_number);
 
     if (display_option == YES) {
         // Print the virtual address, physical address and translated value of
         // the signed char.
-        printf("\nVirtual address[%d]\tPhysical address[%d]\tValue[%d]",
+        printf("Virtual address[%04d]\tPhysical address[%04d]\tValue[%04d]\n",
                virtual_addr, (frame_number << SHIFT) | offset_number,
                translated_value);
     }
