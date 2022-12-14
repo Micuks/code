@@ -20,6 +20,10 @@ typedef struct Block {
 typedef uint8_t Boolean;
 
 void print_menu();
-int config(Process *p, Block *b, int *n, int *m);
+Boolean config(Process **p, Block **b, int *n, int *m);
+Boolean load_config(Process **p, Block **b, int *num_processes,
+                    int *num_blocks);
 Boolean valid_option(char ch);
+
+char get_valid_option();
 #endif // !UTIL_H

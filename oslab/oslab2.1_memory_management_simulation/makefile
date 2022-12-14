@@ -1,9 +1,19 @@
 CC := gcc
-CCFLAGS := -std=gnu17 -Wall -Wextra -Werror
+CCFLAGS := -g -std=gnu17 -Wall -Wextra -Werror
 
 BUILDDIR := build/
 
+FROM := 0
+TO := 1000
+NUM_BLOCKS := 100
+NUM_PROCESSES := 1000
+
+.PHONY: all, test, mkdir, clean
 all: mkdir main
+
+test: main data_gen
+	$(BUILDDIR)/data_gen $(FROM) $(TO) $(NUM_BLOCKS) $(NUM_PROCESSES)
+	$(BUILDDIR)/main
 
 main: src/main.c schemas util
 	$(CC) $(CCFLAGS) src/main.c \
@@ -16,6 +26,9 @@ schemas: src/schemas.c src/schemas.h util
 
 util: src/util.c src/util.h
 	$(CC) $(CCFLAGS) -c src/util.c -o $(BUILDDIR)/util.o
+
+data_gen: src/data_gen.c
+	$(CC) $(CCFLAGS) src/data_gen.c -o $(BUILDDIR)/data_gen
 
 mkdir:
 	$(shell mkdir -p $(BUILDDIR))
