@@ -5,7 +5,7 @@
 // Generating length of time for a function.
 clock_t start, end;
 double cpu_time_elapsed;
-int function_call_count = 0;
+int secondary_storage_call_count = 0;
 
 int **dram; // Physical memory.
 
@@ -76,7 +76,7 @@ void translate_address() {
             read_from_store(page_number);
             cpu_time_elapsed += (double)(clock() - start) / CLOCKS_PER_SEC;
 
-            function_call_count++;
+            secondary_storage_call_count++;
 
             // Set the frame_number to current next_frame index.
             frame_number = next_page - 1;
@@ -170,6 +170,71 @@ void tlb_lru_insert(int page_number, int frame_number) {
     int replace_index = -1;
 
     // Find the index to replace and increment age for all other entries.
+    for (int i = 0; i < TLB_SIZE; i++) {
+        if ((tlbTable->page_num_arr[i] != page_number) &&
+            (tlbTable->page_num_arr[i] != 0)) {
+            // If entry does not exist in TLB and is not a free spot, increment
+            // its age.
+            tlbTable->entry_age_arr[i]++;
+        } else if ((tlbTable->page_num_arr[i] != page_number) &&
+                   (tlbTable->page_num_arr[i] == 0)) {
+            // A free entry in TLB.
+            if (!free_spot_found) {
+                replace_index = i;
+                free_spot_found = True;
+
+                // Don't exit for need to increment age for remaining entries.
+            }
+        } else if (tlbTable->page_num_arr[i] == page_number) {
+            // Entry already in TLB, reset its age.
+            if (!already_here) {
+                tlbTable->entry_age_arr[i] = 0;
+                already_here = True;
+            } else {
+                // Duplicate entry with the same page number.
+                fprintf(stderr,
+                        "Error: Same page appeared twice in LRU TLB.\nPage "
+                        "number[%d]",
+                        page_number);
+            }
+        }
+    }
+
+    // Replacement.
+    if (already_here) {
+        // Already in TLB, do nothing.
+        return;
+    } else if (free_spot_found) {
+        // Free entry available in TLB.
+        tlbTable->page_num_arr[replace_index] = page_number;
+        tlbTable->frame_num_arr[replace_index] = frame_number;
+        tlbTable->entry_age_arr[replace_index] = 0;
+    } else {
+        // No free entry available in TLB, replace the oldest entry.
+        replace_index = get_oldest_entry(TLB_SIZE);
+        tlbTable->page_num_arr[replace_index] = page_number;
+        tlbTable->frame_num_arr[replace_index] = frame_number;
+        tlbTable->entry_age_arr[replace_index] = 0;
+    }
 }
-int get_oldest_entry(int tlb_size);
-double get_avg_time_in_secondary_storage();
+
+int get_oldest_entry(int tlb_size) {
+    int max = tlbTable->entry_age_arr[0];
+    int idx_max = -1;
+    for (int i = 0; i < tlb_size; i++) {
+        if (tlbTable->entry_age_arr[i] > max) {
+            max = tlbTable->entry_age_arr[i];
+            idx_max = i;
+        }
+    }
+
+    if (idx_max == -1) {
+        fprintf(stderr, "Error getting oldest entry in TLB to replace.\n");
+    }
+    return idx_max;
+}
+
+double get_avg_time_in_secondary_storage() {
+    double tmp = (double)cpu_time_elapsed / secondary_storage_call_count;
+    return tmp * 1e6;
+}
