@@ -240,3 +240,4 @@ nlp/DocED
 nlp/MLBiNetWithDataset.tar.gz
 nlp/txt2table.tar.gz
 oslab/oslab1_readers_and_writers_simulation/build
+oslab/oslab2.1_memory_management_simulation/build

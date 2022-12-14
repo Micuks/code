@@ -1,3 +1,7 @@
+PEERS := 10
+RW_RATIO := 90
+SHM_SIZE := 10
+
 CC := gcc
 CCFLAGS := -std=gnu17 -Wall -Werror -Wextra -lm
 
@@ -5,15 +9,31 @@ LOGDIR := logs/
 BUILDDIR := build/
 SRCDIR := src/
 
-.PHONY: all clean mkdir
+.PHONY: all clean mkdir test
 
-all: mkdir main
-
-main: src/main.c semaphores shared_memory
-	$(CC) $(CCFLAGS) src/main.c \
+all: mkdir reader_priority writer_priority
+	@echo "Usage: $(BUILDDIR)[reader_priority | writer_priority] $(PEERS) $(RW_RATIO) $(SHM_SIZE)"
+ 
+reader_priority: src/main_reader_priority.c \
+	semaphores \
+	shared_memory
+	$(CC) $(CCFLAGS) src/main_reader_priority.c \
 		$(BUILDDIR)/semaphores.o \
 		$(BUILDDIR)/shared_memory.o \
-		-o $(BUILDDIR)/main
+		-o $(BUILDDIR)/reader_priority
+
+writer_priority: src/main_writer_priority.c \
+	semaphores \
+	shared_memory
+	$(CC) $(CCFLAGS) src/main_writer_priority.c \
+		$(BUILDDIR)/semaphores.o \
+		$(BUILDDIR)/shared_memory.o \
+		-o $(BUILDDIR)/writer_priority
+
+test: test_reader_priority test_writer_priority
+
+test_reader_priority:
+	$(BUILDDIR)/reader_priority 
 
 semaphores: src/semaphores.c src/semaphores.h
 	$(CC) -c $(CCFLAGS) src/semaphores.c -o $(BUILDDIR)/semaphores.o
