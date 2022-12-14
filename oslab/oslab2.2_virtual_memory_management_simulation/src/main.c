@@ -3,50 +3,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+extern VMemTable *tlbTable;
+extern VMemTable *pageTable;
+extern int **dram;
+
+extern ReplacementMethod replace_method;
+extern DisplayOption display_option;
+
+extern FILE *address_file;
+extern char *secondary_storage_name;
+extern FILE *secondary_storage;
+
+extern int virtual_addr;
+extern int page_number;
+extern int offset_number;
+
+extern int translation_count;
+
+extern char *algo_name;
+
+char address_read_buf[MAX_ADDR_LEN];
+
+// The buffer containing reads from backing store.
+signed char file_read_buf[PAGE_READ_SIZE];
+
 int main(int argc, char *argv[]) {
 
     /**
      * vmemTable is a generic struct defined to implement any number of caches
      * for logical address translation.
      */
-    int **dram; // Physical memory.
-
-    char replace_method; // Menu stdin.
-    char display_choice; // Menu stdin.
-
-    int next_tlb_entry = 0; // Next available index of TLB entry.
-    int next_page = 0;      // Next available page in page table.
-    int next_frame = 0;     // Next available frame TLB or page table.
-
-    // Input file and backup.
-    FILE *address_file;
-    char secondary_storage_name[] = "config/secondary_storage.bin";
-    FILE *secondary_storage;
-
-    // Store data read from input file.
-    char address_read_buf[MAX_ADDR_LEN];
-    int virtual_addr;
-    int page_number;
-    int offset_number;
-
-    // Generating length of time for a function.
-    clock_t start, end;
-    double cpu_time_used;
-    int function_call_count = 0;
-
-    // The buffer containing reads from backing store.
-    signed char file_read_buf[PAGE_READ_SIZE];
-
-    // The translated value of the byte(signed char) in memory.
-    signed char translated_value;
-
-    VMemTable *tlbTable;  // The TLB struct.
-    VMemTable *pageTable; // The Page Table.
     tlbTable = create_vmem_table(TLB_SIZE);
     pageTable = create_vmem_table(PAGE_TABLE_SIZE);
     dram = dram_allocate(TOTAL_FRAME_COUNT, FRAME_SIZE);
-    int translation_count = 0;
-    char *algo_name;
 
     if (argc != 2) {
         fprintf(stderr, "Usage: build/main <input file>\n");
@@ -82,15 +71,15 @@ int main(int argc, char *argv[]) {
     printf("Physical memory size: %d\n", PAGE_READ_SIZE * FRAME_SIZE);
 
     do {
-        printf("\n Display all physical addresses? [y/n]: ");
-        scanf("%c", &display_choice);
-    } while (display_choice != 'n' && display_choice != 'y');
+        printf("\nDisplay all physical addresses? [y/n]: ");
+        scanf("%u", &display_option);
+    } while (display_option != 'n' && display_option != 'y');
 
     do {
         printf("Chose TLB replacement method: \n");
         printf("1: FIFO\n");
         printf("2: LRU\n");
-        scanf("%c", &replace_method);
+        scanf("%u", &replace_method);
     } while (replace_method != '1' && replace_method != '2');
 
     // Read through the input file and print virtual addresses.
@@ -109,7 +98,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Set stdout replacement method name.
-    algo_name = (replace_method == '1') ? "FIFO" : "LRU";
+    algo_name = (replace_method == FIFO) ? "FIFO" : "LRU";
 
     printf("\n------VIRTUAL MEMORY STATISTICS------\n");
     printf("\nReplacement method: %s", algo_name);

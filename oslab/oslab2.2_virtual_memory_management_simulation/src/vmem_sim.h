@@ -1,6 +1,7 @@
 #ifndef VMEM_SIM_H
 #define VMEM_SIM_H
 
+#include "vmem.h"
 #include <stdio.h>
 #include <time.h>
 #define FRAME_SIZE 256        // Size of each frame
@@ -15,14 +16,29 @@
        // input file
 #define PAGE_READ_SIZE 256 // Number of bytes to read
 
-typedef enum { false = 0, true = !false } bool;
+typedef enum { FIFO = '1', LRU = '2' } ReplacementMethod;
+typedef enum { YES = 'y', NO = 'n' } DisplayOption;
 
-// Function definitions.
-void translate_address(char replace_method);
+typedef enum { True = 0, False = 1 } Boolean;
+
+/**
+ * Translate virtual memory address into physical memory address, retrieve the
+ * translated value stored.
+ *
+ * Parameters:
+ * - replace_method: Replacement method used for TLB replacement.
+ *   1 is FIFO, and 2 is LRU.
+ */
+void translate_address();
+
 void read_from_store(int page_number);
+
 void tlb_fifo_insert(int page_number, int frame_number);
+
 void tlb_lru_insert(int page_number, int frame_number);
+
 int get_oldest_entry(int tlb_size);
+
 double get_avg_time_in_secondary_storage();
 
 #endif // !VMEM_SIM_H
