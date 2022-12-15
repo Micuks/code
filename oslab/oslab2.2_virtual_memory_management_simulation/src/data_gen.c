@@ -25,8 +25,11 @@ int main(int argc, char *argv[]) {
     int cnt = num_vaddr;
     int in_frame_cnt;
 
+    int fate_addr = 0x6677;
+
     // Simulate locality of reference.
     while (cnt >= 0) {
+
         // Frame index.
         frame = rand() % (1 << 8);
         // Counter of addresses in this frame.
@@ -34,11 +37,15 @@ int main(int argc, char *argv[]) {
         printf("%4d virtual addresses to access in frame[0x%04x]\n",
                in_frame_cnt, (frame & 0xFF));
         while (in_frame_cnt >= 0) {
-            offset = rand() % (1 << 8);
-            fprintf(fout, "%d\n", ((frame & 0xFF) << 8) | (offset & 0xFF));
+            if ((rand() % 100) < 20) {
+                fprintf(fout, "%d\n", fate_addr);
+            } else {
+                offset = rand() % (1 << 8);
+                fprintf(fout, "%d\n", ((frame & 0xFF) << 8) | (offset & 0xFF));
 
-            in_frame_cnt--;
-            cnt--;
+                in_frame_cnt--;
+                cnt--;
+            }
         }
     }
 
