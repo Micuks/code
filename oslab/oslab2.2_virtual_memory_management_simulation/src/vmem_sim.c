@@ -38,15 +38,15 @@ void translate_address(int virtual_addr, int page_number, int offset_number) {
     // Try to find page in TLB.
     int frame_number = -1;
 
-    EntryNode *entry_node = tlbTable->entryList;
-    while (entry_node->next) {
-        entry_node = entry_node->next;
-
+    EntryNode *entry_node = tlbTable->entryList->next;
+    while (entry_node) {
         if (entry_node->page_index == page_number) {
             frame_number = entry_node->frame_index;
             tlbTable->tlb_hit_count++;
             break;
         }
+
+        entry_node = entry_node->next;
     }
 
     // If page is not hit in TLB, find page in page table, and increment TLB
@@ -55,11 +55,11 @@ void translate_address(int virtual_addr, int page_number, int offset_number) {
     // and increment page table fault count.
     if (frame_number == -1) {
         tlbTable->tlb_miss_count++;
+        printf("TLB miss count: %d\n", tlbTable->tlb_miss_count);
 
         // Iterative through page table to find the demanding page.
-        entry_node = pageTable->entryList;
-        while (entry_node->next) {
-            entry_node = entry_node->next;
+        entry_node = pageTable->entryList->next;
+        while (entry_node) {
             if (entry_node->page_index == page_number) {
                 frame_number = entry_node->frame_index;
                 break;
@@ -72,6 +72,7 @@ void translate_address(int virtual_addr, int page_number, int offset_number) {
         if (frame_number == -1) {
             // Increment the number of page faults.
             pageTable->page_fault_count++;
+            printf("Page table miss count: %d\n", pageTable->page_fault_count);
 
             // Read from secondary storage, and count time elapsed.
             int start = clock();
@@ -97,17 +98,17 @@ void translate_address(int virtual_addr, int page_number, int offset_number) {
     // Get translated value with frame_number and offset_number.
     translated_value = dram[frame_number][offset_number];
 
-    // Debug.
-    printf("\nFrame Number[0x%04x]\tOffset[0x%04x]\n", frame_number,
-           offset_number);
+    // // Debug.
+    // printf("\nFrame Number[0x%04x]\tOffset[0x%04x]\n", frame_number,
+    //        offset_number);
 
     if (display_option == YES) {
         // Print the virtual address, physical address and translated value of
         // the signed char.
-        printf(
-            "Virtual address[0x%04x]\tPhysical address[0x%04x]\tValue[%04d]\n",
-            virtual_addr, (frame_number << SHIFT) | offset_number,
-            translated_value);
+        printf("Virtual address[0x%04x]\t\tPhysical "
+               "address[0x%04x]\tValue[%04d]\n",
+               virtual_addr, (frame_number << SHIFT) | offset_number,
+               translated_value);
     }
 }
 
@@ -130,9 +131,8 @@ void read_from_store(int page_number) {
     }
 
     // Load the frame number into page table in the next page.
-    EntryNode *entry_node = pageTable->entryList;
+    EntryNode *entry_node = pageTable->entryList->next;
     // NOTE: Maybe wrong: exceed by 1 node.
-    entry_node = entry_node->next;
     for (int i = 0; i < next_page; i++) {
         entry_node = entry_node->next;
     }
@@ -142,24 +142,28 @@ void read_from_store(int page_number) {
 
     // Increment counters to track the next available frame.
     next_frame++;
+    printf("Next frame incremented to %d\n", next_frame);
     next_page++;
 }
 
 // TLB fifo insert method.
 void tlb_fifo_insert(int page_number, int frame_number) {
     int i = 0;
-    EntryNode *entry_node = tlbTable->entryList;
+    EntryNode *entry_node = tlbTable->entryList->next;
+    EntryNode *prev_node = entry_node->prev;
     // Break if page already in TLB.
     for (i = 0; i < next_tlb_entry; i++) {
-        entry_node = entry_node->next;
-
         if (entry_node->page_index == page_number) {
             break;
         }
+
+        prev_node = entry_node;
+        entry_node = entry_node->next;
     }
 
     // Page not found in TLB.
     if (i == next_tlb_entry) {
+        entry_node = prev_node;
         if (next_tlb_entry == tlbTable->length) {
             // TLB table is full, replace first entry.
 
@@ -183,39 +187,36 @@ void tlb_fifo_insert(int page_number, int frame_number) {
     } else {
         // If another frame with the same page index already in TLB.
 
-        EntryNode *prev_node = entry_node->prev;
-
         // Go to last page in TLB.
-        for (; i < next_tlb_entry; i++) {
+        for (; i < next_tlb_entry - 1; i++) {
             entry_node = entry_node->next;
         }
-
-        // Delete the node with the same page index.
-        delete_next_node(prev_node);
 
         // Append page to end of TLB.
         EntryNode *new_enode = new_node();
         new_enode->page_index = page_number;
         new_enode->frame_index = frame_number;
         insert_node(entry_node, new_enode);
+
+        // Delete the node with the same page index.
+        delete_next_node(prev_node);
     }
 
     // Increment next tlb entry.
     if (next_tlb_entry < tlbTable->length) {
         next_tlb_entry = next_tlb_entry + 1;
+        printf("Next tlb entry incremented to %d\n", next_tlb_entry);
     }
 }
 
 void tlb_lru_insert(int page_number, int frame_number) {
     Boolean free_spot_found = False;
     Boolean already_here = False;
-    EntryNode *entry_node = tlbTable->entryList;
+    EntryNode *entry_node = tlbTable->entryList->next;
     EntryNode *to_replace_node = NULL;
 
     // Find the index to replace and increment age for all other entries.
     for (int i = 0; i < TLB_SIZE; i++) {
-        entry_node = entry_node->next;
-
         if ((entry_node->page_index) &&
             (entry_node->page_index != page_number)) {
             // If entry does not exist in TLB and is not a free spot, increment
@@ -242,6 +243,8 @@ void tlb_lru_insert(int page_number, int frame_number) {
                         page_number);
             }
         }
+
+        entry_node = entry_node->next;
     }
 
     // Replacement.
@@ -263,18 +266,18 @@ void tlb_lru_insert(int page_number, int frame_number) {
 }
 
 EntryNode *get_oldest_entry(int tlb_size) {
-    EntryNode *entry_node = tlbTable->entryList;
+    EntryNode *entry_node = tlbTable->entryList->next;
     int max = entry_node->age;
     EntryNode *max_age_node = NULL;
 
     // Iterate through TLB to find max age node.
     for (int i = 0; i < tlb_size; i++) {
-        entry_node = entry_node->next;
-
         if (entry_node->age > max) {
             max = entry_node->age;
             max_age_node = entry_node;
         }
+
+        entry_node = entry_node->next;
     }
 
     if (max_age_node == NULL) {

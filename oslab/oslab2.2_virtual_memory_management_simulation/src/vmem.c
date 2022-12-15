@@ -46,17 +46,12 @@ void delete_next_node(struct LLNode *node) {
 
 void free_list(struct LLNode *list) {
     struct LLNode *node = list;
-    struct LLNode *next_node = NULL;
-    if (node->next) {
-        next_node = node->next;
-    }
+    struct LLNode *prev_node = NULL;
+
     while (!node) {
-        free(node);
-
-        node = next_node;
-
-        // Next node will be NULL when come to the last node.
-        next_node = node->next;
+        prev_node = node;
+        node = node->next;
+        free(prev_node);
     }
 }
 
@@ -65,7 +60,7 @@ void free_list(struct LLNode *list) {
  * new_node between two nodes.
  */
 void insert_node(struct LLNode *curr_node, struct LLNode *new_node) {
-    if (curr_node->next != NULL) {
+    if (curr_node->next) {
         // Has hext node.
         struct LLNode *next_node = curr_node->next;
         new_node->prev = curr_node;
@@ -78,6 +73,16 @@ void insert_node(struct LLNode *curr_node, struct LLNode *new_node) {
         curr_node->next = new_node;
         new_node->prev = curr_node;
     }
+}
+
+int list_len(struct LLNode *node) {
+    int len = 0;
+    while (node) {
+        len++;
+        node = node->next;
+    }
+
+    return len;
 }
 
 /**

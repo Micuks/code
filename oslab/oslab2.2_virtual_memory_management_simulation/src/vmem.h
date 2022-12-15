@@ -24,6 +24,11 @@ void insert_node(struct LLNode *curr_node, struct LLNode *new_node);
 void delete_next_node(struct LLNode *node);
 
 /**
+ * Get length of linked list.
+ */
+int list_len(struct LLNode *node);
+
+/**
  * Define a virtual memory addressing table that can be represented as either a
  * tlb cache or a page table.
  */

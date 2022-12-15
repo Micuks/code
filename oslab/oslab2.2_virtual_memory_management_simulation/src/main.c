@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
     // Set stdout replacement method name.
     algo_name = (replace_method == FIFO) ? "FIFO" : "LRU";
 
-    printf("\n\n------VIRTUAL MEMORY STATISTICS------\n");
+    printf("\n\n------VIRTUAL MEMORY STATISTICS------\n\n");
     printf("Replacement method: %s\n", algo_name);
     printf("Number of addresses translated: %d\n", translation_count);
     double pf_rate = (double)pageTable->page_fault_count / translation_count;
@@ -102,6 +102,7 @@ int main(int argc, char *argv[]) {
     printf("TLB hit rate: %.3f%%\n", tlb_rate * 100);
     printf("Average thme retrieving data from secondary storage: %.3f ms\n",
            get_avg_time_in_secondary_storage());
+    printf("\n-------------------------------------\n\n");
 
     // Close input file and secondary storage file.
     fclose(address_file);
