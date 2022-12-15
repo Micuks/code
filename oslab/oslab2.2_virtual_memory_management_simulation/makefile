@@ -1,10 +1,21 @@
 CC := gcc
 CFLAGS := -g -std=gnu17 -Wall -Werror -Wextra
 
+FROM := 0
+TO := 65535
+AMOUNT := 100000
+
 BUILDDIR := build/
 OBJS := $(BUILDDIR)/vmem.o $(BUILDDIR)/vmem_sim.o
 
+INPUT := config/input.txt
+
 all: mkdir main
+
+test: data_gen
+	@echo "Generate $(AMOUNT) virtual addresses to access from $(FROM) to $(TO)."
+	$(BUILDDIR)/data_gen $(FROM) $(TO) $(AMOUNT)
+	$(BUILDDIR)/main $(INPUT)
 
 main: src/main.c vmem_sim vmem
 	$(CC) $(CFLAGS) src/main.c $(OBJS) -o $(BUILDDIR)/main
@@ -14,6 +25,9 @@ vmem_sim: src/vmem_sim.c src/vmem_sim.h
 
 vmem: src/vmem.c src/vmem.h
 	$(CC) $(CFLAGS) -c src/vmem.c -o $(BUILDDIR)/vmem.o
+
+data_gen: src/data_gen.c
+	$(CC) $(CFLAGS) src/data_gen.c -o $(BUILDDIR)/data_gen
 
 mkdir:
 	$(shell mkdir -p $(BUILDDIR)) 
