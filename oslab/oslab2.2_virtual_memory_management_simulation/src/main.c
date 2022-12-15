@@ -104,9 +104,15 @@ int main(int argc, char *argv[]) {
            get_avg_time_in_secondary_storage());
     printf("\n-------------------------------------\n\n");
 
+    // Append statistics to file.
+    FILE *stat_file = fopen("log/stat.log", "a");
+    fprintf(stat_file, "%d %d %d", translation_count,
+            pageTable->page_fault_count, tlbTable->tlb_hit_count);
+
     // Close input file and secondary storage file.
     fclose(address_file);
     fclose(secondary_storage);
+    fclose(stat_file);
 
     // Free memory allocated on heap.
     free_vmem_table(&tlbTable);
