@@ -55,7 +55,7 @@ void translate_address(int virtual_addr, int page_number, int offset_number) {
     // and increment page table fault count.
     if (frame_number == -1) {
         tlbTable->tlb_miss_count++;
-        printf("TLB miss count: %d\n", tlbTable->tlb_miss_count);
+        // printf("TLB miss count: %d\n", tlbTable->tlb_miss_count);
 
         // Iterative through page table to find the demanding page.
         entry_node = pageTable->entryList->next;
@@ -72,7 +72,8 @@ void translate_address(int virtual_addr, int page_number, int offset_number) {
         if (frame_number == -1) {
             // Increment the number of page faults.
             pageTable->page_fault_count++;
-            printf("Page table miss count: %d\n", pageTable->page_fault_count);
+            // printf("Page table miss count: %d\n",
+            // pageTable->page_fault_count);
 
             // Read from secondary storage, and count time elapsed.
             int start = clock();
@@ -142,7 +143,6 @@ void read_from_store(int page_number) {
 
     // Increment counters to track the next available frame.
     next_frame++;
-    printf("Next frame incremented to %d\n", next_frame);
     next_page++;
 }
 
@@ -205,7 +205,6 @@ void tlb_fifo_insert(int page_number, int frame_number) {
     // Increment next tlb entry.
     if (next_tlb_entry < tlbTable->length) {
         next_tlb_entry = next_tlb_entry + 1;
-        printf("Next tlb entry incremented to %d\n", next_tlb_entry);
     }
 }
 

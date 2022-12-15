@@ -16,8 +16,8 @@
        // input file
 #define PAGE_READ_SIZE 256 // Number of bytes to read
 
-typedef enum { FIFO = '1', LRU = '2' } ReplacementMethod;
-typedef enum { YES = 'y', NO = 'n' } DisplayOption;
+typedef enum { FIFO = 1, LRU = 2 } ReplacementMethod;
+typedef enum { YES = 1, NO = 0 } DisplayOption;
 
 typedef enum { True = 1, False = 0 } Boolean;
 
