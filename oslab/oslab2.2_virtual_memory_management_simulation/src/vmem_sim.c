@@ -1,4 +1,5 @@
 #include "vmem_sim.h"
+#include "vmem.h"
 #include <stdio.h>
 #include <time.h>
 
@@ -22,11 +23,6 @@ FILE *address_file;
 char secondary_storage_name[] = "config/secondary_storage.bin";
 FILE *secondary_storage;
 
-// Store data read from input file.
-int virtual_addr;
-int page_number;
-int offset_number;
-
 // The translated value of the byte(signed char) in memory.
 signed char translated_value;
 
@@ -38,32 +34,38 @@ char *algo_name;
 // The buffer containing reads from backing store.
 signed char file_read_buf[PAGE_READ_SIZE];
 
-void translate_address() {
+void translate_address(int virtual_addr, int page_number, int offset_number) {
     // Try to find page in TLB.
     int frame_number = -1;
 
-    for (int i = 0; i < tlbTable->length; i++) {
-        if (tlbTable->page_num_arr[i] == page_number) {
-            frame_number = tlbTable->frame_num_arr[i];
+    EntryNode *entry_node = tlbTable->entryList;
+    while (entry_node->next) {
+        entry_node = entry_node->next;
+
+        if (entry_node->page_index == page_number) {
+            frame_number = entry_node->frame_index;
             tlbTable->tlb_hit_count++;
             break;
         }
     }
 
-    // If page is not hit in TLB, find page in page table, and increment tlb
+    // If page is not hit in TLB, find page in page table, and increment TLB
     // miss count.
     // If page is not found in page table, find it in secondary storage DRAM,
     // and increment page table fault count.
     if (frame_number == -1) {
-        tlbTable->tlb_hit_count++;
+        tlbTable->tlb_miss_count++;
 
         // Iterative through page table to find the demanding page.
-        for (int i = 0; i < next_page; i++) {
-            if (pageTable->page_num_arr[i] == page_number) {
-                // Page found, retrieve corresponding frame number.
-                frame_number = pageTable->frame_num_arr[i];
+        entry_node = pageTable->entryList;
+        while (entry_node->next) {
+            entry_node = entry_node->next;
+            if (entry_node->page_index == page_number) {
+                frame_number = entry_node->frame_index;
                 break;
             }
+
+            entry_node = entry_node->next;
         }
 
         // Page table fault.
@@ -79,7 +81,7 @@ void translate_address() {
             secondary_storage_call_count++;
 
             // Set the frame_number to current next_frame index.
-            frame_number = next_page - 1;
+            frame_number = next_frame - 1;
         }
     }
 
@@ -96,14 +98,16 @@ void translate_address() {
     translated_value = dram[frame_number][offset_number];
 
     // Debug.
-    printf("Frame number[%04d], offset[%04d]\n", frame_number, offset_number);
+    printf("\nFrame Number[0x%04x]\tOffset[0x%04x]\n", frame_number,
+           offset_number);
 
     if (display_option == YES) {
         // Print the virtual address, physical address and translated value of
         // the signed char.
-        printf("Virtual address[%04d]\tPhysical address[%04d]\tValue[%04d]\n",
-               virtual_addr, (frame_number << SHIFT) | offset_number,
-               translated_value);
+        printf(
+            "Virtual address[0x%04x]\tPhysical address[0x%04x]\tValue[%04d]\n",
+            virtual_addr, (frame_number << SHIFT) | offset_number,
+            translated_value);
     }
 }
 
@@ -126,69 +130,109 @@ void read_from_store(int page_number) {
     }
 
     // Load the frame number into page table in the next page.
-    pageTable->page_num_arr[next_page] = page_number;
-    pageTable->frame_num_arr[next_page] = next_frame;
+    EntryNode *entry_node = pageTable->entryList;
+    // NOTE: Maybe wrong: exceed by 1 node.
+    entry_node = entry_node->next;
+    for (int i = 0; i < next_page; i++) {
+        entry_node = entry_node->next;
+    }
+
+    entry_node->page_index = page_number;
+    entry_node->frame_index = next_frame;
 
     // Increment counters to track the next available frame.
     next_frame++;
     next_page++;
 }
 
-// Circular queue to implement FIFO.
+// TLB fifo insert method.
 void tlb_fifo_insert(int page_number, int frame_number) {
     int i = 0;
+    EntryNode *entry_node = tlbTable->entryList;
     // Break if page already in TLB.
     for (i = 0; i < next_tlb_entry; i++) {
-        if (tlbTable->page_num_arr[i] == page_number) {
+        entry_node = entry_node->next;
+
+        if (entry_node->page_index == page_number) {
             break;
         }
     }
 
     // Page not found in TLB.
     if (i == next_tlb_entry) {
-        tlbTable->page_num_arr[next_tlb_entry % TLB_SIZE] = page_number;
-        tlbTable->frame_num_arr[next_tlb_entry % TLB_SIZE] = frame_number;
+        if (next_tlb_entry == tlbTable->length) {
+            // TLB table is full, replace first entry.
+
+            // Allocate new node.
+            EntryNode *new_enode = new_node();
+            new_enode->page_index = page_number;
+            new_enode->frame_index = frame_number;
+
+            // Append new node to the end of TLB.
+            insert_node(entry_node, new_enode);
+
+            // Delete first node.
+            delete_next_node(tlbTable->entryList);
+        } else {
+            // TLB table is not full, append to end of table.
+            EntryNode *next_node = entry_node->next;
+            next_node->page_index = page_number;
+            next_node->frame_index = frame_number;
+            next_node->age = 0;
+        }
     } else {
         // If another frame with the same page index already in TLB.
+
+        EntryNode *prev_node = entry_node->prev;
+
+        // Go to last page in TLB.
         for (; i < next_tlb_entry; i++) {
-            tlbTable->page_num_arr[i] = tlbTable->page_num_arr[i + 1];
-            tlbTable->frame_num_arr[i] = tlbTable->frame_num_arr[i + 1];
+            entry_node = entry_node->next;
         }
 
+        // Delete the node with the same page index.
+        delete_next_node(prev_node);
+
         // Append page to end of TLB.
-        tlbTable->page_num_arr[next_tlb_entry % TLB_SIZE] = page_number;
-        tlbTable->frame_num_arr[next_tlb_entry % TLB_SIZE] = frame_number;
+        EntryNode *new_enode = new_node();
+        new_enode->page_index = page_number;
+        new_enode->frame_index = frame_number;
+        insert_node(entry_node, new_enode);
     }
 
-    // Next tlb entry in circular queue.
-    next_tlb_entry = (next_tlb_entry + 1) % TLB_SIZE;
+    // Increment next tlb entry.
+    if (next_tlb_entry < tlbTable->length) {
+        next_tlb_entry = next_tlb_entry + 1;
+    }
 }
 
 void tlb_lru_insert(int page_number, int frame_number) {
     Boolean free_spot_found = False;
     Boolean already_here = False;
-    int replace_index = -1;
+    EntryNode *entry_node = tlbTable->entryList;
+    EntryNode *to_replace_node = NULL;
 
     // Find the index to replace and increment age for all other entries.
     for (int i = 0; i < TLB_SIZE; i++) {
-        if ((tlbTable->page_num_arr[i] != page_number) &&
-            (tlbTable->page_num_arr[i] != 0)) {
+        entry_node = entry_node->next;
+
+        if ((entry_node->page_index) &&
+            (entry_node->page_index != page_number)) {
             // If entry does not exist in TLB and is not a free spot, increment
             // its age.
-            tlbTable->entry_age_arr[i]++;
-        } else if ((tlbTable->page_num_arr[i] != page_number) &&
-                   (tlbTable->page_num_arr[i] == 0)) {
+            entry_node->age++;
+        } else if (entry_node->page_index == 0) {
             // A free entry in TLB.
             if (!free_spot_found) {
-                replace_index = i;
+                to_replace_node = entry_node;
                 free_spot_found = True;
 
                 // Don't exit for need to increment age for remaining entries.
             }
-        } else if (tlbTable->page_num_arr[i] == page_number) {
+        } else if (entry_node->page_index == page_number) {
             // Entry already in TLB, reset its age.
             if (!already_here) {
-                tlbTable->entry_age_arr[i] = 0;
+                entry_node->age = 0;
                 already_here = True;
             } else {
                 // Duplicate entry with the same page number.
@@ -206,32 +250,39 @@ void tlb_lru_insert(int page_number, int frame_number) {
         return;
     } else if (free_spot_found) {
         // Free entry available in TLB.
-        tlbTable->page_num_arr[replace_index] = page_number;
-        tlbTable->frame_num_arr[replace_index] = frame_number;
-        tlbTable->entry_age_arr[replace_index] = 0;
+        to_replace_node->page_index = page_number;
+        to_replace_node->frame_index = frame_number;
+        to_replace_node->age = 0;
     } else {
         // No free entry available in TLB, replace the oldest entry.
-        replace_index = get_oldest_entry(TLB_SIZE);
-        tlbTable->page_num_arr[replace_index] = page_number;
-        tlbTable->frame_num_arr[replace_index] = frame_number;
-        tlbTable->entry_age_arr[replace_index] = 0;
+        to_replace_node = get_oldest_entry(TLB_SIZE);
+        to_replace_node->page_index = page_number;
+        to_replace_node->frame_index = frame_number;
+        to_replace_node->age = 0;
     }
 }
 
-int get_oldest_entry(int tlb_size) {
-    int max = tlbTable->entry_age_arr[0];
-    int idx_max = -1;
+EntryNode *get_oldest_entry(int tlb_size) {
+    EntryNode *entry_node = tlbTable->entryList;
+    int max = entry_node->age;
+    EntryNode *max_age_node = NULL;
+
+    // Iterate through TLB to find max age node.
     for (int i = 0; i < tlb_size; i++) {
-        if (tlbTable->entry_age_arr[i] > max) {
-            max = tlbTable->entry_age_arr[i];
-            idx_max = i;
+        entry_node = entry_node->next;
+
+        if (entry_node->age > max) {
+            max = entry_node->age;
+            max_age_node = entry_node;
         }
     }
 
-    if (idx_max == -1) {
+    if (max_age_node == NULL) {
         fprintf(stderr, "Error getting oldest entry in TLB to replace.\n");
     }
-    return idx_max;
+
+    // Return max age node.
+    return max_age_node;
 }
 
 double get_avg_time_in_secondary_storage() {
