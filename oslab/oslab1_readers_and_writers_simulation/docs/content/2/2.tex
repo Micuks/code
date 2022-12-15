@@ -1,0 +1,160 @@
+\subsection{实现介绍}
+\subsubsection{概述}
+使用c语言标准库的sys/shm.h库创建共享内存, sys/sym.h创建和管理信号量, 使用fork()
+创建多个子进程并分化位读者和写者. 程序代码结构如下.
+
+\begin{code}
+    ├── makefile
+    ├── run.sh
+    └── src
+    ├── main_reader_priority.c
+    ├── main_writer_priority.c
+    ├── semaphores.c
+    ├── semaphores.h
+    ├── shared_memory.c
+    └── shared_memory.h
+\end{code}
+
+源代码在src文件夹下, 其中:
+\begin{itemize}
+    \item main\_reader\_priority.c中是读者优先策略的主程序,
+    \item main\_writer\_priority.c中是写者优先策略的主程序.
+    \item semaphores.[ch]中封装了对信号量的操作, 包括对信号量的初始化和修改操作;
+    \item shared\_memory.[ch]中封装了对共享内存的操作, 包括对共享内存的初始化和删除
+          回收操作;
+\end{itemize}
+
+\subsubsection{共享内存}
+共享内存定义在shared\_memory.[ch]中, 定义了如下操作:
+\begin{code}
+    /**
+    * @brief Initialize shared memory.
+    *
+    * @param key
+    * @param size
+    * @return int
+    */
+    int shm_init(key_t key, int size);
+
+    /**
+    * @brief Return a pointer to memory.
+    *
+    * @param shm_id
+    * @return shm_data*
+    */
+    ShmData *shm_at(int shm_id);
+
+    /**
+    * @brief Detach memory
+    *
+    * @param shm_ptr
+    * @return int
+    */
+    int shm_detach(void *shm_ptr);
+
+    /**
+    * @brief Deallocate memory
+    *
+    * @param shm_id
+    * @return int
+    */
+    int shm_delete(int shm_id);
+\end{code}
+
+\paragraph{共享数据}
+实验中将多个共享数据结构体存储在共享内存中, 通过对多个共享数据结构体的并行访问和
+控制模拟真实情况. 结构体定义如下.
+
+\begin{code}
+    typedef struct shm_data {
+    int reads;
+    int writes;
+    } ShmData;
+\end{code}
+
+其中reads记录了写者的访问次数, writes记录了读者的访问次数.\\
+为了模拟更加真实, 模拟多个共享数据如下.
+\begin{code}
+    // Initialize the shared matrix.
+    // Allocate shared memory for ShmData.
+    shm_id = shm_init(597, sizeof(ShmData) * shm_size);
+    shmData = shm_at(shm_id);
+    for (int i = 0; i < shm_size; i++) {
+            shmData[i].writes = 0;
+            shmData[i].reads = 0;
+        }
+
+\end{code}
+其中597是shared\_memory key, 唯一标识一块共享内存. 在此处取学号后3位.
+
+\paragraph{读者/写者计数器}
+读者/写者计数器需要被多个读者或多个写者访问, 因此也存放在共享内存中, 使用信号量
+控制访问. 信号量的介绍在下一节中. 读者/写者计数器初始化如下.
+\begin{code}[caption={读者计数器}]
+    // Initialize shared counter for readers
+    readers_counter_id = shm_init((key_t)211, shm_size * sizeof(int));
+    readers_counter_data = (int *)shm_at(readers_counter_id);
+    for (size_t i = 0; i < (size_t)shm_size; i++) {
+    readers_counter_data[i] = 0;
+    }
+\end{code}
+初始化了大小为shm\_size * sizeof(int)的空间, shm\_size位共享数据所在共享内存的结
+构体个数, 对每个结构体单独计数正在访问的读者数量.
+
+为了实现写者优先, 本实验也用到了写者计数器, 类似读者计数器.
+\begin{code}[caption={写者计数器}]
+    // Initialize shared counter for writers
+    writers_counter_id = shm_init((key_t)212, shm_size * sizeof(int));
+    writers_counter_data = (int *)shm_at(writers_counter_id);
+    for (size_t i = 0; i < (size_t)shm_size; i++) {
+    writers_counter_data[i] = 0;
+    }
+\end{code}
+初始化了大小为shm\_size * sizeof(int)的空间, shm\_size位共享数据所在共享内存的结
+构体个数, 对每个结构体单独计数正在访问的写者数量.
+
+\subsubsection{信号量}
+共有三组信号量, 封装信号量操作如下.
+\begin{code}
+    /**
+    * @brief Create and initialize semaphore.
+    *
+    * @param key
+    * @param sem_num
+    * @return int
+    */
+    int sem_init(key_t key, int sem_num);
+
+    /**
+    * @brief Delete semaphore.
+    *
+    * @param sem_id
+    * @param sem_num
+    * @return int
+    */
+    int sem_del(int sem_id);
+
+    /**
+    * @brief Semaphore up.
+    *
+    * @param sem_id
+    * @param sem_num
+    * @return int
+    */
+    int sem_up(int sem_id, int sem_num);
+
+    /**
+    * @brief Sem down.
+    *
+    * @param sem_id
+    * @param sem_num
+    * @return int
+    */
+    int sem_down(int sem_id, int sem_num);
+
+\end{code}
+
+下面对三组信号量进行介绍.
+
+\paragraph{第一组信号量}
+第一组组信号量对共享内存中每个结构体单元的访问进行控制.
