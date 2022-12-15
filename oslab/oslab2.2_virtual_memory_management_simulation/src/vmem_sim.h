@@ -32,10 +32,6 @@ extern FILE *address_file;
 extern char secondary_storage_name[];
 extern FILE *secondary_storage;
 
-extern int virtual_addr;
-extern int page_number;
-extern int offset_number;
-
 extern int translation_count;
 
 extern char *algo_name;
@@ -48,7 +44,7 @@ extern char *algo_name;
  * - replace_method: Replacement method used for TLB replacement.
  *   1 is FIFO, and 2 is LRU.
  */
-void translate_address();
+void translate_address(int virtual_addr, int page_number, int offset_number);
 
 void read_from_store(int page_number);
 
@@ -56,7 +52,7 @@ void tlb_fifo_insert(int page_number, int frame_number);
 
 void tlb_lru_insert(int page_number, int frame_number);
 
-int get_oldest_entry(int tlb_size);
+EntryNode *get_oldest_entry(int tlb_size);
 
 double get_avg_time_in_secondary_storage();
 

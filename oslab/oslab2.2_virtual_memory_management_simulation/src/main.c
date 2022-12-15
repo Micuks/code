@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Open secondary storage file.
-    printf("Attempt to open secondary storage file %s", secondary_storage_name);
+    printf("Load secondary storage file %s\n", secondary_storage_name);
     secondary_storage = fopen(secondary_storage_name, "rb");
     if (secondary_storage == NULL) {
         fprintf(stderr, "Error opening %s\n", secondary_storage_name);
@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Open the file containing logical addresses.
+    printf("Load address file %s\n", argv[1]);
     address_file = fopen(argv[1], "r");
 
     if (address_file == NULL) {
@@ -45,9 +46,9 @@ int main(int argc, char *argv[]) {
     printf("Page size: %d bytes.\n", PAGE_READ_SIZE);
     printf("Page table size: %d\n", PAGE_TABLE_SIZE);
     printf("TLB size: %d entries.\n", TLB_SIZE);
-    printf("Frame size: %d bytes.\n", FRAME_SIZE);
     printf("Physical frames: %d\n", TOTAL_FRAME_COUNT);
-    printf("Physical memory size: %d\n", PAGE_READ_SIZE * FRAME_SIZE);
+    printf("Frame size: %d bytes.\n", FRAME_SIZE);
+    printf("Physical memory size: %d bytes.\n", PAGE_READ_SIZE * FRAME_SIZE);
 
     do {
         printf("\nDisplay all physical addresses? [y/n]: ");
@@ -66,6 +67,11 @@ int main(int argc, char *argv[]) {
 
     } while (replace_method != '1' && replace_method != '2');
 
+    // virtual address.
+    int virtual_addr;
+    int page_number;
+    int offset_number;
+
     // Read through the input file and print virtual addresses.
     while (fgets(address_read_buf, MAX_ADDR_LEN, address_file) != NULL) {
         virtual_addr = atoi(address_read_buf);
@@ -77,7 +83,7 @@ int main(int argc, char *argv[]) {
         offset_number = get_offset(OFFSET_MASK, virtual_addr);
 
         // Get physical address and translated value stored at that address.
-        translate_address();
+        translate_address(virtual_addr, page_number, offset_number);
         translation_count++;
     }
 

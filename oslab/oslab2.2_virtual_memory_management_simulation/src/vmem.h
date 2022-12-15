@@ -2,16 +2,34 @@
 #define VMEM_H
 
 /**
+ * Dual direction linked list.
+ */
+typedef struct LLNode {
+    int page_index;
+    int frame_index;
+    int age;
+    struct LLNode *prev;
+    struct LLNode *next;
+} EntryNode;
+
+/**
+ * Allocate new linked list node.
+ */
+void *new_node();
+
+void free_list(struct LLNode *list);
+
+void insert_node(struct LLNode *curr_node, struct LLNode *new_node);
+
+void delete_next_node(struct LLNode *node);
+
+/**
  * Define a virtual memory addressing table that can be represented as either a
  * tlb cache or a page table.
  */
 typedef struct VMemTable {
-    // Page number array.
-    int *page_num_arr;
-    // Frame number array.
-    int *frame_num_arr;
-    // Age of each index.
-    int *entry_age_arr;
+    // Entry list WITH HEAD NODE.
+    EntryNode *entryList;
     int length;
     int page_fault_count;
     int tlb_hit_count;
