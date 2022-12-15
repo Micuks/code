@@ -42,5 +42,11 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    FILE *stat_file = fopen("logs/stat.log", "a");
+    fprintf(stat_file, "%d\n", in_frame_border);
+
+    fclose(fout);
+    fclose(stat_file);
+
     return 0;
 }

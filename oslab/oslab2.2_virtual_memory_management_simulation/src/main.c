@@ -15,8 +15,9 @@ int main(int argc, char *argv[]) {
     pageTable = create_vmem_table(PAGE_TABLE_SIZE);
     dram = dram_allocate(TOTAL_FRAME_COUNT, FRAME_SIZE);
 
-    if (argc != 2) {
-        fprintf(stderr, "Usage: build/main <input file>\n");
+    if (argc != 4) {
+        fprintf(stderr, "Usage: build/main <input file> <verbose[1/0]> "
+                        "<replacement method[1: FIFO, 2: LRU]>\n");
         return -1;
     }
 
@@ -31,6 +32,8 @@ int main(int argc, char *argv[]) {
     // Open the file containing logical addresses.
     printf("Load address file %s\n", argv[1]);
     address_file = fopen(argv[1], "r");
+    display_option = atoi(argv[2]);
+    replace_method = atoi(argv[3]);
 
     if (address_file == NULL) {
         fprintf(stderr,
@@ -50,22 +53,22 @@ int main(int argc, char *argv[]) {
     printf("Frame size: %d bytes.\n", FRAME_SIZE);
     printf("Physical memory size: %d bytes.\n", PAGE_READ_SIZE * FRAME_SIZE);
 
-    do {
-        printf("\nDisplay all physical addresses? [y/n]: ");
-        if ((display_option = getchar()) == '\n' || display_option == ' ') {
-            display_option = getchar();
-        }
-    } while (display_option != 'n' && display_option != 'y');
+    // do {
+    //     printf("\nDisplay all physical addresses? [y/n]: ");
+    //     if ((display_option = getchar()) == '\n' || display_option == ' ') {
+    //         display_option = getchar();
+    //     }
+    // } while (display_option != 'n' && display_option != 'y');
 
-    do {
-        printf("Chose TLB replacement method: \n");
-        printf("1: FIFO\n");
-        printf("2: LRU\n");
-        if ((replace_method = getchar()) == '\n' || replace_method == ' ') {
-            replace_method = getchar();
-        }
-
-    } while (replace_method != '1' && replace_method != '2');
+    // do {
+    //     printf("Chose TLB replacement method: \n");
+    //     printf("1: FIFO\n");
+    //     printf("2: LRU\n");
+    //     if ((replace_method = getchar()) == '\n' || replace_method == ' ') {
+    //         replace_method = getchar();
+    //     }
+    //
+    // } while (replace_method != '1' && replace_method != '2');
 
     // virtual address.
     int virtual_addr;
@@ -105,8 +108,8 @@ int main(int argc, char *argv[]) {
     printf("\n-------------------------------------\n\n");
 
     // Append statistics to file.
-    FILE *stat_file = fopen("log/stat.log", "a");
-    fprintf(stat_file, "%d %d %d", translation_count,
+    FILE *stat_file = fopen("logs/stat.log", "a");
+    fprintf(stat_file, "%d %d %d\n", translation_count,
             pageTable->page_fault_count, tlbTable->tlb_hit_count);
 
     // Close input file and secondary storage file.
