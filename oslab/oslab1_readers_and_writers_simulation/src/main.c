@@ -62,7 +62,6 @@ int main(int argc, char *argv[]) {
     shm_id = shm_init(597, sizeof(ShmData) * shm_size);
     shmData = shm_at(shm_id);
     for (int i = 0; i < shm_size; i++) {
-        shmData[i].avg_time = 0;
         shmData[i].writes = 0;
         shmData[i].reads = 0;
     }

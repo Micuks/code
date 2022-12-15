@@ -9,7 +9,7 @@
 #define PAGE_MASK 0xFF00      // Mask to get page number
 #define OFFSET_MASK 0xFF      // Mask to get offset
 #define SHIFT 8               // Bitmask shift amount
-#define TLB_SIZE 32           // size of TLB
+#define TLB_SIZE 16           // size of TLB
 #define PAGE_TABLE_SIZE 256   // size of page table
 #define MAX_ADDR_LEN                                                           \
     10 // The number of characters to read for each line from

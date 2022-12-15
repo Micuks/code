@@ -1,7 +1,20 @@
 \subsection{实现介绍}
 \subsubsection{概述}
 使用c语言标准库的sys/shm.h库创建共享内存, sys/sym.h创建和管理信号量, 使用fork()
-创建多个子进程并分化位读者和写者. 程序代码结构如下.
+创建多个子进程并分化位读者和写者.\par
+
+程序使用调用程序的时候传入的命令行参数来设置共享内存大小, 读者和写者的总数, 以及
+读者和写者的占比. \par
+
+第一个参数为peers, 表示读者和写者进程的总数. 一般不超过3000, 否则操作系统将没有
+多余的进程资源可以分配给其他进程请求, 影响操作系统正常运行.\par
+
+第二个参数为rw\_ratio, 表示读者和写者的占比, 范围为$0, 1, \dots, 100$, 含义为每
+个进程有rw\_ratio的概率变成读者.\par
+
+第三个参数为shm\_size, 表示共享内存的大小, 即有多少块独立的共享内存可供访问.\par
+
+程序代码结构如下.
 
 \begin{code}
     ├── makefile
@@ -113,6 +126,31 @@
 初始化了大小为shm\_size * sizeof(int)的空间, shm\_size位共享数据所在共享内存的结
 构体个数, 对每个结构体单独计数正在访问的写者数量.
 
+\paragraph{统计信息共享内存}
+为了统计所有读者/写者进程在进行预先设定好的轮数的共享内存访问时, 作为读者/写者的
+等待时间总和, 设计了统计信息共享内存. 其初始化过程如下.
+\begin{code}
+    /** Initialize shared memory to keep stats
+    * 0: Writer waiting time;
+    * 1: Reader waiting time;
+    * 2: Total waiting time;
+    */
+    shm_stat_id = shm_init((key_t)2022, 3 * sizeof(long));
+    stat_data = (long *)shm_at(shm_stat_id);
+    for (int i = 0; i < 3; i++) {
+    stat_data[i] = 0;
+    }
+
+\end{code}
+其中2022为这块共享内存的key. 每块共享内存存有3个long变量, 分别统计所有读者/写者
+进程的总计等待时间, 读者等待时间和写者等待时间.
+
+\textbf{注意} 由于程序中使用了usleep()来延长读者/写者占用共享内存的时间, 此时操
+作系统不会分配给进程CPU clock, 因此使用clock()无法获取准确的休眠时间, 因此程序中
+使用gettimeofday()的差值来计算经过的时间. 这个函数的返回值和时区相关, 由于只在东
+八区(+8HRS)测试过, 所以不确定其他时区下表现是否有异常. 因此建议在\textbf{东八区}
+使用该程序.
+
 \subsubsection{信号量}
 共有三组信号量, 封装信号量操作如下.
 \begin{code}
@@ -157,4 +195,77 @@
 下面对三组信号量进行介绍.
 
 \paragraph{第一组信号量}
-第一组组信号量对共享内存中每个结构体单元的访问进行控制.
+第一组组信号量对共享内存中每个结构体单元的访问进行控制. 具体信号量初始化如下.
+\begin{code}
+    // Initialize semaphores.
+    read_mutex = sem_init((key_t)10001, shm_size);
+    write_mutex = sem_init((key_t)20001, shm_size);
+    reader_counter_mutex = sem_init((key_t)30001, shm_size);
+    writer_counter_mutex = sem_init((key_t)30002, shm_size);
+    queue_mutex = sem_init((key_t)50001, shm_size);
+    print_mutex = sem_init((key_t)40001, shm_size);
+\end{code}
+其中,
+\begin{itemize}
+    \item read\_mutex是读信号量, 用于控制读者进入关键区;
+    \item  write\_mutex是写信号量, 用于控制读者进入关键区;
+    \item  reader\_counter\_mutex是读者计数器信号量, 用于控制对读者计数器的访问权限;
+    \item writer\_counter\_mutex是写者计数器信号量, 只在写者优先的主程序代码中出现,
+          用于控制对写者计数器的访问权限;
+    \item queue\_mutex是队列互斥锁信号量, 只在写者优先的主程序代码中出现, 用于控制
+          是否允许读者进入等待访问共享内存的关键区的队列.
+    \item print\_mutex用于控制不同进程写log到文件, 保证同一时间只有一个进程正在写log
+          到文件.
+\end{itemize}
+
+\subsubsection{读者/写者分配}
+第一个参数为peers, 表示读者和写者进程的总数. 一般不超过3000, 否则操作系统将没有
+多余的进程资源可以分配给其他进程请求, 影响操作系统正常运行.\par
+
+第二个参数为rw\_ratio, 表示读者和写者的占比, 范围为$0, 1, \dots, 100$, 含义为每
+个进程有rw\_ratio的概率变成读者.\par
+
+\subsection{读者优先策略}
+成为写者的进程的操作伪代码如下. 对伪代码的解释在代码下方.
+\begin{code}
+    // child become writer
+    entry = get random entry in shared memory.
+    writes++;
+    gettimeofday(&start, NULL);
+
+    /**
+    * CRITICAL SECTION OF WRITER
+    */
+    sem_down(write_mutex, entry);
+    printf("%s Child[%d](writer) accessing shared_memory[%d].\n",
+    getpid(), entry);
+
+    gettimeofday(&stop, NULL);
+    curr_time = Time elapsed calculated by stop and start;
+    printf("%s Child[%d](writer) waited for %lf seconds.\n",
+    log_time(), getpid(), (double)curr_time / (double)1e6);
+
+    // Sleep to occupy symaphore.
+    double sleeptime = exp_time();
+    printf("%s Sleep for %lf seconds.\n", log_time(),
+    (double)sleeptime / 1e6);
+    usleep(sleeptime);
+
+    shmData[entry].writes++;
+
+    sem_up(write_mutex, entry);
+    printf("%s Child[%d](writer) exited shared_memory[%d].\n",
+    log_time(), getpid(), entry);
+    /**
+    * EXIT CRITICAL SECTION OF WRITER
+    */
+
+    // Update statistic data.
+    total_time_writer += curr_time;
+    total_time += curr_time;
+
+\end{code}
+
+首先, 随机选择共享内存中一个共享数据结构体entry准备访问. 全局写次数writes自增.
+之后wait(write\_mutex, entry)等待访问entry的读信号量, 并记录等待时间. 获取读信号
+量后, 进入关键区, 使用usleep()来占用关键区一段时间模拟真实使用. 
