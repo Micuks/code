@@ -224,7 +224,7 @@ void tlb_lru_insert(int page_number, int frame_number) {
             entry_node->age++;
         } else if (entry_node->page_index == 0) {
             // A free entry in TLB.
-            if (!free_spot_found) {
+            if (free_spot_found == False) {
                 to_replace_node = entry_node;
                 free_spot_found = True;
 
@@ -232,7 +232,7 @@ void tlb_lru_insert(int page_number, int frame_number) {
             }
         } else if (entry_node->page_index == page_number) {
             // Entry already in TLB, reset its age.
-            if (!already_here) {
+            if (already_here == False) {
                 entry_node->age = 0;
                 already_here = True;
             } else {
@@ -248,10 +248,10 @@ void tlb_lru_insert(int page_number, int frame_number) {
     }
 
     // Replacement.
-    if (already_here) {
+    if (already_here == True) {
         // Already in TLB, do nothing.
         return;
-    } else if (free_spot_found) {
+    } else if (free_spot_found == True) {
         // Free entry available in TLB.
         to_replace_node->page_index = page_number;
         to_replace_node->frame_index = frame_number;
@@ -266,18 +266,18 @@ void tlb_lru_insert(int page_number, int frame_number) {
 }
 
 EntryNode *get_oldest_entry(int tlb_size) {
-    EntryNode *entry_node = tlbTable->entryList->next;
+    EntryNode *entry_node = tlbTable->entryList;
     int max = entry_node->age;
     EntryNode *max_age_node = NULL;
 
     // Iterate through TLB to find max age node.
     for (int i = 0; i < tlb_size; i++) {
+        entry_node = entry_node->next;
+
         if (entry_node->age > max) {
             max = entry_node->age;
             max_age_node = entry_node;
         }
-
-        entry_node = entry_node->next;
     }
 
     if (max_age_node == NULL) {

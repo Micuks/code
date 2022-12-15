@@ -19,7 +19,7 @@
 typedef enum { FIFO = '1', LRU = '2' } ReplacementMethod;
 typedef enum { YES = 'y', NO = 'n' } DisplayOption;
 
-typedef enum { True = 0, False = 1 } Boolean;
+typedef enum { True = 1, False = 0 } Boolean;
 
 extern VMemTable *tlbTable;
 extern VMemTable *pageTable;
