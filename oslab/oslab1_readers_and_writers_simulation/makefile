@@ -33,7 +33,10 @@ writer_priority: src/main_writer_priority.c \
 test: test_reader_priority test_writer_priority
 
 test_reader_priority:
-	$(BUILDDIR)/reader_priority 
+	$(BUILDDIR)/reader_priority $(PEERS) $(RW_RATIO) $(SHM_SIZE)
+
+test_writer_priority:
+	$(BUILDDIR)/writer_priority $(PEERS) $(RW_RATIO) $(SHM_SIZE)
 
 semaphores: src/semaphores.c src/semaphores.h
 	$(CC) -c $(CCFLAGS) src/semaphores.c -o $(BUILDDIR)/semaphores.o
