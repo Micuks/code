@@ -1,0 +1,18 @@
+内存分配实验: 编写模拟程序演示内存分配, 包括: 基本内存分配, 虚拟内存分配. 提交实
+验报告, 并在实验报告中提出自己的见解, 思路和方法.
+
+\subsection{基本内存分配实验}
+模拟了对m个进程和n个内存孔使用First fit和Best fit内存分配算法进行内存分配的过程.\par
+
+其中, 进程数量和每个进程的内存需求, 内存孔数量和每个内存孔大小在
+config/config.txt中读取. config.txt可以由随本模拟程序一并实现的数据生成器
+data\_gen生成, 可以调节参数为内存需求和内存孔的大小范围, 请求内存的进程数量和内
+存孔的数量. \par
+实验实现在oslab2.1\_memory\_management\_simulation文件夹下.
+
+\subsection{虚拟内存分配实验}
+本实验程序模拟了对进程的虚拟内存分配, 对单进程分配固定大小的虚拟内存, 借助TLB和
+页表实现虚拟内存和物理内存的转换. 实现了TLB, 页表, 内存DRAM和二级存储
+Secondary Storage, 并模拟了TLB的FIFO和LRU换页, 页表从二级存储调页和帧在页表中的
+位置分配. 使用纯请求调页的方式实现页表的建立. 实验实现在
+oslab2.2\_virtual\_memory\_management\_simulation下.

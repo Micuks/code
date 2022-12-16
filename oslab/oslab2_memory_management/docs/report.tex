@@ -1,0 +1,144 @@
+\documentclass[12pt, twoside]{article}
+\setlength{\headheight}{14.49998pt}
+\usepackage{xeCJK}
+
+% Pseudo-code
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% Wrap-figure
+\usepackage{wrapfig}
+
+\usepackage{listings}
+\usepackage{lstautogobble} % Fix relative indenting
+\usepackage{xcolor}
+\usepackage{multirow}
+
+\usepackage[a4paper, left=3.17cm, right=3.17cm, top=2.54cm, bottom=2.54cm]{geometry}
+\usepackage{fancyhdr} % header and footer
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{chemformula}
+\usepackage{cite}
+\usepackage[colorlinks, linkcolor=black, anchorcolor=black, citecolor=black]{hyperref}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\setCJKmainfont{Songti SC}
+\setCJKmonofont{Songti SC}
+
+% Define colors for code listing
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.9,0,0}
+\definecolor{graynumbers}{rgb}{0.5,0.5,0.5}
+
+\lstset{
+  autogobble,
+  columns=fullflexible,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  commentstyle=\color{greencomments},
+  keywordstyle=\color{bluekeywords},
+  stringstyle=\color{redstrings},
+  numberstyle=\color{graynumbers},
+  basicstyle=\ttfamily\footnotesize,
+  frame=l,
+  framesep=12pt,
+  xleftmargin=12pt,
+  tabsize=4,
+  captionpos=b
+  language=C++
+  % backgroundcolor=\color{black!5},
+}
+
+% c syntex shortcut
+\newcommand\codestyle{\lstset{
+  autogobble,
+  columns=fullflexible,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  commentstyle=\color{greencomments},
+  keywordstyle=\color{bluekeywords},
+  stringstyle=\color{redstrings},
+  numberstyle=\color{graynumbers},
+  basicstyle=\ttfamily\footnotesize,
+  frame=l,
+  framesep=12pt,
+  xleftmargin=12pt,
+  tabsize=4,
+  captionpos=b
+  language=C++
+  % backgroundcolor=\color{black!5},
+}}
+
+% c environment
+\lstnewenvironment{code}[1][]
+{
+  \codestyle
+  \lstset{#1}
+}
+{}
+
+% c for external files
+\newcommand\codeexternal[2][]{{
+    \codestyle
+    \lstinputlisting[#1]{#2}
+}}
+
+% c for inline
+\newcommand\codeinline[1]{{\codestyle\lstinline!#1!}}
+
+% End of c syntex highlight configuation.
+
+% show paragraphs in table of contentes
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+
+\graphicspath{{figures/}}
+
+\setlength{\parskip}{0.5em}
+\title{内存分配实验}
+\author{\textup{吴清柳}}
+\begin{document}
+\input{title/title.tex}
+\tableofcontents
+\newpage
+
+% set page stype to fancy then decorate it
+\pagestyle{fancy}
+\fancyhead{} % clear all header fields
+\fancyhead[LE, RO]{吴清柳 2020211597}
+\fancyhead[LO, RE]{内存分配实验}
+\fancyfoot{} % clear all footer fileds
+\fancyfoot[CE, CO]{\thepage}
+
+\section{实验题目}
+\input{content/1/1.tex}
+\section{实验过程}
+\input{content/2/2.tex}
+\section{实验结果}
+\input{content/3/3.tex}
+\section{实验总结}
+\input{content/4/4.tex}
+\section{算法源代码}
+\input{content/5/5.tex}
+\section{附录}
+代码仓库: \href
+{https://github.com/Micuks/code/tree/master/oslab/}
+{OSLab}
+
+% \bibliographystyle{ieeetrans}
+% \bibliography{Assignment_Ref}
+
+\end{document}
