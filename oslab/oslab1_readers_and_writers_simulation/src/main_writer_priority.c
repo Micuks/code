@@ -1,5 +1,5 @@
 /**
- * Reader-Preference readers and writers simulation.
+ * Writer-Preference readers and writers simulation.
  */
 
 #include <math.h>

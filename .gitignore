@@ -243,3 +243,9 @@ oslab/oslab1_readers_and_writers_simulation/build
 oslab/oslab2.1_memory_management_simulation/build
 oslab/oslab2.1_memory_management_simulation/config/config.txt
 oslab/oslab2.2_virtual_memory_management_simulation/build
+oslab/oslab1_readers_and_writers_simulation/docs/report.fdb_latexmk
+oslab/oslab1_readers_and_writers_simulation/docs/report.fls
+oslab/oslab1_readers_and_writers_simulation/docs/report.out
+oslab/oslab1_readers_and_writers_simulation/docs/report.synctex.gz
+oslab/oslab2_memory_management/oslab2.1_memory_management_simulation/build
+oslab/oslab2_memory_management/oslab2.2_virtual_memory_management_simulation/build
