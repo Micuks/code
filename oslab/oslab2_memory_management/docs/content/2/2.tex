@@ -1,0 +1,106 @@
+\subsection{基本内存分配实验}
+\subsubsection{概述}
+由于只需要模拟内存分配的过程, 而不需要对内存进行具体的操作, 所以对进程和内存孔均
+抽象为包含大小和是否已分配或被占用两个参数的结构体. 使用动态分配的二维数组存储进
+程和内存孔. 在此基础上模拟First fit和Best fit算法.
+
+程序代码结构如下.
+
+\begin{code}
+    ├── config
+    │   └── config.txt
+    ├── makefile
+    ├── run.sh
+    └── src
+    .  ├── data_gen.c
+    .  ├── main.c
+    .  ├── schemas.c
+    .  ├── schemas.h
+    .  ├── util.c
+    .  └── util.h
+\end{code}
+
+源代码在src文件夹下, 其中:
+\begin{itemize}
+    \item main.c是实验的主程序源代码, 作为实验程序的入口.
+    \item schemas.c和schemas.h实现实验中的内存分配策略,  包括First fit和Best fit策略
+          .
+    \item util.c和util.h是实验中的工具等内容, 定义了进程和内存孔数据结构, 实现了配置
+          文件的加载等内容.回收操作;
+\end{itemize}
+
+\subsubsection{实现介绍}
+\paragraph{进程和内存孔定义和模拟}
+进程和内存孔使用如下结构体模拟.
+\begin{lstlisting}[language=c++]
+    typedef struct Process {
+            int psize;
+            int pflag;
+        } Process;
+
+    typedef struct Block {
+            int bsize;
+            int bflag;
+        } Block;
+
+\end{lstlisting}
+
+根据配置文件config/config.txt加载进程队列和可用的内存孔信息;
+
+\paragraph{First Fit}
+First Fit算法实现在schemas.c中, 具体伪代码如下:
+
+\begin{algorithm}
+    \caption{First Fit}\label{alg:firstfit}
+    \begin{algorithmic}[1]
+        \Require $(Processes, Blocks, n, m)$
+        \State $in\_frag \gets 0$
+        \ForAll{$p \in Processes$}
+        \ForAll{$b \in Blocks$}
+
+        \If{$p.psize \leq b.bsize$ \textbf{and} $p.pflag = 0$ \textbf{and} $b.bflag = 0$}
+        \State $b.bflag \gets 1$
+        \State $p.pflag \gets 1$
+        \State $in\_frag \gets in\_frag + (b.bsize - p.psize)$
+        \State $\mathbf{Break}$
+        \EndIf
+
+        \EndFor
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+对请求内存空间的每一个进程, 程序从第一个内存孔开始判断, 直到找到第一个大小不小于
+进程请求大小, 且没有被占用的内存孔, 将这个内存孔分配给这个进程, 然后处理下一个进
+程, 直到所有进程被处理完毕.
+
+\paragraph{Best Fit}
+Best Fit算法实现在schemas.c中, 伪代码如下.
+\begin{algorithm}
+    \caption{Best Fit}\label{fig:bestfit}
+    \begin{algorithmic}[1]
+        \Require $(Processes, Blocks, n, m)$
+        \State $n\_frag \gets 0$
+        \State $min\_frag \gets INT\_MAX$
+        \State $bid \gets INT\_MAX$
+        \ForAll{$p \in Processes$}
+        \State $ min\_frag \gets INT\_MAX $
+        \State $bid \gets INT\_MAX$
+
+        \For{$j \leftarrow 0, m$}
+        \State $b \gets Blocks[j]$
+        \If{$b.bsize \geq p.psize$ \textbf{and} $b.bflag = 0$ \textbf{and} $min\_frag > (b.bsize - p.psize)$}
+        \State $min\_frag \gets (b.bsize - p.psize)$
+        \State $bid \gets j$
+        \EndIf
+        \EndFor
+        
+        \If{$min\_frag \neq INT\_MAX$}
+        \State $Blocks[bid].bflag \gets 1$
+        \State $p.pflag \gets 1$
+        \State $in\_frag \gets in\_frag + Blocks[bid].bsize - p.psize$
+        \EndIf
+        
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
