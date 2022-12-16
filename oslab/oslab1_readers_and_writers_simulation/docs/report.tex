@@ -60,24 +60,26 @@
 
 % c syntex shortcut
 \newcommand\codestyle{\lstset{
-  basicstyle={\small\ttfamily},
-  belowskip=3mm,
-  breakatwhitespace=true,
+  autogobble,
+  columns=fullflexible,
+  showspaces=false,
+  showtabs=false,
   breaklines=true,
-  classoffset=0,
-  columns=flexible,
-  commentstyle=\color{greencomments},
-  framexleftmargin=0.25em,
-  %To remove to vertical lines on left, set `frameshape={}{}{}{}`
-  frameshape={}{yy}{}{},
-  keywordstyle=\color{bluekeywords},
-  %If you want line numbers, set `numbers=left`
-  numbers=none,
-  numberstyle=\tiny\color{graynumbers},
   showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  commentstyle=\color{greencomments},
+  keywordstyle=\color{bluekeywords},
   stringstyle=\color{redstrings},
-  tabsize=3,
-  xleftmargin =1em
+  numberstyle=\color{graynumbers},
+  basicstyle=\ttfamily\footnotesize,
+  frame=l,
+  framesep=12pt,
+  xleftmargin=12pt,
+  tabsize=4,
+  captionpos=b
+  language=C++
+  % backgroundcolor=\color{black!5},
 }}
 
 % c environment
@@ -106,7 +108,7 @@
 \graphicspath{{figures/}}
 
 \setlength{\parskip}{0.5em}
-\title{基础内存分配实验}
+\title{进程管理实验}
 \author{\textup{吴清柳}}
 \begin{document}
 \input{title/title.tex}
@@ -117,7 +119,7 @@
 \pagestyle{fancy}
 \fancyhead{} % clear all header fields
 \fancyhead[LE, RO]{吴清柳 2020211597}
-\fancyhead[LO, RE]{基础内存分配实验}
+\fancyhead[LO, RE]{进程管理实验}
 \fancyfoot{} % clear all footer fileds
 \fancyfoot[CE, CO]{\thepage}
 
@@ -134,8 +136,8 @@
 \input{content/5/5.tex}
 \section{附录}
 代码仓库: \href
-{https://github.com/Micuks/code/tree/master/algorithm/Greedy/Huffman}
-{Greedy}
+{https://github.com/Micuks/code/tree/master/oslab/}
+{OSLab}
 
 % \bibliographystyle{ieeetrans}
 % \bibliography{Assignment_Ref}

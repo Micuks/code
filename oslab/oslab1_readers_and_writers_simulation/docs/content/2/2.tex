@@ -226,39 +226,130 @@
 个进程有rw\_ratio的概率变成读者.\par
 
 \subsection{读者优先策略}
+\paragraph{写者进程}
 成为写者的进程的操作伪代码如下. 对伪代码的解释在代码下方.
 \begin{code}
     // child become writer
     entry = get random entry in shared memory.
-    writes++;
-    gettimeofday(&start, NULL);
+writes++;
 
     /**
     * CRITICAL SECTION OF WRITER
     */
-    sem_down(write_mutex, entry);
-    printf("%s Child[%d](writer) accessing shared_memory[%d].\n",
-    getpid(), entry);
+sem_down(write_mutex, entry);
 
-    gettimeofday(&stop, NULL);
-    curr_time = Time elapsed calculated by stop and start;
-    printf("%s Child[%d](writer) waited for %lf seconds.\n",
-    log_time(), getpid(), (double)curr_time / (double)1e6);
+// Sleep to occupy symaphore.
+usleep(sleeptime);
+
+shmData[entry].writes++;
+
+sem_up(write_mutex, entry);
+/**
+* EXIT CRITICAL SECTION OF WRITER
+*/
+
+// Update statistic data.
+total_time_writer += curr_time;
+total_time += curr_time;
+
+\end{code}
+
+首先, 随机选择共享内存中一个共享数据结构体entry准备访问. 全局写次数writes+1.
+之后wait(write\_mutex, entry)等待访问entry的读信号量, 并记录等待时间. 获取读信号
+量后, 进入关键区, 使用usleep()来占用关键区一段时间模拟真实使用, 然后让该块共享内
+存写次数+1. 然后退出共享内存, 更新该进程总写者时间和总时间.
+
+\paragraph{读者进程}
+成为读者的进程的操作伪代码如下. 对伪代码的解释在代码下方.
+\begin{code}
+entry =  Access a random shared data struct in shared memory.
+reads++;
+
+// Update counter.
+sem_down(counter_mutex, entry);
+readers_counter_data[entry]++;
+if (readers_counter_data[entry] == 1) {
+        // Prevent writer from entering critical section.
+        sem_down(write_mutex, entry);
+    }
+sem_up(counter_mutex, entry);
+
+/**
+* CRITICAL SECTION OF READER
+*/
+sem_down(read_mutex, entry);
 
     // Sleep to occupy symaphore.
-    double sleeptime = exp_time();
-    printf("%s Sleep for %lf seconds.\n", log_time(),
-    (double)sleeptime / 1e6);
+usleep(sleeptime);
+shmData[entry].reads++;
+
+sem_up(read_mutex, entry);
+/**
+* EXIT CRITICAL ZONE OF READER.
+*/
+
+// Update counter.
+sem_down(counter_mutex, entry);
+readers_counter_data[entry]--;
+if (readers_counter_data[entry] == 0) {
+        // Release writer lock.
+        sem_up(write_mutex, entry);
+    }
+sem_up(counter_mutex, entry);
+
+// Update timer.
+total_time_reader += curr_time;
+total_time += curr_time;
+\end{code}
+和写者进程一样, 首先随机选取一块待访问的共享内存, 然后增加进程阅读次数. 等待读者
+计数器信号量后增加该块共享内存读者计数器. 如果读者计数器值为1, 则等待写者信号量,
+以阻止写者进入关键区. 然后释放计数器信号量, 进入关键区. 等待读信号量, 然后使用
+usleep()函数占用该块共享内存一段时间后, 增加该块共享内存的读次数, 释放读信号量.
+等待读者计数器信号量, 减少该块共享内存读者计数器值. 如果读者计数器值为0, 释放写
+者信号量, 允许写者进入共享内存. 然后释放该块共享内存读者计数器信号量. 更新总读者
+等待时间和总等待时间.
+
+\subsection{写者优先策略}
+\paragraph{写者进程}
+与读者优先策略相比, 写者进程增加了当有写者正在访问的时候阻止读者进入关键区队列的
+操作. 具体伪代码和解释如下.
+\begin{code}
+// child become writer
+entry = Access a random shared data struct in shared memory.
+writes++;
+
+// Update counter.
+sem_down(writer_counter_mutex, entry);
+writers_counter_data[entry]++;
+if (writers_counter_data[entry] == 1) {
+        // Prevent the following readers from entering queue.
+        sem_down(queue_mutex, entry);
+    }
+sem_up(writer_counter_mutex, entry);
+
+/**
+* CRITICAL SECTION OF WRITER
+*/
+sem_down(write_mutex, entry);
+
+// Sleep to occupy critical section.
     usleep(sleeptime);
 
     shmData[entry].writes++;
 
-    sem_up(write_mutex, entry);
-    printf("%s Child[%d](writer) exited shared_memory[%d].\n",
-    log_time(), getpid(), entry);
+sem_up(write_mutex, entry);
     /**
     * EXIT CRITICAL SECTION OF WRITER
     */
+// Update counter.
+sem_down(writer_counter_mutex, entry);
+writers_counter_data[entry]--;
+if (writers_counter_data[entry] == 0) {
+        // No writers waiting. Allow the following readers to
+        // enqueue.
+        sem_up(queue_mutex, entry);
+    }
+sem_up(writer_counter_mutex, entry);
 
     // Update statistic data.
     total_time_writer += curr_time;
@@ -266,6 +357,79 @@
 
 \end{code}
 
-首先, 随机选择共享内存中一个共享数据结构体entry准备访问. 全局写次数writes自增.
-之后wait(write\_mutex, entry)等待访问entry的读信号量, 并记录等待时间. 获取读信号
-量后, 进入关键区, 使用usleep()来占用关键区一段时间模拟真实使用. 
+和读者优先策略中的写者一样, 首先随机选择一块共享内存中的结构体, 并增加进程总写次
+数; 之后等待写者计数器信号量, 增加该共享内存块的写者计数器. 如果该共享内存块的写
+者计数器值为1, 等待该共享内存块的队列信号量queue\_mutex, 以阻止后面的读者进入队
+列. 然后释放该共享内存块的写者计数器信号量. 之后等待写者信号量write\_mutex, 进入
+关键区, usleep()等待一段随机时间sleeptime后增加该块共享内存的写次数, 释放写信号
+量, 退出关键区. 等待写者计数器信号量writers\_counter\_mutex, 减少该共享内存块写
+者计数器计数. 如果写者计数器计数为0, 释放队列入口信号量queue\_mutex, 允许后面的
+读者进入队列. 然后释放该共享内存块的写者计数器信号量.
+
+\paragraph{读者进程}
+相比读者优先策略下的读者, 写者优先策略下的读者增加了等待进入队列的操作, 以保证写
+者能够优先访问关键区共享内存. 具体伪代码和解释如下.
+\begin{code}
+// child become reader.
+    entry =  Access a random shared value in shared memory.
+    reads++;
+
+    // Wait for queue mutex.
+    sem_down(queue_mutex, entry);
+
+    // Update counter.
+    sem_down(reader_counter_mutex, entry);
+    readers_counter_data[entry]++;
+    if (readers_counter_data[entry] == 1) {
+            // Prevent writer from entering critical section.
+            sem_down(write_mutex, entry);
+        }
+
+    // Release queue mutex.
+    sem_up(queue_mutex, entry);
+    // Release reader counter mutex.
+    sem_up(reader_counter_mutex, entry);
+
+    /**
+    * CRITICAL SECTION OF READER
+    */
+    // Wait for read mutex.
+    sem_down(read_mutex, entry);
+
+    // Sleep to occupy symaphore.
+    usleep(sleeptime);
+
+    shmData[entry].reads++;
+
+    sem_up(read_mutex, entry);
+    /**
+    * EXIT CRITICAL ZONE OF READER.
+    */
+
+    // Update counter.
+    sem_down(reader_counter_mutex, entry);
+    readers_counter_data[entry]--;
+    if (readers_counter_data[entry] == 0) {
+            // Release writer lock.
+            sem_up(write_mutex, entry);
+        }
+    sem_up(reader_counter_mutex, entry);
+
+    // Update timer.
+    total_time_reader += curr_time;
+    total_time += curr_time;
+
+\end{code}
+
+首先随机选择一块共享内存中的待访问结构体, 等待本块共享内存队列信号量queue\_mutex. 然后等待读
+者计数器信号量reader\_counter\_mutex, 将该块共享内存的读者计数器数值增加. 如果读
+者计数器的值为1, 等待信号量writer\_mutex, 阻止读者进入本块内存. 然后释放队列信号
+量queue\_mutex和读者计数信号量reader\_counter\_mutex. 之后等待读信号量
+read\_mutex, 进入关键区, usleep()等待一段随机时间sleeptime后增加本块共享内存的读
+次数, 然后释放读信号量read\_mutex. 之后等待读者计数器信号量, 减少本块共享内存的
+读者计数器数量, 释放读者计数器信号量, 如果读者计数器数值为0, 释放写信号量
+write\_mutex, 允许后面的读者访问共享内存. 然后释放读者计数器信号量, 更新总读者等
+待时间和总等待时间.\par
+
+由于只要队列中有写者到来, 队列入口信号量queue\_mutex就会被占用, 导致之后来的读者
+不能进入队列, 因此队列中的写者可以优先访问共享内存, 也就实现了写者优先策略.
