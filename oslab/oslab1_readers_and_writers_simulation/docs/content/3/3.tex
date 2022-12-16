@@ -99,17 +99,17 @@ console中. 截取部分示例如下.\par
 
 \subsection{运行结果}
 分别采用读者优先策略和写者优先策略, 创建2000个读者写者, 读者比例50\%或90\%, 共享
-内存块数量为10的情况下运行, 具体运行命令如下. 
+内存块数量为10的情况下运行, 具体运行命令如下.
 \begin{code}
     # Build
     make
 
     # 读者优先策略, 2000个读者写者, 50%读者, 10个共享内存块.
     build/reader_priority 2000 50 10
-    
+
     # 读者优先策略, 2000个读者写者, 90%读者, 10个共享内存块.
     build/reader_priority 2000 90 10
-    
+
     # 写者优先策略, 2000个读者写者, 50%读者, 10个共享内存块.
     build/writer_priority 2000 50 10
 
@@ -119,8 +119,46 @@ console中. 截取部分示例如下.\par
 
 得运行日志和读者/写者等待时间如下.
 \begin{itemize}
-    \item 读者优先策略, 读者比例50\%的运行日志为logs/50\_file\_reader\_priority.log.
-    \item 读者优先策略, 读者比例90\%的运行日志为logs/90\_file\_reader\_priority.log.
-    \item 写者优先策略, 读者比例50\%的运行日志为logs/50\_file\_reader\_priority.log.
-    \item 写者优先策略, 读者比例90\%的运行日志为logs/90\_file\_reader\_priority.log.
+    \item 读者优先策略, 读者比例50\%的运行日志为logs/50\_file\_reader\_priority.log,
+          等待时间统计如图~\ref{fig:读者优先策略50}.
+    \item 读者优先策略, 读者比例90\%的运行日志为logs/90\_file\_reader\_priority.log,
+          等待时间统计如图~\ref{fig:读者优先策略90}.
+    \item 写者优先策略, 读者比例50\%的运行日志为logs/50\_file\_reader\_priority.log,
+          等待时间统计如图~\ref{fig:写者优先策略50}.
+    \item 写者优先策略, 读者比例90\%的运行日志为logs/90\_file\_reader\_priority.log,
+          等待时间统计如图~\ref{fig:写者优先策略90}.
 \end{itemize}
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{50-reader-priority.png}
+    \caption{读者优先策略,50\%读者}
+    \label{fig:读者优先策略50}
+\end{figure}
+可以看到, 在均为50\%读者情况下, 读者优先策略和写者优先策略的表现是对称的, 即优先
+的一方的等待时间占总等待时间的越$25\%$.
+而均为90\%读者的情况下, 差异则比较大. 读者优先策略下, 读者和写者的等待时间大约对
+半开, 而写者优先策略下, 几乎总是读者在等待, 而写者的等待时间相比之下很小. 可以预
+见, 如果本实验程序中没有设置当进程访问LOOPS次共享内存后结束自己的话, 读者将几乎
+不能访问共享内存.
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{90-reader-priority.png}
+    \caption{读者优先策略,90\%读者}
+    \label{fig:读者优先策略90}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{50-writer-priority.png}
+    \caption{写者优先策略,50\%读者}
+    \label{fig:写者优先策略50}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{90-writer-priority.png}
+    \caption{写者优先策略,50\%读者}
+    \label{fig:写者优先策略90}
+\end{figure}
