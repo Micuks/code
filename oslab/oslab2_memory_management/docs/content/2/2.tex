@@ -94,13 +94,428 @@ Best Fit算法实现在schemas.c中, 伪代码如下.
         \State $bid \gets j$
         \EndIf
         \EndFor
-        
+
         \If{$min\_frag \neq INT\_MAX$}
         \State $Blocks[bid].bflag \gets 1$
         \State $p.pflag \gets 1$
         \State $in\_frag \gets in\_frag + Blocks[bid].bsize - p.psize$
         \EndIf
-        
+
         \EndFor
     \end{algorithmic}
 \end{algorithm}
+
+对请求内存空间的每一个进程, 从头开始遍历每个内存孔, 对大于请求空间的内存孔, 如果
+没有被占用, 且使用此内存孔的内部碎片小于到目前为止的最小碎片, 则将使用此内存孔的
+内存碎片作为新的最小碎片, 此内存孔作为将要使用的内存孔. 重复这个过程,直到所有内
+存孔遍历完成. 当所有进程的请求都被响应后, 内存分配结束. 与First Fit相比, Best
+Fit造成的内部碎片较小.
+
+\subsection{虚拟内存分配实验}
+为了避免与基本内存分配实验重复内容过多, 虚拟内存分配实验的重点聚集在通过TLB, 页表的
+协作来实现对运行在虚拟内存上的进程的虚拟内存寻址请求的响应. 当收到进程的虚拟内存
+寻址请求的时候, 首先查TLB表, TLB表大小可调, 由宏TLB\_SIZE控制. 实验中设置为16.
+TLB命中后, 直接取对应帧号, 配合虚拟内存地址偏移从内存数组DRAM中取回数据. TLB没有
+命中, 则从页表进行查找. 如果找到, 从DRAM中取回数据. 如果页表中也没有找到, 则从二
+级存储Secondary Storage中取一帧到DRAM中, 取回数据, 然后更新页表Page Table. TLB未
+命中的时候, 也会更新TLB表项. 实验实现了FIFO和LRU两种TLB表项更新方法.
+
+\subsubsection{TLB和页表实现介绍}
+\paragraph{TLB和页表的定义}
+TLB和页表使用链表实现, 且实现方式类似. 链表节点的定义如下.
+\begin{lstlisting}[language=c++]
+    /**
+    * Dual direction linked list.
+    */
+    typedef struct LLNode {
+            int page_index;
+            int frame_index;
+            int age;
+            struct LLNode *prev;
+            struct LLNode *next;
+        } EntryNode;
+\end{lstlisting}
+
+其中, page\_index和frame\_index分别是页号和帧号, age是节点的年龄, 在LRU中被使用.
+prev和next分别指向前面和后面的节点.\par
+
+TLB和页表的定义如下.
+\begin{lstlisting}[language=c++]
+    /**
+    * Define a virtual memory addressing table that can be represented as either a
+    * tlb cache or a page table.
+    */
+   typedef struct VMemTable {
+       // Entry list WITH HEAD NODE.
+       EntryNode *entryList;
+       int length;
+       int page_fault_count;
+       int tlb_hit_count;
+       int tlb_miss_count;
+   } VMemTable;
+   
+\end{lstlisting}
+entryList是存储TLB和页表表项的链表, 含有头结点. 对TLB, length表示TLB的长度,
+tlb\_hit\_count表示tlb命中次数, tlb\_miss\_count记录tlb未命中次数;
+对页表, length表示页表的长度, page\_fault\_count记录page fault而需要查Secoundary
+Storage的次数. 由于是纯请求调页, 所以page fault在程序开始的时候会比较频繁. 由于
+内存访问的局部性原理, 后面的频率会低许多.
+
+\paragraph{TLB和页表的初始化}
+TLB和页表使用如下函数进行初始化.
+\begin{lstlisting}[language=c++]
+    VMemTable *create_vmem_table(int length) {
+        VMemTable *new_table = malloc(sizeof(VMemTable));
+        if (new_table == NULL) {
+            printf("Error: failed to allocate memory for Virtual Memory Addressing "
+                   "table.\n");
+            exit(-1);
+        }
+    
+        new_table->length = length;
+        // Allocate head node.
+        new_table->entryList = new_node();
+        // Allocate the rest length nodes.
+        struct LLNode *curr_node = new_table->entryList;
+        for (int i = 0; i < length; i++) {
+            EntryNode *node = new_node();
+            insert_node(curr_node, node);
+            curr_node = curr_node->next;
+        }
+    
+        new_table->page_fault_count = 0;
+        new_table->tlb_hit_count = 0;
+        new_table->tlb_miss_count = 0;
+    
+        return new_table;
+    }
+    
+\end{lstlisting}
+可以看到, TLB和页表都是带头节点的双向链表, 且在创建的时候, 就申请了个数为length
+的表项. TLB和页表的大小分别使用宏TLB\_SIZE和PAGE\_TABLE\_SIZE进行控制. 由于本实
+验程序中内存DRAM的大小为65536字节, 而帧大小FRAME\_SIZE为256, 故页表大小
+PAGE\_TABLE\_SIZE为256. 而TLB\_SIZE设置为16.
+
+使用链表进行实现是为了方便节点的插入操作.
+
+\subsubsection{DRAM实现介绍}
+内存(DRAM)使用二维数组实现, 大小为$FRAME\_SIZE\times TOTAL\_FRAME\_COUNT =
+    256\times 256 = 65536$. DRAM的申请过程如下.
+\begin{lstlisting}[language=c++]
+    int **dram_allocate(int frame_count, int block_size) {
+        int **temp;
+        temp = (int **)malloc(frame_count * sizeof(int *));
+        if (temp == NULL) {
+            fprintf(stderr, "Error: failed to allocated space for DRAM.\n");
+            exit(-1);
+        }
+    
+        for (int i = 0; i < frame_count; i++) {
+            temp[i] = (int *)malloc(block_size * sizeof(int));
+            for (int j = 0; j < block_size; j++) {
+                temp[i][j] = 0;
+            }
+        }
+    
+        return temp;
+    }
+    
+\end{lstlisting}
+
+\subsubsection{物理存储Secondary Storage实现介绍}
+使用dd命令生成的大小为65536字节的随机数据文件作为物理存储. 生成命令如下.
+\begin{code}
+    $ dd if=/dev/urandom of=secondary_storage.bin bs=65536 count=1
+
+    1+0 records in
+    1+0 records out
+    65536 bytes transferred in 0.000159 secs (412176101 bytes/sec)
+\end{code}
+随实验程序已经事先生成好了一个, 存放在config/secondaty\_storage.bin. 物理存储中
+的数据仅当页表Page table遇到page fault的时候逐帧调取到内存DRAM中.
+
+\subsubsection{具体模拟流程}
+首先, 程序加载Secondary storage, 申请DRAM, TLB table和Page table. 然后通过从所给
+文件逐条读取虚拟内存地址, 转换为物理地址并访问的形式来模拟处理进程的虚拟内存访问
+请求. 此程序模拟的内存地址为16位地址, 前8位为页号或帧号, 后8位为业内偏移. 具体读
+取虚拟内存地址并处理的代码如下.
+\begin{lstlisting}[language=c++]
+    while (fgets(address_read_buf, MAX_ADDR_LEN, address_file) != NULL) {
+        virtual_addr = atoi(address_read_buf);
+
+        // Get page number.
+        page_number = get_page_number(PAGE_MASK, virtual_addr, SHIFT);
+
+        // Get offset.
+        offset_number = get_offset(OFFSET_MASK, virtual_addr);
+
+        // Get physical address and translated value stored at that address.
+        translate_address(virtual_addr, page_number, offset_number);
+        translation_count++;
+    }
+\end{lstlisting}
+
+在函数translate\_address中, 根据取到的页号和也偏移, 查TLB和页表尝试转换为对应的
+物理地址. 对于每个由于page fault而被分配到DRAM中的帧, 都会分配一个唯一的页号
+.\par
+
+程序首先尝试从TLB中查找页号.
+\begin{lstlisting}[language=c++]
+    // Try to find page in TLB.
+    int frame_number = -1;
+
+    EntryNode *entry_node = tlbTable->entryList->next;
+    while (entry_node) {
+        if (entry_node->page_index == page_number) {
+            frame_number = entry_node->frame_index;
+            tlbTable->tlb_hit_count++;
+            break;
+        }
+
+        entry_node = entry_node->next;
+    }
+\end{lstlisting}
+由于TLB使用带头结点的链表实现, 所以使用while循环从第二个节点开始查找, 直到TLB命
+中或者TLB查找结束. 如果使用哈希表等数据结构来模拟将更加合适, 但是由于临近期末时
+间有限, 只能先使用链表进行实现.\par
+
+如果TLB命中, 则根据使用的页置换策略是FIFO还是LRU来更新TLB表项, 并从DRAM中使用查
+表得到的帧号和帧内偏移找到得到的值.\par
+
+如果TLB未命中, 则frame\_number仍为-1, 增加TLB未命中次数并查Page table.
+\begin{lstlisting}[language=c++]
+    // If page is not hit in TLB, find page in page table, and increment TLB
+    // miss count.
+    // If page is not found in page table, find it in secondary storage DRAM,
+    // and increment page table fault count.
+    if (frame_number == -1) {
+        tlbTable->tlb_miss_count++;
+        // printf("TLB miss count: %d\n", tlbTable->tlb_miss_count);
+
+        // Iterative through page table to find the demanding page.
+        entry_node = pageTable->entryList->next;
+        while (entry_node) {
+            if (entry_node->page_index == page_number) {
+                frame_number = entry_node->frame_index;
+                break;
+            }
+
+            entry_node = entry_node->next;
+        }
+        
+        if(frame_number == -1) {
+            Page table fault. Fetch frame from secondary storage,
+            update page table.
+        }
+    }
+\end{lstlisting}
+和TLB一样, 页表也使用带头结点的链表实现, 首先遍历页表查找目标页是否在页表中. 如
+果在, 取帧号, 用帧号和帧内偏移访问DRAM取回数据; 如果不在, 触发Page fault, 从
+Secondary storage中调页. Page fault处理过程如下.
+\begin{lstlisting}[language=c++]
+    // Page table fault.
+    if (frame_number == -1) {
+        // Increment the number of page faults.
+        pageTable->page_fault_count++;
+        // printf("Page table miss count: %d\n",
+        // pageTable->page_fault_count);
+
+        // Read from secondary storage, and count time elapsed.
+        int start = clock();
+        read_from_store(page_number);
+        cpu_time_elapsed += (double)(clock() - start) / CLOCKS_PER_SEC;
+
+        secondary_storage_call_count++;
+
+        // Set the frame_number to current next_frame index.
+        frame_number = next_frame - 1;
+    }
+
+\end{lstlisting}
+首先page fault计数器自增, 然后从secondary storage中取目的帧并计时. next\_frame记
+录DRAM中下一个空闲帧的偏移. 取回帧后, 更新frame\_number为分配给新取帧的帧号.
+
+\paragraph{调页过程}
+从secondary storage使用页号调页的过程如下.
+\begin{lstlisting}[language=c++]
+    void read_from_store(int page_number) {
+        // Seek to byte PAGE_READ_SIZE in secondary storage.
+        // SEEL_SET lets fseek() to seek from the beginning of file.
+        if (fseek(secondary_storage, page_number * PAGE_READ_SIZE, SEEK_SET) != 0) {
+            fprintf(stderr, "Error seeking in secondary storage.\n");
+        }
+    
+        // Now read PAGE_READ_SIZE bytes from secondary storage to file_read_buf.
+        if (fread(file_read_buf, sizeof(signed char), PAGE_READ_SIZE,
+                  secondary_storage) == 0) {
+            fprintf(stderr, "Error reading secondary storage.\n");
+        }
+    
+        // Load bytes into the first available fram in the physical memory 2D array.
+        for (int i = 0; i < PAGE_READ_SIZE; i++) {
+            dram[next_frame][i] = file_read_buf[i];
+        }
+    
+        // Load the frame number into page table in the next page.
+        EntryNode *entry_node = pageTable->entryList->next;
+        for (int i = 0; i < next_page; i++) {
+            entry_node = entry_node->next;
+        }
+    
+        entry_node->page_index = page_number;
+        entry_node->frame_index = next_frame;
+    
+        // Increment counters to track the next available frame.
+        next_frame++;
+        next_page++;
+    }
+    
+\end{lstlisting}
+
+首先从secondary storage的开头处查找page\_number * PAGE\_READ\_SIZE处是否存在内容
+. 如果存在, 读取一帧内容到file\_read\_buf. 读取内容长度PAGE\_READ\_SIZE宏被设置
+为与帧大小相同, 均为256, 因此是一次读取一帧. 读取成功后, 将读取缓存中的256个字节
+转移到DRAM中偏移next\_frame处. next\_frame即为分配的新帧号. 这是一个全局变量, 每
+次页表page fault调页到DRAM的时候next\_frame都会自增, 指示下一次出现page fault的
+时候要分配的的帧号. 调取帧到DRAM中后, 更新页表的next\_page表项. 这是新增的表项,
+其页号为请求虚拟地址的页号page\_number, 对应的帧号为新分配的帧号next\_frame. 完
+成上述过程后, next\_frame和next\_page自增. 调页操作完成.
+
+\paragraph{TLB的FIFO置换}
+当TLB未命中的时候, 需要对TLB进行页置换. 本实验实现了FIFO和LRU两种页置换算法. 对
+FIFO策略实现如下.
+\begin{lstlisting}[language=c++]
+    // TLB fifo insert method.
+    void tlb_fifo_insert(int page_number, int frame_number) {
+        int i = 0;
+        EntryNode *entry_node = tlbTable->entryList->next;
+        EntryNode *prev_node = entry_node->prev;
+        // Break if page already in TLB.
+        for (i = 0; i < next_tlb_entry; i++) {
+            if (entry_node->page_index == page_number) {
+                break;
+            }
+    
+            prev_node = entry_node;
+            entry_node = entry_node->next;
+        }
+    
+        // Page not found in TLB.
+        if (i == next_tlb_entry) {
+            entry_node = prev_node;
+            if (next_tlb_entry == tlbTable->length) {
+                // TLB table is full, replace first entry.
+    
+                // Allocate new node.
+                EntryNode *new_enode = new_node();
+                new_enode->page_index = page_number;
+                new_enode->frame_index = frame_number;
+    
+                // Append new node to the end of TLB.
+                insert_node(entry_node, new_enode);
+    
+                // Delete first node.
+                delete_next_node(tlbTable->entryList);
+            } else {
+                // TLB table is not full, append to end of table.
+                EntryNode *next_node = entry_node->next;
+                next_node->page_index = page_number;
+                next_node->frame_index = frame_number;
+                next_node->age = 0;
+            }
+        } else {
+            // If another frame with the same page index already in TLB.
+    
+            // Go to last page in TLB.
+            for (; i < next_tlb_entry - 1; i++) {
+                entry_node = entry_node->next;
+            }
+    
+            // Append page to end of TLB.
+            EntryNode *new_enode = new_node();
+            new_enode->page_index = page_number;
+            new_enode->frame_index = frame_number;
+            insert_node(entry_node, new_enode);
+    
+            // Delete the node with the same page index.
+            delete_next_node(prev_node);
+        }
+    
+        // Increment next tlb entry.
+        if (next_tlb_entry < tlbTable->length) {
+            next_tlb_entry = next_tlb_entry + 1;
+        }
+    }
+    
+\end{lstlisting}
+
+首先遍历TLB, 查看待插入表项页号是否已经在TLB表中. 如果已经在, 将原表项删除, 新表
+项插入表尾. 如果不存在, 判断TLB表项数量. 如果TLB已满, 则删除最早进图TLB的表项,
+将新表项插入表尾; 如果TLB不满, 将表项直接插入表尾.
+
+\paragraph{TLB的LRU换页}
+实验利用表项中的age参数实现了LRU换页. 具体过程如下.
+\begin{lstlisting}[language=c++]
+void tlb_lru_insert(int page_number, int frame_number) {
+    Boolean free_spot_found = False;
+    Boolean already_here = False;
+    EntryNode *entry_node = tlbTable->entryList->next;
+    EntryNode *to_replace_node = NULL;
+
+    // Find the index to replace and increment age for all other entries.
+    for (int i = 0; i < TLB_SIZE; i++) {
+        if ((entry_node->page_index) &&
+            (entry_node->page_index != page_number)) {
+            // If entry does not exist in TLB and is not a free spot, increment
+            // its age.
+            entry_node->age++;
+        } else if (entry_node->page_index == 0) {
+            // A free entry in TLB.
+            if (free_spot_found == False) {
+                to_replace_node = entry_node;
+                free_spot_found = True;
+
+                // Don't exit for need to increment age for remaining entries.
+            }
+        } else if (entry_node->page_index == page_number) {
+            // Entry already in TLB, reset its age.
+            if (already_here == False) {
+                entry_node->age = 0;
+                already_here = True;
+            } else {
+                // Duplicate entry with the same page number.
+                fprintf(stderr,
+                        "Error: Same page appeared twice in LRU TLB.\nPage "
+                        "number[%d]",
+                        page_number);
+            }
+        }
+
+        entry_node = entry_node->next;
+    }
+
+    // Replacement.
+    if (already_here == True) {
+        // Already in TLB, do nothing.
+        return;
+    } else if (free_spot_found == True) {
+        // Free entry available in TLB.
+        to_replace_node->page_index = page_number;
+        to_replace_node->frame_index = frame_number;
+        to_replace_node->age = 0;
+    } else {
+        // No free entry available in TLB, replace the oldest entry.
+        to_replace_node = get_oldest_entry(TLB_SIZE);
+        to_replace_node->page_index = page_number;
+        to_replace_node->frame_index = frame_number;
+        to_replace_node->age = 0;
+    }
+}
+\end{lstlisting}
+
+遍历TLB, 对页号不是待插入页号, 且非空的表项, 增加其age; 如果找到
+了页号和待插入页号相同的表项, 重置其age, 不做其他操作; 如果找到了空表项, 记录此
+空表项在to\_replace\_node, 待更新完所有表项的age之后将新表项插入到此处.\par
+
+如果表项既不已经存在于TLB中, 且也没有空表项, 则使用get\_oldest\_entry()函数找到
+TLB中的最老表项, 并将次表项替换为待插入表项, 重置其age.

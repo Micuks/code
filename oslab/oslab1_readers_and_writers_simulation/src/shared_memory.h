@@ -6,7 +6,6 @@
 typedef struct shm_data {
     int reads;
     int writes;
-    long double avg_time;
 } ShmData;
 
 /**
