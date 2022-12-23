@@ -57,8 +57,8 @@ DEFAULT_REQUEST_HEADERS = {
 # Disable scrapy's default UserAgentMiddleware to use RandomUserAgent
 # Enable scrapy proxy
 DOWNLOADER_MIDDLEWARES = {
-    "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
-    "scrapy_user_agents.middlewares.RandomUserAgentMiddleware": 400,
+    # "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
+    # "scrapy_user_agents.middlewares.RandomUserAgentMiddleware": 400,
     "lianjia.middlewares.ProxiesMiddleware": 300,
 }
 
