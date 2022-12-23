@@ -89,8 +89,8 @@ void translate_address(int virtual_addr, int page_number, int offset_number) {
 
     // Page replacement.
     if (replace_method == FIFO) {
-        // FIFO replacement method to insert the page number and frame number
-        // into TLB.
+        // FIFO replacement method to insert the page number and frame
+        // number into TLB.
         tlb_fifo_insert(page_number, frame_number);
     } else {
         tlb_lru_insert(page_number, frame_number);
@@ -133,7 +133,6 @@ void read_from_store(int page_number) {
 
     // Load the frame number into page table in the next page.
     EntryNode *entry_node = pageTable->entryList->next;
-    // NOTE: Maybe wrong: exceed by 1 node.
     for (int i = 0; i < next_page; i++) {
         entry_node = entry_node->next;
     }

@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -g -std=gnu17 -Wall -Werror -Wextra
+CFLAGS := -std=gnu17 -Wall -Werror -Wextra
 
 AMOUNT := 100000
 UPPER_BORDER := 256

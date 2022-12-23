@@ -1,11 +1,11 @@
 CC := gcc
-CCFLAGS := -g -std=gnu17 -Wall -Wextra -Werror
+CCFLAGS := -O3 -std=gnu17 -Wall -Wextra -Werror
 
 BUILDDIR := build/
 
 FROM := 0
 TO := 1000
-NUM_BLOCKS := 100
+NUM_BLOCKS := 1000
 NUM_PROCESSES := 1000
 
 .PHONY: all, test, mkdir, clean
@@ -13,6 +13,8 @@ all: mkdir main
 
 test: main data_gen
 	$(BUILDDIR)/data_gen $(FROM) $(TO) $(NUM_BLOCKS) $(NUM_PROCESSES)
+	@echo "Generated $(NUM_BLOCKS) memory blocks and" \
+		"$(NUM_PROCESSES) processes. Size from $(FROM) to $(TO)."
 	$(BUILDDIR)/main
 
 main: src/main.c schemas util
