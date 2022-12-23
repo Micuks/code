@@ -1,20 +1,20 @@
 import scrapy
-from items import *
+from ..items import *
 
 
 class BeijingCommunitySpider(scrapy.Spider):
-    name = "beijing_community"
+    name = "BeijingCommunitySpider"
     allowed_domains = ["bj.lianjia.com"]
     path_to_save_response = "beijing_community_response.html"
     custom_settings = {
         "ITEM_PIPELINES": {
-            "webCrawler.pipelines.DownBeijingCommunityUrlPipeline": 100,
+            "lianjia.pipelines.DownBeijingCommunityUrlPipeline": 100,
         }
     }
 
     def start_requests(self):
         urls = ["https://bj.lianjia.com/xiaoqu/"]
-        # urls = ['file:///Users/micuks/dev/mycode/python/scrapy/lianjia/'+path_to_save_response]
+        # urls = ['file:///Users/micuks/dev/mycode/python/final/lianjia/'+self.path_to_save_response]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
@@ -26,7 +26,7 @@ class BeijingCommunitySpider(scrapy.Spider):
         # Crawl all administrative district href.
         administrative_district_hrefs = response.xpath(
             "//div[@data-role='ershoufang']/div[1]/a/@href"
-        )
+        ).getall()
         for href in administrative_district_hrefs:
             href = response.urljoin(href)
             # Crawl each district href.
@@ -47,17 +47,17 @@ class BeijingCommunitySpider(scrapy.Spider):
         # Current administrative district
         business_curr_district = response.xpath(
             "//div[@data-role='ershoufang']//a[@class='selected']/text()"
-        ).getall()
+        ).get()
 
         # Business area names in current district
         business_area_name = response.xpath(
             "//div[@data-role='ershoufang']/div[2]/a/text()"
-        )
+        ).getall()
 
         # Business area hrefs in current district
         business_area_href = response.xpath(
             "//div[@data-role='ershoufang']/div[2]/a/@href"
-        )
+        ).getall()
 
         for name, href in zip(business_area_name, business_area_href):
             area_url = response.urljoin(href)
