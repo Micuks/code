@@ -1,3 +1,5 @@
+# Python venv
+**/.env
 # Java files
 **/*.class
 **/*.jar
@@ -16,8 +18,17 @@
 **/*.aux
 **/*.toc
 **/*.log
-**/*.symctex.gz
+**/*.synctex.gz
 **/*.xdv
+**/*.fls
+**/report.out
+**/*.fdb_latexmk
+**/*.bak
+**/*.pdf
+
+**/*.db
+**/*.txt
+
 
 cs231n_assignments/assignment3/cs231n/datasets/coco_captioning
 cs231n_assignments/assignment3/cs231n/datasets/imagenet_val_25.npz
@@ -249,3 +260,5 @@ oslab/oslab1_readers_and_writers_simulation/docs/report.out
 oslab/oslab1_readers_and_writers_simulation/docs/report.synctex.gz
 oslab/oslab2_memory_management/oslab2.1_memory_management_simulation/build
 oslab/oslab2_memory_management/oslab2.2_virtual_memory_management_simulation/build
+python/final/lianjia/spiders/beijing_community_spider.py
+.gitignore

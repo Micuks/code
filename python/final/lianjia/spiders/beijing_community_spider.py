@@ -1,74 +1,163 @@
+from asyncio.log import logger
+import json
 import scrapy
+import sqlite3
 from ..items import *
 
 
 class BeijingCommunitySpider(scrapy.Spider):
     name = "BeijingCommunitySpider"
     allowed_domains = ["bj.lianjia.com"]
-    path_to_save_response = "beijing_community_response.html"
+    start_urls = []
     custom_settings = {
         "ITEM_PIPELINES": {
-            "lianjia.pipelines.DownBeijingCommunityUrlPipeline": 100,
+            "lianjia.pipelines.DownCommunityInfoPipeline": 101,
         }
     }
 
+    def __init__(self, name=None, **kwargs):
+        self.con = sqlite3.connect("database/Lianjia.db")
+        self.cur = self.con.cursor()
+
     def start_requests(self):
-        urls = ["https://bj.lianjia.com/xiaoqu/"]
-        # urls = ['file:///Users/micuks/dev/mycode/python/final/lianjia/'+self.path_to_save_response]
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+        sql = """
+        select b_url
+        from beijing_business_area
+        where b_accessbit=0;
+        """
+        self.cur.execute(sql)
+        business_area_urls = self.cur.fetchall()
+        for area_url in business_area_urls:
+            try:
+                print(f"Crawling business area {area_url}")
+                yield scrapy.Request(area_url)
+            except:
+                continue
 
     def parse(self, response):
-        # Write response to file for debugging
-        with open(self.path_to_save_response, "w") as response_file:
-            response_file.write(response.text)
+        """
+        Crawl all communities in each business area.
+        """
+        community_list_items = response.xpath(
+            "//li[@class='clear xiaoquListItem']"
+        )
+        for list_item in community_list_items:
+            item = CommunityItem()
+            try:
+                community_url = list_item.xpath(
+                    ".//div[@class='title']/a/@href"
+                ).get()
+                urls = list_item.xpath(".//div[@class='houseInfo']/a")
 
-        # Crawl all administrative district href.
-        administrative_district_hrefs = response.xpath(
-            "//div[@data-role='ershoufang']/div[1]/a/@href"
-        ).getall()
-        for href in administrative_district_hrefs:
-            href = response.urljoin(href)
-            # Crawl each district href.
-            yield scrapy.Request(url=href, callback=self.parse_district)
+                # zone of urls containing rent url varies.
+                try:
+                    if len(urls) == 2:
+                        item["communityRentUrl"] = urls.xpath(
+                            ".//div[@class='title']/a[2]/@href"
+                        ).get()
+                    elif len(urls) == 3:
+                        item["communityRentUrl"] = urls.xpath(
+                            ".//div[@class='title']/a[3]/@href"
+                        ).get()
+                except:
+                    logger.info(
+                        "INFO: This community has no rent info: "
+                        + community_url
+                    )
+                    item["communityRentUrl"] = None
 
-            # def decode_unicode_str(str):
-            #     return str.encode("utf-8").decode("utf-8")
+                position_info = list_item.xpath(
+                    ".//div[@class='positionInfo']/a/text()"
+                ).getall()
 
-            # def decode_unicode_list(lstr):
-            #     return [decode_unicode_str(s) for s in lstr]
+                item["communityUrl"] = community_url
+                item["communityName"] = list_item.xpath(
+                    ".//div[@class='title']/a/text()"
+                ).get()
+                item["communityRegion"] = position_info[0]
+                item["communityBusinessArea"] = position_info[1]
 
-    def parse_district(self, response):
-        '''
-        - Crawl business area url of each administrative district, 
-        - And yield business areas to pipeline.
-        '''
+                # Crawl each community detail page separately if more detailed
+                # data is needed.
+                # yield scrapy.Request(
+                #     url=community_url,
+                #     callback=self.parse_community,
+                #     meta={"item": item},
+                # )
+                
+                # Or just yield community item to pipeline
+                yield item
 
-        # Current administrative district
-        business_curr_district = response.xpath(
-            "//div[@data-role='ershoufang']//a[@class='selected']/text()"
+            except Exception as e:
+                logger.error(
+                    "ERROR: Something wrong while crawling community url: "
+                    + response.url
+                )
+
+        # Jump page
+        pagedata = response.xpath(
+            "//div[@class='page-box house-lst-page-box']/@page-data"
         ).get()
+        json_pagedata = json.loads(pagedata)
+        total_page = pagedata["totalPage"]
+        curr_page = pagedata["curPage"]
 
-        # Business area names in current district
-        business_area_name = response.xpath(
-            "//div[@data-role='ershoufang']/div[2]/a/text()"
-        ).getall()
+        url_framents = response.url.split("/")
+        main_url = (
+            url_framents[0]
+            + "//"
+            + url_framents[2]
+            + "/"
+            + url_framents[3]
+            + "/"
+            + url_framents[4]
+            + "/"
+        )
 
-        # Business area hrefs in current district
-        business_area_href = response.xpath(
-            "//div[@data-role='ershoufang']/div[2]/a/@href"
-        ).getall()
-
-        for name, href in zip(business_area_name, business_area_href):
-            area_url = response.urljoin(href)
-            area_name = name
-
-            print(business_curr_district, area_name, area_url)
-
-            item = BusinessAreaItem(
-                businessAreaUrl=area_url,
-                businessAreaName=area_name,
-                businessAreaRegion=business_curr_district,
+        # Crawl next page if not the last page.
+        if curr_page < total_page:
+            curr_page += 1
+            next_url = main_url + "pg%d/" % curr_page
+            print(next_url)
+            try:
+                logger.info(
+                    "Crawl next community page in {}".format(
+                        item["communityBusinessArea"]
+                    )
+                )
+                yield scrapy.Request(url=next_url, callback=self.parse)
+            except:
+                logger.error(
+                    "Error crawling next community page "
+                    + next_url
+                    + " in "
+                    + item["communityBusinessArea"]
+                )
+        else:
+            print("------------")
+            # Set accessbit to 1 for resume crawling.
+            sql = (
+                """
+            update beijing_business_area
+            set b_accessbit=1
+            where b_url='%s';
+            """
+                % main_url
             )
-
-            yield item
+            try:
+                self.cur.execute(sql)
+                logger.info(
+                    "Finished crawling business area "
+                    + item["communityBusinessArea"]
+                    + "["
+                    + main_url
+                    + "]"
+                )
+            except Exception as e:
+                logger.error(
+                    "Error updating accessbit of business area "
+                    + item["communityBusinessArea"]
+                    + "["
+                    + main_url
+                    + "]"
+                )
