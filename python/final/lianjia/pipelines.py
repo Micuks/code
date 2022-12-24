@@ -14,7 +14,7 @@ class LianjiaPipeline:
         return item
 
 
-class DownBeijingCommunityUrlPipeline(object):
+class DownBusinessAreaUrlPipeline(object):
     """
     Save business area records to MySQL database.
     """
@@ -31,19 +31,19 @@ class DownBeijingCommunityUrlPipeline(object):
         for row in rows:
             print("database path", row[0], row[1], row[2])
 
-        # Create Beijing community table if none exists.
-        # self.cur.execute(
-        #     """
-        #     create table if not exists beijing_business_area(
-        #     b_id integer not null,
-        #     b_name varchar(20) not null,
-        #     b_url varchar(100) not null,
-        #     b_region varchar(20) not null,
-        #     b_accessbit integer default 0 not null,
-        #     primary key(b_id)
-        #     );
-        #     """
-        # )
+        # Create Beijing business area table if none exists.
+        self.cur.execute(
+            """
+            create table if not exists beijing_business_area(
+            b_id integer not null,
+            b_name varchar(20) not null,
+            b_url varchar(100) not null,
+            b_region varchar(20) not null,
+            b_accessbit integer default 0 not null,
+            primary key(b_id)
+            );
+            """
+        )
 
     def process_item(self, item, spider):
         sql_select = """
