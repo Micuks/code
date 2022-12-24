@@ -20,10 +20,14 @@ class BeijingCommunitySpider(scrapy.Spider):
         self.cur = self.con.cursor()
 
     def start_requests(self):
+        '''
+        Crawl all business areas in '北京'.
+        '''
         sql = """
-        select b_url
-        from beijing_business_area
-        where b_accessbit=0;
+        select business_area_url
+        from business_area
+        where b_accessbit=0
+        and business_area_city='北京';
         """
         self.cur.execute(sql)
         business_area_urls = self.cur.fetchall()
@@ -36,7 +40,7 @@ class BeijingCommunitySpider(scrapy.Spider):
 
     def parse(self, response):
         """
-        Crawl all communities in each business area.
+        Crawl all communities in each business area of '北京'.
         """
         community_list_items = response.xpath(
             "//li[@class='clear xiaoquListItem']"
@@ -138,16 +142,17 @@ class BeijingCommunitySpider(scrapy.Spider):
             # Set accessbit to 1 for resume crawling.
             sql = (
                 """
-            update beijing_business_area
-            set b_accessbit=1
-            where b_url='%s';
+            update business_area
+            set business_area_accessbit=1
+            where b_url='%s'
+            and business_area_city='北京';
             """
                 % main_url
             )
             try:
                 self.cur.execute(sql)
                 logger.info(
-                    "Finished crawling business area "
+                    "Finished crawling \"北京\" business area "
                     + item["communityBusinessArea"]
                     + "["
                     + main_url
@@ -155,7 +160,7 @@ class BeijingCommunitySpider(scrapy.Spider):
                 )
             except Exception as e:
                 logger.error(
-                    "Error updating accessbit of business area "
+                    "Error updating accessbit of \"北京\" business area "
                     + item["communityBusinessArea"]
                     + "["
                     + main_url
