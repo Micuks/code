@@ -63,8 +63,8 @@ class DownBeijingBusinessAreaUrlPipeline(object):
         self.cur.execute(sql_select)
         result = self.cur.fetchone()
         if result:
-            print(result)
-            print(
+            logger.info(result)
+            logger.info(
                 f"""Business area[{item['businessAreaName']}] already exists in
                  SQLite database."""
             )
@@ -91,8 +91,8 @@ class DownBeijingBusinessAreaUrlPipeline(object):
 
             except Exception as e:
                 # Rollback if exception.
-                print("------EXCEPTION DURING INSERT------")
-                print(e)
+                logger.error("------EXCEPTION DURING INSERT------")
+                logger.error(e)
                 self.con.rollback()
 
             return item
@@ -107,7 +107,7 @@ class DownBeijingCommunityInfoPipeline(object):
     Save community records to SQLite3 database.
     """
 
-    def __init__(self) -> None:
+    def __init__(self):
         db_path = "database/Lianjia.db"
         self.con = sqlite3.connect(db_path)
         self.cur = self.con.cursor()
@@ -124,7 +124,7 @@ class DownBeijingCommunityInfoPipeline(object):
             community_id integer not null,
             community_name varchar(40) not null,
             community_url varchar(100) unique not null,
-            community_rent_url varchar(100) unique,
+            community_rent_url varchar(100),
             community_business_area varchar(20) not null,
             community_region varchar(20) not null,
             community_city varchar(20) not null,
@@ -157,17 +157,34 @@ class DownBeijingCommunityInfoPipeline(object):
             sql_add = """
             insert into community(community_name, community_url,
             community_rent_url, community_business_area, community_region,
-            community_city) values(%s, %s,
-            %s, %s, %s,
-            %s)
+            community_city) values("%s", "%s",
+            "%s", "%s", "%s",
+            "%s");
             """ % (
-                item['communityName'],
-                item['communityUrl'],
-                item['communityRentUrl'],
-                item['communityBusinessArea'],
-                item['communityRegion'],
-                "北京"
+                item["communityName"],
+                item["communityUrl"],
+                item["communityRentUrl"],
+                item["communityBusinessArea"],
+                item["communityRegion"],
+                "北京",
             )
-            
-            self.cur.execute(sql_add)
+
+            try:
+                self.cur.execute(sql_add)
+                self.con.commit()
+            except Exception as e:
+                logger.error(
+                    "Error inserting '北京' community "
+                    + item["communityName"]
+                    + "["
+                    + item["communityUrl"]
+                    + "]"
+                )
+                logger.error(e)
+                self.con.rollback()
+
             return item
+
+    def close_spider(self, spider):
+        self.cur.close()
+        self.con.close()
