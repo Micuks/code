@@ -60,6 +60,7 @@ class BeijingRentSpider(scrapy.Spider):
         num_rents = response.xpath("//span[@class='q']/text()").get()
         num_rents = re.match(r"^[^\d]+(\d+)", num_rents).group(1)
         logger.debug("Number of houses available on rent[%s]" % num_rents)
+        url_now = response.url
         community_name = str()
         if "0" != num_rents:
             content_list_items = response.xpath(
@@ -140,23 +141,13 @@ class BeijingRentSpider(scrapy.Spider):
                     # Update community_name for logger info
                     community_name = rent_community
 
-                    sql_get_community_id = (
-                        """select community_id
-                        from community
-                        where community_rent_url='%s';
-                        """
-                        % rent_community_rent_url
-                    )
-
-                    self.cur.execute(sql_get_community_id)
-                    rent_community_id = self.cur.fetchone()[0]
                     item = RentalItem(
                         rental_name=rent_name,
                         rental_url=rent_url,
                         rental_city="北京",
                         rental_region=rent_region,
                         rental_business_area=rent_business_area,
-                        rental_community_id=rent_community_id,
+                        rental_community_url=url_now,
                         rental_community=rent_community,
                         rental_area=rent_area,
                         rental_lighting=rent_lighting,
@@ -178,7 +169,6 @@ class BeijingRentSpider(scrapy.Spider):
             pagedata = response.xpath("//div[@class='content__pg']")
             total_page = pagedata.xpath("./@data-totalpage").get()
             curr_page = pagedata.xpath("./@data-curpage").get()
-            url_now = response.url
             if int(curr_page) < int(total_page):
                 url_fragments = response.url.split("/")
                 next_page = str(int(curr_page) + 1)
@@ -219,21 +209,24 @@ class BeijingRentSpider(scrapy.Spider):
                     % url_now
                 )
                 logger.debug(f"Update sql[{sql}]")
+                community_name = community_name
                 try:
                     self.cur.execute(sql)
                     self.con.commit()
+                    logger.info(
+                        f"Finished crawling all rentals in community {community_name}[{url_now}]."
+                    )
+
                 except Exception as e:
+                    self.con.rollback()
                     logger.error(
                         "Error setting accessbit=1 o community[{}]".format(
                             url_now
                         )
                     )
-                    self.con.rollback()
-
-                community_name = community_name
-                logger.info(
-                    f"Finished crawling all rentals in community {community_name}[{url_now}]."
-                )
+                    logger.error(
+                        f"Failed crawling all rentals in community {community_name}[{url_now}]."
+                    )
 
         else:
             # No rentals in current page.
@@ -257,5 +250,3 @@ class BeijingRentSpider(scrapy.Spider):
                     "Error setting accessbit=2 in community[{}]".format(url_now)
                 )
                 self.con.rollback()
-
-            pass
