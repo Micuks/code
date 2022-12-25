@@ -23,10 +23,10 @@ class BusinessAreaSpider(scrapy.Spider):
 
     def start_requests(self):
         urls = [
-            "https://bj.lianjia.com/xiaoqu/",
-            "https://sh.lianjia.com/xiaoqu/",
-            "https://gz.lianjia.com/xiaoqu/",
-            "https://sz.lianjia.com/xiaoqu/",
+            "https://bj.lianjia.com/xiaoqu/dongcheng/",
+            "https://sh.lianjia.com/xiaoqu/pudong/",
+            "https://gz.lianjia.com/xiaoqu/tianhe/",
+            "https://sz.lianjia.com/xiaoqu/luohuqu/",
             "https://wf.lianjia.com/xiaoqu/",
         ]
         cities = ["北京", "上海", "广州", "深圳", "潍坊"]
@@ -45,34 +45,22 @@ class BusinessAreaSpider(scrapy.Spider):
         region_levels = response.xpath(
             "//div[@data-role='ershoufang']/div"
         ).getall()
-        if len(region_levels) == 2:
-            administrative_district_hrefs = response.xpath(
-                "//div[@data-role='ershoufang']/div[1]/a/@href"
-            ).getall()
-            for href in administrative_district_hrefs:
-                href = response.urljoin(href)
-                # Crawl each district href.
-                yield scrapy.Request(
-                    url=href,
-                    callback=self.parse_district,
-                    cb_kwargs={"city": city},
-                )
+        logger.debug(f"len(region_levels)[{len(region_levels)}]")
 
-        elif len(region_levels) == 1:
-            one_level_districts = response.xpath(
-                "//div[@data-role='ershoufang']/div[1]/a/@href"
-            ).getall()
-            for href in one_level_districts:
-                href = response.urljoin(href)
-                yield scrapy.Request(
-                    url=href,
-                    callback=self.parse_one_level_district,
-                    cb_kwargs={"city": city},
-                )
+        administrative_district_hrefs = response.xpath(
+            "//div[@data-role='ershoufang']/div[1]/a/@href"
+        ).getall()
+        for href in administrative_district_hrefs:
+            href = response.urljoin(href)
+            # Crawl each district href.
+            yield scrapy.Request(
+                url=href,
+                callback=self.parse_district,
+                cb_kwargs={"city": city},
+            )
 
-        else:
-            logger.error(f"Unknown region level depth: {len(region_levels)}")
-
+    # For those cities who has only one level filter. Cities like this has not
+    # been found yet.
     def parse_one_level_district(self, response, city="Unknown"):
         """Crawl districts in cities that have only one-level region filter.
         - Crawl business area url of each administrative district,
@@ -98,11 +86,12 @@ class BusinessAreaSpider(scrapy.Spider):
             area_url = response.urljoin(href)
             area_name = name
             logger.info(
-                "Crawling district info:",
-                city,
-                business_curr_district,
-                area_name,
-                area_url,
+                "Crawling district info: {} {} {}[{}]".format(
+                    city,
+                    business_curr_district,
+                    area_name,
+                    area_url,
+                )
             )
 
             item = BusinessAreaItem(
@@ -139,11 +128,12 @@ class BusinessAreaSpider(scrapy.Spider):
             area_name = name
 
             logger.info(
-                "Crawling district info: ",
-                city,
-                business_curr_district,
-                area_name,
-                area_url,
+                "Crawling district info: {} {} {}[{}]".format(
+                    city,
+                    business_curr_district,
+                    area_name,
+                    area_url,
+                )
             )
 
             item = BusinessAreaItem(

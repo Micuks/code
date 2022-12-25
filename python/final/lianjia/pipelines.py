@@ -343,45 +343,60 @@ class DownBusinessAreaUrlPipeline(object):
         for row in rows:
             print("database physical file path: ", row[0], row[1], row[2])
 
-        # Create Beijing business area table if none exists.
-        self.cur.execute(
-            """
-            create table if not exists city(
-                city_id integer not null,
-                city_name varchar(20) unique not null,
-                primary key(city_id)
+        try:
+            # Create Beijing business area table if none exists.
+            self.cur.execute(
+                """
+                create table if not exists city(
+                    city_id integer not null,
+                    city_name varchar(20) unique not null,
+                    primary key(city_id)
+                );
+                """
             )
 
-            create table if not exists region(
-                region_id integer not null,
-                region_name varchar(20) unique not null,
-                city_name varchar(20) not null,
-                primary key(region_id),
-                foreign key (city_name) references city(city_name)
+            self.cur.execute(
+                """
+                create table if not exists region(
+                    region_id integer not null,
+                    region_name varchar(20) not null,
+                    city_name varchar(20) not null,
+                    primary key(region_id),
+                    unique(region_name, city_name),
+                    foreign key (city_name) references city(city_name)
+                );
+                """
             )
 
-            create table if not exists business_area(
-                business_area_id integer not null,
-                business_area_name varchar(20) unique not null,
-                business_area_url varchar(100) unique not null,
-                business_area_region varchar(20) not null,
-                business_area_city varchar(20) not null,
-                business_area_accessbit integer default 0 not null,
+            self.cur.execute(
+                """
+                create table if not exists business_area(
+                    business_area_id integer not null,
+                    business_area_name varchar(20) not null,
+                    business_area_url varchar(100) unique not null,
+                    business_area_region varchar(20) not null,
+                    business_area_city varchar(20) not null,
+                    business_area_accessbit integer default 0 not null,
 
-                primary key(business_area_id),
-                foreign key (business_area_region) references region(region_name),
-                foreign key(business_area_city) references city(city_name)
-            );
-            """
-        )
-        self.con.commit()
+                    unique(business_area_name, business_area_city),
+                    primary key(business_area_id),
+                    foreign key (business_area_region, business_area_city)
+                    references region(region_name, region_city),
+                    foreign key(business_area_city) references city(city_name)
+                );
+                """
+            )
+            self.con.commit()
+        except Exception as e:
+            logger.error("Error creating table city, region or business_area.")
+            raise (e)
 
     def process_item(self, item, spider):
         # Check and update city
         sql_select = """
         select *
         from city
-        where city_name='%s'
+        where city_name='%s';
         """ % (
             item["business_area_city"]
         )
@@ -389,32 +404,70 @@ class DownBusinessAreaUrlPipeline(object):
         result = self.cur.fetchall()
         if not result:
             logger.info("Insert new city {}".format(item["business_area_city"]))
+            sql_insert = (
+                """
+                insert into city(city_name)
+                values("%s");
+                """
+                % item["business_area_city"]
+            )
+            try:
+                self.cur.execute(sql_insert)
+                self.con.commit()
+            except Exception as e:
+                self.con.rollback()
+                logger.error(
+                    "Error inserting new city {}".format(
+                        item["business_area_city"]
+                    )
+                )
 
         # Check and update region
         sql_select = (
             """
         select *
         from region
-        where region_name='%s'
+        where region_name='%s';
         """
             % item["business_area_region"]
         )
         self.cur.execute(sql_select)
         result = self.cur.fetchall()
         if not result:
+            sql_insert = """
+            insert into region(region_name, city_name)
+            values(?, ?);
+            """
             logger.info(
                 "Insert new region {} in city {}.".format(
                     item["business_area_region"], item["business_area_city"]
                 )
             )
+            try:
+                self.cur.execute(
+                    sql_insert,
+                    (
+                        item["business_area_region"],
+                        item["business_area_city"],
+                    ),
+                )
+                self.con.commit()
+            except Exception as e:
+                self.con.rollback()
+                logger.error(
+                    "Error inserting new region {} in city {}".format(
+                        item["business_area_region"],
+                        item["business_area_city"],
+                    )
+                )
+                logger.error(e)
 
         # Check and update business area
         sql_select = (
             """
         select *
         from business_area
-        where business_area_url='%s'
-        ;
+        where business_area_url='%s';
         """
             % item["business_area_url"]
         )
@@ -424,8 +477,8 @@ class DownBusinessAreaUrlPipeline(object):
         if result:
             logger.info(result)
             logger.info(
-                f"""Business area[{item['business_area_name']}] already exists in
-                 SQLite database."""
+                f"Business area[{item['business_area_name']}] already exists in"
+                "SQLite database."
             )
         else:
             sql_add = """
