@@ -30,9 +30,8 @@ class RentSpider(scrapy.Spider):
         }
     }
 
-    def __init__(self, name=None, **kwargs):
-        self.con = sqlite3.connect("database/Lianjia.db")
-        self.cur = self.con.cursor()
+    con = sqlite3.connect("database/Lianjia.db")
+    cur = con.cursor()
 
     def start_requests(self):
         # Fetch communities that has not been crawled yet.

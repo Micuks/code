@@ -34,9 +34,8 @@ class CommunitySpider(scrapy.Spider):
         }
     }
 
-    def __init__(self):
-        self.con = sqlite3.connect("database/Lianjia.db")
-        self.cur = self.con.cursor()
+    con = sqlite3.connect("database/Lianjia.db")
+    cur = con.cursor()
 
     def start_requests(self):
         """
