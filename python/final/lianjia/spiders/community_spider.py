@@ -28,7 +28,7 @@ class CommunitySpider(scrapy.Spider):
     start_urls = []
     custom_settings = {
         "ITEM_PIPELINES": {
-            "lianjia.pipelines.DownBeijingCommunityInfoPipeline": 101,
+            "lianjia.pipelines.DownCommunityInfoPipeline": 101,
         }
     }
 
