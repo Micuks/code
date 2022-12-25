@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 class BusinessAreaSpider(scrapy.Spider):
     name = "BusinessAreaSpider"
     allowed_domains = [
+        "bj.lianjia.com",
         "sh.lianjia.com",
         "gz.lianjia.com",
         "sz.lianjia.com",
@@ -22,12 +23,13 @@ class BusinessAreaSpider(scrapy.Spider):
 
     def start_requests(self):
         urls = [
+            "https://bj.lianjia.com/xiaoqu/",
             "https://sh.lianjia.com/xiaoqu/",
             "https://gz.lianjia.com/xiaoqu/",
             "https://sz.lianjia.com/xiaoqu/",
             "https://wf.lianjia.com/xiaoqu/",
         ]
-        cities = ["上海", "广州", "深圳", "潍坊"]
+        cities = ["北京", "上海", "广州", "深圳", "潍坊"]
         # urls = ['file:///Users/micuks/dev/mycode/python/final/lianjia/'+self.path_to_save_response]
         for i, url in enumerate(urls):
             yield scrapy.Request(
