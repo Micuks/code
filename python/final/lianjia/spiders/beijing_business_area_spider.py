@@ -8,7 +8,7 @@ class BeijingBusinessAreaSpider(scrapy.Spider):
     # path_to_save_response = "beijing_community_response.html"
     custom_settings = {
         "ITEM_PIPELINES": {
-            "lianjia.pipelines.DownBusinessAreaUrlPipeline": 100,
+            "lianjia.pipelines.DownBeijingBusinessAreaUrlPipeline": 100,
         }
     }
 

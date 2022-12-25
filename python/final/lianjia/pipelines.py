@@ -35,7 +35,7 @@ class DownBeijingBusinessAreaUrlPipeline(object):
 
         # Create cursor, used to execute commands.
         self.cur = self.con.cursor()
-        self.cur.execute("PRAGMA database_list")
+        self.cur.execute("PRAGMA database_list;")
         rows = self.cur.fetchall()
         for row in rows:
             print("database physical file path: ", row[0], row[1], row[2])
@@ -57,6 +57,7 @@ class DownBeijingBusinessAreaUrlPipeline(object):
             );
             """
         )
+        self.con.commit()
 
     def process_item(self, item, spider):
         sql_select = """
@@ -70,13 +71,13 @@ class DownBeijingBusinessAreaUrlPipeline(object):
 
         self.cur.execute(sql_select)
         result = self.cur.fetchone()
+        self.con.commit()
         if result:
             logger.info(result)
             logger.info(
                 f"""Business area[{item['business_area_name']}] already exists in
                  SQLite database."""
             )
-
         else:
             sql_add = """
                     insert into business_area(
@@ -120,7 +121,7 @@ class DownBeijingCommunityInfoPipeline(object):
         self.con = sqlite3.connect(db_path)
         self.cur = self.con.cursor()
 
-        self.cur.execute("PRAGMA database_list")
+        self.cur.execute("PRAGMA database_list;")
         rows = self.cur.fetchall()
         for row in rows:
             print("database physical file path:", row[0], row[1], row[2])
@@ -147,6 +148,7 @@ class DownBeijingCommunityInfoPipeline(object):
             );
             """
         )
+        self.con.commit()
 
     def process_item(self, item, spider):
         sql_select = """
@@ -158,6 +160,7 @@ class DownBeijingCommunityInfoPipeline(object):
         )
         self.cur.execute(sql_select)
         result = self.cur.fetchall()
+        self.con.commit()
         if result:
             logger.info(
                 "The community %s is already in table community."
@@ -211,99 +214,114 @@ class DownBeijingRentalInfoPipeline(object):
         self.con = sqlite3.connect(db_path)
         self.cur = self.con.cursor()
 
-        self.cur.execute("PRAGMA database_list")
+        self.cur.execute("PRAGMA database_list;")
         rows = self.cur.fetchall()
         for row in rows:
             print("database physical file path:", row[0], row[1], row[2])
 
         # Create beijing rental info database if not exists.
-        self.cur.execute(
+        try:
+            self.cur.execute(
+                """
+                create table if not exists rental(
+                rental_id integer not null,
+                rental_name varchar(40) not null,
+                rental_url varchar(100) unique not null,
+                rental_city varchar(20) not null,
+                rental_region varchar(20) not null,
+                rental_business_area varchar(20) not null,
+                rental_community_id integer not null,
+                rental_community varchar(40) not null,
+                rental_area numeric(10, 2) not null,
+                rental_lighting varchar(10) not null,
+                rental_rooms integer not null,
+                rental_liverooms integer not null,
+                rental_bathrooms integer not null,
+                rental_price integer not null,
+                rental_timestamp data not null,
+                rental_accessbit integer default 0 not null,
+                primary key(rental_id),
+                foreign key(rental_city) references city(city_name),
+                foreign key(rental_region) references region(region_name),
+                foreign key(rental_business_area)
+                references business_area(business_area_name),
+                foreign key(rental_community_id, rental_community)
+                references community(community_id, community_name)
+                );
             """
-        create table if not exists rental(
-            rental_id integer not null,
-            rental_name varchar(40) not null,
-            rental_url varchar(100) unique not null,
-            rental_city varchar(20) not null,
-            rental_region varchar(20) not null,
-            rental_business_area varchar(20) not null,
-            rental_community_id integer not null,
-            rental_community varchar(40) not null,
-            rental_area numeric(10, 2) not null,
-            rental_lighting varchar(10) not null,
-            rental_rooms integer not null,
-            rental_liverooms integer not null,
-            rental_bathrooms integer not null,
-            rental_price integer not null,
-            rental_timestamp data not null,
-            rental_accessbit integer default 0 not null,
-            primary key(rental_id),
-            foreign key(rental_city) references city(city_name),
-            foreign key(rental_region) references region(region_name),
-            foreign key(rental_business_area)
-            references business_area(business_area_name),
-            foreign key(rental_community_id, rental_community_name)
-            references community(community_id, community_name)
-        );
-        """
-        )
+            )
+            self.con.commit()
+        except Exception as e:
+            self.con.rollback()
+            logger.error("Error creating rental table.")
+            logger.error(e)
 
     def process_item(self, item, spider):
         sql_select = (
             """
         select *
         from rental
-        where rental_url='%s'
+        where rental_url='%s';
         """
             % item["rental_url"]
         )
+        logger.debug(f"sql_select[{sql_select}]")
 
-        self.cur.execute(sql_select)
-        result = self.cur.fetchall()
-        if result:
-            logger.info(
-                "The rental %s is already in table rental."
-                % item["rental_name"]
-            )
-            pass
-        else:
-            sql_add = """
-            insert into rental(rental_name, rental_url, rental_city,
-            rental_region, rental_business_area, rental_community_id,
-            rental_community, rental_area, rental_lighting, rental_rooms,
-            rental_liverooms, rental_bathrooms, rental_price, rental_timestamp)
-            values(?,?,?
-                   ?,?,?,
-                   ?,?,?,?,
-                   ?,?,?,?)
-            """
-            try:
-                self.cur.execute(
-                    sql_add,
-                    (
-                        item["rental_name"],
-                        item["rental_url"],
-                        item["rental_city"],
-                        item["rental_region"],
-                        item["rental_business_area"],
-                        item["rental_community_id"],
-                        item["rental_community"],
-                        item["rental_area"],
-                        item["rental_lighting"],
-                        item["rental_rooms"],
-                        item["rental_liverooms"],
-                        item["rental_bathrooms"],
-                        item["rental_price"],
-                        item["rental_timestamp"],
-                    ),
+        try:
+            self.cur.execute(sql_select)
+            result = self.cur.fetchall()
+
+            if result:
+                logger.info(
+                    "The rental %s is already in table rental."
+                    % item["rental_name"]
                 )
-                self.con.commit()
-            except Exception as e:
-                self.con.rollback()
-                logger.error("Error inserting into table rental.")
-                logger.error(e)
-            
-            return item
-        
+                pass
+            else:
+                sql_add = """
+                insert into rental(rental_name, rental_url, rental_city,
+                rental_region, rental_business_area, rental_community_id,
+                rental_community, rental_area, rental_lighting, rental_rooms,
+                rental_liverooms, rental_bathrooms, rental_price, rental_timestamp)
+                values(?,?,?,
+                       ?,?,?,
+                       ?,?,?,?,
+                       ?,?,?,?);
+                """
+                try:
+                    self.cur.execute(
+                        sql_add,
+                        (
+                            item["rental_name"],
+                            item["rental_url"],
+                            item["rental_city"],
+                            item["rental_region"],
+                            item["rental_business_area"],
+                            item["rental_community_id"],
+                            item["rental_community"],
+                            item["rental_area"],
+                            item["rental_lighting"],
+                            item["rental_rooms"],
+                            item["rental_liverooms"],
+                            item["rental_bathrooms"],
+                            item["rental_price"],
+                            item["rental_timestamp"],
+                        ),
+                    )
+                    self.con.commit()
+                except Exception as e:
+                    self.con.rollback()
+                    logger.error("Error inserting into table rental.")
+                    logger.error(e)
+
+                return item
+        except Exception as e:
+            logger.error(
+                f"Error processing item[{item['rental_name']}] in pipeline."
+            )
+            logger.error(e)
+            self.con.rollback()
+
     def close_spider(self, spider):
         self.cur.close()
         self.con.close()
