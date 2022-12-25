@@ -11,30 +11,30 @@ class BeijingCommunitySpider(scrapy.Spider):
     start_urls = []
     custom_settings = {
         "ITEM_PIPELINES": {
-            "lianjia.pipelines.DownCommunityInfoPipeline": 101,
+            "lianjia.pipelines.DownBeijingCommunityInfoPipeline": 101,
         }
     }
 
-    def __init__(self, name=None, **kwargs):
+    def __init__(self):
         self.con = sqlite3.connect("database/Lianjia.db")
         self.cur = self.con.cursor()
 
     def start_requests(self):
-        '''
+        """
         Crawl all business areas in '北京'.
-        '''
+        """
         sql = """
         select business_area_url
         from business_area
-        where b_accessbit=0
+        where business_area_accessbit=0
         and business_area_city='北京';
         """
         self.cur.execute(sql)
         business_area_urls = self.cur.fetchall()
         for area_url in business_area_urls:
             try:
-                print(f"Crawling business area {area_url}")
-                yield scrapy.Request(area_url)
+                print(f"Crawling business area {area_url[0]}")
+                yield scrapy.Request(area_url[0])
             except:
                 continue
 
@@ -56,12 +56,12 @@ class BeijingCommunitySpider(scrapy.Spider):
                 # zone of urls containing rent url varies.
                 try:
                     if len(urls) == 2:
-                        item["communityRentUrl"] = urls.xpath(
-                            ".//div[@class='title']/a[2]/@href"
+                        item["communityRentUrl"] = list_item.xpath(
+                            ".//div[@class='houseInfo']/a[2]/@href"
                         ).get()
                     elif len(urls) == 3:
-                        item["communityRentUrl"] = urls.xpath(
-                            ".//div[@class='title']/a[3]/@href"
+                        item["communityRentUrl"] = list_item.xpath(
+                            ".//div[@class='houseInfo']/a[3]/@href"
                         ).get()
                 except:
                     logger.info(
@@ -88,7 +88,7 @@ class BeijingCommunitySpider(scrapy.Spider):
                 #     callback=self.parse_community,
                 #     meta={"item": item},
                 # )
-                
+
                 # Or just yield community item to pipeline
                 yield item
 
@@ -102,9 +102,7 @@ class BeijingCommunitySpider(scrapy.Spider):
         pagedata = response.xpath(
             "//div[@class='page-box house-lst-page-box']/@page-data"
         ).get()
-        json_pagedata = json.loads(pagedata)
-        total_page = pagedata["totalPage"]
-        curr_page = pagedata["curPage"]
+        logger.debug(f"Pagedata: {pagedata}")
 
         url_framents = response.url.split("/")
         main_url = (
@@ -118,51 +116,72 @@ class BeijingCommunitySpider(scrapy.Spider):
             + "/"
         )
 
-        # Crawl next page if not the last page.
-        if curr_page < total_page:
-            curr_page += 1
-            next_url = main_url + "pg%d/" % curr_page
-            print(next_url)
+        if pagedata:
             try:
-                logger.info(
-                    "Crawl next community page in {}".format(
-                        item["communityBusinessArea"]
-                    )
-                )
-                yield scrapy.Request(url=next_url, callback=self.parse)
-            except:
-                logger.error(
-                    "Error crawling next community page "
-                    + next_url
-                    + " in "
-                    + item["communityBusinessArea"]
-                )
-        else:
-            print("------------")
-            # Set accessbit to 1 for resume crawling.
-            sql = (
-                """
-            update business_area
-            set business_area_accessbit=1
-            where b_url='%s'
-            and business_area_city='北京';
-            """
-                % main_url
-            )
-            try:
-                self.cur.execute(sql)
-                logger.info(
-                    "Finished crawling \"北京\" business area "
-                    + item["communityBusinessArea"]
-                    + "["
-                    + main_url
-                    + "]"
-                )
+                pagedata = json.loads(pagedata)
+                logger.debug(f"Pagedata json: {pagedata}")
+                total_page = pagedata["totalPage"]
+                curr_page = pagedata["curPage"]
+
+                # Crawl next page if not the last page.
+                if curr_page < total_page:
+                    curr_page += 1
+                    next_url = main_url + "pg%d/" % curr_page
+                    logger.debug(f"next_url: {next_url}")
+                    try:
+                        logger.info(
+                            "Crawl next community page in {}".format(
+                                item["communityBusinessArea"]
+                            )
+                        )
+                        yield scrapy.Request(url=next_url, callback=self.parse)
+                    except:
+                        logger.error(
+                            "Error crawling next community page "
+                            + next_url
+                            + " in "
+                            + item["communityBusinessArea"]
+                        )
+                else:
+                    self.finish_area(main_url)
             except Exception as e:
-                logger.error(
-                    "Error updating accessbit of \"北京\" business area "
-                    + item["communityBusinessArea"]
-                    + "["
-                    + main_url
-                    + "]"
-                )
+                logger.error(e)
+
+    def finish_area(self, main_url):
+        # Set accessbit to 1 for resume crawling.
+        logger.debug(f"in finish_area: main_url{main_url}")
+
+        update_sql = (
+            " update business_area set business_area_accessbit=1 where business_area_url='%s' and business_area_city='北京'; "
+            % main_url
+        )
+
+        get_area_sql = (
+            " select business_area_name from business_area where business_area_url='%s' and business_area_city='北京'; "
+            % main_url
+        )
+
+        self.cur.execute(get_area_sql)
+        business_area_name = self.cur.fetchone()
+        logger.debug(f"business_area_name[{business_area_name}]")
+
+        try:
+            self.cur.execute(update_sql)
+            self.con.commit()
+            logger.info(
+                'Finished crawling "北京" business area '
+                + business_area_name[0]
+                + "["
+                + main_url
+                + "]"
+            )
+        except Exception as e:
+            self.con.rollback()
+            logger.error(
+                'Error updating accessbit of "北京" business area '
+                + business_area_name[0]
+                + "["
+                + main_url
+                + "]"
+            )
+            logger.error(e)
