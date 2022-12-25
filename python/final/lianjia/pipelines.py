@@ -5,9 +5,17 @@
 
 
 # useful for handling different item types with a single interface
-from asyncio.log import logger
 from itemadapter import ItemAdapter
 import sqlite3
+import logging
+
+logging.basicConfig(
+    format="%(asctime)s [%(filename)s:%(lineno)d] %(levelname)s: %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S",
+    level=logging.DEBUG,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class LianjiaPipeline:
@@ -57,7 +65,7 @@ class DownBeijingBusinessAreaUrlPipeline(object):
         where business_area_url='%s'
         and business_area_city='北京';
         """ % (
-            item["businessAreaUrl"]
+            item["business_area_url"]
         )
 
         self.cur.execute(sql_select)
@@ -65,7 +73,7 @@ class DownBeijingBusinessAreaUrlPipeline(object):
         if result:
             logger.info(result)
             logger.info(
-                f"""Business area[{item['businessAreaName']}] already exists in
+                f"""Business area[{item['business_area_name']}] already exists in
                  SQLite database."""
             )
 
@@ -81,9 +89,9 @@ class DownBeijingBusinessAreaUrlPipeline(object):
                 self.cur.execute(
                     sql_add,
                     (
-                        item["businessAreaName"],
-                        item["businessAreaUrl"],
-                        item["businessAreaRegion"],
+                        item["business_area_name"],
+                        item["business_area_url"],
+                        item["business_area_region"],
                     ),
                 )
                 # Commit if no exception.
@@ -91,7 +99,7 @@ class DownBeijingBusinessAreaUrlPipeline(object):
 
             except Exception as e:
                 # Rollback if exception.
-                logger.error("------EXCEPTION DURING INSERT------")
+                logger.error("Error inserting into table business_area.")
                 logger.error(e)
                 self.con.rollback()
 
@@ -151,7 +159,10 @@ class DownBeijingCommunityInfoPipeline(object):
         self.cur.execute(sql_select)
         result = self.cur.fetchall()
         if result:
-            logger.info("The community is already in beijing_community_info")
+            logger.info(
+                "The community %s is already in table community."
+                % item["communityName"]
+            )
             pass
         else:
             sql_add = """
@@ -161,11 +172,11 @@ class DownBeijingCommunityInfoPipeline(object):
             "%s", "%s", "%s",
             "%s");
             """ % (
-                item["communityName"],
-                item["communityUrl"],
-                item["communityRentUrl"],
-                item["communityBusinessArea"],
-                item["communityRegion"],
+                item["community_name"],
+                item["community_url"],
+                item["community_rent_url"],
+                item["community_business_area"],
+                item["community_region"],
                 "北京",
             )
 
@@ -175,9 +186,9 @@ class DownBeijingCommunityInfoPipeline(object):
             except Exception as e:
                 logger.error(
                     "Error inserting '北京' community "
-                    + item["communityName"]
+                    + item["community_name"]
                     + "["
-                    + item["communityUrl"]
+                    + item["community_url"]
                     + "]"
                 )
                 logger.error(e)
@@ -185,6 +196,114 @@ class DownBeijingCommunityInfoPipeline(object):
 
             return item
 
+    def close_spider(self, spider):
+        self.cur.close()
+        self.con.close()
+
+
+class DownBeijingRentalInfoPipeline(object):
+    """
+    Save rental info records to SQLite3 database.
+    """
+
+    def __init__(self) -> None:
+        db_path = "database/Lianjia.db"
+        self.con = sqlite3.connect(db_path)
+        self.cur = self.con.cursor()
+
+        self.cur.execute("PRAGMA database_list")
+        rows = self.cur.fetchall()
+        for row in rows:
+            print("database physical file path:", row[0], row[1], row[2])
+
+        # Create beijing rental info database if not exists.
+        self.cur.execute(
+            """
+        create table if not exists rental(
+            rental_id integer not null,
+            rental_name varchar(40) not null,
+            rental_url varchar(100) unique not null,
+            rental_city varchar(20) not null,
+            rental_region varchar(20) not null,
+            rental_business_area varchar(20) not null,
+            rental_community_id integer not null,
+            rental_community varchar(40) not null,
+            rental_area numeric(10, 2) not null,
+            rental_lighting varchar(10) not null,
+            rental_rooms integer not null,
+            rental_liverooms integer not null,
+            rental_bathrooms integer not null,
+            rental_price integer not null,
+            rental_timestamp data not null,
+            rental_accessbit integer default 0 not null,
+            primary key(rental_id),
+            foreign key(rental_city) references city(city_name),
+            foreign key(rental_region) references region(region_name),
+            foreign key(rental_business_area)
+            references business_area(business_area_name),
+            foreign key(rental_community_id, rental_community_name)
+            references community(community_id, community_name)
+        );
+        """
+        )
+
+    def process_item(self, item, spider):
+        sql_select = (
+            """
+        select *
+        from rental
+        where rental_url='%s'
+        """
+            % item["rental_url"]
+        )
+
+        self.cur.execute(sql_select)
+        result = self.cur.fetchall()
+        if result:
+            logger.info(
+                "The rental %s is already in table rental."
+                % item["rental_name"]
+            )
+            pass
+        else:
+            sql_add = """
+            insert into rental(rental_name, rental_url, rental_city,
+            rental_region, rental_business_area, rental_community_id,
+            rental_community, rental_area, rental_lighting, rental_rooms,
+            rental_liverooms, rental_bathrooms, rental_price, rental_timestamp)
+            values(?,?,?
+                   ?,?,?,
+                   ?,?,?,?,
+                   ?,?,?,?)
+            """
+            try:
+                self.cur.execute(
+                    sql_add,
+                    (
+                        item["rental_name"],
+                        item["rental_url"],
+                        item["rental_city"],
+                        item["rental_region"],
+                        item["rental_business_area"],
+                        item["rental_community_id"],
+                        item["rental_community"],
+                        item["rental_area"],
+                        item["rental_lighting"],
+                        item["rental_rooms"],
+                        item["rental_liverooms"],
+                        item["rental_bathrooms"],
+                        item["rental_price"],
+                        item["rental_timestamp"],
+                    ),
+                )
+                self.con.commit()
+            except Exception as e:
+                self.con.rollback()
+                logger.error("Error inserting into table rental.")
+                logger.error(e)
+            
+            return item
+        
     def close_spider(self, spider):
         self.cur.close()
         self.con.close()

@@ -31,8 +31,11 @@ class CommunityItem(scrapy.Item):
 class RentalItem(scrapy.Item):
     # Rental info
     rental_name = scrapy.Field()
+    rental_url = scrapy.Field()
+    rental_city=scrapy.Field()
     rental_region = scrapy.Field()
     rental_business_area = scrapy.Field()
+    rental_community_id=scrapy.Field()
     rental_community = scrapy.Field()
     rental_area = scrapy.Field()
     rental_lighting = scrapy.Field()
