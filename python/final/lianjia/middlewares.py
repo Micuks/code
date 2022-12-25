@@ -114,7 +114,7 @@ class ProxiesMiddleware(object):
         return cls(crawler.settings)
 
     def process_request(self, request, spider):
-        custom_proxy = "http://127.0.0.1:8001"
+        custom_proxy = "http://127.0.0.1:7890"
         print(f"Using proxy: {custom_proxy}")
         request.meta["proxy"] = custom_proxy
 
