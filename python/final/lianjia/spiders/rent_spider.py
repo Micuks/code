@@ -5,12 +5,6 @@ import scrapy
 import sqlite3
 import logging
 
-# logging.basicConfig(
-#     format="%(asctime)s [%(filename)s:%(lineno)d] %(levelname)s: %(message)s",
-#     datefmt="%Y-%m-%dT%H:%M:%S",
-#     level=logging.DEBUG,
-# )
-
 logger = logging.getLogger(__name__)
 
 
@@ -126,12 +120,29 @@ class RentSpider(scrapy.Spider):
                         elif "卫" in info:
                             logger.debug(f"room info[{info}]")
                             # Rental room info(%d rooms, %d live rooms, %d bathrooms)
-                            re_rent_roominto = re.match(
-                                r"^[\s]*?(\d+)室(\d+)厅(\d+)卫.*?", info
-                            )
-                            rent_rooms = re_rent_roominto.group(1)
-                            rent_liverooms = re_rent_roominto.group(2)
-                            rent_bathrooms = re_rent_roominto.group(3)
+                            rent_rooms = None
+                            rent_liverooms = None
+                            rent_bathrooms = None
+                            try:
+                                re_rent_roominto = re.match(
+                                    r"^[\s]*?(\d+)室(\d+)厅(\d+)卫.*?", info
+                                )
+                                rent_rooms = re_rent_roominto.group(1)
+                                rent_liverooms = re_rent_roominto.group(2)
+                                rent_bathrooms = re_rent_roominto.group(3)
+                            except:
+                                try:
+                                    re_rent_roominto = re.match(
+                                        r"^[\s]*?(\d+)房间(\d+)卫.*?", info
+                                    )
+                                    rent_rooms = re_rent_roominto.group(1)
+                                    rent_liverooms = 0
+                                    rent_bathrooms = re_rent_roominto.group(2)
+                                except:
+                                    rent_rooms = 0
+                                    rent_liverooms = 0
+                                    rent_bathrooms = 0
+
                         elif (
                             "南" in info
                             or "北" in info
@@ -206,7 +217,11 @@ class RentSpider(scrapy.Spider):
                     logger.info(
                         "Crawl next page's rentals: [{}]".format(next_url)
                     )
-                    yield scrapy.Request(url=next_url, callback=self.parse)
+                    yield scrapy.Request(
+                        url=next_url,
+                        callback=self.parse,
+                        cb_kwargs={"city": city},
+                    )
                 except Exception as e:
                     logger.error(
                         "Error attempting to crawl next page's rentals[{}]",
