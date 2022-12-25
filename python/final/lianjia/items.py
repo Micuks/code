@@ -25,6 +25,7 @@ class CommunityItem(scrapy.Item):
     community_url = scrapy.Field()
     community_name = scrapy.Field()
     community_region = scrapy.Field()
+    community_city = scrapy.Field()
     community_business_area = scrapy.Field()
     community_rent_url = scrapy.Field()
 

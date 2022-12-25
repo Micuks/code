@@ -4,12 +4,6 @@ import scrapy
 import sqlite3
 from ..items import *
 
-# logging.basicConfig(
-#     format="%(asctime)s [%(filename)s:%(lineno)d] %(levelname)s: %(message)s",
-#     datefmt="%Y-%m-%dT%H:%M:%S",
-#     level=logging.DEBUG,
-# )
-
 logger = logging.getLogger(__name__)
 
 
