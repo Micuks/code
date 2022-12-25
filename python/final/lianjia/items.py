@@ -17,6 +17,7 @@ class BusinessAreaItem(scrapy.Item):
     business_area_url = scrapy.Field()
     business_area_name = scrapy.Field()
     business_area_region = scrapy.Field()
+    business_area_city = scrapy.Field()
 
 
 class CommunityItem(scrapy.Item):
