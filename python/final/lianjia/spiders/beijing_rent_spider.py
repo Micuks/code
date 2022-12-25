@@ -29,9 +29,12 @@ class BeijingRentSpider(scrapy.Spider):
         self.cur = self.con.cursor()
 
     def start_requests(self):
+        # Fetch communities that has not been crawled yet.
         sql = """select community_name, community_rent_url
             from community
             where community_rent_url!='None'
+            and community_city='北京'
+            and community_accessbit=0;
             """
         self.cur.execute(sql)
         rent_items = self.cur.fetchall()
@@ -79,8 +82,12 @@ class BeijingRentSpider(scrapy.Spider):
                         .strip()
                     )
                     rent_url = item_title.xpath(
-                        ".//a[@target='_blank]/@href"
+                        ".//a[@target='_blank']/@href"
                     ).get()
+                    url_fragments = response.url.split("/")
+                    rent_url = (
+                        url_fragments[0] + "//" + url_fragments[2] + rent_url
+                    )
 
                     # Get rental's location info
                     item_des = item_main.xpath(
@@ -212,8 +219,17 @@ class BeijingRentSpider(scrapy.Spider):
                     % url_now
                 )
                 logger.debug(f"Update sql[{sql}]")
-                self.cur.execute(sql)
-                self.con.commit()
+                try:
+                    self.cur.execute(sql)
+                    self.con.commit()
+                except Exception as e:
+                    logger.error(
+                        "Error setting accessbit=1 o community[{}]".format(
+                            url_now
+                        )
+                    )
+                    self.con.rollback()
+
                 community_name = community_name
                 logger.info(
                     f"Finished crawling all rentals in community {community_name}[{url_now}]."
@@ -233,6 +249,13 @@ class BeijingRentSpider(scrapy.Spider):
                 """
                 % url_now
             )
-            self.cur.execute(sql)
-            self.con.commit()
+            try:
+                self.cur.execute(sql)
+                self.con.commit()
+            except Exception as e:
+                logger.error(
+                    "Error setting accessbit=2 in community[{}]".format(url_now)
+                )
+                self.con.rollback()
+
             pass
