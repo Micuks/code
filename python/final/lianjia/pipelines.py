@@ -9,14 +9,8 @@ from itemadapter import ItemAdapter
 import sqlite3
 import logging
 
-logging.basicConfig(
-    format="%(asctime)s [%(filename)s:%(lineno)d] %(levelname)s: %(message)s",
-    datefmt="%Y-%m-%dT%H:%M:%S",
-    level=logging.DEBUG,
-)
-
 logger = logging.getLogger(__name__)
-
+# logger.setLevel(logging.INFO)
 
 class LianjiaPipeline:
     def process_item(self, item, spider):
@@ -563,7 +557,7 @@ class DownCommunityInfoPipeline(object):
         from community
         where community_url='%s';
         """ % (
-            item["communityUrl"]
+            item["community_url"]
         )
         self.cur.execute(sql_select)
         result = self.cur.fetchall()
@@ -571,7 +565,7 @@ class DownCommunityInfoPipeline(object):
         if result:
             logger.info(
                 "The community %s is already in table community."
-                % item["communityName"]
+                % item["community_name"]
             )
             pass
         else:

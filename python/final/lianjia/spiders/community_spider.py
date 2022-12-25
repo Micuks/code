@@ -3,8 +3,10 @@ import logging
 import scrapy
 import sqlite3
 from ..items import *
+import logging
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 class CommunitySpider(scrapy.Spider):
@@ -46,10 +48,8 @@ class CommunitySpider(scrapy.Spider):
         where business_area_accessbit=0;
         """
         self.cur.execute(sql)
-        business_area_urls, business_area_cities = self.cur.fetchall()
-        for area_url, area_city in zip(
-            business_area_urls, business_area_cities
-        ):
+        business_areas = self.cur.fetchall()
+        for area_url, area_city in business_areas:
             try:
                 print(f"Crawling business area {area_url} in {area_city}")
                 yield scrapy.Request(
@@ -140,56 +140,60 @@ class CommunitySpider(scrapy.Spider):
         )
 
         if pagedata:
-            try:
-                pagedata = json.loads(pagedata)
-                logger.debug(f"Pagedata json: {pagedata}")
-                total_page = pagedata["totalPage"]
-                curr_page = pagedata["curPage"]
+            pagedata = json.loads(pagedata)
+            logger.debug(f"Pagedata json: {pagedata}")
+            total_page = pagedata["totalPage"]
+            curr_page = pagedata["curPage"]
 
-                # Crawl next page if not the last page.
-                if curr_page < total_page:
-                    curr_page += 1
-                    next_url = main_url + "pg%d/" % curr_page
-                    logger.debug(f"next_url: {next_url}")
-                    try:
-                        logger.info(
-                            "Crawl next community page in {}".format(
-                                item["community_business_area"]
-                            )
+            # Crawl next page if not the last page.
+            if curr_page < total_page:
+                curr_page += 1
+                try:
+                    next_url = main_url + f"pg{curr_page}/"
+                except Exception as e:
+                    logger.error(f"next_url: {next_url}")
+                    logger.error(e)
+
+                try:
+                    logger.info(
+                        "Crawl next community page in {}".format(
+                            item["community_business_area"]
                         )
-                        yield scrapy.Request(url=next_url, callback=self.parse)
-                    except:
-                        logger.error(
-                            "Error crawling next community page "
-                            + next_url
-                            + " in "
-                            + item["community_business_area"]
-                        )
-                else:
-                    self.finish_area(main_url, city)
-            except Exception as e:
-                logger.error(e)
+                    )
+                    yield scrapy.Request(
+                        url=next_url,
+                        callback=self.parse,
+                        cb_kwargs={"city": city},
+                    )
+                except:
+                    logger.error(
+                        "Error crawling next community page "
+                        + next_url
+                        + " in "
+                        + item["community_business_area"]
+                    )
+            else:
+                self.finish_area(main_url, city)
 
     def finish_area(self, main_url, city):
         # Set accessbit to 1 for resume crawling.
-        logger.debug(f"in finish_area of main_url{main_url} in {city}")
+        logger.debug(f"in finish_area of {main_url} in {city}")
 
-        get_area_sql = (
-            """ select business_area_name
+        get_area_sql = """ select business_area_name
             from business_area
             where business_area_url='%s'
             and business_area_city='%s';
-            """
-            % main_url,
+            """ % (
+            main_url,
             city,
         )
 
-        update_sql = (
-            """ update business_area
+        update_sql = """ update business_area
             set business_area_accessbit=1
             where business_area_url='%s'
-            and business_area_city='%s'; """
-            % main_url,
+            and business_area_city='%s';
+            """ % (
+            main_url,
             city,
         )
 
@@ -201,19 +205,18 @@ class CommunitySpider(scrapy.Spider):
             self.cur.execute(update_sql)
             self.con.commit()
             logger.info(
-                'Finished crawling "%s" business area '
-                + business_area_name[0]
+                'Finished crawling "%s" business area ' % business_area_name[0]
                 + "["
                 + main_url
-                + "]" % city
+                + "] in %s" % city
             )
         except Exception as e:
             self.con.rollback()
             logger.error(
                 'Error updating accessbit of "%s" business area '
-                + business_area_name[0]
+                % business_area_name[0]
                 + "["
                 + main_url
-                + "]" % city
+                + "] in %s" % city
             )
             logger.error(e)
