@@ -28,7 +28,7 @@ class DownBeijingBusinessAreaUrlPipeline(object):
     Save business area records to SQLite3 database.
     """
 
-    def __init__(self):
+    def open_spider(self, spider):
         db_path = "database/Lianjia.db"
         # Connect to database.
         self.con = sqlite3.connect(db_path)
@@ -116,7 +116,7 @@ class DownBeijingCommunityInfoPipeline(object):
     Save community records to SQLite3 database.
     """
 
-    def __init__(self):
+    def open_spider(self, spider):
         db_path = "database/Lianjia.db"
         self.con = sqlite3.connect(db_path)
         self.cur = self.con.cursor()
@@ -209,7 +209,7 @@ class DownBeijingRentalInfoPipeline(object):
     Save rental info records to SQLite3 database.
     """
 
-    def __init__(self) -> None:
+    def open_spider(self, spider):
         db_path = "database/Lianjia.db"
         self.con = sqlite3.connect(db_path)
         self.cur = self.con.cursor()
@@ -230,7 +230,7 @@ class DownBeijingRentalInfoPipeline(object):
                 rental_city varchar(20) not null,
                 rental_region varchar(20) not null,
                 rental_business_area varchar(20) not null,
-                rental_community_id integer not null,
+                rental_community_url varchar(100) not null,
                 rental_community varchar(40) not null,
                 rental_area numeric(10, 2) not null,
                 rental_lighting varchar(10) not null,
@@ -245,8 +245,8 @@ class DownBeijingRentalInfoPipeline(object):
                 foreign key(rental_region) references region(region_name),
                 foreign key(rental_business_area)
                 references business_area(business_area_name),
-                foreign key(rental_community_id, rental_community)
-                references community(community_id, community_name)
+                foreign key(rental_community, rental_community_url)
+                references community(community_name, community_url)
                 );
             """
             )
@@ -265,7 +265,6 @@ class DownBeijingRentalInfoPipeline(object):
         """
             % item["rental_url"]
         )
-        logger.debug(f"sql_select[{sql_select}]")
 
         try:
             self.cur.execute(sql_select)
@@ -280,7 +279,7 @@ class DownBeijingRentalInfoPipeline(object):
             else:
                 sql_add = """
                 insert into rental(rental_name, rental_url, rental_city,
-                rental_region, rental_business_area, rental_community_id,
+                rental_region, rental_business_area, rental_community_url,
                 rental_community, rental_area, rental_lighting, rental_rooms,
                 rental_liverooms, rental_bathrooms, rental_price, rental_timestamp)
                 values(?,?,?,
@@ -297,7 +296,7 @@ class DownBeijingRentalInfoPipeline(object):
                             item["rental_city"],
                             item["rental_region"],
                             item["rental_business_area"],
-                            item["rental_community_id"],
+                            item["rental_community_url"],
                             item["rental_community"],
                             item["rental_area"],
                             item["rental_lighting"],
