@@ -6,6 +6,7 @@ import sqlite3
 import logging
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 class RentSpider(scrapy.Spider):
@@ -64,9 +65,13 @@ class RentSpider(scrapy.Spider):
 
     def parse(self, response, city):
         # Crawl rental's details
-        num_rents = response.xpath("//span[@class='q']/text()").get()
-        num_rents = re.match(r"^[^\d]+(\d+)", num_rents).group(1)
-        logger.debug("Number of houses available on rent[%s]" % num_rents)
+        num_rents = "0"
+        try:
+            num_rents = response.xpath("//span[@class='q']/text()").get()
+            num_rents = re.match(r"^[^\d]+(\d+)", num_rents).group(1)
+            logger.debug("Number of houses available on rent[%s]" % num_rents)
+        except:
+            pass
         url_now = response.url
         community_name = str()
         if "0" != num_rents:
@@ -197,21 +202,41 @@ class RentSpider(scrapy.Spider):
             if int(curr_page) < int(total_page):
                 url_fragments = response.url.split("/")
                 next_page = str(int(curr_page) + 1)
+                next_url = str()
                 if "pg" in url_now:
-                    next_url = url_now.replace(
-                        "pg%s" % curr_page, "pg%s", next_page
-                    )
+                    try:
+                        next_url = url_now.replace(
+                            "pg" + curr_page, "pg" + next_page
+                        )
+                    except Exception as e:
+                        logger.error(
+                            "Error getting next page's url[{}] in {}".format(
+                                next_url, community_name
+                            )
+                        )
+                        logger.error(
+                            "curr_page[{}], next_page[{}]".format(
+                                curr_page, next_page
+                            )
+                        )
                 else:
-                    next_url = (
-                        url_fragments[0]
-                        + "//"
-                        + url_fragments[2]
-                        + "/"
-                        + url_fragments[3]
-                        + "/pg%s" % next_page
-                        + url_fragments[4]
-                        + "/"
-                    )
+                    try:
+                        next_url = (
+                            url_fragments[0]
+                            + "//"
+                            + url_fragments[2]
+                            + "/"
+                            + url_fragments[3]
+                            + "/pg%s" % next_page
+                            + url_fragments[4]
+                            + "/"
+                        )
+                    except Exception as e:
+                        logger.error(
+                            "Error getting next page's url[{}] in {}".format(
+                                next_url, community_name
+                            )
+                        )
 
                 try:
                     logger.info(
@@ -224,8 +249,9 @@ class RentSpider(scrapy.Spider):
                     )
                 except Exception as e:
                     logger.error(
-                        "Error attempting to crawl next page's rentals[{}]",
-                        next_url,
+                        "Error attempting to crawl next page's rentals[{}]".format(
+                            next_url
+                        )
                     )
                     logger.error(e)
             else:

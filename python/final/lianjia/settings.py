@@ -59,7 +59,7 @@ DEFAULT_REQUEST_HEADERS = {
 DOWNLOADER_MIDDLEWARES = {
     # "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
     # "scrapy_user_agents.middlewares.RandomUserAgentMiddleware": 400,
-    "lianjia.middlewares.ProxiesMiddleware": 300,
+    # "lianjia.middlewares.ProxiesMiddleware": 300,
 }
 
 # Enable or disable extensions
