@@ -11,7 +11,7 @@ import logging
 import os
 
 logger = logging.getLogger(__name__)
-# logger.setLevel(logging.INFO)
+logger.setLevel(logging.INFO)
 
 class LianjiaPipeline:
     def process_item(self, item, spider):
