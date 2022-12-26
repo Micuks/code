@@ -173,6 +173,13 @@ class CommunitySpider(scrapy.Spider):
                     )
             else:
                 self.finish_area(main_url, city)
+        else:
+            logger.info(
+                "No nextpage data in {}[{}]. Finished crawling this business area.".format(
+                    item["community_business_area"], main_url
+                )
+            )
+            self.finish_area(main_url, city)
 
     def finish_area(self, main_url, city):
         # Set accessbit to 1 for resume crawling.

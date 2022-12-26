@@ -193,6 +193,7 @@ class RentSpider(scrapy.Spider):
             pagedata = response.xpath("//div[@class='content__pg']")
             total_page = pagedata.xpath("./@data-totalpage").get()
             curr_page = pagedata.xpath("./@data-curpage").get()
+
             if int(curr_page) < int(total_page):
                 url_fragments = response.url.split("/")
                 next_page = str(int(curr_page) + 1)

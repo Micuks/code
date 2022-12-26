@@ -124,30 +124,28 @@ class BeijingCommunitySpider(scrapy.Spider):
                 logger.debug(f"Pagedata json: {pagedata}")
                 total_page = pagedata["totalPage"]
                 curr_page = pagedata["curPage"]
-
-                # Crawl next page if not the last page.
-                if curr_page < total_page:
-                    curr_page += 1
-                    next_url = main_url + "pg%d/" % curr_page
-                    logger.debug(f"next_url: {next_url}")
-                    try:
-                        logger.info(
-                            "Crawl next community page in {}".format(
-                                item["communityBusinessArea"]
-                            )
-                        )
-                        yield scrapy.Request(url=next_url, callback=self.parse)
-                    except:
-                        logger.error(
-                            "Error crawling next community page "
-                            + next_url
-                            + " in "
-                            + item["communityBusinessArea"]
-                        )
-                else:
-                    self.finish_area(main_url)
             except Exception as e:
                 logger.error(e)
+
+            curr_page += 1
+            next_url = main_url + "pg%d/" % curr_page
+            logger.debug(f"next_url: {next_url}")
+            try:
+                logger.info(
+                    "Crawl next community page in {}".format(
+                        item["communityBusinessArea"]
+                    )
+                )
+                yield scrapy.Request(url=next_url, callback=self.parse)
+            except:
+                logger.error(
+                    "Error crawling next community page "
+                    + next_url
+                    + " in "
+                    + item["communityBusinessArea"]
+                )
+        else:
+            self.finish_area(main_url)
 
     def finish_area(self, main_url):
         # Set accessbit to 1 for resume crawling.
