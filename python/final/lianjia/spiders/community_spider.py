@@ -66,6 +66,7 @@ class CommunitySpider(scrapy.Spider):
         community_list_items = response.xpath(
             "//li[@class='clear xiaoquListItem']"
         )
+        current_business_area=str()
         for list_item in community_list_items:
             item = CommunityItem()
             try:
@@ -102,6 +103,9 @@ class CommunitySpider(scrapy.Spider):
                 item["community_region"] = position_info[0]
                 item["community_business_area"] = position_info[1]
                 item["community_city"] = city
+                
+                # Update current community business area for log.
+                current_business_area = item["community_business_area"]
 
                 # Crawl each community detail page separately if more detailed
                 # data is needed.
@@ -156,7 +160,7 @@ class CommunitySpider(scrapy.Spider):
                 try:
                     logger.info(
                         "Crawl next community page in {}".format(
-                            item["community_business_area"]
+                            current_business_area
                         )
                     )
                     yield scrapy.Request(
@@ -169,14 +173,14 @@ class CommunitySpider(scrapy.Spider):
                         "Error crawling next community page "
                         + next_url
                         + " in "
-                        + item["community_business_area"]
+                        + current_business_area
                     )
             else:
                 self.finish_area(main_url, city)
         else:
             logger.info(
                 "No nextpage data in {}[{}]. Finished crawling this business area.".format(
-                    item["community_business_area"], main_url
+                    current_business_area, main_url
                 )
             )
             self.finish_area(main_url, city)
