@@ -1,0 +1,80 @@
+在本实验中, 选取北京, 上海, 广州, 深圳和潍坊五个城市, 借助Scrapy框架设计爬虫, 部
+署在Scrapyd上运行爬取; 爬取数据以定义的item结构保存, 通过pipeline传输到使用
+SQLite3建立的数据库进行去重, 断点续爬和持久化.
+
+爬虫设置方面, 由于部署在Scrapyd上进行爬取, 因此爬取时间不成为限制. 为了避免可能
+出现的反爬措施, 设置下载延迟为6\~10秒, 每个域名并行请求数为2, 每个IP并行请求数为
+2, 并使用了轮换的User Agent.
+
+由于链家一次只显示100页, 只有3000个房源, 远小于房源总数, 直接对租房房源进行爬取将遗漏大量房
+源信息. 因此为了尽可能多的爬取房源, 制作了三个爬虫, 分别爬取板块(商圈, business
+area), 小区(community)和租房房源(rental).在爬取板块的同时, 爬虫可以\textbf{自动
+    收集行政区划分}, 小区指北京邮电大学家属小区这一级, 租房房源指具体的出租房源信息.
+由于一个小区内不会有超过3000各租房房源,因此通过这一划分方式, 可以尽可能的避免这
+一限制造成的爬取不充分. 对三个爬虫分别介绍如下.
+
+\subsection{行政区划和板块爬虫}
+这一爬虫是首先运行的爬虫, 定义在 ``business\_area\_spider.py'' 中的
+\pythoninline{class BusinessAreaSpider} 中.
+
+其部署到scrapyd或者本地运行后, 将以start\_requests中urls中的url为起点, 对每个城
+市的行政区, 以及板块进行爬取.
+
+\subsubsection{爬取结果的持久化}
+爬取到的板块将保存在定义在``items.py''中的 \pythoninline{class BusinessAreaItem}
+中, 并传输给定义在``pipeline.py''中的 \pythoninline{class
+    DownBusinessAreaUrlPipeline} , 由该pipeline判断此BusinessAreaItem所在的城市, 行
+政区, 以及此板块是否分别存在与相应数据库表中. 如果不存在, 则插入.
+
+BusinessAreaItem定义如下.
+\begin{python}
+    class BusinessAreaItem(scrapy.Item):
+    # Business area
+    business_area_url = scrapy.Field()
+    business_area_name = scrapy.Field()
+    business_area_region = scrapy.Field()
+    business_area_city = scrapy.Field()
+\end{python}
+
+分别存储了板块的url, 名称, 行政区和所在城市. 而其保存到的SQL中的板块表还有一个
+accessbit字段, 用于判断该板块是否已经被下面介绍的小区爬虫爬取过. 借助这一字段,可
+以方便的实现\textbf{断点续爬}: 不会对已经爬取过的小区重复爬取, 而是对因为意外中
+断而没有来得及爬取的板块中小区进行爬取.
+
+\subsection{小区爬虫}
+这一爬虫在行政区划和板块爬虫爬取完毕后运行, 定义在``community\_spider.py''中的
+\pythoninline{class ComemunitySpider(scrapy.Spider)}, 在本地或者scrapyd上启动后,
+将首先访问SQLite数据库, 获取没有访问的板块url和对应城市url, 并对其开始并行爬取.
+由于小区数量很多, 一页不能完全展示, 所以需要处理\textbf{翻页}问题; 此外, 为了避免对一个区
+块的重复爬取, 需要设置\textbf{已爬标记}.
+
+\subsubsection{已爬标记和翻页}
+每爬取完一页小区后, 需要借助当前页码和总页数进行判断. 当前页和总页数均存储在
+\pythoninline{"//div[@class='page-box house-lst-page-box']/@pagedata"}中. 如果已
+经是最后一页小区, 则设置该小区所在的business\_area的accessbit为1, 表示这一区块已
+经被爬取过. 如果不是最后一页小区, 则对response.url进行处理, 提取出当前板块的主
+url, 并链接\pythoninline{f"pg{next_page}/"}字段, 作为下一页url进行爬取.
+
+\subsubsection{爬取结果的持久化}
+爬取结果保存在 \pythoninline{class CommunityItem(scrapy.Item)} 中, 传输给
+\pythoninline{class DownCommunityInfoPipeline} , 由其根据小区链接
+\pythoninline{item["community_url"]} 是否已在数据库中来判断该结果是否重复. 如果
+不重复, 则插入数据库. CommunityItem定义如下.
+\begin{python}
+    class CommunityItem(scrapy.Item):
+    # Community
+    community_url = scrapy.Field()
+    community_name = scrapy.Field()
+    community_region = scrapy.Field()
+    community_city = scrapy.Field()
+    community_business_area = scrapy.Field()
+    community_rent_url = scrapy.Field()
+\end{python}
+分别存储小区链接, 小区名, 小区所在行政区, 小区所在城市, 小区所在板块和小区租房链
+接. 其中如果小区内没有房屋出租, 则租房链接为`None', 避免数据库中出现null值.
+
+\subsection{租房房源爬虫}
+小区信息爬取完毕后, 在小区信息的基础上进行租房房源信息的爬取. 租房房源爬虫为
+``rent\_spider.py''中的 \pythoninline{class RentSpider(scrapy.Spider)}, 首先从数
+据库中读取租房链接community\_rent\_url非`None', 且访问位community\_accessbit为0
+的小区列表, 再对这些小区进行租房房源的并行爬取.
