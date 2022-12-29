@@ -1,0 +1,149 @@
+\documentclass[12pt, twoside]{article}
+\setlength{\headheight}{14.49998pt}
+\usepackage{xeCJK}
+
+% Pseudo-code
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% Wrap-figure
+\usepackage{wrapfig}
+
+\usepackage{listings}
+\usepackage{lstautogobble} % Fix relative indenting
+\usepackage{xcolor}
+\usepackage{multirow}
+
+\usepackage[a4paper, left=3.17cm, right=3.17cm, top=2.54cm, bottom=2.54cm]{geometry}
+\usepackage{fancyhdr} % header and footer
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{chemformula}
+\usepackage{cite}
+\usepackage[colorlinks, linkcolor=black, anchorcolor=black, citecolor=black]{hyperref}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\usepackage[utf8]{inputenc}
+
+\setCJKmainfont{Songti SC}
+\setCJKmonofont{Songti SC}
+
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+% Python style for highlighting
+\newcommand\pythonstyle{\lstset{
+language=Python,
+basicstyle=\ttm,
+morekeywords={self},              % Add keywords here
+keywordstyle=\ttb\color{deepblue},
+emph={MyClass,__init__},          % Custom highlighting
+emphstyle=\ttb\color{deepred},    % Custom highlighting style
+stringstyle=\color{deepgreen},
+frame=tb,                         % Any extra options here
+showstringspaces=false
+}}
+
+
+% Python environment
+\lstnewenvironment{python}[1][]
+{
+\pythonstyle
+\lstset{#1}
+}
+{}
+
+% Python for external files
+\newcommand\pythonexternal[2][]{{
+\pythonstyle
+\lstinputlisting[#1]{#2}}}
+
+% Python for inline
+\newcommand\pythoninline[1]{{\pythonstyle\lstinline!#1!}}
+
+% Define colors for code listing
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.9,0,0}
+\definecolor{graynumbers}{rgb}{0.5,0.5,0.5}
+
+\lstset{
+  autogobble,
+  columns=fullflexible,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  commentstyle=\color{greencomments},
+  keywordstyle=\color{bluekeywords},
+  stringstyle=\color{redstrings},
+  numberstyle=\color{graynumbers},
+  basicstyle=\ttfamily\footnotesize,
+  frame=l,
+  framesep=12pt,
+  xleftmargin=12pt,
+  tabsize=4,
+  captionpos=b
+  language=C++
+  % backgroundcolor=\color{black!5},
+}
+% show paragraphs in table of contentes
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+
+\graphicspath{{figures/}}
+
+\setlength{\parskip}{0.5em}
+\title{Python链家五大城市租房数据爬取与分析实验报告}
+\author{\textup{吴清柳}}
+\begin{document}
+\input{title/title.tex}
+\tableofcontents
+\newpage
+
+% set page stype to fancy then decorate it
+\pagestyle{fancy}
+\fancyhead{} % clear all header fields
+\fancyhead[LE, RO]{吴清柳 2020211597}
+\fancyhead[LO, RE]{Python链家五大城市租房数据爬取与分析实验报告}
+\fancyfoot{} % clear all footer fileds
+\fancyfoot[CE, CO]{\thepage}
+
+
+\section{概述}
+\input{content/1/1.tex}
+\section{爬虫设计和数据爬取}
+\input{content/2/2.tex}
+\section{房租租金分析}
+\input{content/3/3.tex}
+\section{各居室房型比较分析}
+\input{content/4/4.tex}
+\section{各城市不同板块均价比较分析}
+\input{content/6/6.tex}
+\section{不同朝向租金比较分析}
+\input{content/7/7.tex}
+\section{人均GDP与单位面积租金的关系}
+\input{content/8/8.tex}
+\section{平均工资与单位面积租金的关系}
+\input{content/9/9.tex}
+\section{附录}
+代码仓库: \href
+{https://github.com/Micuks/code/tree/master/python/final/lianjia}
+{Lianjia}
+
+% \bibliographystyle{ieeetrans}
+% \bibliography{Assignment_Ref}
+
+\end{document}
