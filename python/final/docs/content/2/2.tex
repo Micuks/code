@@ -57,8 +57,8 @@ business\_area的accessbit为1, 表示这一区块已经被爬取过. 如果不�
 \pythoninline{f"pg{next_page}/"}字段, 作为下一页url进行爬取.
 
 \subsubsection{爬取结果的持久化}
-爬取结果保存在 \pythoninline{class CommunityItem(scrapy.Item)} 中, 传输给
-\pythoninline{class DownCommunityInfoPipeline} , 由其根据小区链接
+爬取结果保存在\pythoninline{class CommunityItem}中, 传输给
+\pythoninline{class DownCommunityInfoPipeline}, 由其根据小区链接
 \pythoninline{item["community_url"]} 是否已在数据库中来判断该结果是否重复. 如果
 不重复, 则插入数据库. CommunityItem定义如下.
 \begin{python}
@@ -82,7 +82,7 @@ business\_area的accessbit为1, 表示这一区块已经被爬取过. 如果不�
 全展示的问题, 因此也需要处理\textbf{翻页}问题. 链家的租房房源不同页的url设计比较
 奇怪, 给翻页问题的处理带来了一些困扰.
 
-\subsection{已爬标记和翻页}
+\subsubsection{已爬标记和翻页}
 与爬取板块内小区不同的是, 小区内会出现没有房源正在出租的情况. 通过仔细观察, 注意
 到字段 \pythoninline{response.xpath("//span[@class='q']/text())} 记录了当前小区
 内房源数量. 如果当前小区内租房房源数量为0, 则设置当前小区的访问位
@@ -93,9 +93,9 @@ community\_accessbit为2, 跳过当前小区.
 如果已经是最后一页小区,则设置该页所在小区的community\_accessbit为1, 结束对该小区
 的访问.
 
-\subsection{爬取结果的持久化}
-爬取结果保存在\pythoninline{class RentalItem(scrapy.Item)} 中, 传输给
-\pythoninline{class DownRentalInfoPipeline(object)}, 由其根据房源url判断是否已经
+\subsubsection{爬取结果的持久化}
+爬取结果保存在\pythoninline{class RentalItem} 中, 传输给
+\pythoninline{class DownRentalInfoPipeline}, 由其根据房源url判断是否已经
 在SQLite数据库中的rental表中. 如果不存在, 则插入. RentalItem定义如下:
 \begin{python}
     class RentalItem(scrapy.Item):
@@ -115,3 +115,15 @@ community\_accessbit为2, 跳过当前小区.
     rental_price = scrapy.Field()
     rental_timestamp = scrapy.Field()
 \end{python}
+
+\subsection{部署在scrapyd上进行爬取}
+完成上述过程后, 为了让爬虫能够稳定运行, 在服务器上安装scrapyd, 部署在端口6800并
+转发端口. 在本地使用scrapyd-client将爬虫部署到服务器的scrapyd如图~\ref{fig:运行
+在Scrapyd上的爬虫}, 并依次运行BusinessAreaSpider, CommunitySpider和RentSpider进
+行爬取.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{scrapyd.png}
+    \caption{运行在Scrapyd上的爬虫}
+    \label{fig:运行在Scrapyd上的爬虫}
+\end{figure}

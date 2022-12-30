@@ -28,10 +28,11 @@ ROBOTSTXT_OBEY = False
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 # Random download delay between 3 and 10 seconds.
-DOWNLOAD_DELAY = random.randint(3, 10)
+# DOWNLOAD_DELAY = random.randint(1, 3)
+DOWNLOAD_DELAY = 0.25
 # The download delay setting will honor only one of:
-CONCURRENT_REQUESTS_PER_DOMAIN = 2
-CONCURRENT_REQUESTS_PER_IP = 2
+CONCURRENT_REQUESTS_PER_DOMAIN = 100
+CONCURRENT_REQUESTS_PER_IP = 100
 
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = False
