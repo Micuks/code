@@ -28,7 +28,7 @@ class BusinessAreaSpider(scrapy.Spider):
             "https://sh.lianjia.com/xiaoqu/pudong/",
             "https://gz.lianjia.com/xiaoqu/tianhe/",
             "https://sz.lianjia.com/xiaoqu/luohuqu/",
-            "https://wf.lianjia.com/xiaoqu/",
+            "https://wf.lianjia.com/xiaoqu/linquxian/",
         ]
         cities = ["北京", "上海", "广州", "深圳", "潍坊"]
         # urls = ['file:///Users/micuks/dev/mycode/python/final/lianjia/'+self.path_to_save_response]
