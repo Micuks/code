@@ -118,12 +118,11 @@ community\_accessbit为2, 跳过当前小区.
 
 \subsection{部署在scrapyd上进行爬取}
 完成上述过程后, 为了让爬虫能够稳定运行, 在服务器上安装scrapyd, 部署在端口6800并
-转发端口. 在本地使用scrapyd-client将爬虫部署到服务器的scrapyd如图~\ref{fig:运行
-在Scrapyd上的爬虫}, 并依次运行BusinessAreaSpider, CommunitySpider和RentSpider进
+转发端口. 在本地使用scrapyd-client将爬虫部署到服务器的scrapyd, 并依次运行BusinessAreaSpider, CommunitySpider和RentSpider进
 行爬取.
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.95\textwidth]{scrapyd.png}
+    \includegraphics[width=0.6\textwidth]{scrapyd.png}
     \caption{运行在Scrapyd上的爬虫}
     \label{fig:运行在Scrapyd上的爬虫}
 \end{figure}
