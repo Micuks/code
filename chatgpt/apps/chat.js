@@ -1,6 +1,6 @@
 import plugin from "../../../lib/plugins/plugin.js";
 import _ from "lodash";
-import { Config } from "../config/index.js";
+import { Config } from "../config/config.js";
 import showdown from "showdown";
 import mjAPI from "mathjax-node";
 import { ChatGPTAPIBrowser } from "chatgpt";

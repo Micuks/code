@@ -1,0 +1,6 @@
+{
+	"dependencies": {
+		"chatgpt": "^3.3.11",
+		"puppeteer": "^19.4.1"
+	}
+}
