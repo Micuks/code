@@ -21,13 +21,37 @@ class LSTMLayer(nn.Module):
         self, input: Tensor, state: Tuple[Tensor, Tensor]
     ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
         inputs = input.unbind(0)
-        outputs = List[Tensor]
+        outputs: List[Tensor] = []
         for i in range(len(inputs)):
             out, state = self.cell(inputs[i], state)
             outputs += [out]
 
         return torch.stack(outputs), state
 
+
+def reverse(lst: List[Tensor]) -> List[Tensor]:
+    """
+    Reverse input list
+    """
+    return lst[::-1]
+
+
+class ReverseLSTMLayer(nn.Module):
+    def __init__(self, cell, *cell_args):
+        super(ReverseLSTMLayer, self).__init__()
+        self.cell = cell(*cell_args)
+
+    def forward(
+        self, input: Tuple, state: Tuple[Tensor, Tensor]
+    ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
+        inputs = reverse(input.unbind(0))
+        outputs: List[Tensor] = []
+        for i in range(len(inputs)):
+            out, state = self.cell(inputs[i], state)
+            outputs += [out]
+
+        return torch.stack(reverse(outputs), state)
+    
 
 class LSTMCell(nn.Module):
     """
@@ -41,7 +65,7 @@ class LSTMCell(nn.Module):
         self.weight_ih = Parameter(torch.randn(4 * hidden_size, input_size))
         self.weight_hh = Parameter(torch.randn(4 * hidden_size, hidden_size))
         self.bias_ih = Parameter(torch.randn(4 * hidden_size))
-        self.bias_hh = Parameter(torch.randn(torch.randn(4 * hidden_size)))
+        self.bias_hh = Parameter(torch.randn(4 * hidden_size))
 
     def forward(
         self, input: Tensor, state: Tuple[Tensor, Tensor]
@@ -66,19 +90,19 @@ class LSTMCell(nn.Module):
         return hy, (hy, cy)
 
 
-class PeepHoleLSTMCELL(nn.Module):
+class PeepHoleLSTMCell(nn.Module):
     """
     LSTM Cell with peepholes
     """
 
     def __init__(self, input_size, hidden_size) -> None:
-        super(PeepHoleLSTMCELL, self).__init__()
+        super(PeepHoleLSTMCell, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.weight_ih = Parameter(torch.randn(4 * hidden_size, input_size))
         self.weight_hh = Parameter(torch.randn(4 * hidden_size, hidden_size))
         self.weight_ch = Parameter(torch.randn(4 * hidden_size, hidden_size))
-        self.bias_ih = Parameter(torch.randn(4 * hidden_size, hidden_size))
+        self.bias_ih = Parameter(torch.randn(4 * hidden_size))
         self.bias_hh = Parameter(torch.randn(4 * hidden_size))
         self.bias_ch = Parameter(torch.randn(4 * hidden_size))
 
@@ -102,7 +126,6 @@ class PeepHoleLSTMCELL(nn.Module):
             + torch.mm(cx, self.weight_ch.t())
             + self.bias_ch
         )
-        # TODO: computation of cx above may be wrong during (maybe) wrong shape.
 
         ingate, forgetgate, cellgate, outgate = gates.chunk(4, 1)
 
@@ -161,7 +184,7 @@ class GRUCell(nn.Module):
         newgate = torch.tanh(newgate_h * resetgate + newgate_x)
 
         hy = (1 - ingate) * hx + resetgate * newgate
-        
+
         return hy
 
 
@@ -177,6 +200,6 @@ class SentenceEncodingLayer(nn.Module):
         self.name = name
         lstm_cell = {}
         for direction in ["forward", "backward"]:
-            lstm_cell[direction] = None
+            lstm_cell[direction] = PeepHoleLSTMCell(self.encode_h)
             # TODO: Implement coupled input forget gate lstm cell:
             # that is, LSTM cell with peephole implemented.
