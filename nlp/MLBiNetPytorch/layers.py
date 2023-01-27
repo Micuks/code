@@ -52,6 +52,29 @@ class ReverseLSTMLayer(nn.Module):
 
         return torch.stack(reverse(outputs), state)
     
+class BidirLSTMLayer(nn.Module):
+    __constants__ = ['direcitons']
+    
+    def __init__(self, cell, *cell_args):
+        super(BidirLSTMLayer, self).__init__()
+        self.directions = nn.ModuleList([
+            LSTMLayer(cell, *cell_args),
+            ReverseLSTMLayer(cell, *cell_args)
+        ])
+        
+    def forward(self, input: Tensor, states: List[Tuple[Tensor, Tensor]]) -> Tuple[Tensor, List[Tuple[Tensor, Tensor]]]:
+        # List[LSTMState]: [forward state, backward state]
+        outputs : List[Tensor] = []
+        output_states : List[Tuple[Tensor, Tensor]]=[]
+        
+        for i, direction in enumerate(self.directions):
+            state = states[i]
+            out, out_state = direction(input, state)
+            outputs += [out]
+            output_states += [out_state]
+
+        return torch.cat(outputs, -1), output_states
+        
 
 class LSTMCell(nn.Module):
     """
