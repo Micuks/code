@@ -77,8 +77,10 @@ class PeepHoleLSTMCELL(nn.Module):
         self.hidden_size = hidden_size
         self.weight_ih = Parameter(torch.randn(4 * hidden_size, input_size))
         self.weight_hh = Parameter(torch.randn(4 * hidden_size, hidden_size))
+        self.weight_ch = Parameter(torch.randn(4 * hidden_size, hidden_size))
         self.bias_ih = Parameter(torch.randn(4 * hidden_size, hidden_size))
-        self.bias_hh = Parameter(torch.randn(torch.randn(4 * hidden_size)))
+        self.bias_hh = Parameter(torch.randn(4 * hidden_size))
+        self.bias_ch = Parameter(torch.randn(4 * hidden_size))
 
     def forward(
         self, input: Tensor, state: Tuple[Tensor, Tensor]
@@ -88,12 +90,15 @@ class PeepHoleLSTMCELL(nn.Module):
             (torch.mm(input, self.weight_ih.t()))
             + self.bias_ih
             + torch.mm(hx, self.weight_hh.t() + self.bias_hh)
+            + torch.mm(cx, self.weight_ch.t() + self.bias_ch)
         )
+        # TODO: computation of cx above may be wrong during (maybe) wrong shape.
+
         ingate, forgetgate, cellgate, outgate = gates.chunk(4, 1)
 
-        ingate = torch.sigmoid(ingate * cellgate)
-        forgetgate = torch.sigmoid(forgetgate * cellgate)
-        outgate = torch.sigmoid(outgate * cellgate)
+        ingate = torch.sigmoid(ingate)
+        forgetgate = torch.sigmoid(forgetgate)
+        outgate = torch.sigmoid(outgate)
         cellgate = torch.tanh(cellgate)
 
         cy = (forgetgate * cx) + (ingate * cellgate)
