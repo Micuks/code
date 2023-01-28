@@ -28,40 +28,6 @@ logger.addHandler(con_handler)
 LSTMState = namedtuple("LSTMState", ["hx", "cx"])
 
 
-def my_lstm(
-    input_size,
-    hidden_size,
-    num_layers,
-    bias=True,
-    batch_first=False,
-    dropout=False,
-    bidirectional=False,
-):
-    """
-    mimics PyTorch naive LSTM with bidirectional LSTM implemented.
-    """
-    # The following are not implemented.
-    assert bias
-    assert not dropout
-    assert not batch_first
-
-    if bidirectional:
-        stack_type = StackedLSTM2
-        layer_type = BidirLSTMLayer
-        dirs = 2
-    else:
-        stack_type = StackedLSTM
-        layer_type = LSTMLayer
-        dirs = 1
-
-    return stack_type(
-        num_layers,
-        layer_type,
-        first_layer_args=[LSTMCell, input_size, hidden_size],
-        other_layer_args=[LSTMCell, hidden_size * dirs, hidden_size],
-    )
-
-
 class LSTMCell(nn.Module):
     """
     Default LSTM Cell
@@ -97,6 +63,55 @@ class LSTMCell(nn.Module):
         hy = outgate * torch.tanh(cy)
 
         return hy, (hy, cy)
+
+
+def my_lstm(
+    input_size,
+    hidden_size,
+    num_layers,
+    cell=LSTMCell,
+    bias=True,
+    batch_first=False,
+    dropout=False,
+    bidirectional=False,
+):
+    """
+    mimics PyTorch naive LSTM with bidirectional LSTM implemented.
+
+    Args:
+        input_size (_type_):
+        hidden_size (_type_):
+        num_layers (_type_):
+        cell (_type_, optional): Cell that LSTM will use. Defaults to LSTMCell.
+        bias (bool, optional): use bias or not. Defaults to True.
+        batch_first (bool, optional): _description_. Defaults to False.
+        dropout (bool, optional): _description_. Defaults to False.
+        bidirectional (bool, optional): bidirectional or not. Defaults to False.
+
+    Returns:
+        _type_: a stack of LSTM layers
+    """
+
+    # The following are not implemented.
+    assert bias
+    assert not dropout
+    assert not batch_first
+
+    if bidirectional:
+        stack_type = StackedLSTM2
+        layer_type = BidirLSTMLayer
+        dirs = 2
+    else:
+        stack_type = StackedLSTM
+        layer_type = LSTMLayer
+        dirs = 1
+
+    return stack_type(
+        num_layers,
+        layer_type,
+        first_layer_args=[cell, input_size, hidden_size],
+        other_layer_args=[cell, hidden_size * dirs, hidden_size],
+    )
 
 
 class PeepHoleLSTMCell(nn.Module):
@@ -267,29 +282,46 @@ class BidirLSTMLayer(nn.Module):
         return torch.cat(outputs, -1), output_states
 
 
-class SentenceEncodingLayer(nn.Module):
+def sentence_encoding_layer(
+    embedding_input: Tensor, hidden_size, valid_len, num_layers=1
+):
     """
     Sentence encoding layer to get representation of each words
+
+    Args:
+        embedding_input (_type_): embedding input
+        hidden_size (_type_): set to MLBiNet encode_h
+        valid_len (_type_): sequence valid length
+        name (_type_): _description_
     """
+    input_size, batch = embedding_input.shape()
+    
+    # Initialize hidden states
+    # 
+    # TODO: Used normal initialization here,
+    # may need to change to xavier_initializer.
+    states = [
+        [
+            LSTMState(torch.randn(batch, hidden_size), torch.randn(batch, hidden_size))
+            for _ in range(2)
+        ]
+        for _ in range(num_layers)
+    ]
 
-    def __init__(self, embedding_input, valid_len, name):
-        super().__init__()
-        self.embedding_input = embedding_input
-        self.valid_len = valid_len
-        self.name = name
-        lstm_cell = {}
-        for direction in ["forward", "backward"]:
-            # TODO: Use xavier initializer as default initializer
-            lstm_cell[direction] = PeepHoleLSTMCell(
-                embedding_input, self.encode_h
-            )
-
-        (
-            output,
-            (encoder_fw_final_state, encoder_bw_final_state),
-        ) = BidirLSTMLayer(
-            lstm_cell["forward"], lstm_cell["backward"], embedding_input
-        )
+    # Bidirectional LSTM layer using peephole LSTM cell.
+    peephole_lstm = my_lstm(
+        input_size,
+        hidden_size,
+        num_layers=num_layers,
+        cell=PeepHoleLSTMCell,
+        bias=True,
+        bidirectional=True,
+    )
+    
+    out, out_state = peephole_lstm(embedding_input, states)
+    peephole_state = double_flatten_states(out_state)
+    
+    return out, peephole_state
 
 
 def init_stacked_lstm(num_layers, layer, first_layer_args, other_layer_args):
@@ -412,6 +444,16 @@ def flatten_states(states):
 
 
 def double_flatten_states(states):
+    """
+    Flatten hidden state of bidirectional LSTM(List[List[Tuple[Tensor, Tensor]]])
+    into PyTorch hidden state format.
+
+    Args:
+        states (List[List[Tuple[Tensor, Tensor]]]): states to be flattened
+
+    Returns:
+        _type_: flattened states
+    """
     logger = logging.getLogger(
         "{}.{}".format(
             inspect.currentframe().f_code.co_filename.split("/")[-1],
