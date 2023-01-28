@@ -1,4 +1,6 @@
 from collections import namedtuple
+import inspect
+import numpy as np
 import torch
 from torch.nn import Parameter
 import torch.nn as nn
@@ -6,7 +8,9 @@ from torch import Tensor
 from typing import List, Tuple
 import logging
 
-logger = logging.getLogger("layers.py")
+logger = logging.getLogger(
+    inspect.currentframe().f_code.co_filename.split("/")[-1]
+)
 logger.setLevel(logging.DEBUG)
 
 con_handler = logging.StreamHandler()
@@ -235,7 +239,7 @@ class ReverseLSTMLayer(nn.Module):
             out, state = self.cell(inputs[i], state)
             outputs += [out]
 
-        return torch.stack(reverse(outputs), state)
+        return torch.stack(reverse(outputs)), state
 
 
 class BidirLSTMLayer(nn.Module):
@@ -254,10 +258,7 @@ class BidirLSTMLayer(nn.Module):
         outputs: List[Tensor] = []
         output_states: List[Tuple[Tensor, Tensor]] = []
 
-        logger.debug(f"len(directions)[{len(self.directions)}]")
-        logger.debug(f"len(states)[{len(states)}]")
         for i, direction in enumerate(self.directions):
-            logger.debug(f"i={i}")
             state = states[i]
             out, out_state = direction(input, state)
             outputs += [out]
@@ -383,8 +384,24 @@ def test_lstm_layer(seq_len, batch, input_size, hidden_size):
 
     lstm_out, lstm_out_state = lstm(inp, lstm_state)
 
+    logger.info("LSTM layer test:")
+    logger.info(
+        "(custom_out - lstn_out).abs().max(): {}".format(
+            (custom_out - lstm_out).abs().max()
+        )
+    )
     assert (custom_out - lstm_out).abs().max() < 1e-5
+    logger.info(
+        "(custom_out_state[0] - lstm_out_state[0]).abs().max(): {}".format(
+            (custom_out_state[0] - lstm_out_state[0]).abs().max()
+        )
+    )
     assert (custom_out_state[0] - lstm_out_state[0]).abs().max() < 1e-5
+    logger.info(
+        "(custom_out_state[1] - lstm_out_state[1]).abs().max(): {}".format(
+            (custom_out_state[1] - lstm_out_state[1]).abs().max()
+        )
+    )
     assert (custom_out_state[1] - lstm_out_state[1]).abs().max() < 1e-5
 
 
@@ -395,11 +412,16 @@ def flatten_states(states):
 
 
 def double_flatten_states(states):
-    logger.debug(f"states.len[{len(states)}], inner.shape[{states[0].shape}]")
+    logger = logging.getLogger(
+        "{}.{}".format(
+            inspect.currentframe().f_code.co_filename.split("/")[-1],
+            inspect.currentframe().f_code.co_name,
+        )
+    )
+
     states = flatten_states([flatten_states(inner) for inner in states])
-    logger.debug(f"states.len[{len(states)}], hidden.shape[{states[0].shape}]")
-    assert states.len == 2
-    assert len(states[0].shape) == 2
+    logger.debug(f"len(states)={len(states)}, hidden.shape={states[0].shape}")
+    assert len(states) == 2
     return [hidden.view([-1] + list(hidden.shape[2:])) for hidden in states]
 
 
@@ -430,8 +452,18 @@ def test_stacked_lstm(seq_len, batch, input_size, hidden_size, num_layers):
                 lstm_param.copy_(custom_param)
     lstm_out, lstm_out_state = lstm(inp, lstm_state)
 
+    logger.info("Stacked LSTM test:")
+    logger.info(
+        f"(custom_out - lstm_out).abs().max(): {(custom_out - lstm_out).abs().max()}"
+    )
     assert (custom_out - lstm_out).abs().max() < 1e-5
+    logger.info(
+        f"(custom_state[0] - lstm_out_state[0]).abs().max(): {(custom_state[0] - lstm_out_state[0]).abs().max()}"
+    )
     assert (custom_state[0] - lstm_out_state[0]).abs().max() < 1e-5
+    logger.info(
+        f"(custom_state[1] - lstm_out_state[1]).abs().max(): {(custom_state[1] - lstm_out_state[1]).abs().max()}"
+    )
     assert (custom_state[1] - lstm_out_state[1]).abs().max() < 1e-5
 
 
@@ -444,8 +476,8 @@ def test_stacked_bidir_lstm(
             LSTMState(
                 torch.randn(batch, hidden_size), torch.randn(batch, hidden_size)
             )
+            for _ in range(2)
         ]
-        for _ in range(2)
         for _ in range(num_layers)
     ]
     custom_lstm = my_lstm(
@@ -471,8 +503,18 @@ def test_stacked_bidir_lstm(
                     lstm_param.copy_(custom_param)
     lstm_out, lstm_out_state = lstm(inp, lstm_state)
 
+    logger.info("Stacked Bidirectional LSTM test:")
+    logger.info(
+        f"(custom_out - lstm_out).abs().max(): {(custom_out - lstm_out).abs().max()}"
+    )
     assert (custom_out - lstm_out).abs().max() < 1e-5
+    logger.info(
+        f"(custom_state[0] - lstm_out_state[0]).abs().max(): {(custom_state[0] - lstm_out_state[0]).abs().max()}"
+    )
     assert (custom_state[0] - lstm_out_state[0]).abs().max() < 1e-5
+    logger.info(
+        f"(custom_state[1] - lstm_out_state[1]).abs().max(): {(custom_state[1] - lstm_out_state[1]).abs().max()}"
+    )
     assert (custom_state[1] - lstm_out_state[1]).abs().max() < 1e-5
 
 
