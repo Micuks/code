@@ -275,6 +275,78 @@ class SentenceEncodingLayer(nn.Module):
         )
 
 
+def init_stacked_lstm(num_layers, layer, first_layer_args, other_layer_args):
+    """Initialize layers with given layer args
+
+    Args:
+        num_layers: Number of layers
+        layer: Layer
+        first_layer_args: Args of first layer
+        other_layer_args: Args of second layer
+
+    Returns:
+        nn.ModuleList: A list of initialized layers
+    """
+    layers = [layer(*first_layer_args)] + [
+        layer(*other_layer_args) for _ in range(num_layers - 1)
+    ]
+    return nn.ModuleList(layers)
+
+
+class StackedLSTM(nn.Module):
+    __constants__ = ["layers"]  # Necessary for interating throuch self.layers
+
+    def __init__(self, num_layers, layer, first_layer_args, other_layer_args):
+        super(StackedLSTM, self).__init__()
+        self.layers = init_stacked_lstm(
+            num_layers, layer, first_layer_args, other_layer_args
+        )
+
+    def forward(
+        self, input: Tensor, states: List[Tuple[Tensor, Tensor]]
+    ) -> Tuple[Tensor, List[Tuple[Tensor, Tensor]]]:
+        # List[LSTMState]: One state per layer
+        output_states: List[Tuple[Tensor, Tensor]] = []
+        output = input
+        for i, rnn_layer in enumerate(self.layers):
+            state = states[i]
+            output, out_state = rnn_layer(output, state)
+            output_states += [out_state]
+
+        return output, output_states
+
+
+class StackedLSTM2(nn.Module):
+    """
+    Differs from StackedLSTM: its forward method takes
+    List[List[Tuple[Tensor, Tensor]]].
+
+    This can also be done by subclassing StackedLSTM.
+    """
+
+    __constants__ = ["layers"]  # Necessary for iterating toruch self.layers
+
+    def __init(self, num_layers, layer, first_layer_args, other_layer_args):
+        super(StackedLSTM2, self).__init__()
+        self.layers = init_stacked_lstm(
+            num_layers, layer, first_layer_args, other_layer_args
+        )
+
+    def forward(
+        self, input: Tensor, states: List[List[Tuple[Tensor, Tensor]]]
+    ) -> Tuple[Tensor, List[List[Tuple[Tensor, Tensor]]]]:
+        # List[List[LSTMState]]: the outer list is for layers,
+        # inner list is for directions
+        output_states: List[List[Tuple[Tensor, Tensor]]] = []
+        output = input
+        for i, rnn_layer in enumerate(self.layers):
+            state = states[i]
+            output, out_state = rnn_layer(output, state)
+            output_states += [out_state]
+
+        return output, output_states
+
+
 def test_lstm_layer(seq_len, batch, input_size, hidden_size):
     inp = torch.randn(seq_len, batch, input_size)
     state = LSTMState(
