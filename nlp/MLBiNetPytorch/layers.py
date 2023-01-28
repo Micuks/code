@@ -4,14 +4,27 @@ from torch.nn import Parameter
 import torch.nn as nn
 from torch import Tensor
 from typing import List, Tuple
-from logging import Logger
+import logging
 
-logger = Logger(__name__)
+logger = logging.getLogger("layers.py")
+logger.setLevel(logging.DEBUG)
+
+con_handler = logging.StreamHandler()
+con_handler.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(
+    "%(asctime)s [%(levelname)s] %(name)s L%(lineno)d: %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S",
+    style="%",
+)
+
+con_handler.setFormatter(formatter)
+logger.addHandler(con_handler)
 
 LSTMState = namedtuple("LSTMState", ["hx", "cx"])
 
 
-def lstm(
+def my_lstm(
     input_size,
     hidden_size,
     num_layers,
@@ -25,7 +38,7 @@ def lstm(
     """
     # The following are not implemented.
     assert bias
-    assert dropout
+    assert not dropout
     assert not batch_first
 
     if bidirectional:
@@ -73,7 +86,7 @@ class LSTMCell(nn.Module):
 
         ingate = torch.sigmoid(ingate)
         forgetgate = torch.sigmoid(forgetgate)
-        cellgate = torch.sigmoid(cellgate)
+        cellgate = torch.tanh(cellgate)
         outgate = torch.sigmoid(outgate)
 
         cy = (forgetgate * cx) + (ingate * cellgate)
@@ -241,7 +254,10 @@ class BidirLSTMLayer(nn.Module):
         outputs: List[Tensor] = []
         output_states: List[Tuple[Tensor, Tensor]] = []
 
+        logger.debug(f"len(directions)[{len(self.directions)}]")
+        logger.debug(f"len(states)[{len(states)}]")
         for i, direction in enumerate(self.directions):
+            logger.debug(f"i={i}")
             state = states[i]
             out, out_state = direction(input, state)
             outputs += [out]
@@ -326,7 +342,7 @@ class StackedLSTM2(nn.Module):
 
     __constants__ = ["layers"]  # Necessary for iterating toruch self.layers
 
-    def __init(self, num_layers, layer, first_layer_args, other_layer_args):
+    def __init__(self, num_layers, layer, first_layer_args, other_layer_args):
         super(StackedLSTM2, self).__init__()
         self.layers = init_stacked_lstm(
             num_layers, layer, first_layer_args, other_layer_args
@@ -370,3 +386,96 @@ def test_lstm_layer(seq_len, batch, input_size, hidden_size):
     assert (custom_out - lstm_out).abs().max() < 1e-5
     assert (custom_out_state[0] - lstm_out_state[0]).abs().max() < 1e-5
     assert (custom_out_state[1] - lstm_out_state[1]).abs().max() < 1e-5
+
+
+def flatten_states(states):
+    states = list(zip(*states))
+    assert len(states) == 2
+    return [torch.stack(state) for state in states]
+
+
+def double_flatten_states(states):
+    logger.debug(f"states.len[{len(states)}], inner.shape[{states[0].shape}]")
+    states = flatten_states([flatten_states(inner) for inner in states])
+    logger.debug(f"states.len[{len(states)}], hidden.shape[{states[0].shape}]")
+    assert states.len == 2
+    assert len(states[0].shape) == 2
+    return [hidden.view([-1] + list(hidden.shape[2:])) for hidden in states]
+
+
+def test_stacked_lstm(seq_len, batch, input_size, hidden_size, num_layers):
+    inp = torch.randn(seq_len, batch, input_size)
+    states = [
+        LSTMState(
+            torch.randn(batch, hidden_size), torch.randn(batch, hidden_size)
+        )
+        for _ in range(num_layers)
+    ]
+    custom_lstm = my_lstm(input_size, hidden_size, num_layers)
+    custom_out, custom_out_state = custom_lstm(inp, states)
+    custom_state = flatten_states(custom_out_state)
+
+    # Control: PyTorch native LSTM
+    lstm = nn.LSTM(input_size, hidden_size, num_layers)
+    lstm_state = flatten_states(states)
+    for layer in range(num_layers):
+        custom_params = list(custom_lstm.parameters())[
+            4 * layer : 4 * (layer + 1)
+        ]
+        for lstm_param, custom_param in zip(
+            lstm.all_weights[layer], custom_params
+        ):
+            assert lstm_param.shape == custom_param.shape
+            with torch.no_grad():
+                lstm_param.copy_(custom_param)
+    lstm_out, lstm_out_state = lstm(inp, lstm_state)
+
+    assert (custom_out - lstm_out).abs().max() < 1e-5
+    assert (custom_state[0] - lstm_out_state[0]).abs().max() < 1e-5
+    assert (custom_state[1] - lstm_out_state[1]).abs().max() < 1e-5
+
+
+def test_stacked_bidir_lstm(
+    seq_len, batch, input_size, hidden_size, num_layers
+):
+    inp = torch.randn(seq_len, batch, input_size)
+    states = [
+        [
+            LSTMState(
+                torch.randn(batch, hidden_size), torch.randn(batch, hidden_size)
+            )
+        ]
+        for _ in range(2)
+        for _ in range(num_layers)
+    ]
+    custom_lstm = my_lstm(
+        input_size, hidden_size, num_layers, bidirectional=True
+    )
+    custom_out, custom_out_state = custom_lstm(inp, states)
+    custom_state = double_flatten_states(custom_out_state)
+
+    # Control: PyTorch native LSTM
+    lstm = nn.LSTM(input_size, hidden_size, num_layers, bidirectional=True)
+    lstm_state = double_flatten_states(states)
+    for layer in range(num_layers):
+        for direction in range(2):
+            index = 2 * layer + direction
+            custom_params = list(custom_lstm.parameters())[
+                4 * index : 4 * index + 4
+            ]
+            for lstm_param, custom_param in zip(
+                lstm.all_weights[index], custom_params
+            ):
+                assert lstm_param.shape == custom_param.shape
+                with torch.no_grad():
+                    lstm_param.copy_(custom_param)
+    lstm_out, lstm_out_state = lstm(inp, lstm_state)
+
+    assert (custom_out - lstm_out).abs().max() < 1e-5
+    assert (custom_state[0] - lstm_out_state[0]).abs().max() < 1e-5
+    assert (custom_state[1] - lstm_out_state[1]).abs().max() < 1e-5
+
+
+test_lstm_layer(5, 2, 3, 7)
+test_stacked_lstm(5, 2, 3, 7, 4)
+test_stacked_bidir_lstm(5, 2, 3, 7, 4)
