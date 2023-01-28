@@ -1,3 +1,4 @@
+from collections import namedtuple
 import torch
 from torch.nn import Parameter
 import torch.nn as nn
@@ -7,74 +8,42 @@ from logging import Logger
 
 logger = Logger(__name__)
 
+LSTMState = namedtuple("LSTMState", ["hx", "cx"])
 
-class LSTMLayer(nn.Module):
+
+def lstm(
+    input_size,
+    hidden_size,
+    num_layers,
+    bias=True,
+    batch_first=False,
+    dropout=False,
+    bidirectional=False,
+):
     """
-    Custom LSTM Layer
+    mimics PyTorch naive LSTM with bidirectional LSTM implemented.
     """
+    # The following are not implemented.
+    assert bias
+    assert dropout
+    assert not batch_first
 
-    def __init__(self, cell, *cell_args) -> None:
-        super(LSTMLayer, self).__init__()
-        self.cell = cell(*cell_args)
+    if bidirectional:
+        stack_type = StackedLSTM2
+        layer_type = BidirLSTMLayer
+        dirs = 2
+    else:
+        stack_type = StackedLSTM
+        layer_type = LSTMLayer
+        dirs = 1
 
-    def forward(
-        self, input: Tensor, state: Tuple[Tensor, Tensor]
-    ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
-        inputs = input.unbind(0)
-        outputs: List[Tensor] = []
-        for i in range(len(inputs)):
-            out, state = self.cell(inputs[i], state)
-            outputs += [out]
+    return stack_type(
+        num_layers,
+        layer_type,
+        first_layer_args=[LSTMCell, input_size, hidden_size],
+        other_layer_args=[LSTMCell, hidden_size * dirs, hidden_size],
+    )
 
-        return torch.stack(outputs), state
-
-
-def reverse(lst: List[Tensor]) -> List[Tensor]:
-    """
-    Reverse input list
-    """
-    return lst[::-1]
-
-
-class ReverseLSTMLayer(nn.Module):
-    def __init__(self, cell, *cell_args):
-        super(ReverseLSTMLayer, self).__init__()
-        self.cell = cell(*cell_args)
-
-    def forward(
-        self, input: Tuple, state: Tuple[Tensor, Tensor]
-    ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
-        inputs = reverse(input.unbind(0))
-        outputs: List[Tensor] = []
-        for i in range(len(inputs)):
-            out, state = self.cell(inputs[i], state)
-            outputs += [out]
-
-        return torch.stack(reverse(outputs), state)
-    
-class BidirLSTMLayer(nn.Module):
-    __constants__ = ['direcitons']
-    
-    def __init__(self, cell, *cell_args):
-        super(BidirLSTMLayer, self).__init__()
-        self.directions = nn.ModuleList([
-            LSTMLayer(cell, *cell_args),
-            ReverseLSTMLayer(cell, *cell_args)
-        ])
-        
-    def forward(self, input: Tensor, states: List[Tuple[Tensor, Tensor]]) -> Tuple[Tensor, List[Tuple[Tensor, Tensor]]]:
-        # List[LSTMState]: [forward state, backward state]
-        outputs : List[Tensor] = []
-        output_states : List[Tuple[Tensor, Tensor]]=[]
-        
-        for i, direction in enumerate(self.directions):
-            state = states[i]
-            out, out_state = direction(input, state)
-            outputs += [out]
-            output_states += [out_state]
-
-        return torch.cat(outputs, -1), output_states
-        
 
 class LSTMCell(nn.Module):
     """
@@ -165,7 +134,7 @@ class PeepHoleLSTMCell(nn.Module):
 
 class GRUCell(nn.Module):
     """
-    GRU(Gated Recurrent Unit) LSTM Cell
+    GRU(Gated Recurrent Unit) Cell
 
     Combines the forget and input gate into update gate which is newly added in
     this architecture. It also merges the cell state and hidden state. The
@@ -211,6 +180,76 @@ class GRUCell(nn.Module):
         return hy
 
 
+class LSTMLayer(nn.Module):
+    """
+    Custom LSTM Layer
+    """
+
+    def __init__(self, cell, *cell_args) -> None:
+        super(LSTMLayer, self).__init__()
+        self.cell = cell(*cell_args)
+
+    def forward(
+        self, input: Tensor, state: Tuple[Tensor, Tensor]
+    ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
+        inputs = input.unbind(0)
+        outputs: List[Tensor] = []
+        for i in range(len(inputs)):
+            out, state = self.cell(inputs[i], state)
+            outputs += [out]
+
+        return torch.stack(outputs), state
+
+
+def reverse(lst: List[Tensor]) -> List[Tensor]:
+    """
+    Reverse input list
+    """
+    return lst[::-1]
+
+
+class ReverseLSTMLayer(nn.Module):
+    def __init__(self, cell, *cell_args):
+        super(ReverseLSTMLayer, self).__init__()
+        self.cell = cell(*cell_args)
+
+    def forward(
+        self, input: Tuple, state: Tuple[Tensor, Tensor]
+    ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
+        inputs = reverse(input.unbind(0))
+        outputs: List[Tensor] = []
+        for i in range(len(inputs)):
+            out, state = self.cell(inputs[i], state)
+            outputs += [out]
+
+        return torch.stack(reverse(outputs), state)
+
+
+class BidirLSTMLayer(nn.Module):
+    __constants__ = ["direcitons"]
+
+    def __init__(self, cell, *cell_args):
+        super(BidirLSTMLayer, self).__init__()
+        self.directions = nn.ModuleList(
+            [LSTMLayer(cell, *cell_args), ReverseLSTMLayer(cell, *cell_args)]
+        )
+
+    def forward(
+        self, input: Tensor, states: List[Tuple[Tensor, Tensor]]
+    ) -> Tuple[Tensor, List[Tuple[Tensor, Tensor]]]:
+        # List[LSTMState]: [forward state, backward state]
+        outputs: List[Tensor] = []
+        output_states: List[Tuple[Tensor, Tensor]] = []
+
+        for i, direction in enumerate(self.directions):
+            state = states[i]
+            out, out_state = direction(input, state)
+            outputs += [out]
+            output_states += [out_state]
+
+        return torch.cat(outputs, -1), output_states
+
+
 class SentenceEncodingLayer(nn.Module):
     """
     Sentence encoding layer to get representation of each words
@@ -223,6 +262,39 @@ class SentenceEncodingLayer(nn.Module):
         self.name = name
         lstm_cell = {}
         for direction in ["forward", "backward"]:
-            lstm_cell[direction] = PeepHoleLSTMCell(self.encode_h)
-            # TODO: Implement coupled input forget gate lstm cell:
-            # that is, LSTM cell with peephole implemented.
+            # TODO: Use xavier initializer as default initializer
+            lstm_cell[direction] = PeepHoleLSTMCell(
+                embedding_input, self.encode_h
+            )
+
+        (
+            output,
+            (encoder_fw_final_state, encoder_bw_final_state),
+        ) = BidirLSTMLayer(
+            lstm_cell["forward"], lstm_cell["backward"], embedding_input
+        )
+
+
+def test_lstm_layer(seq_len, batch, input_size, hidden_size):
+    inp = torch.randn(seq_len, batch, input_size)
+    state = LSTMState(
+        torch.randn(batch, hidden_size), torch.randn(batch, hidden_size)
+    )
+    custom_lstm = LSTMLayer(LSTMCell, input_size, hidden_size)
+    custom_out, custom_out_state = custom_lstm(inp, state)
+
+    # Control: pytorch native LSTM
+    lstm = nn.LSTM(input_size, hidden_size, 1)
+    lstm_state = LSTMState(state.hx.unsqueeze(0), state.cx.unsqueeze(0))
+    for lstm_param, custom_param in zip(
+        lstm.all_weights[0], custom_lstm.parameters()
+    ):
+        assert lstm_param.shape == custom_param.shape
+        with torch.no_grad():
+            lstm_param.copy_(custom_param)
+
+    lstm_out, lstm_out_state = lstm(inp, lstm_state)
+
+    assert (custom_out - lstm_out).abs().max() < 1e-5
+    assert (custom_out_state[0] - lstm_out_state[0]).abs().max() < 1e-5
+    assert (custom_out_state[1] - lstm_out_state[1]).abs().max() < 1e-5
