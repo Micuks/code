@@ -1,11 +1,25 @@
 import os
 import torch
 import torch.nn as nn
+from layers import *
 from torch.utils.data import DataLoader
 from logging import Logger
 from scipy import truncnorm
 
-logger = Logger(__name__)
+# Logger setup
+logger = logging.getLogger(
+    inspect.currentframe().f_code.co_filename.split("/")[-1]
+)
+logger.setLevel(logging.DEBUG)
+
+con_handler = logging.StreamHandler()
+con_handler.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(
+    "%(asctime)s [%(levelname)s] %(name)s L%(lineno)d: %(message)s",
+    datefmt="%Y-%m-%DT%H:%M:%S",
+    style="%",
+)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 device = "mps" if torch.backends.mps.is_available() else "cpu"
@@ -69,6 +83,38 @@ class MLBiNet(nn.Module):
         self.word_emb_mat = self.word_emb_mat.type(torch.float32)
         self.word_embedding_init()
 
+        self.input_docs = torch.zeros(
+            self.batch_size,
+            self.max_doc_len,
+            self.max_seq_len,
+            dtype=torch.int32,
+        )
+        self.ner_docs_1 = torch.zeros(
+            self.batch_size,
+            self.max_doc_len,
+            self.max_seq_len,
+            dtype=torch.int32,
+        )
+        self.ner_docs_2 = torch.zeros(
+            self.batch_size,
+            self.max_doc_len,
+            self.max_seq_len,
+            dtype=torch.int32,
+        )
+        self.input_label_docs = torch.zeros(
+            self.batch_size,
+            self.max_doc_len,
+            self.max_seq_len,
+            dtype=torch.int32,
+        )
+        self.valid_batch = torch.tensor(0, dtype=torch.int32)
+        self.valid_sent_len = torch.zeros(self.batch_size, dtype=torch.int32)
+        self.valid_words_len = torch.zeros(
+            self.batch_size, self.max_doc_len, dtype=torch.int32
+        )
+        self.dropout_rate = torch.tensor(0, dtype=torch.float32)
+        self.positive_weights = torch.tensor(0, dtype=torch.float32)
+
         # embedding layer
         self.word_embedding_lookup = self.embedding_layer()
 
@@ -88,15 +134,41 @@ class MLBiNet(nn.Module):
         self.unk_event_semantic = truncated_normal_(
             tensor=torch.tensor.new_empty((1, self.event_info_h), std=0.1)
         )
-        self.unk_event_semantic = torch.zeros((1, self.event_info_h))
-        
+        # self.unk_event_semantic = torch.zeros((1, self.event_info_h))
+
         # sentence encoding layer
         emb_size_curr = list(self.word_embedding_lookup.size())[-1]
         lstm_dropout = torch.nn.Dropout(p=self.dropout_rate)
         self.lstm_inputs = lstm_dropout(self.word_embedding_lookup)
-        
-        logger.info("embedding dimension before encoding layer:\t", emb_size_curr)
-        
-        words_enc, _, _ = self.sent_encode_layer(
-            
+
+        logger.info(
+            "embedding dimension before encoding layer:\t", emb_size_curr
+        )
+
+        words_enc, _ = sentence_encoding_layer(
+            torch.reshape(
+                self.lstm_inputs,
+                [
+                    self.batch_size * self.max_doc_len,
+                    self.max_seq_len,
+                    emb_size_curr,
+                ],
+            ),
+            self.encode_h,
+            torch.reshape(self.valid_words_len, shape=[-1]),
+        )
+
+        logger.info(
+            f"embedding dimension after encoding layer: {words_enc.shape().as_list()[-1]}"
+        )
+
+        # self-attention
+        words_enc = torch.reshape(
+            words_enc, (self.batch_size, self.max_doc_len, self.max_seq_len, -1)
+        )
+        if self.self_att_not:
+            words_enc = self.sent_self_att(words_enc, self.valid_words_len)
+
+        print(
+            f"embedding dimension after self-attention: {words_enc.shape().as_list()[-1]}"
         )
