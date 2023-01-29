@@ -77,7 +77,8 @@ class MLBiNet(nn.Module):
         self.event_vector_trans = event_vector_trans
 
         # global initializer
-        self.initializer = torch.nn.init.xavier_uniform_()
+        # xavier_initializer in tensorflow is uniform by default
+        self.initializer = torch.nn.init.xavier_uniform_
 
         # initialize the word embedding matrix
         self.word_emb_mat = self.word_emb_mat.type(torch.float32)
@@ -145,7 +146,7 @@ class MLBiNet(nn.Module):
             "embedding dimension before encoding layer:\t", emb_size_curr
         )
 
-        words_enc, _ = sentence_encoding_layer(
+        words_enc, _ = self.sentence_encoding_layer(
             torch.reshape(
                 self.lstm_inputs,
                 [
@@ -159,16 +160,165 @@ class MLBiNet(nn.Module):
         )
 
         logger.info(
-            f"embedding dimension after encoding layer: {words_enc.shape().as_list()[-1]}"
+            f"embedding dimension after encoding layer: {list(words_enc.shape())[-1]}"
         )
 
         # self-attention
         words_enc = torch.reshape(
             words_enc, (self.batch_size, self.max_doc_len, self.max_seq_len, -1)
         )
+        # TODO: Implement self attention layer
         if self.self_att_not:
             words_enc = self.sent_self_att(words_enc, self.valid_words_len)
 
-        print(
-            f"embedding dimension after self-attention: {words_enc.shape().as_list()[-1]}"
+        logger.info(
+            f"embedding dimension after self-attention: {list(words_enc.shape())[-1]}"
         )
+
+    def word_embedding_init(self):
+        """
+        Initialize the word embedding matrix.
+
+        By default the word embedding matrix is given as parameter.
+        """
+        if self.word_emb_mat is None:
+            logger.error("The embedding matrix must be initialized!")
+        else:
+            # By default the word embedding matrix is given as parameter.
+            pass
+
+    def get_param(
+        self, name: str, shape, dtype=None, initializer=None
+    ) -> Parameter:
+        """
+        Get tensor by name.
+        If tensor does not exist, initialize a new one with initializer.
+
+        Args:
+            name (_type_): tensor name
+            shape (_type_): tensor shape
+            dtype (_type_, optional): tensor dtype. Defaults to torch.float32.
+            initializer (_type_, optional): tensor initializer. Defaults to self.initializer.
+        """
+
+        param: Parameter
+        try:
+            param = self.get_parameter(name)
+        except:
+            # Tensor does not exist, initialize a new one.
+            param = Parameter(initializer(torch.empty(shape, dtype=dtype)))
+            self.register_parameter(name=name, param=param)
+        return param
+
+    def embedding_layer(self):
+        """
+        Embedding layer with respect to the word embedding matrix
+        """
+        embedding_tmp = torch.index_select(
+            self.word_emb_mat, 0, self.input_docs
+        )
+
+        # looking up the level-1 ner embedding
+        if self.ner_size_1 is not None:
+            ner_mat_1 = self.get_param(
+                name="ner_mat_1",
+                shape=(self.ner_size_1, self.ner_dim_1),
+                dtype=torch.float32,
+                initializer=self.initializer,
+            )
+            emb_ner1_tmp = torch.index_select(ner_mat_1, 0, self.ner_docs_1)
+            embedding_tmp = torch.cat([embedding_tmp, emb_ner1_tmp], dim=-1)
+
+        # lokking up the level-2 ner embedding
+        if self.ner_size_2 is not None:
+            ner_mat_2 = self.get_param(
+                "ner_mat_2",
+                (self.ner_size_2, self.ner_dim_2),
+                dtype=torch.float32,
+                initializer=self.initializer,
+            )
+            # FIXME: the sequence to be embedded may be self.ner_docs_2 i guess.
+            #   Try it.
+            emb_ner2_tmp = torch.index_select(ner_mat_2, 0, self.ner_docs_1)
+            embedding_tmp = torch.cat([embedding_tmp, emb_ner2_tmp], dim=-1)
+
+    def sentence_encoding_layer(
+        embedding_input: Tensor, hidden_size, valid_len, num_layers=1
+    ):
+        """
+        Sentence encoding layer to get representation of each words
+
+        Args:
+            embedding_input (_type_): embedding input
+            hidden_size (_type_): set to MLBiNet encode_h
+            valid_len (_type_): sequence valid length
+            num_layers: number of LSTM layers
+        """
+        _, batch, _ = embedding_input.shape()
+
+        # Initialize hidden states
+        #
+        # TODO: Used normal initialization here,
+        # may need to change to xavier_initializer.
+        states = [
+            [
+                LSTMState(
+                    torch.randn(batch, hidden_size),
+                    torch.randn(batch, hidden_size),
+                )
+                for _ in range(2)
+            ]
+            for _ in range(num_layers)
+        ]
+
+        # Bidirectional LSTM layer using peephole LSTM cell.
+        # FIXME: input_size of my_lstm may not be valid_len
+        peephole_lstm = my_lstm(
+            valid_len,
+            hidden_size,
+            num_layers=num_layers,
+            cell=PeepHoleLSTMCell,
+            bias=True,
+            bidirectional=True,
+        )
+
+        out, out_state = peephole_lstm(embedding_input, states)
+        peephole_state = double_flatten_states(out_state)
+
+        return out, peephole_state
+
+    def sentence_self_attention(self, words_enc: Tensor, valid_words_len):
+        """
+        sentence-level self-attention
+
+        Args:
+            words_enc (Tensor): batch_size * max_doc_size * max_seq_len * dim
+            valid_words_len (_type_): batch_size * max_doc_size
+        """
+        enc_dim_tmp = list(words_enc.shape())
+        words_enc_new0 = torch.reshape(
+            words_enc,
+            [self.batch_size * self.max_doc_len, self.max_seq_len, enc_dim_tmp],
+        )
+        valid_words_len_new = torch.reshape(valid_words_len, shape=[-1])
+
+        def self_attention(weight_name="att_W"):
+            """
+            Sentence level self attention with different window size
+            """
+            # BUG: replace with get_tensor
+
+            W = self.get_param(
+                weight_name,
+                shape=(enc_dim_tmp, enc_dim_tmp),
+                dtype=torch.float32,
+            )
+            # x'Wx
+            words_enc_new = torch.reshape(
+                words_enc,
+                (
+                    self.batch_size * self.max_doc_len * self.max_seq_len,
+                    enc_dim_tmp,
+                ),
+            )
+            words_enc_new = torch.mm(words_enc_new, W)

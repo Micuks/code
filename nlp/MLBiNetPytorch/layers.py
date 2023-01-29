@@ -283,49 +283,6 @@ class BidirLSTMLayer(nn.Module):
 
         return torch.cat(outputs, -1), output_states
 
-
-def sentence_encoding_layer(
-    embedding_input: Tensor, hidden_size, valid_len, num_layers=1
-):
-    """
-    Sentence encoding layer to get representation of each words
-
-    Args:
-        embedding_input (_type_): embedding input
-        hidden_size (_type_): set to MLBiNet encode_h
-        valid_len (_type_): sequence valid length
-        name (_type_): _description_
-    """
-    input_size, batch = embedding_input.shape()
-    
-    # Initialize hidden states
-    # 
-    # TODO: Used normal initialization here,
-    # may need to change to xavier_initializer.
-    states = [
-        [
-            LSTMState(torch.randn(batch, hidden_size), torch.randn(batch, hidden_size))
-            for _ in range(2)
-        ]
-        for _ in range(num_layers)
-    ]
-
-    # Bidirectional LSTM layer using peephole LSTM cell.
-    peephole_lstm = my_lstm(
-        input_size,
-        hidden_size,
-        num_layers=num_layers,
-        cell=PeepHoleLSTMCell,
-        bias=True,
-        bidirectional=True,
-    )
-    
-    out, out_state = peephole_lstm(embedding_input, states)
-    peephole_state = double_flatten_states(out_state)
-    
-    return out, peephole_state
-
-
 def init_stacked_lstm(num_layers, layer, first_layer_args, other_layer_args):
     """Initialize layers with given layer args
 
