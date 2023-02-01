@@ -1,4 +1,5 @@
 import os
+import torch.nn.functional as F
 import torch
 import torch.nn as nn
 from layers import *
@@ -306,7 +307,6 @@ class MLBiNet(nn.Module):
             """
             Sentence level self attention with different window size
             """
-            # BUG: replace with get_tensor
 
             W = self.get_param(
                 weight_name,
@@ -321,4 +321,68 @@ class MLBiNet(nn.Module):
                     enc_dim_tmp,
                 ),
             )
-            words_enc_new = torch.mm(words_enc_new, W)
+            words_enc_new = torch.matmul(words_enc_new, W)
+            words_enc_new = torch.reshape(
+                words_enc_new,
+                (
+                    self.batch_size * self.max_doc_len,
+                    self.max_seq_len,
+                    enc_dim_tmp,
+                ),
+            )
+            # tanh(x'Wx)
+            # FIXME: this is supposed to function like
+            #   words_enc_new, tf.transpose(words_enc_new0, perm=[0, 2, 1])
+            logit_self_att = torch.matmul(
+                words_enc_new, torch.transpose(words_enc_new0, 1, 2)
+            )
+            logit_self_att = torch.tanh(logit_self_att)
+            probs = F.softmax(logit_self_att, -1)
+
+            # Equivalent to sequence_mask in tensorflow
+            def sequence_mask(lengths, maxlen=None, dtype=torch.bool):
+                """
+                Equivalent to sequence_mask in tensorflow
+
+                Args:
+                    lengths (_type_): lengths of sequences.
+                    maxlen (_type_, optional): max sequence length. Defaults to None.
+                    dtype (_type_, optional): mask type. Defaults to torch.bool.
+                """
+                if maxlen is None:
+                    maxlen = lengths.max()
+                row_vector = torch.arange(0, maxlen, 1)
+                matrix = torch.unsqueeze(lengths, dim=-1)
+                mask = row_vector < matrix
+                mask.type(dtype)
+                return mask
+
+            # mask invalid words
+            mask_words = sequence_mask(
+                valid_words_len_new,
+                maxlen=self.max_seq_len,
+                dtype=torch.float32,
+            )  # 160*100
+            mask_words = torch.tile(
+                torch.unsqueeze(mask_words, dim=1), dim=(1, self.max_seq_len, 1)
+            )  # 160*100*100
+            probs = probs * mask_words
+            probs = torch.matmul(
+                torch.diag(1 / (torch.sum(probs, dim=-1) + 1e-8)), probs
+            )  # re-standardize the probability
+            # attention output
+            att_output = torch.matmul(probs, words_enc_new0)
+            att_output = att_output.reshape(
+                shape=(
+                    self.batch_size,
+                    self.max_doc_len,
+                    self.max_seq_len,
+                    enc_dim_tmp,
+                )
+            )
+            return att_output
+
+        att_output = self_attention(weight_name="att_W")
+        return att_output
+    
+    
