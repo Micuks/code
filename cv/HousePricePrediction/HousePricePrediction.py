@@ -3,7 +3,7 @@ import logging
 
 # logger settings
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 con_handler = logging.StreamHandler()
 con_handler.setLevel(logging.DEBUG)
@@ -53,24 +53,30 @@ import numpy as np
 plt.rcParams["font.sans-serif"] = ["Songti SC"]
 plt.rcParams["axes.unicode_minus"] = False
 x_data = x_train.data.numpy()  # 将x中的数据转换为Numpy数组
-plt.figure(figsize=(5, 3))
+fig, (ax1, ax2) = plt.subplots(1,2, figsize=(15,6))
 # #绘制xh和y的散点图
-xplot = plt.plot(x_data, y_train.data.numpy(), "o")
+xplot, = ax1.plot(x_data, y_train.data.numpy(), "o")
 # 绘制出拟合直线
-yplot = plt.plot(x_data, a.data.numpy() * x_data + b.data.numpy())
+yplot, = ax1.plot(x_data, a.data.numpy() * x_data + b.data.numpy())
 predictions = a.expand_as(x_test) * x_test + b.expand_as(x_test)  # 计算模型预测结果
+plt.xlabel("月份")
+ax1.set_xlabel("月份")
+ax1.set_ylabel("房价")
+ax1.set_title("训练集数据")
+ax1.legend([xplot, yplot], ["Data", "Y_train" ])  # 绘制图例
 # 获得包裹的测试数据的自变量
 x_pred = x_test.data.numpy()
-plt.figure(figsize=(10, 7))  # 设置绘制窗口大学
-plt.plot(x_data, y_train.data.numpy(), "o")  # 绘制训练数据
-plt.plot(x_pred, y_test.data.numpy(), "s")  # 绘制测试数据
+ax2.plot(x_data, y_train.data.numpy(), "o")  # 绘制训练数据
+ytest_plot, = ax2.plot(x_pred, y_test.data.numpy(), "s")  # 绘制测试数据
 x_data = np.r_[x_data, x_test.data.numpy()]
 # 绘制拟合数据
-plt.plot(x_data, a.data.numpy() * x_data + b.data.numpy())
+ax2.plot(x_data, a.data.numpy() * x_data + b.data.numpy())
 # 绘制预测数据
-plt.plot(x_pred, a.data.numpy() * x_pred + b.data.numpy(), "o")
-plt.xlabel("X")  # 给横轴加标注
-plt.ylabel("Y")  # 给纵轴加标注
+yhat_plot, = ax2.plot(x_pred, a.data.numpy() * x_pred + b.data.numpy(), "o")
+ax2.set_title("训练集和测试集数据")
+ax2.set_xlabel("月份")
+ax2.set_ylabel("房价")
 str1 = str(a.data.numpy()[0]) + "x+" + str(b.data.numpy()[0])
-plt.legend([xplot, yplot], ["Data", str1])  # 绘制图例
+ax2.legend([xplot, yplot, ytest_plot, yhat_plot], ["Data", str1, "Y_test",
+                                                   "Y_test_hat"])  # 绘制图例
 plt.show()  # 绘制图形
