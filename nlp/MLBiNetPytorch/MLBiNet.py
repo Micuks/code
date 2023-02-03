@@ -243,6 +243,8 @@ class MLBiNet(nn.Module):
             emb_ner2_tmp = torch.index_select(ner_mat_2, 0, self.ner_docs_1)
             embedding_tmp = torch.cat([embedding_tmp, emb_ner2_tmp], dim=-1)
 
+        return embedding_tmp
+
     def sentence_encoding_layer(
         embedding_input: Tensor, hidden_size, valid_len, num_layers=1
     ):
@@ -287,6 +289,24 @@ class MLBiNet(nn.Module):
         peephole_state = double_flatten_states(out_state)
 
         return out, peephole_state
+
+    # Equivalent to sequence_mask in tensorflow
+    def sequence_mask(lengths, maxlen=None, dtype=torch.bool):
+        """
+        Equivalent to sequence_mask in tensorflow
+
+        Args:
+            lengths (_type_): lengths of sequences.
+            maxlen (_type_, optional): max sequence length. Defaults to None.
+            dtype (_type_, optional): mask type. Defaults to torch.bool.
+        """
+        if maxlen is None:
+            maxlen = lengths.max()
+        row_vector = torch.arange(0, maxlen, 1)
+        matrix = torch.unsqueeze(lengths, dim=-1)
+        mask = row_vector < matrix
+        mask.type(dtype)
+        return mask
 
     def sentence_self_attention(self, words_enc: Tensor, valid_words_len):
         """
@@ -339,26 +359,8 @@ class MLBiNet(nn.Module):
             logit_self_att = torch.tanh(logit_self_att)
             probs = F.softmax(logit_self_att, -1)
 
-            # Equivalent to sequence_mask in tensorflow
-            def sequence_mask(lengths, maxlen=None, dtype=torch.bool):
-                """
-                Equivalent to sequence_mask in tensorflow
-
-                Args:
-                    lengths (_type_): lengths of sequences.
-                    maxlen (_type_, optional): max sequence length. Defaults to None.
-                    dtype (_type_, optional): mask type. Defaults to torch.bool.
-                """
-                if maxlen is None:
-                    maxlen = lengths.max()
-                row_vector = torch.arange(0, maxlen, 1)
-                matrix = torch.unsqueeze(lengths, dim=-1)
-                mask = row_vector < matrix
-                mask.type(dtype)
-                return mask
-
             # mask invalid words
-            mask_words = sequence_mask(
+            mask_words = self.sequence_mask(
                 valid_words_len_new,
                 maxlen=self.max_seq_len,
                 dtype=torch.float32,
@@ -384,5 +386,33 @@ class MLBiNet(nn.Module):
 
         att_output = self_attention(weight_name="att_W")
         return att_output
-    
-    
+
+    def info_aggregation_layer(
+        self, predict_tag_vector: Tensor, reverse_seq=False
+    ):
+        """
+        Sentence-level event and semantic information aggregation layer
+
+        Args:
+            predict_tag_vector (_type_): given sentence vector
+            reverse_seq (bool, optional): reverse sequence or not. Defaults to False.
+        """
+        dim_curr = list(predict_tag_vector.shape)[-1]
+
+        # mask invalid words
+        mask_padding_index = self.sequence_mask(
+            self.valid_words_len, maxlen=self.max_seq_len, dtype=torch.float32
+        )
+        mask_padding_index = torch.tile(
+            torch.unsqueeze(mask_padding_index, dim=3), dims=(1, 1, 1, dim_curr)
+        )
+        predict_tag_vector = predict_tag_vector * mask_padding_index
+
+        # reverse the sequence
+        if reverse_seq:
+            predict_tag_vector = predict_tag_vector[:, :, ::-1, :]
+            var_name = "reversed_sentence_info_aggregation_layer"
+        else:
+            var_name = "sentence_info_aggregation_layer"
+
+        info_aggregation_lstmcell = torch.lstm_cell()

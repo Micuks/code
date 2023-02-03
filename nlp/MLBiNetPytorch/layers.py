@@ -96,13 +96,17 @@ def my_lstm(
 
     # The following are not implemented.
     assert bias
-    assert not dropout
     assert not batch_first
 
     if bidirectional:
         stack_type = StackedLSTM2
         layer_type = BidirLSTMLayer
         dirs = 2
+    elif dropout:
+        # TODO
+        stack_type = StackedLSTMWithDropout
+        layer_type = LSTMLayer
+        dirs = 1
     else:
         stack_type = StackedLSTM
         layer_type = LSTMLayer
@@ -283,6 +287,7 @@ class BidirLSTMLayer(nn.Module):
 
         return torch.cat(outputs, -1), output_states
 
+
 def init_stacked_lstm(num_layers, layer, first_layer_args, other_layer_args):
     """Initialize layers with given layer args
 
@@ -302,7 +307,7 @@ def init_stacked_lstm(num_layers, layer, first_layer_args, other_layer_args):
 
 
 class StackedLSTM(nn.Module):
-    __constants__ = ["layers"]  # Necessary for interating throuch self.layers
+    __constants__ = ["layers"]  # Necessary for iterating throuch self.layers
 
     def __init__(self, num_layers, layer, first_layer_args, other_layer_args):
         super(StackedLSTM, self).__init__()
@@ -319,6 +324,57 @@ class StackedLSTM(nn.Module):
         for i, rnn_layer in enumerate(self.layers):
             state = states[i]
             output, out_state = rnn_layer(output, state)
+            output_states += [out_state]
+
+        return output, output_states
+
+
+class StackedLSTMWithDropout(nn.Module):
+    __constants__ = [
+        "layers",
+        "num_layers",
+    ]  # Necessary for iterating through self.layers
+
+    def __init__(
+        self,
+        num_layers,
+        layer,
+        first_layer_args,
+        other_layer_args,
+        dropout_rate=0.4,
+    ):
+        super(StackedLSTMWithDropout, self).__init__()
+        self.layers = init_stacked_lstm(
+            num_layers, layer, first_layer_args, other_layer_args
+        )
+        # Introduce a Dropout layer on the outputs of each LSTM layer except the
+        # last layer, with dropout probability = 0.4.
+        self.num_layers = num_layers
+
+        self.dropout_rate = dropout_rate
+
+        if num_layers == 1:
+            logger.warning(
+                "Dropout LSTM adds dropout layers after all but last recurrent"
+                "layer, it expects num_layers greater than 1, but got"
+                "num_layers = 1."
+            )
+
+        self.dropout_layer = nn.Dropout(self.dropout_rate)
+
+    def forward(
+        self, input: Tensor, states: List[Tuple[Tensor, Tensor]]
+    ) -> Tuple[Tensor, List[Tuple[Tensor, Tensor]]]:
+        # List[LSTMState]: One state per layer
+        output_states: List[Tuple[Tensor, Tensor]] = []
+        output = input
+
+        for i, rnn_layer in enumerate(self.layers):
+            state = states[i]
+            output, out_state = rnn_layer(output, state)
+            # apply the dropoutlayer except the last layer
+            if i < self.num_layers - 1:
+                output = self.dropout_layer(output)
             output_states += [out_state]
 
         return output, output_states
@@ -353,6 +409,58 @@ class StackedLSTM2(nn.Module):
             output_states += [out_state]
 
         return output, output_states
+
+
+class EmbeddingLayer(nn.Module):
+    """
+    Word embedding layer
+
+    Args:
+        nn (_type_): _description_
+    """
+
+    def __init__(
+        self,
+        word_emb_mat: Tensor,
+        input_docs: Tensor,
+        ner_docs_1: Tensor,
+        ner_docs_2: Tensor,
+        ner_size_1=None,
+        ner_dim_1=None,
+        ner_size_2=None,
+        ner_dim_2=None,
+        initializer=nn.init.xavier_uniform_,
+    ) -> Tensor:
+        embedding_tmp = torch.index_select(word_emb_mat, 0, input_docs)
+
+        # looking up the level-1 ner embedding
+        # FIXME: In origin tensorflow code, ner_mat_1 is got using get_variable().
+        if ner_size_1 is not None:
+            ner_mat_1 = nn.Parameter(
+                initializer(
+                    torch.empty(
+                        shape=(ner_size_1, ner_dim_1), dtype=torch.float32
+                    )
+                )
+            )
+            emb_ner1_tmp = torch.index_select(ner_mat_1, 0, ner_docs_1)
+            embedding_tmp = torch.cat((embedding_tmp, emb_ner1_tmp), dim=-1)
+
+        # looking up the level-2 ner embedding
+        if ner_size_2 is not None:
+            ner_mat_2 = nn.Parameter(
+                initializer(
+                    torch.empty(
+                        shape=(ner_size_1, ner_dim_1), dtype=torch.float32
+                    )
+                )
+            )
+            # FIXME: the sequence to be embedded may be self.ner_docs_2 i guess.
+            # Try it if there is a bug.
+            emb_ner2_tmp = torch.index_select(ner_mat_2,0,ner_docs_1)
+            embedding_tmp=torch.cat((embedding_tmp,emb_ner2_tmp),dim=-1)
+        
+        return embedding_tmp
 
 
 def test_lstm_layer(seq_len, batch, input_size, hidden_size):
