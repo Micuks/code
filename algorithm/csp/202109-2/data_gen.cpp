@@ -11,8 +11,8 @@ int main(int argc, char **argv) {
     random_device rand_dev;
     mt19937 generator(rand_dev());
 
-    uniform_int_distribution<int> n_generate(1, 10e4);
-    uniform_int_distribution<int> distr(0, 20e3);
+    uniform_int_distribution<int> n_generate(1, 10);
+    uniform_int_distribution<int> distr(0, 2e4);
 
     fstream fs;
     string filename = "in";
