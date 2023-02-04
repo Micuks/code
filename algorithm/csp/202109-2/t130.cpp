@@ -11,16 +11,17 @@ class Solution {
     vector<int> a;
     int aMax;
     int aMin;
-    static const int MAXN = 2e4;
+    static const int MAXN = 2e5;
     int count[MAXN];
     int ans;
 
   public:
     Solution(int n, vector<int> a, int aMax, int aMin)
         : n(n), a(a), aMax(aMax), aMin(aMin) {
-        memset(count, 0, (aMax - aMin + 1) * sizeof(int));
+        memset(count, 0, MAXN * sizeof(int));
     }
     int solve();
+    const int getAns() const { return ans; }
 };
 
 int Solution::solve() {
@@ -47,7 +48,7 @@ int Solution::solve() {
 
     ans = 0;
     int tmp = 0;
-    for (int num = aMax; num >= aMin; num--) {
+    for (int num = aMax; num > 0; num--) {
         tmp = tmp + count[num];
         ans = ans > tmp ? ans : tmp;
     }
