@@ -1,3 +1,4 @@
+// #define DEBUG
 #include <algorithm>
 #include <climits>
 #include <cstring>
@@ -25,20 +26,18 @@ class Solution {
 };
 
 int Solution::solve() {
-    n = unique(a.begin(), a.end()) - a.begin();
-
-    if (a[0] > a[1]) {
-        count[a[0]]++;
-    } else if (a[0] < a[1]) {
-        count[a[0]]--;
+    n = unique(a.begin() + 1, a.begin() + n + 1) - a.begin() - 1;
+    a[0] = 0;
+    a[n + 1] = 0;
+#ifdef DEBUG
+    cout << "a: " << endl;
+    for (int i = 0; i <= n + 1; i++) {
+        cout << a[i] << " ";
     }
-    if (a[n - 1] > a[n - 2]) {
-        count[a[n - 1]]++;
-    } else if (a[n - 1] < a[n - 2]) {
-        count[a[n - 1]]--;
-    }
+    cout << endl;
+#endif
 
-    for (int i = 1; i < n - 1; i++) {
+    for (int i = 1; i <= n; i++) {
         if (a[i - 1] < a[i] && a[i] > a[i + 1]) {
             count[a[i]]++;
         } else if (a[i - 1] > a[i] && a[i + 1] > a[i]) {
@@ -51,6 +50,10 @@ int Solution::solve() {
     for (int num = aMax; num > 0; num--) {
         tmp = tmp + count[num];
         ans = ans > tmp ? ans : tmp;
+#ifdef DEBUG
+        cout << num << ": " << tmp << ", count: " << count[num]
+             << ", ans: " << ans << endl;
+#endif
     }
 
     return ans;
@@ -62,6 +65,7 @@ int main() {
     int aMax = INT_MIN;
     int aMin = INT_MAX;
     cin >> n;
+    a.push_back(0);
     for (int i = 0; i < n; i++) {
         int tmp;
         cin >> tmp;
@@ -71,6 +75,7 @@ int main() {
 
         a.push_back(tmp);
     }
+    a.push_back(0);
 
     Solution s(n, a, aMax, aMin);
     cout << s.solve() << endl;
