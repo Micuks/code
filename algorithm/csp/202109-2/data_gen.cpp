@@ -25,6 +25,9 @@ int main(int argc, char **argv) {
         for (int i = 0; i < n; i++) {
             fs << distr(generator) << " ";
         }
+        fs << endl;
     }
-    fs << endl;
+    fs.close();
+
+    return 0;
 }
