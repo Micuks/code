@@ -422,45 +422,131 @@ class EmbeddingLayer(nn.Module):
     def __init__(
         self,
         word_emb_mat: Tensor,
-        input_docs: Tensor,
-        ner_docs_1: Tensor,
-        ner_docs_2: Tensor,
         ner_size_1=None,
         ner_dim_1=None,
         ner_size_2=None,
         ner_dim_2=None,
         initializer=nn.init.xavier_uniform_,
     ) -> Tensor:
-        embedding_tmp = torch.index_select(word_emb_mat, 0, input_docs)
+        word_emb = nn.Embedding(word_emb_mat.size()[0], word_emb_mat.size()[1])
+        word_emb.weight = nn.Parameter(word_emb_mat)
+        self.word_emb = word_emb
+
+        if word_emb_mat is None:
+            logger.error("The embedding matrix must be initialized!")
 
         # looking up the level-1 ner embedding
         # FIXME: In origin tensorflow code, ner_mat_1 is got using get_variable().
         if ner_size_1 is not None:
-            ner_mat_1 = nn.Parameter(
+            ner_mat_1 = nn.Embedding(ner_size_1, ner_dim_1)
+            ner_mat_1.weight = nn.Parameter(
                 initializer(
                     torch.empty(
                         shape=(ner_size_1, ner_dim_1), dtype=torch.float32
                     )
                 )
             )
-            emb_ner1_tmp = torch.index_select(ner_mat_1, 0, ner_docs_1)
-            embedding_tmp = torch.cat((embedding_tmp, emb_ner1_tmp), dim=-1)
+            self.ner_mat_1 = ner_mat_1
 
         # looking up the level-2 ner embedding
         if ner_size_2 is not None:
-            ner_mat_2 = nn.Parameter(
+            ner_mat_2 = nn.Embedding(ner_size_2, ner_dim_2)
+            ner_mat_2.weight = nn.Parameter(
                 initializer(
                     torch.empty(
-                        shape=(ner_size_1, ner_dim_1), dtype=torch.float32
+                        shape=(ner_size_2, ner_dim_2), dtype=torch.float32
                     )
                 )
             )
+            self.ner_mat_2 = ner_mat_2
+
+    def forward(
+        self, input_docs: Tensor, ner_docs_1: Tensor, ner_docs_2: Tensor
+    ):
+        word_emb = self.word_emb
+        embedding_tmp = word_emb(input_docs)
+        # embedding_tmp = torch.index_select(word_emb_mat, 0, input_docs)
+
+        # looking up the level-1 ner embedding
+        # FIXME: In origin tensorflow code, ner_mat_1 is got using get_variable().
+        if self.ner_mat_1 is not None:
+            ner_mat_1 = self.ner_mat_1
+            emb_ner1_tmp = ner_mat_1(ner_docs_1)
+            # emb_ner1_tmp = torch.index_select(ner_mat_1, 0, ner_docs_1)
+            embedding_tmp = torch.cat((embedding_tmp, emb_ner1_tmp), dim=-1)
+
+        # looking up the level-2 ner embedding
+        if self.ner_mat_2 is not None:
+            ner_mat_2 = self.ner_mat_2
             # FIXME: the sequence to be embedded may be self.ner_docs_2 i guess.
             # Try it if there is a bug.
-            emb_ner2_tmp = torch.index_select(ner_mat_2,0,ner_docs_1)
-            embedding_tmp=torch.cat((embedding_tmp,emb_ner2_tmp),dim=-1)
-        
+            emb_ner2_tmp = ner_mat_2(ner_docs_2)
+            # emb_ner2_tmp = torch.index_select(ner_mat_2,0,ner_docs_1)
+            embedding_tmp = torch.cat((embedding_tmp, emb_ner2_tmp), dim=-1)
+
         return embedding_tmp
+
+
+class SentenceEncodingLayer(nn.Module):
+    """
+    Sentence encoding layer to get representation of each words
+
+    Args:
+        embedding_input (_type_): embedding input
+        hidden_size (_type_): set to MLBiNet encode_h
+        valid_len (_type_): sequence valid length
+        num_layers: number of LSTM layers
+    """
+
+    def __init__(
+        self,
+        input_size: Tensor,
+        hidden_size: Tensor,
+        valid_len: Tensor,
+        num_layers=1,
+    ):
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        self.valid_len = valid_len
+
+        # Bidirectional LSTM layer using peephole LSTM cell.
+        self.peephole_lstm = my_lstm(
+            input_size,
+            hidden_size,
+            num_layers=num_layers,
+            cell=PeepHoleLSTMCell,
+            bias=True,
+            Mbidirectional=True,
+        )
+
+    def init_hidden(self, batch_size):
+        """
+        Init hidden states.
+
+        Args:
+            batch_size (_type_): _description_
+        """
+        states = [
+            [
+                LSTMState(
+                    torch.randn(batch_size, self.hidden_size),
+                    torch.randn(batch_size, self.hidden_size),
+                )
+                for _ in range(2)
+            ]
+            for _ in range(self.num_layers)
+        ]
+        
+        return states
+
+    def forward(self, embedding_input):
+        peephole_lstm = self.peephole_lstm
+        states = self.states
+        out, out_state = peephole_lstm(embedding_input, states)
+        peephole_state = double_flatten_states(out_state)
+
+        return out, peephole_state
 
 
 def test_lstm_layer(seq_len, batch, input_size, hidden_size):

@@ -176,18 +176,6 @@ class MLBiNet(nn.Module):
             f"embedding dimension after self-attention: {list(words_enc.shape())[-1]}"
         )
 
-    def word_embedding_init(self):
-        """
-        Initialize the word embedding matrix.
-
-        By default the word embedding matrix is given as parameter.
-        """
-        if self.word_emb_mat is None:
-            logger.error("The embedding matrix must be initialized!")
-        else:
-            # By default the word embedding matrix is given as parameter.
-            pass
-
     def get_param(
         self, name: str, shape, dtype=None, initializer=None
     ) -> Parameter:
@@ -210,85 +198,6 @@ class MLBiNet(nn.Module):
             param = Parameter(initializer(torch.empty(shape, dtype=dtype)))
             self.register_parameter(name=name, param=param)
         return param
-
-    def embedding_layer(self):
-        """
-        Embedding layer with respect to the word embedding matrix
-        """
-        embedding_tmp = torch.index_select(
-            self.word_emb_mat, 0, self.input_docs
-        )
-
-        # looking up the level-1 ner embedding
-        if self.ner_size_1 is not None:
-            ner_mat_1 = self.get_param(
-                name="ner_mat_1",
-                shape=(self.ner_size_1, self.ner_dim_1),
-                dtype=torch.float32,
-                initializer=self.initializer,
-            )
-            emb_ner1_tmp = torch.index_select(ner_mat_1, 0, self.ner_docs_1)
-            embedding_tmp = torch.cat([embedding_tmp, emb_ner1_tmp], dim=-1)
-
-        # lokking up the level-2 ner embedding
-        if self.ner_size_2 is not None:
-            ner_mat_2 = self.get_param(
-                "ner_mat_2",
-                (self.ner_size_2, self.ner_dim_2),
-                dtype=torch.float32,
-                initializer=self.initializer,
-            )
-            # FIXME: the sequence to be embedded may be self.ner_docs_2 i guess.
-            #   Try it.
-            emb_ner2_tmp = torch.index_select(ner_mat_2, 0, self.ner_docs_1)
-            embedding_tmp = torch.cat([embedding_tmp, emb_ner2_tmp], dim=-1)
-
-        return embedding_tmp
-
-    def sentence_encoding_layer(
-        embedding_input: Tensor, hidden_size, valid_len, num_layers=1
-    ):
-        """
-        Sentence encoding layer to get representation of each words
-
-        Args:
-            embedding_input (_type_): embedding input
-            hidden_size (_type_): set to MLBiNet encode_h
-            valid_len (_type_): sequence valid length
-            num_layers: number of LSTM layers
-        """
-        _, batch, _ = embedding_input.shape()
-
-        # Initialize hidden states
-        #
-        # TODO: Used normal initialization here,
-        # may need to change to xavier_initializer.
-        states = [
-            [
-                LSTMState(
-                    torch.randn(batch, hidden_size),
-                    torch.randn(batch, hidden_size),
-                )
-                for _ in range(2)
-            ]
-            for _ in range(num_layers)
-        ]
-
-        # Bidirectional LSTM layer using peephole LSTM cell.
-        # FIXME: input_size of my_lstm may not be valid_len
-        peephole_lstm = my_lstm(
-            valid_len,
-            hidden_size,
-            num_layers=num_layers,
-            cell=PeepHoleLSTMCell,
-            bias=True,
-            bidirectional=True,
-        )
-
-        out, out_state = peephole_lstm(embedding_input, states)
-        peephole_state = double_flatten_states(out_state)
-
-        return out, peephole_state
 
     # Equivalent to sequence_mask in tensorflow
     def sequence_mask(lengths, maxlen=None, dtype=torch.bool):
