@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from utils import *
+import torch.nn.functional as F
 from collections import namedtuple
 import inspect
 import numpy as np
@@ -75,6 +77,7 @@ def my_lstm(
     bias=True,
     batch_first=False,
     dropout=False,
+    dropout_rate=0.4,
     bidirectional=False,
 ):
     """
@@ -103,7 +106,6 @@ def my_lstm(
         layer_type = BidirLSTMLayer
         dirs = 2
     elif dropout:
-        # TODO
         stack_type = StackedLSTMWithDropout
         layer_type = LSTMLayer
         dirs = 1
@@ -112,12 +114,25 @@ def my_lstm(
         layer_type = LSTMLayer
         dirs = 1
 
-    return stack_type(
-        num_layers,
-        layer_type,
-        first_layer_args=[cell, input_size, hidden_size],
-        other_layer_args=[cell, hidden_size * dirs, hidden_size],
-    )
+    if dropout:
+        return stack_type(
+            num_layers,
+            layer_type,
+            first_layer_args=[cell, input_size, hidden_size, dropout_rate],
+            other_layer_args=[
+                cell,
+                hidden_size * dirs,
+                hidden_size,
+                dropout_rate,
+            ],
+        )
+    else:
+        return stack_type(
+            num_layers,
+            layer_type,
+            first_layer_args=[cell, input_size, hidden_size],
+            other_layer_args=[cell, hidden_size * dirs, hidden_size],
+        )
 
 
 class PeepHoleLSTMCell(nn.Module):
@@ -341,7 +356,6 @@ class StackedLSTMWithDropout(nn.Module):
         layer,
         first_layer_args,
         other_layer_args,
-        dropout_rate=0.4,
     ):
         super(StackedLSTMWithDropout, self).__init__()
         self.layers = init_stacked_lstm(
@@ -351,7 +365,7 @@ class StackedLSTMWithDropout(nn.Module):
         # last layer, with dropout probability = 0.4.
         self.num_layers = num_layers
 
-        self.dropout_rate = dropout_rate
+        self.dropout_rate = first_layer_args[-1]
 
         if num_layers == 1:
             logger.warning(
@@ -517,7 +531,7 @@ class SentenceEncodingLayer(nn.Module):
             num_layers=num_layers,
             cell=PeepHoleLSTMCell,
             bias=True,
-            Mbidirectional=True,
+            bidirectional=True,
         )
 
     def init_hidden(self, batch_size):
@@ -537,16 +551,239 @@ class SentenceEncodingLayer(nn.Module):
             ]
             for _ in range(self.num_layers)
         ]
-        
+
         return states
 
-    def forward(self, embedding_input):
+    def forward(self, embedding_input, states):
         peephole_lstm = self.peephole_lstm
         states = self.states
         out, out_state = peephole_lstm(embedding_input, states)
         peephole_state = double_flatten_states(out_state)
 
         return out, peephole_state
+
+
+class SentenceSelfAttention(nn.Module):
+    def __init__(
+        self,
+        words_enc: Tensor,
+        valid_words_len,
+        batch_size,
+        max_doc_len,
+        max_seq_len,
+    ):
+        """
+        sentence-level self-attention with different window size
+        """
+        enc_dim_tmp = list(words_enc.size())
+        words_enc_new0 = torch.reshape(
+            words_enc, (batch_size * max_doc_len, max_seq_len, enc_dim_tmp)
+        )
+        valid_words_len_new = torch.reshape(valid_words_len, shape=(-1))
+
+        W = nn.Parameter(
+            torch.empty(enc_dim_tmp, enc_dim_tmp, dtype=torch.float32)
+        )
+
+        self.register_parameter("W", W)
+        self.W = W
+        self.valid_words_len = valid_words_len
+        self.batch_size = batch_size
+        self.max_doc_len = max_doc_len
+        self.max_seq_len = max_seq_len
+        self.enc_dim_tmp = enc_dim_tmp
+        self.words_enc_new0 = words_enc_new0
+        self.valid_words_len_new = valid_words_len_new
+
+    def forward(self, words_enc: Tensor):
+        valid_words_len = self.valid_words_len
+        batch_size = self.batch_size
+        max_doc_len = self.max_doc_len
+        max_seq_len = self.max_seq_len
+        enc_dim_tmp = self.enc_dim_tmp
+        words_enc_new0 = self.words_enc_new0
+        valid_words_len_new = valid_words_len_new
+        W = self.W
+
+        # x'Wx
+        words_enc_new = torch.reshape(
+            words_enc, (batch_size * max_doc_len * max_seq_len, enc_dim_tmp)
+        )
+        words_enc_new = torch.matmul(words_enc_new, W)
+        words_enc_new = torch.reshape(
+            words_enc_new, (batch_size * max_doc_len, max_seq_len, enc_dim_tmp)
+        )
+        # tanh(x'Wx)
+        logit_self_att = torch.matmul(
+            words_enc_new, torch.transpose(words_enc_new0, 1, 2)
+        )
+        logit_self_att = torch.tanh(logit_self_att)
+        probs = F.softmax(logit_self_att, -1)
+
+        # mask invalid words
+        mask_words = sequence_mask(
+            valid_words_len_new, maxlen=max_seq_len, dtype=torch.float32
+        )  # 160*100
+        mask_words = torch.tile(
+            torch.unsqueeze(mask_words, dim=1), dim=(1, max_seq_len, 1)
+        )  # 160*100*100
+        probs = probs * mask_words
+        probs = torch.matmul(
+            torch.diag(1 / (torch.sum(probs, dim=-1) + 1e-8)), probs
+        )  # re-standardize the probability
+        # attention output
+        att_output = torch.matmul(probs, words_enc_new0)
+        att_output = att_output.reshape(
+            shape=(
+                batch_size,
+                max_doc_len,
+                max_seq_len,
+                enc_dim_tmp,
+            )
+        )
+
+        return att_output
+
+
+class InfoAggregationLayer(nn.Module):
+    def __init__(
+        self,
+        valid_words_len,
+        batch_size,
+        max_seq_len,
+        max_doc_len,
+        event_info_h,
+        dropout_rate,
+    ):
+        """
+        Sentence-level event and semantic information aggregation layer
+
+        Args:
+        """
+        input_size = max_seq_len * max_doc_len
+        hidden_size = event_info_h
+
+        initial_states = [
+            LSTMState(
+                torch.randn(batch_size, hidden_size),
+                torch.randn(batch_size, hidden_size),
+            )
+        ]
+
+        info_aggregation_lstm = my_lstm(
+            input_size,
+            hidden_size,
+            num_layers=1,
+            dropout=True,
+            dropout_rate=dropout_rate,
+        )
+
+        self.info_aggregation_lstm = info_aggregation_lstm
+        self.input_size = input_size
+        self.max_seq_len = max_seq_len
+        self.batch_size = batch_size
+        self.max_doc_len = max_doc_len
+        self.valid_words_len = valid_words_len
+
+    def forward(self, predict_tag_vector, reverse_seq=False):
+        info_aggregation_lstm = self.info_aggregation_lstm
+        max_seq_len = self.max_seq_len
+        max_doc_len = self.max_doc_len
+        input_size = self.input_size
+        batch_size = self.batch_size
+        valid_words_len = self.valid_words_len
+
+        dim_curr = list(predict_tag_vector.shape)[-1]
+        # mask invalid words
+        mask_padding_index = sequence_mask(
+            valid_words_len, maxlen=max_seq_len, dtype=torch.float32
+        )
+        mask_padding_index = torch.tile(
+            torch.unsqueeze(mask_padding_index, dim=3), dims=(1, 1, 1, dim_curr)
+        )
+        predict_tag_vector = predict_tag_vector * mask_padding_index
+
+        # reverse the sequence
+        if reverse_seq:
+            predict_tag_vector = predict_tag_vector[:, :, ::-1, :]
+
+        # sent_event_semantic_info: LSTMState[1], cell hidden state
+        _, (_, sent_event_sematic_info) = info_aggregation_lstm(
+            torch.reshape(
+                predict_tag_vector, shape=(input_size, max_seq_len, -1)
+            )
+        )
+        sent_event_sematic_info = torch.reshape(
+            sent_event_sematic_info, shape=(batch_size, max_doc_len, -1)
+        )
+
+        # LSTMState[1] tensor
+        return sent_event_sematic_info
+
+
+class BidirectionalInfoAggregationLayer(nn.Module):
+    def __init__(
+        self,
+        valid_words_len,
+        batch_size,
+        max_seq_len,
+        max_doc_len,
+        event_info_h,
+        dropout_rate,
+    ):
+        """
+        Bidirectional sentence-level event and semantic info aggregation layer
+
+        Args:
+            nn (_type_): _description_
+        """
+        input_size = max_seq_len * max_doc_len
+        hidden_size = event_info_h
+
+        initial_states = [
+            LSTMState(
+                torch.randn(batch_size, hidden_size),
+                torch.randn(batch_size, hidden_size),
+            )
+        ]
+
+        bidir_info_aggr_lstm = SentenceEncodingLayer(
+            input_size, hidden_size, torch.reshape(valid_words_len, [-1])
+        )
+
+        self.bidir_info_aggr_lstm = bidir_info_aggr_lstm
+        self.input_size = input_size
+        self.batch_size = batch_size
+        self.max_seq_len = max_seq_len
+        self.max_doc_len = max_doc_len
+        self.valid_words_len = valid_words_len
+
+    def forward(self, predict_tag_vector: Tensor, reverse_seq=False):
+        """
+        Forward
+
+        Args:
+            predict_tag_vector (Tensor): shape(batch_size, max_doc_len,
+                max_seq_len, word_embedding)
+            reverse_seq (bool, optional): _description_. Defaults to False.
+        """
+        bidir_info_aggr_lstm = self.bidir_info_aggr_lstm
+        valid_words_len = self.valid_words_len
+        max_seq_len = self.max_seq_len
+
+        dim_curr = list(predict_tag_vector.shape)[-1]
+        # mask invalid words
+        mask_padding_index = sequence_mask(
+            valid_words_len, maxlen=max_seq_len, dtype=torch.float32
+        )
+        mask_padding_index = torch.tile(
+            torch.unsqueeze(mask_padding_index, dim=3), dims=(1, 1, 1, dim_curr)
+        )
+        predict_tag_vector = predict_tag_vector * mask_padding_index
+
+        # reverse the sequence
+        if reverse_seq:
+            predict_tag_vector = predict_tag_vector[:, :, ::-1, :]
 
 
 def test_lstm_layer(seq_len, batch, input_size, hidden_size):
