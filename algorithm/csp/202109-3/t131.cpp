@@ -1,5 +1,6 @@
-#define DEBUG
+// #define DEBUG
 #include <algorithm>
+#include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -7,7 +8,9 @@
 
 using namespace std;
 
+const int MAXT = 1e4;
 double dt;
+int mod = numeric_limits<int>::lowest();
 
 class Synapse {
   protected:
@@ -39,73 +42,47 @@ class Neuron {
     int rn; // Number of this kind of neuron.
     double v, u, a, b, c, d;
     int num_pulses_sent;
-    vector<Pulse> pulses;     // pulses on their way.
+    double I[MAXT];
     vector<Synapse> synapses; // Synapses from this neuron.
 
   public:
     Neuron(int rn, double v0, double u0, double a, double b, double c, double d)
         : rn(rn), v(v0), u(u0), a(a), b(b), c(c), d(d) {
         num_pulses_sent = 0;
+        memset(I, 0, MAXT * sizeof(double));
     }
     void addSynapse(Synapse &syna) { synapses.push_back(syna); }
-    void sendPulse(vector<Neuron> &neurons);
-    void addPulse(Synapse &syna) { pulses.push_back(syna); }
-    void updateStatus(vector<Neuron> &neurons);
-    double updatePulses();
+    void sendPulse(const int time, vector<Neuron> &neurons);
+    void addPulse(const int time, const int d, const double w);
+    void updateStatus(const int time, vector<Neuron> &neurons);
     const double getV() const { return v; }
     const int getNumPulsesSent() const { return num_pulses_sent; }
 };
 
-double Neuron::updatePulses() {
-#ifdef DEBUG
-    cout << "    len(pulses)[" << pulses.size() << "]" << endl;
-#endif // DEBUG
-    double I = 0;
-    for (auto iter = pulses.begin(); iter != pulses.end();) {
-#ifdef DEBUG
-        cout << "    update pulse[" << (iter - pulses.begin()) << "]" << endl;
-#endif // DEBUG
-        auto &pulse = *iter;
-        pulse.update();
-#ifdef DEBUG
-        cout << "      pulse.countDown[" << pulse.getCountDown() << "]" << endl;
-#endif // DEBUG
-        if (!pulse.getCountDown()) {
-#ifdef DEBUG
-            cout << "      pulse arrived. pulse.w[" << pulse.getW() << "]"
-                 << endl;
-#endif // DEBUG
-            I += pulse.getW();
-            // iter point to new position of next element.
-            iter = pulses.erase(iter);
-        } else {
-            iter++;
-        }
-    }
-
-    return I;
+void Neuron::addPulse(const int time, const int d, const double w) {
+    I[(time + d) % mod] += w;
 }
 
-void Neuron::sendPulse(vector<Neuron> &neurons) {
+void Neuron::sendPulse(const int time, vector<Neuron> &neurons) {
     for (auto &syna : synapses) {
         auto to = syna.getT();
 #ifdef DEBUG
         cout << to << " ";
 #endif // DEBUG
-        neurons[to].addPulse(syna);
+        neurons[to].addPulse(time, syna.getD(), syna.getW());
     }
 #ifdef DEBUG
     cout << endl;
 #endif // DEBUG
 }
 
-void Neuron::updateStatus(vector<Neuron> &neurons) {
-    double I = updatePulses();
+void Neuron::updateStatus(const int time, vector<Neuron> &neurons) {
+    double currI = I[time];
     double vPrev = v, uPrev = u;
-    v = vPrev + dt * (0.04 * vPrev * vPrev + 5 * vPrev + 140 - uPrev) + I;
+    v = vPrev + dt * (0.04 * vPrev * vPrev + 5 * vPrev + 140 - uPrev) + currI;
     u = uPrev + dt * a * (b * vPrev - uPrev);
 #ifdef DEBUG
-    cout << "    v[" << v << "], u[" << u << "], I[" << I << "]" << endl;
+    cout << "    v[" << v << "], u[" << u << "], I[" << currI << "]" << endl;
 #endif // DEBUG
 
     if (v >= 30) {
@@ -113,7 +90,7 @@ void Neuron::updateStatus(vector<Neuron> &neurons) {
         cout << "    Send pulses to ";
 #endif // DEBUG
        // v_k >= 30, send pulse.
-        sendPulse(neurons);
+        sendPulse(time, neurons);
         // Update number of pulses sent
         num_pulses_sent++;
     }
@@ -122,6 +99,8 @@ void Neuron::updateStatus(vector<Neuron> &neurons) {
         v = c;
         u = u + d;
     }
+
+    I[time] = 0;
 }
 
 class PulseSource {
@@ -132,7 +111,7 @@ class PulseSource {
   public:
     PulseSource(int r) : r(r) {}
     int myRand(void);
-    void sendPulse(vector<Neuron> &neurons);
+    void sendPulse(const int time, vector<Neuron> &neurons);
     void addSynapse(Synapse &syna) { synapses.push_back(syna); }
 };
 
@@ -143,7 +122,7 @@ int PulseSource::myRand() {
     return ((unsigned)(next / 65536) % 32768);
 }
 
-void PulseSource::sendPulse(vector<Neuron> &neurons) {
+void PulseSource::sendPulse(const int time, vector<Neuron> &neurons) {
     int rand = myRand();
 #ifdef DEBUG
     cout << "    r[" << r << "], "
@@ -160,8 +139,7 @@ void PulseSource::sendPulse(vector<Neuron> &neurons) {
 #ifdef DEBUG
             cout << to << " ";
 #endif // DEBUG
-            Pulse pulse(syna);
-            neurons[to].addPulse(pulse);
+            neurons[to].addPulse(time, syna.getD(), syna.getW());
         }
 #ifdef DEBUG
         cout << endl;
@@ -187,24 +165,22 @@ class Simulation {
 
 void Simulation::simulate() {
     for (int time = 1; time <= T; time++) {
+        int modTime = time % mod;
 #ifdef DEBUG
-        cout << "T[" << time << "]:" << endl;
-#endif // DEBUG
-        for (auto &neu : neurons) {
-#ifdef DEBUG
-            cout << "  neu[" << &neu - &(*neurons.begin()) << "]: " << endl;
-#endif // DEBUG
-            neu.updateStatus(neurons);
-        }
-#ifdef DEBUG
-        cout << endl;
+        cout << "T[" << time << "], modT[" << modTime << "]:" << endl;
 #endif // DEBUG
         for (auto &ps : pulseSources) {
 #ifdef DEBUG
             cout << "  source[" << &ps - pulseSources.begin().base()
                  << "]:" << endl;
 #endif // DEBUG
-            ps.sendPulse(neurons);
+            ps.sendPulse(modTime, neurons);
+        }
+        for (auto &neu : neurons) {
+#ifdef DEBUG
+            cout << "  neu[" << &neu - &(*neurons.begin()) << "]: " << endl;
+#endif // DEBUG
+            neu.updateStatus(modTime, neurons);
         }
     }
 }
@@ -226,6 +202,7 @@ void Simulation::printAns() {
 }
 
 int main() {
+    mod = numeric_limits<int>::lowest();
     int N, S, P, T;
     cin >> N >> S >> P >> T;
     cin >> dt;
@@ -287,6 +264,7 @@ int main() {
             Synapse syna(_s, _t, _w, _d);
             neurons[_s].addSynapse(syna);
         }
+        mod = max(mod, _d + 1);
     }
 
     Simulation sim(N, S, P, T, neurons, pulseSources);
