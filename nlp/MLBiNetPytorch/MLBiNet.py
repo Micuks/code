@@ -22,6 +22,9 @@ formatter = logging.Formatter(
     style="%",
 )
 
+con_handler.setFormatter(formatter)
+logger.addHandler(con_handler)
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 device = "mps" if torch.backends.mps.is_available() else "cpu"
 logger.info("Using {} device".format(device))
@@ -168,7 +171,6 @@ class MLBiNet(nn.Module):
         words_enc = torch.reshape(
             words_enc, (self.batch_size, self.max_doc_len, self.max_seq_len, -1)
         )
-        # TODO: Implement self attention layer
         if self.self_att_not:
             words_enc = self.sent_self_att(words_enc, self.valid_words_len)
 
