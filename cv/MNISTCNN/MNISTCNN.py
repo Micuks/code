@@ -16,7 +16,7 @@ logger = logging.getLogger("MNISTCNN")
 logger.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter(
-        "%(asctime)s [%(levelname)s] %(name)s %(lineno)s: %(message)s")
+        "%(asctime)s [%(levelname)s] %(name)s:L%(lineno)s: %(message)s")
 con_handler = logging.StreamHandler()
 con_handler.setLevel(logging.DEBUG)
 con_handler.setFormatter(formatter)
@@ -109,7 +109,7 @@ class ConvNet(nn.Module):
         # Two 2x2 pooling layers make the image 1/4 as before by height and width.
         x=x.view(-1, image_size//4*image_size//4*depth[1])
         x=self.fc1(x)
-        x.F.relu(x)
+        x=F.relu(x)
         # Dropout at 0.5 possibility.
         x=F.dropout(x,training=self.training)
         x=self.fc2(x)
@@ -184,8 +184,8 @@ for epoch in range(num_epochs):
                                 len(train_loader.dataset),
                                100.*batch_idx/len(train_loader),
                                 loss.data,
-                                100.*train_r[0].numpy()/train_r[1],
-                               100.*val_r[0].numpy()/val_r[1]))
+                                100.*train_r[0].cpu().numpy()/train_r[1],
+                               100.*val_r[0].cpu().numpy()/val_r[1]))
 
             record.append((100-100.*train_r[0]/train_r[1],100-100.*val_r[0]/val_r[1]))
             weights.append([net.conv1.weight.data.clone(),
@@ -198,8 +198,8 @@ net.eval()
 vals = []
 
 for data, target in test_loader:
-    data, target = data.clone().detach().requires_grad_(True),
-    target.clone().detach()
+    data, target = (data.clone().detach().requires_grad_(True),
+    target.clone().detach())
     data = data.to(device)
     target=target.to(device)
     output=net(data)
@@ -208,11 +208,12 @@ for data, target in test_loader:
 
 # Calculate accuracy
 rights=(sum([tup[0] for tup in vals]), sum([tup[1] for tup in vals]))
-accuracy = 100.*rights[0].numpy()/rights[1]
+accuracy = 100.*rights[0].cpu().numpy()/rights[1]
 logger.info("Accuracy: {}".format(accuracy))
 
 # Plot loss diagram, error rate on validating and testing set.
 plt.figure(figsize=(10,7))
+record = [((x.cpu(), y.cpu()) for (x, y) in rec) for rec in record]
 plt.plot(record)
 plt.xlabel("Steps", fontsize=16)
 plt.ylabel("Error rate", fontsize=16)
