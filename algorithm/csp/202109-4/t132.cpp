@@ -1,69 +1,73 @@
 // #define DEBUG
+#include <bitset>
+#include<iomanip>
 #include <cmath>
 #include <cstring>
 #include <iostream>
 #include <vector>
 using namespace std;
 
+static const int MAXN = 16;
+static const int MAXK = 5;
+double state[1 << MAXN][MAXN * MAXK];
+
 class Solution {
     int n, k;
     vector<double> ps;
-    int *collected;
     double expectation;
+
+    int coins;
+    int remains;
+
+    // double state[1 << MAXN][MAXN * MAXK];
+    double dp(int t);
 
   public:
     Solution(int n, int k, vector<double> &ps)
-        : n(n), k(k), ps(ps), expectation(0) {
-        collected = (int *)malloc(ps.size() * sizeof(int));
-        memset(collected, 0, ps.size() * sizeof(int));
+        : n(n), k(k), ps(ps), expectation(-1), coins(0), remains(n) {
+        memset(state, -1, sizeof(state));
     }
-    void dfs(int t);
-    bool end(int t);
-    const double getExp() const { return expectation; }
+    double dp() {
+        if (expectation == -1) {
+            expectation = dp(0);
+            return expectation;
+        }
+        return expectation;
+    }
 };
 
-void Solution::dfs(int t) {
-    if (end(t)) {
-        double thisExp = 1;
-        for (int i = 0; i < n; i++) {
-            if (!collected[i]) {
-                continue;
-            }
-            double po = pow(ps[i], collected[i]);
-            thisExp *= po;
-        }
-        thisExp *= t;
-        expectation += thisExp;
-        return;
-    }
-    for (int i = 0; i < n; i++) {
-        collected[i]++;
-        dfs(t + 1);
-        collected[i]--;
-    }
-}
+double Solution::dp(int t) {
+    // t: cards fetched in binary encoding.
+    #ifdef DEBUG
+    cout << hex << "t[" << bitset<16>(t) << "]"
+         << "coins[" << coins << "]"
+         << "remains[" << remains << "]" << endl;
+         #endif
+    double &curr_exp = state[t][coins];
 
-bool Solution::end(int t) {
-    if (t < n) {
-        // Less than n times of fetching cards.
-        return false;
+    if (curr_exp >= static_cast<double>(0)) {
+        return curr_exp;
+    } else if (coins >= remains * k) {
+        return 0;
     }
 
-    // O(n)
-    int not_collected = 0;
-    int coins = 0;
+    curr_exp = 0;
     for (int i = 0; i < n; i++) {
-        if (collected[i] == 0) {
-            not_collected++;
-        } else if (collected[i] > 1) {
-            coins += (collected[i] - 1);
+        if ((t >> i) & 1) {
+            coins++;
+            curr_exp += ps[i] * (dp(t) + 1);
+            coins--;
+        } else {
+            remains--;
+            curr_exp += ps[i] * (dp(t | (1 << i)) + 1);
+            remains++;
         }
     }
-    if (coins / k >= not_collected) {
-        return true;
-    }
 
-    return false;
+    #ifdef DEBUG
+    cout << "t[" << bitset<16>(t) << "]: " << dec << curr_exp << endl;
+    #endif
+    return curr_exp;
 }
 
 int main() {
@@ -77,8 +81,7 @@ int main() {
     }
 
     Solution s(n, k, ps);
-    s.dfs(0);
-    cout << s.getExp() << endl;
+    cout << fixed<<setprecision(10)<<s.dp() << endl;
 
     return 0;
 }
