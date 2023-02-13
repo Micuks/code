@@ -75,7 +75,7 @@ def my_lstm(
     num_layers,
     cell=LSTMCell,
     bias=True,
-    batch_first=False,
+    batch_first=True,
     dropout=False,
     dropout_rate=0.4,
     bidirectional=False,
@@ -1275,12 +1275,172 @@ class BackwardCrossSentenceEDLayer(nn.Module):
                     dim=1,
                 )
                 info_event_semantic_pre_sentence = torch.reshape(
-                    info_event_semantic_pre_sentence, 
-                    shape=(self.batch_size*self.max_doc_len, -1)
+                    info_event_semantic_pre_sentence,
+                    shape=(self.batch_size * self.max_doc_len, -1),
                 )
-            tag_final += weight_decay**layer_id*tag_outputs
+            tag_final += weight_decay**layer_id * tag_outputs
             tag_final_list.append(tag_outputs)
         return tag_final, tag_final_list
+
+
+class BidirectinoalCrossSentenceEDLayer(nn.Module):
+    def __init__(
+        self,
+        words_enc: Tensor,
+        event_info_h: Tensor,
+        tag_dim,
+        enc_dim,
+        valid_words_len,
+        valid_sent_len,
+        num_tag_layers: int,
+        event_vector_trans,
+        initializer=nn.init.xavier_uniform_,
+        reverse_seq=False,
+        weight_decay=None,
+        batch_size=None,
+        max_doc_len=None,
+        max_seq_len=None,
+        decode_h=None,
+        dropout_rate=0.4,
+        unk_event_semantic: Tensor = None,
+    ):
+        """
+        Bidirectional cross-sentence event tag event detection,
+        modeling bidirectional event correlation
+
+        Args:
+            words_enc (Tensor): _description_
+            event_info_h (Tensor): _description_
+            tag_dim (_type_): _description_
+            enc_dim (_type_): _description_
+            valid_words_len (_type_): _description_
+            valid_sent_len (_type_): _description_
+            num_tag_layers (int): _description_
+            event_vector_trans (_type_): _description_
+            initializer (_type_, optional): _description_. Defaults to nn.init.xavier_uniform_.
+            reverse_seq (bool, optional): _description_. Defaults to False.
+            weight_decay (_type_, optional): _description_. Defaults to None.
+            batch_size (_type_, optional): _description_. Defaults to None.
+            max_doc_len (_type_, optional): _description_. Defaults to None.
+            max_seq_len (_type_, optional): _description_. Defaults to None.
+            decode_h (_type_, optional): _description_. Defaults to None.
+            dropout_rate (float, optional): _description_. Defaults to 0.4.
+            unk_event_semantic (Tensor, optional): _description_. Defaults to None.
+        """
+        input_size = batch_size * max_doc_len
+        hidden_size = decode_h
+
+        self.event_info_h = event_info_h
+        self.event_vector_trans = event_vector_trans
+        self.words_enc = words_enc
+        self.tag_dim = tag_dim
+        self.enc_dim = enc_dim
+        self.num_tag_layers = num_tag_layers
+        self.weight_decay = weight_decay
+        self.batch_size = batch_size
+        self.max_doc_len = max_doc_len
+        self.max_seq_len = max_seq_len
+        self.decode_h = decode_h
+        self.dropout_rate = dropout_rate
+        self.unk_event_semantic = unk_event_semantic
+
+        # decoding layer
+        # all layers share the same decoder layer
+        # for the first decoder layer,
+        # we set c_{i-1} and c_{i+1} with unk_event_semantic
+        self.lstm_outputs = torch.reshape(
+            words_enc,
+            shape=(self.batch_size * self.max_doc_len, self.max_seq_len, -1),
+        )
+        self.backward_lstm_outputs = self.lstm_outputs[:, ::-1, :]
+
+        self.fw_decoder_lstm = my_lstm(
+            input_size, hidden_size, 1, dropout=True, dropout_rate=dropout_rate
+        )
+        self.bw_decoder_lstm = my_lstm(
+            input_size, hidden_size, 1, dropout=True, dropout_rate=dropout_rate
+        )
+
+        # multi-tagging block
+        self.tag_final_fw = torch.zeros(
+            (self.batch_size, self.max_doc_len, self.max_seq_len, tag_dim),
+            dtype=torch.float32,
+        )
+        self.tag_final_bw = torch.zeros(
+            (self.batch_size, self.max_doc_len, self.max_seq_len, tag_dim),
+            dtype=torch.float32,
+        )
+        self.tag_final_list_fw = []
+        self.tag_final_list_bw = []
+
+        self.fw_init_state = LSTMState(
+            torch.zeros(
+                self.batch_size * self.max_doc_len, dtype=torch.float32
+            ),
+            torch.zeros(
+                self.batch_size * self.max_doc_len, dtype=torch.float32
+            ),
+        )
+
+        self.bw_init_state = LSTMState(
+            torch.zeros(
+                self.batch_size * self.max_doc_len, dtype=torch.float32
+            ),
+            torch.zeros(
+                self.batch_size * self.max_doc_len, dtype=torch.float32
+            ),
+        )
+
+        # event and semantic information of the previous sentence and next sentence
+        self.info_event_semantic_pre_sentence = torch.tile(
+            self.unk_event_semantic,
+            dims=(self.batch_size * self.max_doc_len, 1),
+        )
+        self.info_event_semantic_next_sentence = torch.tile(
+            self.unk_event_semantic,
+            dims=(self.batch_size * self.max_doc_len, 1),
+        )
+
+        # event and semantic information of the beginning sentence
+        self.info_event_semantic_init_sentence = torch.tile(
+            self.unk_event_semantic, dims=(self.batch_size, 1)
+        )
+        self.info_event_semantic_init_sentence = torch.unsqueeze(
+            self.info_event_semantic_init_sentence, dim=1
+        )
+        self.info_event_sem_mat0 = torch.tile(
+            torch.unsqueeze(self.unk_event_semantic, dim=0),
+            dims=(self.batch_size, self.max_doc_len, 1),
+        )
+
+    def forward(self):
+        """
+        bidirecitonal rnn decoding layer forward
+        """
+        num_tag_layers = self.num_tag_layers
+        fw_init_state = self.fw_init_state
+        bw_init_state = self.bw_init_state
+        info_event_semantic_pre_sentence = self.info_event_semantic_pre_sentence
+        info_event_semantic_init_sentence = (
+            self.info_event_semantic_init_sentence
+        )
+        info_event_semantic_next_sentence = (
+            self.info_event_semantic_next_sentence
+        )
+        lstm_outputs = self.lstm_outputs
+        fw_decoder_lstm = self.fw_decoder_lstm
+        bw_decoder_lstm = self.bw_decoder_lstm
+        tag_dim = self.tag_dim
+        info_event_sem_mat0 = self.info_event_sem_mat0
+        tag_final_fw = self.tag_final_fw
+        tag_final_bw = self.tag_final_bw
+        weight_decay = self.weight_decay
+        tag_final_list = self.tag_final_list
+
+        num_tag_layers = self.num_tag_layers
+        for layer_id in range(num_tag_layers):
+            # initialize for each layer
+            fw_h_state, fw_c_state = fw_init_state
 
 
 def test_lstm_layer(seq_len, batch, input_size, hidden_size):
