@@ -1,0 +1,827 @@
+[
+  {
+    "paper_name": "DID-M3D: Decoupling Instance Depth for Monocular 3D Object Detection",
+    "paper_authors": "Liang Peng, Xiaopei Wu, Zheng Yang, Haifeng Liu, Deng Cai",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136610071.pdf"
+  },
+  {
+    "paper_name": "Lidar Point Cloud Guided Monocular 3D Object Detection",
+    "paper_authors": "Liang Peng, Fei Liu, Zhengxu Yu, Senbo Yan, Dan Deng, Zheng Yang, Haifeng Liu, Deng Cai",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136610123.pdf"
+  },
+  {
+    "paper_name": "Proposal-Free Temporal Action Detection via Global Segmentation Mask Learning",
+    "paper_authors": "Sauradip Nag, Xiatian Zhu, Yi-Zhe Song, Tao Xiang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136630632.pdf"
+  },
+  {
+    "paper_name": "Semi-Supervised Temporal Action Detection with Proposal-Free Masking",
+    "paper_authors": "Sauradip Nag, Xiatian Zhu, Yi-Zhe Song, Tao Xiang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136630649.pdf"
+  },
+  {
+    "paper_name": "Zero-Shot Temporal Action Detection via Vision-Language Prompting",
+    "paper_authors": "Sauradip Nag, Xiatian Zhu, Yi-Zhe Song, Tao Xiang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136630667.pdf"
+  },
+  {
+    "paper_name": "Uncertainty-Based Spatial-Temporal Attention for Online Action Detection",
+    "paper_authors": "Hongji Guo, Zhou Ren, Yi Wu, Gang Hua, Qiang Ji",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136640068.pdf"
+  },
+  {
+    "paper_name": "Iwin: Human-Object Interaction Detection via Transformer with Irregular Windows",
+    "paper_authors": "Danyang Tu, Xiongkuo Min, Huiyu Duan, Guodong Guo, Guangtao Zhai, Wei Shen",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136640085.pdf"
+  },
+  {
+    "paper_name": "Mining Cross-Person Cues for Body-Part Interactiveness Learning in HOI Detection",
+    "paper_authors": "Xiaoqian Wu, Yong-Lu Li, Xinpeng Liu, Junyi Zhang, Yuzhe Wu, Cewu Lu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136640119.pdf"
+  },
+  {
+    "paper_name": "Scale-Aware Spatio-Temporal Relation Learning for Video Anomaly Detection",
+    "paper_authors": "Guoqiu Li, Guanxiong Cai, Xingyu Zeng, Rui Zhao",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136640328.pdf"
+  },
+  {
+    "paper_name": "Dynamic Local Aggregation Network with Adaptive Clusterer for Anomaly Detection",
+    "paper_authors": "Zhiwei Yang, Peng Wu, Jing Liu, Xiaotao Liu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136640398.pdf"
+  },
+  {
+    "paper_name": "A Large-Scale Multiple-Objective Method for Black-Box Attack against Object Detection",
+    "paper_authors": "Siyuan Liang, Longkang Li, Yanbo Fan, Xiaojun Jia, Jingzhi Li, Baoyuan Wu, Xiaochun Cao",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136640611.pdf"
+  },
+  {
+    "paper_name": "UIA-ViT: Unsupervised Inconsistency-Aware Method Based on Vision Transformer for Face Forgery Detection",
+    "paper_authors": "Wanyi Zhuang, Qi Chu, Zhentao Tan, Qiankun Liu, Haojie Yuan, Changtao Miao, Zixiang Luo, Nenghai Yu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136650384.pdf"
+  },
+  {
+    "paper_name": "Effective Presentation Attack Detection Driven by Face Related Task",
+    "paper_authors": "Wentian Zhang, Haozhe Liu, Feng Liu, Raghavendra Ramachandra, Christoph Busch",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136650400.pdf"
+  },
+  {
+    "paper_name": "\"Unitail: Detecting, Reading, and Matching in Retail Scene\"",
+    "paper_authors": "Fangyi Chen, Han Zhang, Zaiwang Li, Jiachen Dou, Shentong Mo, Hao Chen, Yongxin Zhang, Uzair Ahmed, Chenchen Zhu, Marios Savvides",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136670695.pdf"
+  },
+  {
+    "paper_name": "PANDORA: A Panoramic Detection Dataset for Object with Orientation",
+    "paper_authors": "Hang Xu, Qiang Zhao, Yike Ma, Xiaodong Li, Peng Yuan, Bailan Feng, Chenggang Yan, Feng Dai",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136680229.pdf"
+  },
+  {
+    "paper_name": "Deformable Feature Aggregation for Dynamic Multi-modal 3D Object Detection",
+    "paper_authors": "Zehui Chen, Zhenyu Li, Shiquan Zhang, Liangji Fang, Qinhong Jiang, Feng Zhao",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136680616.pdf"
+  },
+  {
+    "paper_name": "Graph R-CNN: Towards Accurate 3D Object Detection with Semantic-Decorated Local Graph",
+    "paper_authors": "Honghui Yang, Zili Liu, Xiaopei Wu, Wenxiao Wang, Wei Qian, Xiaofei He, Deng Cai",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136680650.pdf"
+  },
+  {
+    "paper_name": "MPPNet: Multi-Frame Feature Intertwining with Proxy Points for 3D Temporal Object Detection",
+    "paper_authors": "Xuesong Chen, Shaoshuai Shi, Benjin Zhu, Ka Chun Cheung, Hang Xu, Hongsheng Li",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136680667.pdf"
+  },
+  {
+    "paper_name": "Long-Tail Detection with Effective Class-Margins",
+    "paper_authors": "Jang Hyun Cho, Philipp Kr\u00e4henb\u00fchl",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136680684.pdf"
+  },
+  {
+    "paper_name": "Semi-Supervised Monocular 3D Object Detection by Multi-View Consistency",
+    "paper_authors": "Qing Lian, Yanbo Xu, Weilong Yao, Yingcong Chen, Tong Zhang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136680702.pdf"
+  },
+  {
+    "paper_name": "PTSEFormer: Progressive Temporal-Spatial Enhanced TransFormer towards Video Object Detection",
+    "paper_authors": "Han Wang, Jun Tang, Xiaodong Liu, Shanyan Guan, Rong Xie, Li Song",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136680719.pdf"
+  },
+  {
+    "paper_name": "Dense Teacher: Dense Pseudo-Labels for Semi-Supervised Object Detection",
+    "paper_authors": "Hongyu Zhou, Zheng Ge, Songtao Liu, Weixin Mao, Zeming Li, Haiyan Yu, Jian Sun",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690036.pdf"
+  },
+  {
+    "paper_name": "Point-to-Box Network for Accurate Object Detection via Single Point Supervision",
+    "paper_authors": "Pengfei Chen, Xuehui Yu, Xumeng Han, Najmul Hassan, Kai Wang, Jiachen Li, Jian Zhao, Humphrey Shi, Zhenjun Han, Qixiang Ye",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690053.pdf"
+  },
+  {
+    "paper_name": "Towards Data-Efficient Detection Transformers",
+    "paper_authors": "Wen Wang, Jing Zhang, Yang Cao, Yongliang Shen, Dacheng Tao",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690090.pdf"
+  },
+  {
+    "paper_name": "Prediction-Guided Distillation for Dense Object Detection",
+    "paper_authors": "Chenhongyi Yang, Mateusz Ochal, Amos Storkey, Elliot J. Crowley",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690123.pdf"
+  },
+  {
+    "paper_name": "Multimodal Object Detection via Probabilistic Ensembling",
+    "paper_authors": "Yi-Ting Chen, Jinghao Shi, Zelin Ye, Christoph Mertz, Deva Ramanan, Shu Kong",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690139.pdf"
+  },
+  {
+    "paper_name": "Exploiting Unlabeled Data with Vision and Language Models for Object Detection",
+    "paper_authors": "Shiyu Zhao, Zhixing Zhang, Samuel Schulter, Long Zhao, Vijay Kumar B G, Anastasis Stathopoulos, Manmohan Chandraker, Dimitris N. Metaxas",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690156.pdf"
+  },
+  {
+    "paper_name": "INT: Towards Infinite-Frames 3D Detection with an Efficient Framework",
+    "paper_authors": "Jianyun Xu, Zhenwei Miao, Da Zhang, Hongyu Pan, Kaixuan Liu, Peihan Hao, Jun Zhu, Zhengyang Sun, Hongmin Li, Xin Zhan",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690190.pdf"
+  },
+  {
+    "paper_name": "End-to-End Weakly Supervised Object Detection with Sparse Proposal Evolution",
+    "paper_authors": "Mingxiang Liao, Fang Wan, Yuan Yao, Zhenjun Han, Jialing Zou, Yuze Wang, Bailan Feng, Peng Yuan, Qixiang Ye",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690207.pdf"
+  },
+  {
+    "paper_name": "Unsupervised Domain Adaptation for Monocular 3D Object Detection via Self-Training",
+    "paper_authors": "Zhenyu Li, Zehui Chen, Ang Li, Liangji Fang, Qinhong Jiang, Xianming Liu, Junjun Jiang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690242.pdf"
+  },
+  {
+    "paper_name": "Exploring Plain Vision Transformer Backbones for Object Detection",
+    "paper_authors": "Yanghao Li, Hanzi Mao, Ross Girshick, Kaiming He",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690276.pdf"
+  },
+  {
+    "paper_name": "Adversarially-Aware Robust Object Detector",
+    "paper_authors": "Ziyi Dong, Pengxu Wei, Liang Lin",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690293.pdf"
+  },
+  {
+    "paper_name": "HEAD: HEtero-Assists Distillation for Heterogeneous Object Detectors",
+    "paper_authors": "Luting Wang, Xiaojie Li, Yue Liao, Zeren Jiang, Jianlong Wu, Fei Wang, Chen Qian, Si Liu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690310.pdf"
+  },
+  {
+    "paper_name": "Detecting Twenty-Thousand Classes Using Image-Level Supervision",
+    "paper_authors": "Xingyi Zhou, Rohit Girdhar, Armand Joulin, Philipp Kr\u00e4henb\u00fchl, Ishan Misra",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690344.pdf"
+  },
+  {
+    "paper_name": "Monocular 3D Object Detection with Depth from Motion",
+    "paper_authors": "Tai Wang, Jiangmiao Pang, Dahua Lin",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690380.pdf"
+  },
+  {
+    "paper_name": "Distilling Object Detectors with Global Knowledge",
+    "paper_authors": "Sanli Tang, Zhongyu Zhang, Zhanzhan Cheng, Jing Lu, Yunlu Xu, Yi Niu, Fan He",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690415.pdf"
+  },
+  {
+    "paper_name": "PseCo: Pseudo Labeling and Consistency Training for Semi-Supervised Object Detection",
+    "paper_authors": "Gang Li, Xiang Li, Yujie Wang, Yichao Wu, Ding Liang, Shanshan Zhang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690449.pdf"
+  },
+  {
+    "paper_name": "Exploring Resolution and Degradation Clues As Self-Supervised Signal for Low Quality Object Detection",
+    "paper_authors": "Ziteng Cui, Yingying Zhu, Lin Gu, Guo-Jun Qi, Xiaoxiao Li, Renrui Zhang, Zenghui Zhang, Tatsuya Harada",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690465.pdf"
+  },
+  {
+    "paper_name": "\"Translation, Scale and Rotation: Cross-Modal Alignment Meets RGB-Infrared Vehicle Detection\"",
+    "paper_authors": "Maoxun Yuan, Yinyan Wang, Xingxing Wei",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690501.pdf"
+  },
+  {
+    "paper_name": "RFLA: Gaussian Receptive Field Based Label Assignment for Tiny Object Detection",
+    "paper_authors": "Chang Xu, Jinwang Wang, Wen Yang, Huai Yu, Lei Yu, Gui-Song Xia",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690518.pdf"
+  },
+  {
+    "paper_name": "Rethinking IoU-Based Optimization for Single-Stage 3D Object Detection",
+    "paper_authors": "Hualian Sheng, Sijia Cai, Na Zhao, Bing Deng, Jianqiang Huang, Xian-Sheng Hua, Min-Jian Zhao, Gim Hee Lee",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690536.pdf"
+  },
+  {
+    "paper_name": "Multi-faceted Distillation of Base-Novel Commonality for Few-Shot Object Detection",
+    "paper_authors": "Shuang Wu, Wenjie Pei, Dianwen Mei, Fanglin Chen, Jiandong Tian, Guangming Lu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690569.pdf"
+  },
+  {
+    "paper_name": "MTTrans: Cross-Domain Object Detection with Mean Teacher Transformer",
+    "paper_authors": "Jinze Yu, Jiaming Liu, Xiaobao Wei, Haoyi Zhou, Yohei Nakata, Denis Gudovskiy, Tomoyuki Okuno, Jianxin Li, Kurt Keutzer, Shanghang Zhang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690620.pdf"
+  },
+  {
+    "paper_name": "DEVIANT: Depth EquiVarIAnt NeTwork for Monocular 3D Object Detection",
+    "paper_authors": "Abhinav Kumar, Garrick Brazil, Enrique Corona, Armin Parchami, Xiaoming Liu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690655.pdf"
+  },
+  {
+    "paper_name": "Label-Guided Auxiliary Training Improves 3D Object Detector",
+    "paper_authors": "Yaomin Huang, Xinmei Liu, Yichen Zhu, Zhiyuan Xu, Chaomin Shen, Zhengping Che, Guixu Zhang, Yaxin Peng, Feifei Feng, Jian Tang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690674.pdf"
+  },
+  {
+    "paper_name": "PromptDet: Towards Open-Vocabulary Detection Using Uncurated Images",
+    "paper_authors": "Chengjian Feng, Yujie Zhong, Zequn Jie, Xiangxiang Chu, Haibing Ren, Xiaolin Wei, Weidi Xie, Lin Ma",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690691.pdf"
+  },
+  {
+    "paper_name": "Densely Constrained Depth Estimator for Monocular 3D Object Detection",
+    "paper_authors": "Yingyan Li, Yuntao Chen, Jiawei He, Zhaoxiang Zhang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136690708.pdf"
+  },
+  {
+    "paper_name": "Cornerformer: Purifying Instances for Corner-Based Detectors",
+    "paper_authors": "Haoran Wei, Xin Chen, Lingxi Xie, Qi Tian",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700017.pdf"
+  },
+  {
+    "paper_name": "PillarNet: Real-Time and High-Performance Pillar-Based 3D Object Detection",
+    "paper_authors": "Guangsheng Shi, Ruifeng Li, Chao Ma",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700034.pdf"
+  },
+  {
+    "paper_name": "Robust Object Detection with Inaccurate Bounding Boxes",
+    "paper_authors": "Chengxin Liu, Kewei Wang, Hao Lu, Zhiguo Cao, Ziming Zhang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700052.pdf"
+  },
+  {
+    "paper_name": "Efficient Decoder-Free Object Detection with Transformers",
+    "paper_authors": "Peixian Chen, Mengdan Zhang, Yunhang Shen, Kekai Sheng, Yuting Gao, Xing Sun, Ke Li, Chunhua Shen",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700069.pdf"
+  },
+  {
+    "paper_name": "Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection",
+    "paper_authors": "Yu Hong, Hang Dai, Yong Ding",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700085.pdf"
+  },
+  {
+    "paper_name": "ReAct: Temporal Action Detection with Relational Queries",
+    "paper_authors": "Dingfeng Shi, Yujie Zhong, Qiong Cao, Jing Zhang, Lin Ma, Jia Li, Dacheng Tao",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700102.pdf"
+  },
+  {
+    "paper_name": "Improving the Intra-Class Long-Tail in 3D Detection via Rare Example Mining",
+    "paper_authors": "Chiyu Max Jiang, Mahyar Najibi, Charles R. Qi, Yin Zhou, Dragomir Anguelov",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700155.pdf"
+  },
+  {
+    "paper_name": "UC-OWOD: Unknown-Classified Open World Object Detection",
+    "paper_authors": "Zhiheng Wu, Yue Lu, Xingyu Chen, Zhengxing Wu, Liwen Kang, Junzhi Yu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700191.pdf"
+  },
+  {
+    "paper_name": "3D Object Detection with a Self-Supervised Lidar Scene Flow Backbone",
+    "paper_authors": "Eme\u00e7 Er\u00e7elik, Ekim Yurtsever, Mingyu Liu, Zhijie Yang, Hanzhen Zhang, P\u0131nar Top\u00e7am, Maximilian Listl, Y\u0131lmaz Kaan \u00c7ayl\u0131, Alois Knoll",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700244.pdf"
+  },
+  {
+    "paper_name": "Open Vocabulary Object Detection with Pseudo Bounding-Box Labels",
+    "paper_authors": "Mingfei Gao, Chen Xing, Juan Carlos Niebles, Junnan Li, Ran Xu, Wenhao Liu, Caiming Xiong",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700263.pdf"
+  },
+  {
+    "paper_name": "Few-Shot Object Detection by Knowledge Distillation Using Bag-of-Visual-Words Representations",
+    "paper_authors": "Wenjie Pei, Shuang Wu, Dianwen Mei, Fanglin Chen, Jiandong Tian, Guangming Lu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700279.pdf"
+  },
+  {
+    "paper_name": "SALISA: Saliency-Based Input Sampling for Efficient Video Object Detection",
+    "paper_authors": "Babak Ehteshami Bejnordi, Amirhossein Habibian, Fatih Porikli, Amir Ghodrati",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700296.pdf"
+  },
+  {
+    "paper_name": "DetMatch: Two Teachers Are Better than One for Joint 2D and 3D Semi-Supervised Object Detection",
+    "paper_authors": "Jinhyung Park, Chenfeng Xu, Yiyang Zhou, Masayoshi Tomizuka, Wei Zhan",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700366.pdf"
+  },
+  {
+    "paper_name": "ObjectBox: From Centers to Boxes for Anchor-Free Object Detection",
+    "paper_authors": "Mohsen Zand, Ali Etemad, Michael Greenspan",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700385.pdf"
+  },
+  {
+    "paper_name": "SWFormer: Sparse Window Transformer for 3D Object Detection in Point Clouds",
+    "paper_authors": "Pei Sun, Mingxing Tan, Weiyue Wang, Chenxi Liu, Fei Xia, Zhaoqi Leng, Dragomir Anguelov",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700422.pdf"
+  },
+  {
+    "paper_name": "GLAMD: Global and Local Attention Mask Distillation for Object Detectors",
+    "paper_authors": "Younho Jang, Wheemyung Shin, Jinbeom Kim, Simon Woo, Sung-Ho Bae",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700456.pdf"
+  },
+  {
+    "paper_name": "FCAF3D: Fully Convolutional Anchor-Free 3D Object Detection",
+    "paper_authors": "Danila Rukhovich, Anna Vorontsova, Anton Konushin",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700473.pdf"
+  },
+  {
+    "paper_name": "Video Anomaly Detection by Solving Decoupled Spatio-Temporal Jigsaw Puzzles",
+    "paper_authors": "Guodong Wang, Yunhong Wang, Jie Qin, Dongming Zhang, Xiuguo Bao, Di Huang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700490.pdf"
+  },
+  {
+    "paper_name": "Class-Agnostic Object Detection with Multi-modal Transformer",
+    "paper_authors": "Muhammad Maaz, Hanoona Rasheed, Salman Khan, Fahad Shahbaz Khan, Rao Muhammad Anwer, Ming-Hsuan Yang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700507.pdf"
+  },
+  {
+    "paper_name": "Enhancing Multi-modal Features Using Local Self-Attention for 3D Object Detection",
+    "paper_authors": "Hao Li, Zehan Zhang, Xian Zhao, Yulong Wang, Yuxi Shen, Shiliang Pu, Hui Mao",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700527.pdf"
+  },
+  {
+    "paper_name": "Object Detection As Probabilistic Set Prediction",
+    "paper_authors": "Georg Hess, Christoffer Petersson, Lennart Svensson",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700545.pdf"
+  },
+  {
+    "paper_name": "Weakly-Supervised Temporal Action Detection for Fine-Grained Videos with Hierarchical Atomic Actions",
+    "paper_authors": "Zhi Li, Lu He, Huijuan Xu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700562.pdf"
+  },
+  {
+    "paper_name": "Out-of-Distribution Identification: Let Detector Tell Which I Am Not Sure",
+    "paper_authors": "Ruoqi Li, Chongyang Zhang, Hao Zhou, Chao Shi, Yan Luo",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700631.pdf"
+  },
+  {
+    "paper_name": "A Simple Single-Scale Vision Transformer for Object Detection and Instance Segmentation",
+    "paper_authors": "Wuyang Chen, Xianzhi Du, Fan Yang, Lucas Beyer, Xiaohua Zhai, Tsung-Yi Lin, Huizhong Chen, Jing Li, Xiaodan Song, Zhangyang Wang, Denny Zhou",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700697.pdf"
+  },
+  {
+    "paper_name": "Simple Open-Vocabulary Object Detection with Vision Transformers",
+    "paper_authors": "Matthias Minderer, Alexey Gritsenko, Austin Stone, Maxim Neumann, Dirk Weissenborn, Alexey Dosovitskiy, Aravindh Mahendran, Anurag Arnab, Mostafa Dehghani, Zhuoran Shen, Xiao Wang, Xiaohua Zhai, Thomas Kipf, Neil Houlsby",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136700714.pdf"
+  },
+  {
+    "paper_name": "\"A Simple Approach and Benchmark for 21,000-Category Object Detection\"",
+    "paper_authors": "Yutong Lin, Chen Li, Yue Cao, Zheng Zhang, Jianfeng Wang, Lijuan Wang, Zicheng Liu, Han Hu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136710001.pdf"
+  },
+  {
+    "paper_name": "IDa-Det: An Information Discrepancy-Aware Distillation for 1-Bit Detectors",
+    "paper_authors": "Sheng Xu, Yanjing Li, Bohan Zeng, Teli Ma, Baochang Zhang, Xianbin Cao, Peng Gao, Jinhu L\u00fc",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136710347.pdf"
+  },
+  {
+    "paper_name": "Hierarchical Contrastive Inconsistency Learning for Deepfake Video Detection",
+    "paper_authors": "Zhihao Gu, Taiping Yao, Yang Chen, Shouhong Ding, Lizhuang Ma",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136720588.pdf"
+  },
+  {
+    "paper_name": "Detecting and Recovering Sequential DeepFake Manipulation",
+    "paper_authors": "Rui Shao, Tianxing Wu, Ziwei Liu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136730710.pdf"
+  },
+  {
+    "paper_name": "Self-Supervised Sparse Representation for Video Anomaly Detection",
+    "paper_authors": "Jhih-Ciang Wu, He-Yen Hsieh, Ding-Jie Chen, Chiou-Shann Fuh, Tyng-Luh Liu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136730727.pdf"
+  },
+  {
+    "paper_name": "Explaining Deepfake Detection by Analysing Image Matching",
+    "paper_authors": "Shichao Dong, Jin Wang, Jiajun Liang, Haoqiang Fan, Renhe Ji",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136740018.pdf"
+  },
+  {
+    "paper_name": "FingerprintNet: Synthesized Fingerprints for Generated Image Detection",
+    "paper_authors": "Yonghyun Jeong, Doyeon Kim, Youngmin Ro, Pyounggeon Kim, Jongwon Choi",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136740071.pdf"
+  },
+  {
+    "paper_name": "Detecting Generated Images by Real Images",
+    "paper_authors": "Bo Liu, Fan Yang, Xiuli Bi, Bin Xiao, Weisheng Li, Xinbo Gao",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136740089.pdf"
+  },
+  {
+    "paper_name": "An Information Theoretic Approach for Attention-Driven Face Forgery Detection",
+    "paper_authors": "Ke Sun, Hong Liu, Taiping Yao, Xiaoshuai Sun, Shen Chen, Shouhong Ding, Rongrong Ji",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136740105.pdf"
+  },
+  {
+    "paper_name": "Exploring Disentangled Content Information for Face Forgery Detection",
+    "paper_authors": "Jiahao Liang, Huafeng Shi, Weihong Deng",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136740122.pdf"
+  },
+  {
+    "paper_name": "Discovering Transferable Forensic Features for CNN-Generated Images Detection",
+    "paper_authors": "Keshigeyan Chandrasegaran, Ngoc-Trung Tran, Alexander Binder, Ngai-Man Cheung",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136750669.pdf"
+  },
+  {
+    "paper_name": "Learning Shadow Correspondence for Video Shadow Detection",
+    "paper_authors": "Xinpeng Ding, Jingwen Yang, Xiaowei Hu, Xiaomeng Li",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136770709.pdf"
+  },
+  {
+    "paper_name": "Few-Shot Object Detection with Model Calibration",
+    "paper_authors": "Qi Fan, Chi-Keung Tang, Yu-Wing Tai",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136790707.pdf"
+  },
+  {
+    "paper_name": "Few-Shot Video Object Detection",
+    "paper_authors": "Qi Fan, Chi-Keung Tang, Yu-Wing Tai",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136800071.pdf"
+  },
+  {
+    "paper_name": "Time-rEversed diffusioN tEnsor Transformer: A New TENET of Few-Shot Object Detection",
+    "paper_authors": "Shan Zhang, Naila Murray, Lei Wang, Piotr Koniusz",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136800300.pdf"
+  },
+  {
+    "paper_name": "Few-Shot Object Counting and Detection",
+    "paper_authors": "Thanh Nguyen, Chau Pham, Khoi Nguyen, Minh Hoai",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136800336.pdf"
+  },
+  {
+    "paper_name": "Rethinking Few-Shot Object Detection on a Multi-Domain Benchmark",
+    "paper_authors": "Kibok Lee, Hao Yang, Satyaki Chakraborty, Zhaowei Cai, Gurumurthy Swaminathan, Avinash Ravichandran, Onkar Dabeer",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136800354.pdf"
+  },
+  {
+    "paper_name": "Mutually Reinforcing Structure with Proposal Contrastive Consistency for Few-Shot Object Detection",
+    "paper_authors": "Tianxue Ma, Mingwei Bi, Jian Zhang, Wang Yuan, Zhizhong Zhang, Yuan Xie, Shouhong Ding, Lizhuang Ma",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136800388.pdf"
+  },
+  {
+    "paper_name": "EAutoDet: Efficient Architecture Search for Object Detection",
+    "paper_authors": "Xiaoxing Wang, Jiale Lin, Juanping Zhao, Xiaokang Yang, Junchi Yan",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136800652.pdf"
+  },
+  {
+    "paper_name": "Check and Link: Pairwise Lesion Correspondence Guides Mammogram Mass Detection",
+    "paper_authors": "Ziwei Zhao, Dong Wang, Yihong Chen, Ziteng Wang, Liwei Wang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136810379.pdf"
+  },
+  {
+    "paper_name": "Semi-Supervised Keypoint Detector and Descriptor for Retinal Image Matching",
+    "paper_authors": "Jiazhen Liu, Xirong Li, Qijie Wei, Jie Xu, Dayong Ding",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136810586.pdf"
+  },
+  {
+    "paper_name": "Accurate Detection of Proteins in Cryo-Electron Tomograms from Sparse Labels",
+    "paper_authors": "Qinwen Huang, Ye Zhou, Hsuan-Fu Liu, Alberto Bartesaghi",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136810636.pdf"
+  },
+  {
+    "paper_name": "ByteTrack: Multi-Object Tracking by Associating Every Detection Box",
+    "paper_authors": "Yifu Zhang, Peize Sun, Yi Jiang, Dongdong Yu, Fucheng Weng, Zehuan Yuan, Ping Luo, Wenyu Liu, Xinggang Wang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136820001.pdf"
+  },
+  {
+    "paper_name": "Out-of-Distribution Detection with Boundary Aware Learning",
+    "paper_authors": "Sen Pei, Xin Zhang, Bin Fan, Gaofeng Meng",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136840232.pdf"
+  },
+  {
+    "paper_name": "Learning to Detect Every Thing in an Open World",
+    "paper_authors": "Kuniaki Saito, Ping Hu, Trevor Darrell, Kate Saenko",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136840265.pdf"
+  },
+  {
+    "paper_name": "Registration Based Few-Shot Anomaly Detection",
+    "paper_authors": "Chaoqin Huang, Haoyan Guan, Aofan Jiang, Ya Zhang, Michael Spratling, Yan-Feng Wang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136840300.pdf"
+  },
+  {
+    "paper_name": "Out-of-Distribution Detection with Semantic Mismatch under Masking",
+    "paper_authors": "Yijun Yang, Ruiyuan Gao, Qiang Xu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136840369.pdf"
+  },
+  {
+    "paper_name": "Chairs Can Be Stood On: Overcoming Object Bias in Human-Object Interaction Detection",
+    "paper_authors": "Guangzhi Wang, Yangyang Guo, Yongkang Wong, Mohan Kankanhalli",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136840645.pdf"
+  },
+  {
+    "paper_name": "DICE: Leveraging Sparsification for Out-of-Distribution Detection",
+    "paper_authors": "Yiyou Sun, Yixuan Li",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136840680.pdf"
+  },
+  {
+    "paper_name": "Hierarchical Semi-Supervised Contrastive Learning for Contamination-Resistant Anomaly Detection",
+    "paper_authors": "Gaoang Wang, Yibing Zhan, Xinchao Wang, Mingli Song, Klara Nahrstedt",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136850107.pdf"
+  },
+  {
+    "paper_name": "Semantic Novelty Detection via Relational Reasoning",
+    "paper_authors": "Francesco Cappio Borlino, Silvia Bucci, Tatiana Tommasi",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136850181.pdf"
+  },
+  {
+    "paper_name": "Bridging Images and Videos: A Simple Learning Framework for Large Vocabulary Video Object Detection",
+    "paper_authors": "Sanghyun Woo, Kwanyong Park, Seoung Wug Oh, In So Kweon, Joon-Young Lee",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136850235.pdf"
+  },
+  {
+    "paper_name": "DenseHybrid: Hybrid Anomaly Detection for Dense Open-Set Recognition",
+    "paper_authors": "Matej Grci\u0107, Petra Bevandi\u0107, Sini\u0161a \u0160egvi\u0107",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136850494.pdf"
+  },
+  {
+    "paper_name": "Should All Proposals Be Treated Equally in Object Detection?",
+    "paper_authors": "Yunsheng Li, Yinpeng Chen, Xiyang Dai, Dongdong Chen, Mengchen Liu, Pei Yu, Ying Jin, Lu Yuan, Zicheng Liu, Nuno Vasconcelos",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136850549.pdf"
+  },
+  {
+    "paper_name": "VIP: Unified Certified Detection and Recovery for Patch Attack with Vision Transformers",
+    "paper_authors": "Junbo Li, Huan Zhang, Cihang Xie",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136850566.pdf"
+  },
+  {
+    "paper_name": "incDFM: Incremental Deep Feature Modeling for Continual Novelty Detection",
+    "paper_authors": "Amanda Rios, Nilesh Ahuja, Ibrahima Ndiour, Utku Genc, Laurent Itti, Omesh Tickoo",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136850581.pdf"
+  },
+  {
+    "paper_name": "Few-Shot End-to-End Object Detection via Constantly Concentrated Encoding across Heads",
+    "paper_authors": "Jiawei Ma, Guangxing Han, Shiyuan Huang, Yuncong Yang, Shih-Fu Chang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136860056.pdf"
+  },
+  {
+    "paper_name": "Towards Hard-Positive Query Mining for DETR-Based Human-Object Interaction Detection",
+    "paper_authors": "Xubin Zhong, Changxing Ding, Zijian Li, Shaoli Huang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136870437.pdf"
+  },
+  {
+    "paper_name": "PETR: Position Embedding Transformation for Multi-View 3D Object Detection",
+    "paper_authors": "Yingfei Liu, Tiancai Wang, Xiangyu Zhang, Jian Sun",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136870523.pdf"
+  },
+  {
+    "paper_name": "Salient Object Detection for Point Clouds",
+    "paper_authors": "Songlin Fan, Wei Gao, Ge Li",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136880001.pdf"
+  },
+  {
+    "paper_name": "MonteBoxFinder: Detecting and Filtering Primitives to Fit a Noisy Point Cloud",
+    "paper_authors": "Micha\u00ebl Ramamonjisoa, Sinisa Stekovic, Vincent Lepetit",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136880160.pdf"
+  },
+  {
+    "paper_name": "Detecting Tampered Scene Text in the Wild",
+    "paper_authors": "Yuxin Wang, Hongtao Xie, Mengting Xing, Jing Wang, Shenggao Zhu, Yongdong Zhang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136880214.pdf"
+  },
+  {
+    "paper_name": "Language Matters: A Weakly Supervised Vision-Language Pre-training Approach for Scene Text Detection and Spotting",
+    "paper_authors": "Chuhui Xue, Wenqing Zhang, Yu Hao, Shijian Lu, Philip H. S. Torr, Song Bai",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136880282.pdf"
+  },
+  {
+    "paper_name": "Contextual Text Block Detection towards Scene Text Understanding",
+    "paper_authors": "Chuhui Xue, Jiaxing Huang, Wenqing Zhang, Shijian Lu, Changhu Wang, Song Bai",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136880371.pdf"
+  },
+  {
+    "paper_name": "Saliency Hierarchy Modeling via Generative Kernels for Salient Object Detection",
+    "paper_authors": "Wenhu Zhang, Liangli Zheng, Huanyu Wang, Xintian Wu, Xi Li",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136880564.pdf"
+  },
+  {
+    "paper_name": "MVSalNet:Multi-View Augmentation for RGB-D Salient Object Detection",
+    "paper_authors": "Jiayuan Zhou, Lijun Wang, Huchuan Lu, Kaining Huang, Xinchu Shi, Bocong Liu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136890268.pdf"
+  },
+  {
+    "paper_name": "SPSN: Superpixel Prototype Sampling Network for RGB-D Salient Object Detection",
+    "paper_authors": "Minhyeok Lee, Chaewon Park, Suhwan Cho, Sangyoun Lee",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136890621.pdf"
+  },
+  {
+    "paper_name": "Open-Set Semi-Supervised Object Detection",
+    "paper_authors": "Yen-Cheng Liu, Chih-Yao Ma, Xiaoliang Dai, Junjiao Tian, Peter Vajda, Zijian He, Zsolt Kira",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136900142.pdf"
+  },
+  {
+    "paper_name": "Active Learning Strategies for Weakly-Supervised Object Detection",
+    "paper_authors": "Huy V. Vo, Oriane Sim\u00e9oni, Spyros Gidaris, Andrei Bursuc, Patrick P\u00e9rez, Jean Ponce",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136900210.pdf"
+  },
+  {
+    "paper_name": "Locally Varying Distance Transform for Unsupervised Visual Anomaly Detection",
+    "paper_authors": "Wen-Yan Lin, Zhonghang Liu, Siying Liu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136900353.pdf"
+  },
+  {
+    "paper_name": "SPot-the-Difference Self-Supervised Pre-training for Anomaly Detection and Segmentation",
+    "paper_authors": "Yang Zou, Jongheon Jeong, Latha Pemula, Dongqing Zhang, Onkar Dabeer",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136900389.pdf"
+  },
+  {
+    "paper_name": "United Defocus Blur Detection and Deblurring via Adversarial Promoting Learning",
+    "paper_authors": "Wenda Zhao, Fei Wei, You He, Huchuan Lu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136900562.pdf"
+  },
+  {
+    "paper_name": "Diverse Learner: Exploring Diverse Supervision for Semi-Supervised Object Detection",
+    "paper_authors": "Linfeng Li, Minyue Jiang, Yue Yu, Wei Zhang, Xiangru Lin, Yingying Li, Xiao Tan, Jingdong Wang, Errui Ding",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136900631.pdf"
+  },
+  {
+    "paper_name": "W2N: Switching from Weak Supervision to Noisy Supervision for Object Detection",
+    "paper_authors": "Zitong Huang, Yiping Bao, Bowen Dong, Erjin Zhou, Wangmeng Zuo",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136900699.pdf"
+  },
+  {
+    "paper_name": "CA-SSL: Class-Agnostic Semi-Supervised Learning for Detection and Segmentation",
+    "paper_authors": "Lu Qi, Jason Kuen, Zhe Lin, Jiuxiang Gu, Fengyun Rao, Dian Li, Weidong Guo, Zhen Wen, Ming-Hsuan Yang, Jiaya Jia",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136910057.pdf"
+  },
+  {
+    "paper_name": "Data Invariants to Understand Unsupervised Out-of-Distribution Detection",
+    "paper_authors": "Lars Doorenbos, Raphael Sznitman, Pablo M\u00e1rquez-Neila",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136910129.pdf"
+  },
+  {
+    "paper_name": "Semi-Supervised Object Detection via Virtual Category Learning",
+    "paper_authors": "Changrui Chen, Kurt Debattista, Jungong Han",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136910164.pdf"
+  },
+  {
+    "paper_name": "Object Discovery via Contrastive Learning for Weakly Supervised Object Detection",
+    "paper_authors": "Jinhwan Seo, Wonho Bae, Danica J. Sutherland, Junhyug Noh, Daijin Kim",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136910302.pdf"
+  },
+  {
+    "paper_name": "Natural Synthetic Anomalies for Self-Supervised Anomaly Detection and Localization",
+    "paper_authors": "Hannah M. Schl\u00fcter, Jeremy Tan, Benjamin Hou, Bernhard Kainz",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136910459.pdf"
+  },
+  {
+    "paper_name": "DSR \u2013 A Dual Subspace Re-Projection Network for Surface Anomaly Detection",
+    "paper_authors": "Vitjan Zavrtanik, Matej Kristan, Danijel Sko\u010daj",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136910526.pdf"
+  },
+  {
+    "paper_name": "ASpanFormer: Detector-Free Image Matching with Adaptive Span Transformer",
+    "paper_authors": "Hongkai Chen, Zixin Luo, Lei Zhou, Yurun Tian, Mingmin Zhen, Tian Fang, David McKinnon, Yanghai Tsin, Long Quan",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136920020.pdf"
+  },
+  {
+    "paper_name": "Objects Can Move: 3D Change Detection by Geometric Transformation Consistency",
+    "paper_authors": "Aikaterini Adam, Torsten Sattler, Konstantinos Karantzalos, Tomas Pajdla",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136930104.pdf"
+  },
+  {
+    "paper_name": "PoserNet: Refining Relative Camera Poses Exploiting Object Detections",
+    "paper_authors": "Matteo Taiana, Matteo Toso, Stuart James, Alessio Del Bue",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136930242.pdf"
+  },
+  {
+    "paper_name": "AcroFOD: An Adaptive Method for Cross-Domain Few-Shot Object Detection",
+    "paper_authors": "Yipeng Gao, Lingxiao Yang, Yunmu Huang, Song Xie, Shiyong Li, Wei-Shi Zheng",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136930661.pdf"
+  },
+  {
+    "paper_name": "Unsupervised Domain Adaptation for One-Stage Object Detector Using Offsets to Bounding Box",
+    "paper_authors": "Jayeon Yoo, Inseop Chung, Nojun Kwak",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136930679.pdf"
+  },
+  {
+    "paper_name": "An Efficient Spatio-Temporal Pyramid Transformer for Action Detection",
+    "paper_authors": "Yuetian Weng, Zizheng Pan, Mingfei Han, Xiaojun Chang, Bohan Zhuang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136940350.pdf"
+  },
+  {
+    "paper_name": "Towards Open Set Video Anomaly Detection",
+    "paper_authors": "Yuansheng Zhu, Wentao Bao, Qi Yu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136940387.pdf"
+  },
+  {
+    "paper_name": "Adaptive Face Forgery Detection in Cross Domain",
+    "paper_authors": "Luchuan Song, Zheng Fang, Xiaodan Li, Xiaoyi Dong, Zhenchao Jin, Yuefeng Chen, Siwei Lyu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136940460.pdf"
+  },
+  {
+    "paper_name": "Real-Time Online Video Detection with Temporal Smoothing Transformers",
+    "paper_authors": "Yue Zhao, Philipp Kr\u00e4henb\u00fchl",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136940478.pdf"
+  },
+  {
+    "paper_name": "Efficient One-Stage Video Object Detection by Exploiting Temporal Consistency",
+    "paper_authors": "Guanxiong Sun, Yang Hua, Guosheng Hu, Neil Robertson",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136950001.pdf"
+  },
+  {
+    "paper_name": "Self-Supervised Social Relation Representation for Human Group Detection",
+    "paper_authors": "Jiacheng Li, Ruize Han, Haomin Yan, Zekun Qian, Wei Feng, Song Wang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136950140.pdf"
+  },
+  {
+    "paper_name": "Learning Long-Term Spatial-Temporal Graphs for Active Speaker Detection",
+    "paper_authors": "Kyle Min, Sourya Roy, Subarna Tripathi, Tanaya Guha, Somdeb Majumdar",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136950367.pdf"
+  },
+  {
+    "paper_name": "Panoramic Vision Transformer for Saliency Detection in 360\u00b0 Videos",
+    "paper_authors": "Heeseung Yun, Sehun Lee, Gunhee Kim",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136950419.pdf"
+  },
+  {
+    "paper_name": "Unifying Event Detection and Captioning as Sequence Generation via Pre-training",
+    "paper_authors": "Qi Zhang, Yuqing Song, Qin Jin",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136960358.pdf"
+  },
+  {
+    "paper_name": "Bottom Up Top down Detection Transformers for Language Grounding in Images and Point Clouds",
+    "paper_authors": "Ayush Jain, Nikolaos Gkanatsios, Ishita Mediratta, Katerina Fragkiadaki",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136960411.pdf"
+  },
+  {
+    "paper_name": "SemAug: Semantically Meaningful Image Augmentations for Object Detection through Language Grounding",
+    "paper_authors": "Morgan Heisler, Amin Banitalebi-Dehkordi, Yong Zhang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136960602.pdf"
+  },
+  {
+    "paper_name": "End-to-End Active Speaker Detection",
+    "paper_authors": "Juan Le\u00f3n Alc\u00e1zar, Moritz Cordes, Chen Zhao, Bernard Ghanem",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136970124.pdf"
+  },
+  {
+    "paper_name": "TALISMAN: Targeted Active Learning for Object Detection with Rare Classes and Slices Using Submodular Mutual Information",
+    "paper_authors": "Suraj Kothawade, Saikat Ghosh, Sumit Shekhar, Yu Xiang, Rishabh Iyer",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136980001.pdf"
+  },
+  {
+    "paper_name": "CramNet: Camera-Radar Fusion with Ray-Constrained Cross-Attention for Robust 3D Object Detection",
+    "paper_authors": "Jyh-Jing Hwang, Henrik Kretzschmar, Joshua Manela, Sean Rafferty, Nicholas Armstrong-Crews, Tiffany Chen, Dragomir Anguelov",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136980382.pdf"
+  },
+  {
+    "paper_name": "CODA: A Real-World Road Corner Case Dataset for Object Detection in Autonomous Driving",
+    "paper_authors": "Kaican Li, Kai Chen, Haoyu Wang, Lanqing Hong, Chaoqiang Ye, Jianhua Han, Yukuai Chen, Wei Zhang, Chunjing Xu, Dit-Yan Yeung, Xiaodan Liang, Zhenguo Li, Hang Xu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136980399.pdf"
+  },
+  {
+    "paper_name": "RCLane: Relay Chain Prediction for Lane Detection",
+    "paper_authors": "Shenghua Xu, Xinyue Cai, Bin Zhao, Li Zhang, Hang Xu, Yanwei Fu, Xiangyang Xue",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136980453.pdf"
+  },
+  {
+    "paper_name": "CenterFormer: Center-based Transformer for 3D Object Detection",
+    "paper_authors": "Zixiang Zhou, Xiangchen Zhao, Yu Wang, Panqu Wang, Hassan Foroosh",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136980487.pdf"
+  },
+  {
+    "paper_name": "PersFormer: 3D Lane Detection via Perspective Transformer and the OpenLane Benchmark",
+    "paper_authors": "Li Chen, Chonghao Sima, Yang Li, Zehan Zheng, Jiajie Xu, Xiangwei Geng, Hongyang Li, Conghui He, Jianping Shi, Yu Qiao, Junchi Yan",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136980539.pdf"
+  },
+  {
+    "paper_name": "Multimodal Transformer for Automatic 3D Annotation and Object Detection",
+    "paper_authors": "Chang Liu, Xiaoyan Qian, Binxiao Huang, Xiaojuan Qi, Edmund Lam, Siew-Chong Tan, Ngai Wong",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136980641.pdf"
+  },
+  {
+    "paper_name": "Homogeneous Multi-modal Feature Fusion and Interaction for 3D Object Detection",
+    "paper_authors": "Xin Li, Botian Shi, Yuenan Hou, Xingjiao Wu, Tianlong Ma, Yikang Li, Liang He",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136980675.pdf"
+  },
+  {
+    "paper_name": "Semi-Supervised 3D Object Detection with Proficient Teachers",
+    "paper_authors": "Junbo Yin, Jin Fang, Dingfu Zhou, Liangjun Zhang, Cheng-Zhong Xu, Jianbing Shen, Wenguan Wang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136980710.pdf"
+  },
+  {
+    "paper_name": "Lane Detection Transformer Based on Multi-Frame Horizontal and Vertical Attention and Visual Transformer Module",
+    "paper_authors": "Han Zhang, Yunchao Gu, Xinliang Wang, Junjun Pan, Minghui Wang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136990001.pdf"
+  },
+  {
+    "paper_name": "ProposalContrast: Unsupervised Pre-training for LiDAR-Based 3D Object Detection",
+    "paper_authors": "Junbo Yin, Dingfu Zhou, Liangjun Zhang, Jin Fang, Cheng-Zhong Xu, Jianbing Shen, Wenguan Wang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136990017.pdf"
+  },
+  {
+    "paper_name": "Radatron: Accurate Detection Using Multi-Resolution Cascaded MIMO Radar",
+    "paper_authors": "Sohrab Madani, Jayden Guan, Waleed Ahmed, Saurabh Gupta, Haitham Hassanieh",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136990157.pdf"
+  },
+  {
+    "paper_name": "LiDAR Distillation: Bridging the Beam-Induced Domain Gap for 3D Object Detection",
+    "paper_authors": "Yi Wei, Zibu Wei, Yongming Rao, Jiaxin Li, Jie Zhou, Jiwen Lu",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136990175.pdf"
+  },
+  {
+    "paper_name": "SpatialDETR: Robust Scalable Transformer-Based 3D Object Detection from Multi-View Camera Images with Global Cross-Sensor Attention",
+    "paper_authors": "Simon Doll, Richard Schulz, Lukas Schneider, Viviane Benzin, Markus Enzweiler, Hendrik P.A. Lensch",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136990226.pdf"
+  },
+  {
+    "paper_name": "OPD: Single-View 3D Openable Part Detection",
+    "paper_authors": "Hanxiao Jiang, Yongsen Mao, Manolis Savva, Angel X. Chang",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136990404.pdf"
+  },
+  {
+    "paper_name": "AirDet: Few-Shot Detection without Fine-Tuning for Autonomous Exploration",
+    "paper_authors": "Bowen Li, Chen Wang, Pranay Reddy, Seungchan Kim, Sebastian Scherer",
+    "paper_pdf": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136990421.pdf"
+  }
+]
