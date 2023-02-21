@@ -25,6 +25,8 @@ int Solution::solve() {
             j++;
         } else if (j >= A[i + 1]) {
             i++;
+        } else {
+            ;
         }
     }
 
