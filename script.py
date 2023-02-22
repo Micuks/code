@@ -1,12 +1,20 @@
 import re
 
-strs =[ "2022-10-21 15:11:35 吴清柳<imwql@qq.com>\n",
-       "2022-10-21 15:11:44 Mr.Goddess(215381250)\n", "没用的登西\n"]
-# pattern = r"^\d+-\d+-\d+\ \d+:\d+:\d+\ .*$"
-pattern = r"^\d+-\d+-\d+\s\d+:\d+:\d+\s.*$"
-match = [re.search(pattern, str) for str in strs]
-for m, s in zip(match, strs):
-    if(isinstance(m, re.Match)):
-        print(m.group(0))
-    else:
-        print("No match in {}".format(s))
+tests:list[str] =[ "2022-10-21 15:11:35 吴清柳<imwql@qq.com>\n",
+       "2022-10-21 15:11:44 Mr.Goddess(215381250)\n",
+       "没用的登西\n",
+       "2022-10-21 15:11:35 吴清柳<imwql@qq.com>\n没用的登西\n2022-10-21 15:11:44 Mr.Goddess(215381250)\n"]
+pattern:str = r"\d+-\d+-\d+\s\d+:\d+:\d+\s.+"
+
+filename:str = "in.txt"
+
+with open(filename, "r") as f:
+    strs:list[str] = f.readlines()
+    new_strs:list[str] = [re.sub(pattern, "", s) for s in strs]
+
+outfile:str = "out.txt"
+with open(outfile, "w") as f:
+    f.writelines(new_strs)
+#
+# for i,o in zip(strs[:100], new_strs[:100]):
+#     print(f"in: {i}out: {o}")
