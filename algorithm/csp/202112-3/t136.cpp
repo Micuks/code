@@ -99,9 +99,6 @@ int main() {
     data[0] = data.size();
     // End of data module
 
-    // Beginning of check module
-    vector<int> checkData;
-
     // Calculate g(x)
     vector<int> g = generateG(k);
 
@@ -134,7 +131,7 @@ int main() {
     for (int i = 0; i <= lenD - lenG; i++) {
         int a = d.at(i) / g.at(0);
         for (int j = i; j < i + lenG; j++) {
-            d.at(j) -= a * g.at(j - i);
+            d.at(j) = (d.at(j) - a * g.at(j - i)) % MOD;
         }
     }
 
@@ -149,7 +146,7 @@ int main() {
 
     // Get mod of r(x)
     for (auto &a : r) {
-        a = ((a % MOD) + MOD) % MOD;
+        a = (a + MOD) % MOD;
     }
 
     // Append r(x) to end of Data
@@ -184,9 +181,9 @@ vector<int> generateG(int k) {
         for (int i = 1; i <= k; i++) {
             g.at(i) = 1;
             for (int j = i - 1; j > 0; j--) {
-                g.at(j) = g.at(j - 1) - pow(3, i) * g.at(j);
+                g.at(j) = (int)(g.at(j - 1) - pow(3, i) * g.at(j)) % MOD;
             }
-            g.at(0) = g.at(0) * -pow(3, i);
+            g.at(0) = (g.at(0) * (int)(-pow(3, i) + MOD)) % MOD;
         }
     } catch (exception &e) {
         cout << "ERROR: " << e.what() << endl;
