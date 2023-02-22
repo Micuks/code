@@ -40,7 +40,7 @@ int main() {
                 tmpData.push_back(a - 'a');
 
                 current_state = 1;
-            } else if (isnumber(a)) {
+            } else if (isdigit(a)) {
                 tmpData.push_back(28);
                 tmpData.push_back(a - '0');
 
@@ -58,7 +58,7 @@ int main() {
                 current_state = 0;
             } else if (islower(a)) {
                 tmpData.push_back(a - 'a');
-            } else if (isnumber(a)) {
+            } else if (isdigit(a)) {
                 tmpData.push_back(28);
                 tmpData.push_back(a - '0');
 
@@ -78,7 +78,7 @@ int main() {
                 tmpData.push_back(a - 'a');
 
                 current_state = 1;
-            } else if (isnumber(a)) {
+            } else if (isdigit(a)) {
                 tmpData.push_back(a - '0');
             } else {
                 throw "Invalid input.";
