@@ -20,9 +20,6 @@ class Node {
     friend ostream &operator<<(ostream &os, Node *pnode);
 };
 
-void getEarliestStartTime(Node *currNode, int currTime);
-vector<Node *> getNodesWithNoChild(vector<Node *> nodes);
-
 void printNodes(vector<Node *> nodes) {
     auto nullNode = nodes.at(0);
     cout << "0"
@@ -84,8 +81,18 @@ int main() {
 #endif // DEBUG
 
     // compute earliest start time
-    auto cNode = nodes.at(0);
-    getEarliestStartTime(cNode, 1);
+    for (int i = 1; i <= m; i++) {
+        auto &node = nodes.at(i);
+        if (node->parent->idx == 0) {
+            node->earliestTime = 1;
+        } else {
+            auto &parent = node->parent;
+            node->earliestTime = parent->earliestTime + parent->t;
+        }
+
+        validLatestTime =
+            (node->earliestTime + node->t > n) ? false : validLatestTime;
+    }
 
     // Compute latest start time
     for (auto iter = nodes.rbegin(); iter != nodes.rend(); iter++) {
@@ -119,26 +126,4 @@ int main() {
     }
 
     return 0;
-}
-
-vector<Node *> getNodesWithNoChild(vector<Node *> nodes) {
-    vector<Node *> nodesNoChild;
-    for (auto &a : nodes) {
-        if (!a->children.size()) {
-            nodesNoChild.push_back(a);
-        }
-    }
-    return nodesNoChild;
-}
-
-void getEarliestStartTime(Node *currNode, int currTime) {
-    if (currTime > n) {
-        validLatestTime = false;
-    }
-    currNode->earliestTime = currTime;
-    if (currNode->children.size()) {
-        for (auto &node : currNode->children) {
-            getEarliestStartTime(node, currTime + currNode->t);
-        }
-    }
 }
