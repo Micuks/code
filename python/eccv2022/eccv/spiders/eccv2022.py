@@ -38,20 +38,20 @@ class EccvSpider(scrapy.Spider):
             paper_pdf = paper_url.xpath("./a/@href").get()
             paper_pdf = url_prefix + paper_pdf
 
-            if "detect" in paper_name or "Detect" in paper_name:
-                # Paper metadata
-                yield {
-                    "paper_name": paper_name,
-                    "paper_authors": paper_authors,
-                    "paper_pdf": paper_pdf,
-                }
+            # if "detect" in paper_name or "Detect" in paper_name:
+            # Paper metadata
+            yield {
+                "paper_name": paper_name,
+                "paper_authors": paper_authors,
+                "paper_pdf": paper_pdf,
+            }
 
-                # Download and save paper pdf.
-                yield scrapy.Request(
-                    url=paper_pdf,
-                    callback=self.parse_pdf,
-                    cb_kwargs={"paper_name": paper_name},
-                )
+            # Download and save paper pdf.
+            yield scrapy.Request(
+                url=paper_pdf,
+                callback=self.parse_pdf,
+                cb_kwargs={"paper_name": paper_name},
+            )
 
     def parse_pdf(self, response, paper_name: str):
         """

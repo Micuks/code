@@ -1443,6 +1443,29 @@ class BidirectinoalCrossSentenceEDLayer(nn.Module):
             fw_h_state, fw_c_state = fw_init_state
 
 
+class AggChoiceCrossSentenceED(nn.Module):
+    def __init__(
+        self,
+        words_enc: Tensor,
+        tag_dim,
+        num_tag_layers,
+        weight_decay,
+        agg_choice="lstm",
+    ):
+        """
+        Different choice of aggregation function
+
+        Args:
+            words_enc (Tensor): _description_
+            tag_dim (_type_): _description_
+            num_tag_layers (_type_): _description_
+            weight_decay (_type_): _description_
+            agg_choice (str, optional): average, lstm or concat(concat state).
+                Defaults to "lstm".
+        """
+
+
+
 def test_lstm_layer(seq_len, batch, input_size, hidden_size):
     inp = torch.randn(seq_len, batch, input_size)
     state = LSTMState(
