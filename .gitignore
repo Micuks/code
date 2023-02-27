@@ -11,6 +11,9 @@
 **/.idea
 **/.vscode
 
+# macOS clang++ debug file
+**/*.dSYM
+
 # python cahce
 **/__pycache__
 
