@@ -4019,3 +4019,7 @@ javaHadoop/java-hadoop/.settings
 javaHadoop/java-hadoop/target
 algorithm/csp/202212-3/t158
 python/eccv2022/eccv2022_all.json
+algorithm/csp/202212-3/datagen
+algorithm/csp/202212-3/out
+algorithm/csp/202212-3/sample
+algorithm/csp/202212-3/sample_out
