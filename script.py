@@ -1,20 +1,35 @@
-import re
+# 复制代码
 
-tests:list[str] =[ "2022-10-21 15:11:35 吴清柳<imwql@qq.com>\n",
-       "2022-10-21 15:11:44 Mr.Goddess(215381250)\n",
-       "没用的登西\n",
-       "2022-10-21 15:11:35 吴清柳<imwql@qq.com>\n没用的登西\n2022-10-21 15:11:44 Mr.Goddess(215381250)\n"]
-pattern:str = r"\d+-\d+-\d+\s\d+:\d+:\d+\s.+"
+import random
 
-filename:str = "in.txt"
+def luhn_residue(digits):
+   return sum(sum(divmod(int(d)*(1 + i%2), 10))
+                for i, d in enumerate(digits[::-1])) % 10
 
-with open(filename, "r") as f:
-    strs:list[str] = f.readlines()
-    new_strs:list[str] = [re.sub(pattern, "", s) for s in strs]
+### 生成imei
+def getImei(N):
+       part = ''.join(str(random.randrange(0,9)) for _ in range(N-1))
+       res = luhn_residue('{}{}'.format(part, 0))
+       return '{}{}'.format(part, -res%10)
 
-outfile:str = "out.txt"
-with open(outfile, "w") as f:
-    f.writelines(new_strs)
-#
-# for i,o in zip(strs[:100], new_strs[:100]):
-#     print(f"in: {i}out: {o}")
+### 检测
+def isimei(imei):
+    try:
+        imeiChar = list(imei)  # .toCharArray()
+        resultInt = 0
+        i = 0
+        while i < len(imeiChar) - 1:
+            a = int(imeiChar[i])
+            i += 1
+            temp = int(imeiChar[i]) * 2
+            b = (temp - 9, temp)[temp < 10]  # temp if temp < 10 else temp - 9
+            resultInt += a + b
+            i += 1
+        resultInt %= 10
+        resultInt = (10 - resultInt, 0)[resultInt == 0]
+        crc = int(imeiChar[14])
+        return resultInt == crc
+    except:
+        return False
+
+print(isimei(getImei(15)))
