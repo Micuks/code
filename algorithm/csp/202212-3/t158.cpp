@@ -74,7 +74,9 @@ const vector<int> &Matrix::operator[](const int &idx) const {
 const string Matrix::toString() {
     int width = 3;
     stringstream ss;
-    // ss << endl;
+#ifdef DEBUG
+    ss << endl;
+#endif
     for (auto &a : matrix) {
         for (auto &b : a) {
             ss << setw(width) << b << " ";
@@ -109,7 +111,7 @@ int main() {
 
     // Load M data into M matrix
     int k = 0;
-    for (int m = 0; m <= 7; m++) {
+    for (int m = 0; m <= 7 && k <= n; m++) {
         if (m & 1) {
             for (int i = 0; i <= m; i++) {
                 int j = -1 * i + m;
@@ -124,7 +126,6 @@ int main() {
     }
 
     deb("n[%d], T[%d]\n", n, T);
-    deb(n << T);
     deb(M.toString().c_str());
 
     // Multiply M with Q
@@ -135,6 +136,8 @@ int main() {
             result[i][j] = M[i][j] * Q[i][j];
         }
     }
+
+    deb(result.toString().c_str());
 
     // Discrete cosine transform
     result = result.DCT();
