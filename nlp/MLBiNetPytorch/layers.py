@@ -1448,8 +1448,14 @@ class AggChoiceCrossSentenceED(nn.Module):
         self,
         words_enc: Tensor,
         tag_dim,
-        num_tag_layers,
-        weight_decay,
+        num_tag_layers: int,
+        weight_decay: float,
+        max_doc_len,
+        max_seq_len,
+        batch_size,
+        decode_h,
+        dropout_rate,
+        unk_event_semantic,
         agg_choice="lstm",
     ):
         """
@@ -1463,7 +1469,116 @@ class AggChoiceCrossSentenceED(nn.Module):
             agg_choice (str, optional): average, lstm or concat(concat state).
                 Defaults to "lstm".
         """
+        self.words_enc = words_enc
+        self.tag_dim = tag_dim
+        self.num_tag_layers = num_tag_layers
+        self.weight_decay = weight_decay
+        self.max_doc_len = max_doc_len
+        self.max_seq_len = max_seq_len
+        self.batch_size = batch_size
+        self.decode_h = decode_h
+        self.dropout_rate = dropout_rate
+        self.unk_event_semantic = unk_event_semantic
 
+        self.agg_choice = agg_choice
+
+        input_size = batch_size * max_doc_len
+        hidden_size = self.decode_h
+
+        # docoding layer
+        # all layers share the same decoder layer
+        # for the first decoder layer, set c_{i-1} and c_{i+1}
+        # with unk_event_semantic
+        lstm_outputs = torch.reshape(
+            words_enc,
+            shape=[[self.batch_size * self.max_doc_len, self.max_seq_len, -1]],
+        )
+        backward_lstm_outputs = lstm_outputs[:, ::-1, :]
+
+        forward_lstm = my_lstm(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            num_layers=1,
+            dropout=True,
+            dropout_rate=dropout_rate,
+        )
+
+        backward_lstm = my_lstm(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            num_layers=1,
+            dropout=True,
+            dropout_rate=dropout_rate,
+        )
+
+        # multi-tagging block
+        tag_final_forward = torch.zeros(
+            (self.batch_size, self.max_doc_len, self.max_seq_len, tag_dim),
+            dtype=torch.float32,
+        )
+        tag_final_backward = torch.zeros(
+            (self.batch_size, self.max_doc_len, self.max_seq_len, tag_dim),
+            dtype=torch.float32,
+        )
+        tag_final_list_forward = []
+        tag_final_list_backward = []
+
+        forward_init_state = LSTMState(
+            torch.randn(
+                self.batch_size * self.max_doc_len, dtype=torch.float32
+            ),
+            torch.randn(
+                self.batch_size * self.max_doc_len, dtype=torch.float32
+            ),
+        )
+
+        backward_init_state = LSTMState(
+            torch.randn(
+                self.batch_size * self.max_doc_len, dtype=torch.float32
+            ),
+            torch.randn(
+                self.batch_size * self.max_doc_len, dtype=torch.float32
+            ),
+        )
+
+        # event and semantic information of the previous sentence and next sentence
+        if agg_choice == "lstm":
+            info_event_semantic_pre_sentence = torch.tile(
+                self.unk_event_semantic,
+                dims=[self.batch_size * self.max_doc_len, 1],
+            )
+            info_event_semantic_next_sentence = torch.tile(
+                self.unk_event_semantic,
+                dims=[self.batch_size * self.max_doc_len, 1],
+            )
+        else:
+            info_event_semantic_pre_sentence = torch.zeros(
+                self.unk_event_semantic,
+                dims=[self.batch_size * self.max_doc_len, 1],
+            )
+            info_event_semantic_next_sentence = torch.zeros(
+                self.unk_event_semantic,
+                dims=[self.batch_size * self.max_doc_len, 1],
+            )
+
+        # event and semantic information of the beginning sentence
+        info_event_semantic_init_sentence = torch.tile(
+            self.unk_event_semantic, dims=[self.batch_size, 1]
+        )
+        info_event_semantic_init_sentence = torch.unsqueeze(
+            info_event_semantic_init_sentence, dim=1
+        )
+        info_event_semantic_mat0 = torch.tile(
+            torch.unsqueeze(self.unk_event_semantic, dim=0),
+            dims=(self.batch_size, self.max_doc_len, 1),
+        )
+        
+    def forward(self):
+        """
+        Bidirectional rnn decoding layer
+        """
+        for layer_id in range(self.num_tag_layers):
+            # initialize for each layer
 
 
 def test_lstm_layer(seq_len, batch, input_size, hidden_size):
