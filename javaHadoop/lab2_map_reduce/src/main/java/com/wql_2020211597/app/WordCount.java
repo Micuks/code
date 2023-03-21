@@ -18,9 +18,9 @@ public class WordCount {
     public static class TokenizerMapper
             extends Mapper<Object, Text, Text, IntWritable> {
         private final static IntWritable one = new IntWritable(1);
-        private org.apache.hadoop.io.Text word = new Text();
+        private Text word = new Text();
 
-        public void map(Object key, org.w3c.dom.Text value, Context context)
+        public void map(Object key, Text value, Context context)
                 throws IOException, InterruptedException {
             StringTokenizer itr = new StringTokenizer(value.toString());
             while (itr.hasMoreTokens()) {
