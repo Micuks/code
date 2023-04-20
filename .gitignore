@@ -4025,3 +4025,8 @@ algorithm/csp/202212-3/sample
 algorithm/csp/202212-3/sample_out
 algorithm/csp/202212-4/t157
 javaHadoop/lab2_map_reduce/target
+javaHadoop/lab3.hbase.inputSource/target
+javaHadoop/lab4.scala.removeDuplication/.bloop
+javaHadoop/lab4.scala.removeDuplication/target
+javaHadoop/lab4.scala.test/.bloop
+javaHadoop/lab4.scala.test/target
