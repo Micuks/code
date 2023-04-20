@@ -7,7 +7,7 @@
 
   <groupId>org.wql2020211597.hbase.inputSource</groupId>
   <artifactId>hbase.inputSource</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.3</version>
 
   <name>hbase.inputSource</name>
   <!-- FIXME change it to the project's website -->
