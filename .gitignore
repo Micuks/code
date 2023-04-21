@@ -4030,3 +4030,5 @@ javaHadoop/lab4.scala.removeDuplication/.bloop
 javaHadoop/lab4.scala.removeDuplication/target
 javaHadoop/lab4.scala.test/.bloop
 javaHadoop/lab4.scala.test/target
+javaHadoop/lab4.scala.sql/.bloop
+javaHadoop/lab4.scala.sql/target
