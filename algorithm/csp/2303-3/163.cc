@@ -14,7 +14,7 @@
 #include <unordered_set>
 #include <vector>
 
-// #define debug
+#define debug
 
 #ifdef debug
 #include "debug.hh"
@@ -40,12 +40,13 @@ class Solution {
         attr_key_to_users[attr_key].push_back(dn);
     }
     char GetNextToken(const string &s, size_t &pos);
-    vector<int> ParseExpr(const string &expr, size_t &pos, char &token);
+    vector<int> ParseExpr(const string &expr);
     vector<int> ParseBaseExpr(const string &expr, size_t &pos, char &token);
 
     void InitCorrespondingDns() { corresponding_dns_.clear(); }
     const string CorrespondingDn() {
         stringstream ss;
+        sort(corresponding_dns_.begin(), corresponding_dns_.end());
         for (auto &dn : corresponding_dns_) {
             ss << dn << ' ';
         }
@@ -125,7 +126,7 @@ vector<int> Solution::NegativeFetchDns(int key, int value) {
                 dns.push_back(dn);
         }
     } catch (exception e) {
-        deb(e.what();)
+        deb(e.what());
     }
 
     return dns;
@@ -137,48 +138,61 @@ char Solution::GetNextToken(const string &s, size_t &pos) {
     return pos < s.size() ? s.at(pos++) : '\0';
 }
 
-vector<int> Solution::ParseExpr(const string &expr, size_t &pos, char &token) {
-    vector<int> dns;
-    char mode;
+vector<int> Solution::ParseExpr(const string &expr) {
+    vector<char> opers;
+    vector<vector<int>> dns;
+    int c = 0, d = 0;
 
-    switch (token) {
-    case '&':
-    case '|':
-        mode = token;
-        token = GetNextToken(expr, pos);
-        if (token != '(')
-            throw std::runtime_error("Expected (");
-        token = GetNextToken(expr, pos);
-        dns = ParseExpr(expr, pos, token);
-        if (token != ')')
-            throw runtime_error("Expected )");
-        if ((token = GetNextToken(expr, pos)) != '(')
-            throw runtime_error("Expected (");
-        token = GetNextToken(expr, pos);
-        deb(mode);
-        dns = (mode == '&') ? AndExprs(dns, ParseExpr(expr, pos, token))
-                            : OrExprs(dns, ParseExpr(expr, pos, token));
-        if (token != ')')
-            throw runtime_error("Expected )");
-        token = GetNextToken(expr, pos);
-        break;
-    case '(':
-        token = GetNextToken(expr, pos);
-        if (token == '(') {
-            token = GetNextToken(expr, pos);
+    for (size_t i = 0; i < expr.size();) {
+        auto t = expr.at(i);
+        if (t == '|') {
+            opers.push_back('|');
+            i++;
+        } else if (t == '&') {
+            opers.push_back('&');
+            i++;
+        } else if (t == '(') {
+            c++;
+            int l = 0;
+            while (isdigit(t = expr.at(++i))) {
+                l = l * 10 + (t - '0');
+            }
+            auto mode = t;
+            int r = 0;
+            while (isdigit(t = expr.at(++i))) {
+                r = r * 10 + (t - '0');
+            }
+            if (mode == ':')
+                dns.push_back(PositiveFetchDns(l, r));
+            else if (mode == '~')
+                dns.push_back(NegativeFetchDns(l, r));
+            i++;
+        } else if (t == ')') {
+            d++;
+            if (d == 2) {
+                auto oper = opers.back();
+                opers.pop_back();
+                auto r = dns.back();
+                dns.pop_back();
+                auto l = dns.back();
+                dns.pop_back();
+
+                vector<int> vr;
+                if (oper == '&') {
+                    set_intersection(l.begin(), l.end(), r.begin(), r.end(),
+                                     back_inserter(vr));
+
+                } else if (oper == '|') {
+                    set_union(l.begin(), l.end(), r.begin(), r.end(),
+                              back_inserter(vr));
+                }
+                dns.push_back(vr);
+                d = 0;
+            }
+            i++;
         }
-        dns = ParseExpr(expr, pos, token);
-        token = GetNextToken(expr, pos);
-        if (token != ')')
-            throw runtime_error("Expected )");
-        break;
-    case ')':
-        throw runtime_error("Unexpected )");
-    default:
-        return ParseBaseExpr(expr, pos, token);
     }
-
-    return dns;
+    return dns.back();
 }
 
 vector<int> Solution::ParseBaseExpr(const string &expr, size_t &pos,
@@ -214,14 +228,14 @@ int main(int argc, char *argv[]) {
     cin >> s.n;
     // Read users
     for (int i = 0; i < s.n; i++) {
-        int dn, num_attrs;
-        cin >> dn >> num_attrs;
-        auto u = make_shared<User>(dn, num_attrs);
-        int attr_key, attr_val;
-        for (int j = 0; j < num_attrs; j++) {
-            cin >> attr_key >> attr_val;
-            u->attrs_.insert({attr_key, attr_val});
-            s.AddAttrKeyToDNMap(attr_key, dn);
+        int dn, k;
+        cin >> dn >> k;
+        auto u = make_shared<User>(dn, k);
+        int l, r;
+        for (int j = 0; j < k; j++) {
+            cin >> l >> r;
+            u->attrs_.insert({l, r});
+            s.AddAttrKeyToDNMap(l, dn);
         }
         s.AddUser(u);
     }
