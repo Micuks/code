@@ -4057,3 +4057,11 @@ algorithm/csp/2212-4/t157
 algorithm/csp/2303-1/t165
 algorithm/csp/2303-2/t164
 algorithm/csp/2303-3/163
+algorithm/csp/2303-3/std
+javaHadoop/final.lab1/target/classes/log4j.properties
+javaHadoop/final.lab1/target/maven-archiver/pom.properties
+javaHadoop/final.lab1/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+javaHadoop/final.lab1/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+javaHadoop/final.lab1/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst
+javaHadoop/final.lab1/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
+javaHadoop/final.lab1/target/surefire-reports/TEST-com.wql_2020211597.app.AppTest.xml
