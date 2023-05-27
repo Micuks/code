@@ -8,6 +8,7 @@ inline void __print(char x) { cout << x; }
 inline void __print(const char *x) { cout << x; }
 inline void __print(const string &x) { cout << x; }
 inline void __print(bool x) { cout << x; }
+inline void __print(size_t x) { cout << x; }
 
 template <typename T, typename V> void __print(const pair<T, V> &x) {
     cout << '{';

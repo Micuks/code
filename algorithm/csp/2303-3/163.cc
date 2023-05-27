@@ -41,7 +41,7 @@ class Solution {
     }
     char GetNextToken(const string &s, size_t &pos);
     vector<int> ParseExpr(const string &expr);
-    vector<int> ParseBaseExpr(const string &expr, size_t &pos, char &token);
+    vector<int> ParseBaseExpr(const string &expr);
 
     void InitCorrespondingDns() { corresponding_dns_.clear(); }
     const string CorrespondingDn() {
@@ -89,20 +89,14 @@ vector<int> Solution::PositiveFetchDns(int key, int value) {
     vector<int> users;
     try {
         users = attr_key_to_users.at(key);
+        for (auto &dn : users) {
+            auto user = dn_to_users_.at(dn);
+            auto user_val = user->attrs_.at(key);
+            if (user_val == value)
+                dns.push_back(dn);
+        }
     } catch (exception e) {
         deb(e.what());
-    }
-    users = attr_key_to_users.at(key);
-    for (auto &dn : users) {
-        auto user = dn_to_users_.at(dn);
-        if (!user)
-            throw runtime_error("Expected user " + to_string(dn));
-        auto user_val = user->attrs_.at(key);
-        if (!user_val)
-            throw runtime_error("Expected value of user " + to_string(dn) +
-                                "'s attribute " + to_string(key));
-        if (user_val == value)
-            dns.push_back(dn);
     }
 
     return dns;
@@ -116,12 +110,7 @@ vector<int> Solution::NegativeFetchDns(int key, int value) {
         users = attr_key_to_users.at(key);
         for (auto &dn : users) {
             auto user = dn_to_users_.at(dn);
-            if (!user)
-                throw runtime_error("Expected user" + to_string(dn));
             auto user_val = user->attrs_.at(key);
-            if (!user_val)
-                throw runtime_error("Expected value of user " + to_string(dn) +
-                                    "'s attribute " + to_string(key));
             if (user_val != value)
                 dns.push_back(dn);
         }
@@ -133,8 +122,6 @@ vector<int> Solution::NegativeFetchDns(int key, int value) {
 }
 
 char Solution::GetNextToken(const string &s, size_t &pos) {
-    // while (pos < s.size() && isspace(s.at(pos)))
-    //     ++pos;
     return pos < s.size() ? s.at(pos++) : '\0';
 }
 
@@ -145,6 +132,7 @@ vector<int> Solution::ParseExpr(const string &expr) {
 
     for (size_t i = 0; i < expr.size();) {
         auto t = expr.at(i);
+        deb(i, t);
         if (t == '|') {
             opers.push_back('|');
             i++;
@@ -166,7 +154,7 @@ vector<int> Solution::ParseExpr(const string &expr) {
                 dns.push_back(PositiveFetchDns(l, r));
             else if (mode == '~')
                 dns.push_back(NegativeFetchDns(l, r));
-            i++;
+            // Now, t == ')'
         } else if (t == ')') {
             d++;
             if (d == 2) {
@@ -188,42 +176,39 @@ vector<int> Solution::ParseExpr(const string &expr) {
                 }
                 dns.push_back(vr);
                 d = 0;
+                c -= 2;
             }
             i++;
+        } else {
+            ParseBaseExpr(expr);
         }
     }
     return dns.back();
 }
 
-vector<int> Solution::ParseBaseExpr(const string &expr, size_t &pos,
-                                    char &token) {
-    int first_num = token - '0', second_num = 0;
-    while (isdigit(token = GetNextToken(expr, pos))) {
-        first_num = first_num * 10 + (token - '0');
+vector<int> Solution::ParseBaseExpr(const string &expr) {
+    char t;
+    int l = 0;
+    int r = 0;
+    int i = -1;
+    while (isdigit((t = expr.at(++i)))) {
+        l = 10 * l + (t - '0');
+    }
+    char mode = t;
+    while (isdigit((t = expr.at(++i)))) {
+        r = 10 * r + (t - '0');
     }
 
-    char oper = token;
-    if (oper != ':' && token != '~')
-        throw runtime_error("Expected : or ~");
-
-    token = GetNextToken(expr, pos);
-    second_num = token - '0';
-    while (isdigit(token = GetNextToken(expr, pos))) {
-        second_num = second_num * 10 + (token - '0');
+    if (mode == ':') {
+        return PositiveFetchDns(l, r);
+    } else if (mode == '~') {
+        return NegativeFetchDns(l, r);
+    } else {
+        throw runtime_error("Error: invalid mode: " + to_string(mode));
     }
-
-    deb(first_num, oper, second_num);
-
-    // Fetch DNs meeting attr key and value requirements
-    if (oper == ':') {
-        return PositiveFetchDns(first_num, second_num);
-    } else if (oper == '~') {
-        return NegativeFetchDns(first_num, second_num);
-    }
-    throw runtime_error("Illegal operater " + to_string(oper));
 }
 
-int main(int argc, char *argv[]) {
+int main() {
     Solution s;
     cin >> s.n;
     // Read users
@@ -250,9 +235,7 @@ int main(int argc, char *argv[]) {
         s.InitCorrespondingDns();
 
         getline(cin, expr);
-        size_t pos = 1;
-        char token = expr.at(0);
-        s.corresponding_dns_ = s.ParseExpr(expr, pos, token);
+        s.corresponding_dns_ = s.ParseExpr(expr);
         cout << s.CorrespondingDn();
     }
 
