@@ -4066,3 +4066,5 @@ javaHadoop/final.lab1/target/maven-status/maven-compiler-plugin/testCompile/defa
 javaHadoop/final.lab1/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
 javaHadoop/final.lab1/target/surefire-reports/TEST-com.wql_2020211597.app.AppTest.xml
 algorithm/leetcode/2608/a
+algorithm/csp/2303-3/bps
+algorithm/csp/2303-3/in3
