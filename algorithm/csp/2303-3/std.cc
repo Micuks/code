@@ -1,7 +1,9 @@
 #include <algorithm>
+#include <bitset>
 #include <cctype>
 #include <cstddef>
 #include <cstdlib>
+#include <cstring>
 #include <exception>
 #include <iostream>
 #include <iterator>
