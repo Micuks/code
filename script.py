@@ -1,35 +1,18 @@
-# 复制代码
+def find_min(numbers):
+    return min(numbers)
 
-import random
 
-def luhn_residue(digits):
-   return sum(sum(divmod(int(d)*(1 + i%2), 10))
-                for i, d in enumerate(digits[::-1])) % 10
+def main():
+    # 读取输入
+    n = int(input())
+    input_numbers = list(map(int, input().split()))
 
-### 生成imei
-def getImei(N):
-       part = ''.join(str(random.randrange(0,9)) for _ in range(N-1))
-       res = luhn_residue('{}{}'.format(part, 0))
-       return '{}{}'.format(part, -res%10)
+    # 查找最小值
+    min_value = find_min(input_numbers)
 
-### 检测
-def isimei(imei):
-    try:
-        imeiChar = list(imei)  # .toCharArray()
-        resultInt = 0
-        i = 0
-        while i < len(imeiChar) - 1:
-            a = int(imeiChar[i])
-            i += 1
-            temp = int(imeiChar[i]) * 2
-            b = (temp - 9, temp)[temp < 10]  # temp if temp < 10 else temp - 9
-            resultInt += a + b
-            i += 1
-        resultInt %= 10
-        resultInt = (10 - resultInt, 0)[resultInt == 0]
-        crc = int(imeiChar[14])
-        return resultInt == crc
-    except:
-        return False
+    # 输出结果
+    print("min =", min_value)
 
-print(isimei(getImei(15)))
+
+if __name__ == "__main__":
+    main()
