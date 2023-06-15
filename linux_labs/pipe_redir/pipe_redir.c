@@ -8,11 +8,14 @@ int main(int argc, char *argv[]) {
   int fd[2], fd_in, fd_out;
   pid_t pid1, pid2;
 
+  printf("Starting program...\n");
   // create pipe
   if (pipe(fd) < 0) {
     perror("pipe");
     return 1;
   }
+
+  printf("Pipe created...\n");
 
   // create first child process
   pid1 = fork();
@@ -20,6 +23,8 @@ int main(int argc, char *argv[]) {
     perror("fork");
     return 1;
   } else if (pid1 == 0) { // child process 1
+    printf("Child 1 executing...\n");
+
     fd_in = open("/etc/passwd", O_RDONLY);
     dup2(fd_in, STDIN_FILENO); // replace standard input with file
     close(fd_in);
@@ -42,6 +47,7 @@ int main(int argc, char *argv[]) {
     perror("fork");
     return 1;
   } else if (pid2 == 0) {
+    printf("Child 2 executing...\n");
     // child process 2
     fd_out = open("r.txt", O_WRONLY | O_CREAT, 0666);
     dup2(fd_out, STDOUT_FILENO); // replace standard output with file
@@ -61,6 +67,8 @@ int main(int argc, char *argv[]) {
   close(fd[0]);
   close(fd[1]);
 
+  printf("Waiting for children to finish...\n");
+
   // wait for child processes to finish
   waitpid(pid1, NULL, 0);
   waitpid(pid2, NULL, 0);
@@ -71,12 +79,16 @@ int main(int argc, char *argv[]) {
     perror("fork");
     return 1;
   } else if (pid3 == 0) {
+    printf("Printint the content of r.txt...\n");
+
     char *argv3[] = {"cat", "r.txt", NULL};
     execvp(argv3[0], argv3);
     _exit(1);
   }
 
   waitpid(pid3, NULL, 0);
+
+  printf("Program finished.\n");
 
   return EXIT_SUCCESS;
 }
