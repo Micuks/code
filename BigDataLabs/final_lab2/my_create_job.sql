@@ -1,6 +1,6 @@
 -- 数据源：Kafka
 CREATE TABLE book_sales_raw (
-  date STRING,
+  cur_date STRING,
   book_category STRING,
   book_title STRING,
   total_sales BIGINT,
@@ -18,7 +18,7 @@ CREATE TABLE book_sales_raw (
 -- 临时表
 CREATE VIEW book_sales_stats_tmp AS
 SELECT 
-  date,
+  cur_date,
   book_category,
   COUNT(DISTINCT book_title) AS num_titles,
   SUM(total_sales) AS total_sales,
@@ -28,11 +28,11 @@ SELECT
   SUM(total_revenue) AS total_revenue,
   MAX(last_sale_time) AS last_sale_time
 FROM book_sales_raw
-GROUP BY date, book_category;
+GROUP BY cur_date, book_category;
 
 -- 结果表：MySQL
 CREATE TABLE daily_book_sales_stats (
-  date STRING,
+  cur_date STRING,
   book_category STRING,
   num_titles BIGINT,
   total_sales BIGINT,
@@ -42,7 +42,7 @@ CREATE TABLE daily_book_sales_stats (
   total_revenue DOUBLE,
   last_sale_time STRING,
   flink_current_time STRING,
-  PRIMARY KEY (date, book_category) NOT ENFORCED
+  PRIMARY KEY (cur_date, book_category) NOT ENFORCED
 ) WITH (
   'connector' = 'jdbc',
   'url' = 'jdbc:mysql://192.168.0.10:3306/dli-wql',
@@ -56,7 +56,7 @@ CREATE TABLE daily_book_sales_stats (
 -- 将数据从临时表转移到 MySQL 结果表
 INSERT INTO daily_book_sales_stats
 SELECT 
-  date,
+  cur_date,
   book_category,
   num_titles,
   total_sales,
