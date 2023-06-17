@@ -8,9 +8,9 @@ CREATE TABLE book_sales_raw (
   last_sale_time STRING
 ) WITH (
   'connector' = 'kafka',
-  'properties.bootstrap.servers' = 'XXXX:9092,XXXX:9092,XXXX:9092', 
+  'properties.bootstrap.servers' = '192.168.0.84:9092,192.168.0.48:9092,192.168.0.99:9092', 
   'properties.group.id' = 'book_sales', 
-  'topic' = 'book_sales_info_<姓名缩写>', 
+  'topic' = 'book_sales_info_wql', 
   'format' = 'json',
   'scan.startup.mode' = 'latest-offset'
 );
@@ -45,10 +45,10 @@ CREATE TABLE daily_book_sales_stats (
   PRIMARY KEY (date, book_category) NOT ENFORCED
 ) WITH (
   'connector' = 'jdbc',
-  'url' = 'jdbc:mysql://XXXX:3306/dli-<姓名缩写>',
+  'url' = 'jdbc:mysql://192.168.0.10:3306/dli-wql',
   'table-name' = 'daily_book_sales_stats',
   'username' = 'root',
-  'password' = 'XXXX',
+  'password' = 'km6Gexhua',
   'sink.buffer-flush.max-rows' = '1000',
   'sink.buffer-flush.interval' = '1s'
 );
