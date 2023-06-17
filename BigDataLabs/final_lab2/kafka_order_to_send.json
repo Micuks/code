@@ -1,0 +1,121 @@
+{
+  "order_id": "202103241000000001",
+  "order_channel": "webShop",
+  "order_time": "2021-03-24 10:00:00",
+  "pay_amount": "100.00",
+  "real_pay": "100.00",
+  "pay_time": "2021-03-24 10:02:03",
+  "user_id": "0001",
+  "user_name": "Alice",
+  "area_id": "330106"
+}
+{
+  "order_id": "202103241606060001",
+  "order_channel": "appShop",
+  "order_time": "2021-03-24 16:06:06",
+  "pay_amount": "200.00",
+  "real_pay": "180.00",
+  "pay_time": "2021-03-24 16:10:06",
+  "user_id": "0001",
+  "user_name": "Alice",
+  "area_id": "330106"
+}
+{
+  "order_id": "202103251202020001",
+  "order_channel": "miniAppShop",
+  "order_time": "2021-03-25 12:02:02",
+  "pay_amount": "60.00",
+  "real_pay": "60.00",
+  "pay_time": "2021-03-25 12:03:00",
+  "user_id": "0002",
+  "user_name": "Bob",
+  "area_id": "330110"
+}
+{
+  "order_id": "202103251505050001",
+  "order_channel": "qqShop",
+  "order_time": "2021-03-25 15:05:05",
+  "pay_amount": "500.00",
+  "real_pay": "400.00",
+  "pay_time": "2021-03-25 15:10:00",
+  "user_id": "0003",
+  "user_name": "Cindy",
+  "area_id": "330108"
+}
+{
+  "order_id": "202103252020200001",
+  "order_channel": "webShop",
+  "order_time": "2021-03-24 20:20:20",
+  "pay_amount": "600.00",
+  "real_pay": "480.00",
+  "pay_time": "2021-03-25 00:00:00",
+  "user_id": "0004",
+  "user_name": "Daisy",
+  "area_id": "330102"
+}
+{
+  "order_id": "202103260808080001",
+  "order_channel": "webShop",
+  "order_time": "2021-03-25 08:08:08",
+  "pay_amount": "300.00",
+  "real_pay": "240.00",
+  "pay_time": "2021-03-25 08:10:00",
+  "user_id": "0004",
+  "user_name": "Daisy",
+  "area_id": "330102"
+}
+{
+  "order_id": "202103261313130001",
+  "order_channel": "webShop",
+  "order_time": "2021-03-25 13:13:13",
+  "pay_amount": "100.00",
+  "real_pay": "100.00",
+  "pay_time": "2021-03-25 16:16:16",
+  "user_id": "0004",
+  "user_name": "Daisy",
+  "area_id": "330102"
+}
+{
+  "order_id": "202103270606060001",
+  "order_channel": "appShop",
+  "order_time": "2021-03-25 06:06:06",
+  "pay_amount": "50.50",
+  "real_pay": "50.50",
+  "pay_time": "2021-03-25 06:07:00",
+  "user_id": "0001",
+  "user_name": "Alice",
+  "area_id": "330106"
+}
+{
+  "order_id": "202103270606060002",
+  "order_channel": "webShop",
+  "order_time": "2021-03-25 06:06:06",
+  "pay_amount": "66.60",
+  "real_pay": "66.60",
+  "pay_time": "2021-03-25 06:07:00",
+  "user_id": "0002",
+  "user_name": "Bob",
+  "area_id": "330110"
+}
+{
+  "order_id": "202103270606060003",
+  "order_channel": "miniAppShop",
+  "order_time": "2021-03-25 06:06:06",
+  "pay_amount": "88.80",
+  "real_pay": "88.80",
+  "pay_time": "2021-03-25 06:07:00",
+  "user_id": "0003",
+  "user_name": "Cindy",
+  "area_id": "330108"
+}
+{
+  "order_id": "202103270606060004",
+  "order_channel": "webShop",
+  "order_time": "2021-03-25 06:06:06",
+  "pay_amount": "99.90",
+  "real_pay": "99.90",
+  "pay_time": "2021-03-25 06:07:00",
+  "user_id": "0004",
+  "user_name": "Daisy",
+  "area_id": "330102"
+}
