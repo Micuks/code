@@ -1,6 +1,7 @@
 {
   "date": "2023-06-01",
   "book_category": "Novel",
+  "book_title": "HelloNovel",
   "total_sales": 120,
   "total_revenue": 2400.00,
   "last_sale_time": "2023-06-01 22:12:00"
@@ -8,6 +9,7 @@
 {
   "date": "2023-06-01",
   "book_category": "Science",
+  "book_title": "HelloScience",
   "total_sales": 90,
   "total_revenue": 1800.00,
   "last_sale_time": "2023-06-01 21:45:00"
@@ -15,6 +17,7 @@
 {
   "date": "2023-06-02",
   "book_category": "Novel",
+  "book_title": "2Novel",
   "total_sales": 110,
   "total_revenue": 2200.00,
   "last_sale_time": "2023-06-02 21:20:00"
@@ -22,6 +25,7 @@
 {
   "date": "2023-06-02",
   "book_category": "History",
+  "book_title": "2History",
   "total_sales": 100,
   "total_revenue": 2000.00,
   "last_sale_time": "2023-06-02 20:35:00"
@@ -29,6 +33,7 @@
 {
   "date": "2023-06-03",
   "book_category": "Novel",
+  "book_title": "3Novel",
   "total_sales": 125,
   "total_revenue": 2500.00,
   "last_sale_time": "2023-06-03 22:20:00"
@@ -36,6 +41,7 @@
 {
   "date": "2023-06-03",
   "book_category": "Science",
+  "book_title": "3Science",
   "total_sales": 85,
   "total_revenue": 1700.00,
   "last_sale_time": "2023-06-03 21:45:00"
@@ -43,6 +49,7 @@
 {
   "date": "2023-06-04",
   "book_category": "Novel",
+  "book_title": "4Novel",
   "total_sales": 130,
   "total_revenue": 2600.00,
   "last_sale_time": "2023-06-04 22:30:00"
@@ -50,6 +57,7 @@
 {
   "date": "2023-06-04",
   "book_category": "History",
+  "book_title": "4His",
   "total_sales": 110,
   "total_revenue": 2200.00,
   "last_sale_time": "2023-06-04 21:50:00"
@@ -57,6 +65,7 @@
 {
   "date": "2023-06-05",
   "book_category": "Novel",
+  "book_title": "5Nov",
   "total_sales": 140,
   "total_revenue": 2800.00,
   "last_sale_time": "2023-06-05 22:40:00"
@@ -64,6 +73,7 @@
 {
   "date": "2023-06-05",
   "book_category": "Science",
+  "book_title": "5Sci",
   "total_sales": 75,
   "total_revenue": 1500.00,
   "last_sale_time": "2023-06-05 21:55:00"
@@ -71,6 +81,7 @@
 {
   "date": "2023-06-06",
   "book_category": "Novel",
+  "book_title": "6Nov",
   "total_sales": 135,
   "total_revenue": 2700.00,
   "last_sale_time": "2023-06-06 22:25:00"
@@ -78,6 +89,7 @@
 {
   "date": "2023-06-06",
   "book_category": "History",
+  "book_title": "6His",
   "total_sales": 115,
   "total_revenue": 2300.00,
   "last_sale_time": "2023-06-06 21:45:00"
@@ -85,6 +97,7 @@
 {
   "date": "2023-06-07",
   "book_category": "Novel",
+  "book_title": "7Nov",
   "total_sales": 145,
   "total_revenue": 2900.00,
   "last_sale_time": "2023-06-07 22:30:00"
@@ -92,6 +105,7 @@
 {
   "date": "2023-06-07",
   "book_category": "Science",
+  "book_title": "8Sci",
   "total_sales": 70,
   "total_revenue": 1400.00,
   "last_sale_time": "2023-06-07 21:45:00"
@@ -99,6 +113,7 @@
 {
   "date": "2023-06-08",
   "book_category": "Novel",
+  "book_title": "9Nov",
   "total_sales": 150,
   "total_revenue": 3000.00,
   "last_sale_time": "2023-06-08 22:35:00"
@@ -106,6 +121,7 @@
 {
   "date": "2023-06-08",
   "book_category": "History",
+  "book_title": "9His",
   "total_sales": 120,
   "total_revenue": 2400.00,
   "last_sale_time": "2023-06-08 21:50:00"
@@ -113,6 +129,7 @@
 {
   "date": "2023-06-09",
   "book_category": "Novel",
+  "book_title": "10Nov",
   "total_sales": 155,
   "total_revenue": 3100.00,
   "last_sale_time": "2023-06-09 22:40:00"
@@ -120,6 +137,7 @@
 {
   "date": "2023-06-09",
   "book_category": "Science",
+  "book_title": "11Sci",
   "total_sales": 65,
   "total_revenue": 1300.00,
   "last_sale_time": "2023-06-09 21:55:00"
@@ -127,6 +145,7 @@
 {
   "date": "2023-06-10",
   "book_category": "Novel",
+  "book_title": "11Nov",
   "total_sales": 160,
   "total_revenue": 3200.00,
   "last_sale_time": "2023-06-10 22:45:00"
@@ -134,6 +153,7 @@
 {
   "date": "2023-06-10",
   "book_category": "History",
+  "book_title": "12His",
   "total_sales": 125,
   "total_revenue": 2500.00,
   "last_sale_time": "2023-06-10 21:50:00"

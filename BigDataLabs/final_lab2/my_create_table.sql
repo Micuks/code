@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS `dli-xyz`.`daily_book_sales`;
+DROP TABLE IF EXISTS `dli-wql`.`daily_book_sales`;
 
-CREATE TABLE `dli-xyz`.`daily_book_sales` (
+CREATE TABLE `dli-wql`.`daily_book_sales` (
     `date` DATE NOT NULL,
     `book_category` VARCHAR(64) NOT NULL,
     `total_sales` INT UNSIGNED NULL,
