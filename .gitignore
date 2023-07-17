@@ -16,6 +16,8 @@
 
 # python cahce
 **/__pycache__
+**/venv
+**/.env
 
 # Latex cache
 **/*.aux
@@ -4076,3 +4078,11 @@ gnn/2_emojify/archive.zip
 gnn/3_loan_prediction/venv
 gnn/3_loan_prediction/archive (1).zip
 gnn/1_iris/iris-classification/.ipynb_checkpoints
+gnn/1_iris.out
+gnn/1_iris.tex
+gnn/2_emojify.out
+gnn/2_emojify.tex
+gnn/3_loan_prediction.out
+gnn/3_loan_prediction.tex
+gnn/temp.ipynb
+gnn/tplx_template.tplx
