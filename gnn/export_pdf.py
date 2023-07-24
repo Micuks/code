@@ -32,8 +32,9 @@ def add_latex_package(tex_file):
             lines[i] = (
                 line
                 + "\n\\usepackage{xeCJK}\n"
-                + "\\setCJKmainfont{Songti SC}\n"
-                + "\\setCJKmonofont{Songti SC}\n"
+                + "\\setCJKmainfont{Source Han Sans CN}\n"
+                + "\\setCJKmonofont{Source Han Sans CN}\n"
+                + "\\author{吴清柳}\n"
             )
             break
     with open(tex_file, "w") as f:
@@ -87,11 +88,12 @@ for dirpath, dirnames, filenames in os.walk("."):
             add_latex_package(tex_file=tex_file)
 
             # convert to .pdf
+            # os.chdir(root_dir)
             subprocess.call(
                 [
-                    "xelatex",
-                    "-output-directory",
-                    root_dir,
+                    "latexmk",
+                    "-pdf",
+                    "-xelatex",
                     tex_file,
                 ]
             )
