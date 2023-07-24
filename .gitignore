@@ -29,7 +29,6 @@
 **/report.out
 **/*.fdb_latexmk
 **/*.bak
-**/*.pdf
 
 **/*.db
 **/*.txt
@@ -4088,3 +4087,16 @@ gnn/temp.ipynb
 gnn/tplx_template.tplx
 gnn/5_MNIST_classification/dataset/MNIST/raw
 gnn/7_titanic_machine_learning_from_disaster/dataset/titanic.zip
+gnn/..pdf
+gnn/4_housing_prices_prediction.ipynb
+gnn/4_housing_prices_prediction.out
+gnn/4_housing_prices_prediction.tex
+gnn/5_MNIST_classification.ipynb
+gnn/5_MNIST_classification.out
+gnn/5_MNIST_classification.tex
+gnn/6_stock_price_prediction.ipynb
+gnn/6_stock_price_prediction.out
+gnn/6_stock_price_prediction.tex
+gnn/7_titanic_machine_learning_from_disaster.ipynb
+gnn/7_titanic_machine_learning_from_disaster.out
+gnn/7_titanic_machine_learning_from_disaster.tex
