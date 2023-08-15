@@ -15,6 +15,10 @@
 \setmainfont{Times}
 \setmonofont{Times}
 
+% Avoid ^I in minted output
+\setminted{tabsize=4}
+
+
 % macOS font setting
 \ifmacosx
 	\setCJKmainfont{Songti SC}
@@ -45,7 +49,7 @@
 	\tableofcontents
 \end{frame}
 
-\section{Overview}
+\section{概述}
 \begin{frame}
 	\frametitle{Overview}
 	通过该ppt, 对9个实验使用的模型进行介绍. 九个实验分别是鸢尾花分类实验，emojify人
@@ -79,22 +83,23 @@
 	\frametitle{模型信息}
 	模型搭建代码如下.
 	\begin{minted}[breaklines]{python}
-		class Model(nn.Module):
-		def __init__(self, input_feats=4, hidden_layer1=25, hidden_layer2=30, output_feats=3) -> None:
-			super().__init__()
-			self.fc1 = nn.Linear(input_feats, hidden_layer1)
-			self.fc2=nn.Linear(hidden_layer1, hidden_layer2)
-			self.out=nn.Linear(hidden_layer2, output_feats)
+class Model(nn.Module):
+def __init__(self, input_feats=4, hidden_layer1=25, hidden_layer2=30, output_feats=3) -> None:
+	super().__init__()
+	self.fc1 = nn.Linear(input_feats, hidden_layer1)
+	self.fc2=nn.Linear(hidden_layer1, hidden_layer2)
+	self.out=nn.Linear(hidden_layer2, output_feats)
 
-		def forward(self, x):
-			x=F.relu(self.fc1(x))
-			x=F.relu(self.fc2(x))
-			x=self.out(x)
+def forward(self, x):
+	x=F.relu(self.fc1(x))
+	x=F.relu(self.fc2(x))
+	x=self.out(x)
 
-			return x
+	return x
 	\end{minted}
 \end{frame}
 
+\subsection{模型介绍}
 \begin{frame}
 	\frametitle{模型介绍}
 
@@ -116,10 +121,131 @@
 
 \end{frame}
 
-\section{训练方法}
-\begin{frame}
+\subsection{训练方法}
+\begin{frame}[fragile]
 	\frametitle{训练方法}
 	使用交叉熵作为损失函数, Adam为优化器, 学习率为0.01, 在训练集上进行100轮训练. 对loss可视化观察后看到大约40轮后模型已经接近收敛.
+	\begin{block}{训练代码}
+		\begin{minted}[breaklines=true]{python}
+epochs=100
+losses=[]
+for i in range(epochs):
+    y_pred=model.forward(X_train)
+    loss=criterion(y_pred,y_train)
+    losses.append(loss)
+    print(f'epoch: {i:2} loss: {loss.item():10.8f}')
+    
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+	\end{minted}
+	\end{block}
 \end{frame}
+
+% Slide 1: Introduction to Training Duration and Loss Storage
+\begin{frame}[fragile]
+	\frametitle{初始化}
+	\begin{itemize}
+		\item 一轮代表对所有训练样本的一个完全的前向传播和反向传播过程;
+		\item \texttt{losses}列表会存储在每轮中计算的loss值, 用于追踪模型的表现;
+	\end{itemize}
+	\begin{minted}[breaklines]{python}
+		epochs = 100
+		losses = []
+		\end{minted}
+\end{frame}
+
+% Slide 2: The Training Loop - Forward Pass and Loss Calculation
+\begin{frame}[fragile]
+	\frametitle{训练循环: 前向传播和损失计算}
+	Within the loop, the model predicts outcomes and computes the discrepancy between predictions and actual values.
+	在训练循环中, 模型预测输出, 计算预测值和实际值之间的差异;
+
+	\begin{minted}[breaklines]{python}
+for i in range(epochs):
+    y_pred = model.forward(X_train)
+    loss = criterion(y_pred, y_train)
+    losses.append(loss)
+\end{minted}
+\end{frame}
+
+% Slide 3: The Training Loop - Logging, Backward Pass, and Optimization
+\begin{frame}[fragile]
+	\frametitle{训练循环: 日志和优化}
+	\begin{itemize}
+		\item 通过打印轮数和loss值来监控训练进程;
+		\item 计算梯度并更新模型参数来降低loss;
+	\end{itemize}
+
+	\begin{minted}[breaklines]{python}
+    print(f'epoch: {i:2} loss: {loss.item():10.8f}')
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+\end{minted}
+\end{frame}
+
+\section{Emojify表情识别实验}
+\begin{frame}
+	\frametitle{利用CNN进行面部表情识别}
+
+	在该实验中, 利用Tensorflow来搭建CNN网络进行对摄像头采集的人脸进行表情识别. 模型使用
+	GPU进行训练, 得到的权重文件作为表情识别的依据.
+
+	此处使用Tensorflow是为了将Pytorch和Tensorflow两个常用框架都进行学习.
+
+\end{frame}
+
+\subsection{模型介绍}
+% Slide 1: Introduction to the Model
+\begin{frame}[fragile]
+	\frametitle{CNN Model Structure}
+	\begin{itemize}
+		\item Purpose: Emotion recognition from grayscale images.
+		\item Image input shape: \(48 \times 48 \times 1\).
+		\item Layers are stacked sequentially.
+	\end{itemize}
+	\begin{minted}[breaklines]{python}
+emotion_model = Sequential()
+\end{minted}
+\end{frame}
+
+% Slide 2: Initial Convolution Layers
+\begin{frame}[fragile]
+	\frametitle{Initial Convolution Layers}
+	\begin{minted}[breaklines]{python}
+emotion_model.add(
+    Conv2D(32, kernel_size=(3, 3), activation="relu", input_shape=(48, 48, 1))
+)
+emotion_model.add(Conv2D(64, kernel_size=(3, 3), activation="relu"))
+emotion_model.add(MaxPooling2D(pool_size=(2, 2)))
+emotion_model.add(Dropout(0.25))
+\end{minted}
+\end{frame}
+
+% Slide 3: Deeper Convolution Layers
+\begin{frame}[fragile]
+	\frametitle{Deeper Convolution Layers}
+	\begin{minted}[breaklines]{python}
+emotion_model.add(Conv2D(128, kernel_size=(3, 3), activation="relu"))
+emotion_model.add(MaxPooling2D(pool_size=(2, 2)))
+emotion_model.add(Conv2D(128, kernel_size=(3, 3), activation="relu"))
+emotion_model.add(MaxPooling2D(pool_size=(2, 2)))
+emotion_model.add(Dropout(0.25))
+\end{minted}
+\end{frame}
+
+% Slide 4: Fully Connected Layers
+\begin{frame}[fragile]
+	\frametitle{Fully Connected Layers}
+	\begin{minted}[breaklines]{python}
+emotion_model.add(Flatten())
+emotion_model.add(Dense(1024, activation="relu"))
+emotion_model.add(Dropout(0.25))
+emotion_model.add(Dense(7, activation="softmax"))
+\end{minted}
+\end{frame}
+
+
 
 \end{document}
