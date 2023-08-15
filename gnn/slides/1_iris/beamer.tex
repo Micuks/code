@@ -1,0 +1,125 @@
+\documentclass{beamer}
+\usepackage{xeCJK}
+\usepackage[T1]{fontenc}
+\usepackage{ifplatform}
+\usepackage{mathptmx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{chemformula}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\defaultfontfeatures{Mapping=tex-text, Scale=MatchLowercase}
+\setmainfont{Times}
+\setmonofont{Times}
+
+% macOS font setting
+\ifmacosx
+	\setCJKmainfont{Songti SC}
+	\setCJKmonofont{Songti SC}
+\else
+% Linux and other OS font setting
+	\setCJKmainfont{Source Han Sans CN}
+	\setCJKmonofont{Source Han Sans CN}
+\fi
+
+% Theme
+% \usetheme{metropolis}
+
+% Information to be included in the title page:
+\title{模型介绍}
+\author{吴清柳}
+\institute{Beijing University of Posts and Telecommunications}
+\date{\today}
+
+\begin{document}
+\AtBeginSection{\tableofcontents[currentsection]}
+% Title page
+\maketitle
+
+% Table of contents
+\begin{frame}
+	\frametitle{Table of Contentes}
+	\tableofcontents
+\end{frame}
+
+\section{Overview}
+\begin{frame}
+	\frametitle{Overview}
+	通过该ppt, 对9个实验使用的模型进行介绍. 九个实验分别是鸢尾花分类实验，emojify人
+	脸表情识别实验, 贷款预测, 房价预测, MNIST手写数字识别, 股票价格预测, 泰坦尼克号
+	生还预测, 红酒质量预测和假新闻预测.
+
+	使用的模型有机器学习方法如决策树, 线性回归, XGBoost等; 以及深度学习方法如全连接
+	网络, CNN等.
+\end{frame}
+
+\section{鸢尾花分类实验}
+\begin{frame}
+	\frametitle{鸢尾花分类实验}
+	\begin{block}{代码和数据集}
+		该论文的复现代码在\href{这里}{https://github.com/Micuks/code/blob/master/gnn/1\_iris/iris-classification/train.ipynb}
+		数据集使用了鸢尾花分类数据集.
+	\end{block}
+
+	\begin{block}{模型信息}
+		模型使用PyTorch编写, 为三层的全连接网络. 前两层使用ReLU激活函数, 第三层为完成分
+		类功能, 使用Softmax作为激活函数, 输出分类结果.
+		\begin{itemize}
+			\item 第一层全连接层输入特征数量为4, 输出特征数量为25;
+			\item 第二层全连接层输入特征数量为25, 输出特征数量为30;
+			\item 第三层全连接层输入特征数量为30, 输出特征数量为3, 对应三类鸢尾花;
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{模型信息}
+	模型搭建代码如下.
+	\begin{minted}[breaklines]{python}
+		class Model(nn.Module):
+		def __init__(self, input_feats=4, hidden_layer1=25, hidden_layer2=30, output_feats=3) -> None:
+			super().__init__()
+			self.fc1 = nn.Linear(input_feats, hidden_layer1)
+			self.fc2=nn.Linear(hidden_layer1, hidden_layer2)
+			self.out=nn.Linear(hidden_layer2, output_feats)
+
+		def forward(self, x):
+			x=F.relu(self.fc1(x))
+			x=F.relu(self.fc2(x))
+			x=self.out(x)
+
+			return x
+	\end{minted}
+\end{frame}
+
+\begin{frame}
+	\frametitle{模型介绍}
+
+	输入数据为鸢尾花(Iris)的特征数据. 鸢尾花有三种, 分别是Setosa, Versicolour,
+	Virginica. 每个都有4个特征: sepal length, sepal width, 以及petal width.
+
+	模型的结构介绍如下.
+	\begin{block}{模型结构}
+		\begin{enumerate}
+			\item \textbf{输入层} 神经元数量为4, 代表4个输入特征.
+			\item \textbf{第一个隐藏层`fc1'} 全连接层(dense layer), 25个神经元, 激活函数为
+			      ReLU, 当输入为正时输出输入本身, 否则输出0. 如果没有非线性激活函数, 则模型将等效
+			      为线性拟合函数, 拟合性能下降.
+			\item \textbf{第二个隐藏层`fc2'} 另一个全连接层, 30个神经元, 激活函数为ReLU;
+			\item \textbf{输出层`out'} 一个全连接层, 3个神经元, 对应鸢尾花的三个分类:
+			      Setosa, Versicolour, Virginica.
+		\end{enumerate}
+	\end{block}
+
+\end{frame}
+
+\section{训练方法}
+\begin{frame}
+	\frametitle{训练方法}
+	使用交叉熵作为损失函数, Adam为优化器, 学习率为0.01, 在训练集上进行100轮训练. 对loss可视化观察后看到大约40轮后模型已经接近收敛.
+\end{frame}
+
+\end{document}
