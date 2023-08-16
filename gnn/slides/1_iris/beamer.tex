@@ -672,4 +672,101 @@ class CNN(nn.Module):
 			\end{enumerate}
 	\end{enumerate}
 \end{frame}
+
+\begin{frame}[fragile]{模型训练}
+	接下来介绍对模型的训练. 首先将模型和数据移动到CUDA GPU上, 然后对模型进行训练.
+	\begin{minted}[breaklines,tabsize=4]{python}
+device = torch.device("cuda" if torch.cuda.is_available else "cpu")
+# initialize the model
+model = CNN().to(device)
+	\end{minted}
+	首先判断cuda是否可用, 如果可用则使用其进行加速. 否则在cpu上进行训练.
+\end{frame}
+
+\begin{frame}[fragile]{损失和优化器配置}
+	\begin{minted}[breaklines,tabsize=4]{python}
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+	\end{minted}
+	\begin{itemize}
+		\item Loss函数使用交叉熵, 对于分类任务这是常用的;
+		\item 使用Adam优化器, 以及0.001的学习率来调节模型参数;
+	\end{itemize}
+\end{frame}
+\begin{frame}[fragile]{训练循环}
+	\begin{minted}[breaklines,tabsize=4]{python}
+num_epochs = 10
+for epoch in range(num_epochs):  # loop over the dataset multiple times
+    running_loss = 0.0
+    model.train()  # set model to train mode
+    for inputs, labels in trainloader:
+        inputs, labels = inputs.to(device), labels.to(device)
+
+        optimizer.zero_grad()
+
+        # forward, backward, optimize
+        outputs = model(inputs)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+    print(f"Epoch {epoch+1},loss: {running_loss/len(trainloader)}")
+	\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{训练循环}
+	\begin{itemize}
+		\item 模型进行10轮训练;
+		\item 在数据集上迭代之前, `running\_loss'被设置为0来累加一轮的损失.
+		\item 借助`model.train()'将模型设置到训练模式. 该模式影响dropout或者batch normalization层这种在训练时和测试时表现不同的层.
+		\item 对来自`trainloader'数据的每个批次(`inputs'和对应的`labels'):
+		      \begin{itemize}
+			      \item 数据被转移到配置的装置(CUDA或CPU);
+			      \item 梯度被清零来确保没有来自前一次迭代的累加;
+			      \item 一个前向过程计算模型的预测(`outputs');
+			      \item loss被在预测和真实标签之间计算出来;
+			      \item 一个反向传播过程计算loss与对应的模型参数的梯度值;
+			      \item 优化器基于计算的梯度更新模型的参数;
+			      \item 该批次的loss被累加到`running\_loss';
+		      \end{itemize}
+		\item 在所有的批次被处理后, 该轮次的平均loss被打印.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{训练循环的验证阶段}
+	\begin{minted}[breaklines,tabsize=4]{python}
+	...
+    model.eval()  # set the model to evaluation mode
+    with torch.no_grad():
+        running_loss = 0.0
+        correct_predictions = 0
+        total_predictions = 0
+        for inputs, labels in validloader:
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            running_loss += loss.item()
+            _, predicted = torch.max(outputs.data, 1)
+            total_predictions += labels.size(0)
+            correct_predictions += (predicted == labels).sum().item()
+        print(
+            f"Validation loss: {running_loss/len(validloader)}, Validation accuracy: {correct_predictions/total_predictions*100}%"
+        )
+	\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{训练循环的验证阶段}
+	\begin{itemize}
+		\item 模型被借助`model.eval()'设置为验证模式. 这确保了dropout和batch normalization等层工作在验证模式;
+		\item `torch.no\_grad()'确保了在这一阶段不会计算梯度, 减少了内存消耗;
+		\item 对来自`validloader'的每一批次数据:
+		      \begin{itemize}
+			      \item 数据被转移到device上;
+			      \item 一个前向传播过程计算了模型预测;
+			      \item loss被计算并添加到`running\_loss';
+			      \item 预测值被与真实标签比较来确定准确度.
+		      \end{itemize}
+	\end{itemize}
+\end{frame}
 \end{document}
