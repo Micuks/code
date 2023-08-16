@@ -199,20 +199,21 @@ for i in range(epochs):
 \subsection{模型介绍}
 % Slide 1: Introduction to the Model
 \begin{frame}[fragile]
-	\frametitle{CNN Model Structure}
+	\frametitle{CNN模型结构}
 	\begin{itemize}
-		\item Purpose: Emotion recognition from grayscale images.
-		\item Image input shape: \(48 \times 48 \times 1\).
-		\item Layers are stacked sequentially.
+		\item 目的: 从灰度图片进行表情识别;
+		\item 图片输入形状: \(48 \times 48 \times 1\);
+		\item 层之间顺序堆叠;
 	\end{itemize}
 	\begin{minted}[breaklines]{python}
 emotion_model = Sequential()
 \end{minted}
+	Keras中的`Sequential'是层之间的线性堆叠. 可以允许我们来通过将层逐个堆叠来搭建神经网络.
 \end{frame}
 
 % Slide 2: Initial Convolution Layers
 \begin{frame}[fragile]
-	\frametitle{Initial Convolution Layers}
+	\frametitle{初始化卷积层}
 	\begin{minted}[breaklines]{python}
 emotion_model.add(
     Conv2D(32, kernel_size=(3, 3), activation="relu", input_shape=(48, 48, 1))
@@ -221,11 +222,25 @@ emotion_model.add(Conv2D(64, kernel_size=(3, 3), activation="relu"))
 emotion_model.add(MaxPooling2D(pool_size=(2, 2)))
 emotion_model.add(Dropout(0.25))
 \end{minted}
+	\only<1>{\begin{block}{第一个卷积层}
+			第一个卷积层有32个卷积核, 每个尺寸为$3\times 3$, 来处理尺寸为$48\times 48$的输
+			入图片. `relu'激活函数引入了非线性, 让模型可以捕获复杂的特征.
+		\end{block}}
+	\only<2>{\begin{block}{第二个卷积层}
+			第二个卷积层有64个$3\times 3$的卷积核, 该层进一步处理了来自前一层的特征图, 检测了输入图片中的更复杂的特征.
+		\end{block}}
+	\only<3>{\begin{block}{Max-Pooling层}
+			该层通过从每个$2\times 2$窗口中取最大值来对特征图进行降采样. 这减少了计算负担, 并帮助让模型平移不变.
+		\end{block}}
+	\only<4>{\begin{block}{Dropout层}
+			Dropout可以用来避免过拟合. 0.25的Dropout率意味着大约25\%的神经元在前面的层会被随
+			机在训练中关闭, 使得可以获得容错率更高的模型.
+		\end{block}}
 \end{frame}
 
 % Slide 3: Deeper Convolution Layers
 \begin{frame}[fragile]
-	\frametitle{Deeper Convolution Layers}
+	\frametitle{多个卷积层}
 	\begin{minted}[breaklines]{python}
 emotion_model.add(Conv2D(128, kernel_size=(3, 3), activation="relu"))
 emotion_model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -233,19 +248,136 @@ emotion_model.add(Conv2D(128, kernel_size=(3, 3), activation="relu"))
 emotion_model.add(MaxPooling2D(pool_size=(2, 2)))
 emotion_model.add(Dropout(0.25))
 \end{minted}
+	\only<1>{\begin{block}{更深的卷积层}
+			后面的具有128个卷积核的卷积层每个都进一步细化了特征图. 随着模型变深, 这些层会捕获图片中更多的高层特征.
+
+			每个卷积层后面都有一个Max-Pooling层来降采样, 降低计算负担, 提高平移不变性.
+		\end{block}}
 \end{frame}
 
 % Slide 4: Fully Connected Layers
 \begin{frame}[fragile]
-	\frametitle{Fully Connected Layers}
+	\frametitle{全连接层}
 	\begin{minted}[breaklines]{python}
 emotion_model.add(Flatten())
 emotion_model.add(Dense(1024, activation="relu"))
 emotion_model.add(Dropout(0.25))
 emotion_model.add(Dense(7, activation="softmax"))
 \end{minted}
+
+	\only<1>{\begin{block}{Flatten扁平化层}
+			该层将2D的特征矩阵映射到1D的向量. 在将数据传入全连接层之前, 这是必要的步骤;
+		\end{block}}
+	\only<2>{\begin{block}{稠密全连接层}
+			具有1024个神经元的全连接层允许模型来基于由卷积层提取的高层次特征来进行决策. `ReLU'激活函数确保了非线性.
+		\end{block}}
+	\only<3>{\begin{block}{输出层}
+			输出稠密层有7个神经元, 对应在数据集中的七种表情分类. `softmax'激活函数确保了输出值是和为1的概率.
+		\end{block}}
+	\only<4>{\begin{block}{Softmax}
+			Softmax函数常常被用在基于神经网络的分类器的最后一层, 将一个实数向量转化为一个概
+			率分布.
+
+			在数学上, 对一个向量$z$的Softmax函数$\sigma$可以被定义为
+			\begin{equation}
+				\sigma(z)_i=\frac{e^{z_i}}{\sum^K_{j=1}{e^{z_j}}}
+			\end{equation}
+			其中,
+			\begin{itemize}
+				\item $\sigma(z)_i$是$z$的第$i^{th}$个分量的Softmax函数输出;
+				\item $K$是分类的数量(也是向量$z$的长度);
+			\end{itemize}
+		\end{block}}
+	\only<5>{\begin{block}{Softmax}
+			指数函数确保了输出向量所有的分量都是非负的, 除法将所有的分量规范化, 让他们的和为
+			1. 结果向量因此可以表示$K$个类别的概率分布.
+		\end{block}}
+	\only<6>{\begin{block}{为什么使用Softmax}
+			\begin{enumerate}
+				\item \textbf{概率解释} softmax函数被用于分类模型的输出层, 因为他提供了多个类之
+				      间的概率分布. 这意味着对于给定的输入, 模型可以提供输入可能属于哪个输出的类别;
+				\item \textbf{处理多个类 }在分类问题中, 尤其是对于超过两个类别的情况, 分类时需要
+				      不仅知道哪个类是最可能属于的, 还想预测和其他类的似然成都. Softmax可以通过将每个
+				      类的输出压缩在0和1之间, 并确保他们的和为1来帮助实现这一目标.
+				\item \textbf{基于梯度的优化} Softmax与类别交叉熵作为loss函数, 提供了一个表现良
+				      好的梯度. 在训练神经网络的反向传播阶段非常有用. 没有良好的梯度, 神经网络将不能高效的学习.
+			\end{enumerate}
+		\end{block}}
 \end{frame}
 
+\begin{frame}[fragile]{Cross-Entropy}
+	Cross-entropy是衡量两个概率分布之间的差异的方法. 在机器学习和深度学习中, 它常常
+	被用作损失函数来量化预测概率分布和真实分布之间的差异.
 
+	对两个离散的概率分布$p$和$q$, 交叉熵$H(p,q)$被定义为
+	\begin{equation}
+		H(p,q)=-\sum_x{p(x)\log{(q(x))}}
+	\end{equation}
+	其中,
+	\begin{itemize}
+		\item $p(x)$是事件$x$发生的真实概率;
+		\item $q(x)$是事件$x$发生的预测概率;
+		\item 对于所有的可能事件$x$进行求和;
+	\end{itemize}
+
+	对于用于分类任务的神经网络, $p$是真实标签的独热编码向量, $q$是预测概率(经常通过
+	softmax函数取得).
+\end{frame}
+
+\begin{frame}
+	\frametitle{为什么使用Cross-entropy}
+
+	\begin{enumerate}
+		\item \textbf{概率解释 } Cross-entropy提供了真实概率分布和预测概率分布之间的差异
+		      的度量. 较低的交叉熵值表明模型的预测与真实标签比较相似.
+		\item \textbf{可微分 } 对于学习算法, 尤其是神经网络, 具有一个可微分的损失函数是
+		      至关重要的. 交叉熵可微分, 使得他可以被用于像梯度下降这样的基于梯度的优化方法.
+		\item \textbf{惩罚自信的错误预测 } 交叉熵作为loss函数的一个优点是它如何处理预测.
+		      如果一个模型对一个错误的类别预测0.99的概率, 对正确的类别预测0.01的概率, 交叉熵会
+		      变得非常大. 这个特征确保了当模型非常自信得犯错的时候, 会被严重惩罚;
+		\item \textbf{和Softmax配合良好} 交叉熵损失结合输出层中的softmax激活函数是分类问
+		      题中流行的组合. 从这个组合中获得的梯度有良好的属性, 使得模型可以更快收敛, 并且经
+		      常相较于其他的激活函数-损失函数对具有更好的解决方案.
+		\item \textbf{解决饱和问题 } 在神经网络中, sigmoid激活函数和quadratic cost可以导
+		      致``饱和''问题, 此时神经元的输出和梯度都几乎是0, 使得网络难以训练. 交叉熵不会受
+		      这个问题困扰, 使得训练更加高效.
+	\end{enumerate}
+
+\end{frame}
+
+\subsection{模型训练}
+\begin{frame}[fragile]
+	\frametitle{模型训练}
+
+	神经网络模型的结构确定后, 下一个关键步骤就是在数据上对其进行训练.
+
+	\begin{enumerate}
+		\item<1-> \textbf{编译模型}
+			\only<1>{
+				\begin{itemize}
+					\item \textbf{损失函数 } 模型使用`categorical\_crossentropy'作为损失函数.
+					\item \textbf{优化器 } 使用`Adam'作为优化器. Adam对每个参数调节学习率. 其具有高
+					      效率与低内存需求. `learning\_rate'战术决定了优化器最小化loss的步长, `decay'可以
+					      随时间降低学习率来允许在之后的训练过程中更细化的权重更新.
+					\item \textbf{矩阵 } `accuracy'是在训练过程中监控的矩阵. 准确率提供了一个清晰的,
+					      直观的对模型执行情况的理解: 表示正确分类的实例在总实例中占的百分比.
+				\end{itemize}}
+		\item<2-> \textbf{拟合模型 }
+			\only<2>{
+				\begin{itemize}
+					\item \textbf{数据源 } 模型借助`fit\_generator'方法进行训练, 该方法允许边读取边
+					      数据增强(data augmentation on-the-fly), 且更加内存高效. 该方法当训练集太大而无法
+					      整个放入内存的时候更合适.
+					\item \textbf{轮数 } 模型训练了50轮. 每轮代表一次对于所有训练样本的前向传播和反
+					      向传播.
+					\item \textbf{Batch Size } 每一轮的步数(`28709 // 64')表示数据每次被传入大小为64
+					      个实例的批次. 类似的, 对于验证阶段, 使用批次大小`7178 // 64'. 使用批次加速了训练
+					      过程, 因为模型权重的更新是在每一轮后进行的, 而不是在每个数据点之后.
+					\item \textbf{验证数据 }模型的表现在一个单独的验证数据几上并行验证. 这帮助了监控
+					      任何的过拟合信号, 当模型在训练数据上表现异常良好, 而对于新的没有见过的数据非常糟糕的时候就发生了过拟合.
+				\end{itemize}}
+	\end{enumerate}
+
+\end{frame}
 
 \end{document}
