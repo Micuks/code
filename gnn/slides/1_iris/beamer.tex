@@ -10,6 +10,8 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{minted}
+\usepackage{fancyvrb}
+\usepackage{etoolbox}
 
 \defaultfontfeatures{Mapping=tex-text, Scale=MatchLowercase}
 \setmainfont{Times}
@@ -17,6 +19,7 @@
 
 % Avoid ^I in minted output
 \setminted{tabsize=4}
+
 
 
 % macOS font setting
@@ -425,7 +428,7 @@ LR.fit(X_train,y_train)
 
 \begin{frame}[fragile]{进行预测}
 	\begin{minted}[breaklines,tabsize=4]{python}
-	y_hat=LR.predict(X_test)
+y_hat=LR.predict(X_test)
 	\end{minted}
 	在将模型在训练数据上训练后, 下一步就是在新的没有见过的模型上进行预测. `predict'
 	方法将测试数据`X\_test'作为参数, 返回预测标签`y\_hat'.
@@ -436,12 +439,62 @@ LR.fit(X_train,y_train)
 	print(classification_report(y_test,y_hat))
 	\end{minted}
 	`classification\_report'提供了模型表现的准确度, 召回度和F1-score.
-	\begin{description}
-		\item[Precision准确度] 在所有预测为某个特定类的例子中, 多少是真阳性;
-		\item[Recall召回率] 在所有属于一个特定类的实例中, 哪些被正确预测了, 即真阳性与真阴性的和;
-		\item[F1-score] 准确度和召回率的调和平均值, 提供了两个之间的平衡指标.
-	\end{description}
+	\begin{itemize}
+		\item \textbf{Precision准确度}
+			      在所有预测为某个特定类的例子中, 多少是真阳性;
+		      
+		\item \textbf{Recall召回率}
+			      在所有属于一个特定类的实例中, 哪些被正确预测了, 即真阳性与真阴性的和;
+		      
+		\item \textbf{F1-score}
+			      准确度和召回率的调和平均值, 提供了两个之间的平衡指标.
+		      
+	\end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]{Precision准确度}
+	\begin{equation}
+		\text{Precision}=\frac{\text{True Positives}}{\text{True Positives}+\text{False Positives}}
+	\end{equation}
+
+	当假阳性的代价高的时候, 准确度是关键的.
+\end{frame}
+
+\begin{frame}[fragile]{Recall召回率}
+	\begin{equation}
+		\text{Recall}=\frac{\text{True Positives}}{\text{True Positives}+\text{False Negatives}}
+	\end{equation}
+
+	当假阴性的代价高的时候, 召回率是重要的.
+\end{frame}
+
+\begin{frame}[fragile]{准确率分数}
+	\begin{minted}[breaklines,tabsize=4]{python}
+LR_SC=accuracy_score(y_hat,y_test)
+print('accuracy is',accuracy_score(y_hat,y_test))
+	\end{minted}
+
+	准确率分数是一个可以表明在测试数据中正确预测的分类的占比的量. 计算方式为将正确预
+	测的数量除以预测的总数.
+	\begin{equation}
+		\text{Accuracy}=\frac{\text{Number of correct predictions}}{\text{Total number of predictions}}
+	\end{equation}
+
+	对于本处的贷款预测:
+	\begin{itemize}
+		\item 如果一个贷款请求倾向于被允许, 模型会预测`1', 否则为0.
+		\item 准确率通过将预测结果与实际情况对比告诉我们多少的贷款请求被我们的模型正确预测.
+	\end{itemize}
+
+\end{frame}
+\subsection{模型局限}
+\begin{frame}[fragile]{模型局限}
+	逻辑回归具有这样的局限:
+	\begin{description}
+		\item[线性决策边界] 逻辑回归假设一个线性决策边界, 这可能不能捕获数据中的复杂关系.
+		\item[特征的独立性] 逻辑回归假设输入特征是独立的, 意味着他们不会互相影响. 如果一
+			些特征是强相关的, 这可能影响模型的参数.
+	\end{description}
+\end{frame}
 
 \end{document}
