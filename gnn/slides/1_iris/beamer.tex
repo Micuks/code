@@ -441,14 +441,14 @@ y_hat=LR.predict(X_test)
 	`classification\_report'提供了模型表现的准确度, 召回度和F1-score.
 	\begin{itemize}
 		\item \textbf{Precision准确度}
-			      在所有预测为某个特定类的例子中, 多少是真阳性;
-		      
+		      在所有预测为某个特定类的例子中, 多少是真阳性;
+
 		\item \textbf{Recall召回率}
-			      在所有属于一个特定类的实例中, 哪些被正确预测了, 即真阳性与真阴性的和;
-		      
+		      在所有属于一个特定类的实例中, 哪些被正确预测了, 即真阳性与真阴性的和;
+
 		\item \textbf{F1-score}
-			      准确度和召回率的调和平均值, 提供了两个之间的平衡指标.
-		      
+		      准确度和召回率的调和平均值, 提供了两个之间的平衡指标.
+
 	\end{itemize}
 \end{frame}
 
@@ -497,4 +497,179 @@ print('accuracy is',accuracy_score(y_hat,y_test))
 	\end{description}
 \end{frame}
 
+\section{房价预测}
+\begin{frame}[fragile]{在Boston Hosting数据集上进行房价预测}
+	借助PyTorch搭建全连接模型对Boston Hosting数据集进行房价预测.
+\end{frame}
+
+\subsection{模型结构}
+\begin{frame}[fragile]{模型结构}
+	\begin{minted}[breaklines,tabsize=4]{python}
+	# boston housing model
+class BostonHousingModel(nn.Module):
+    def __init__(self):
+        super(BostonHousingModel,self).__init__()
+        self.layer1=nn.Linear(13,64)
+        self.layer2=nn.Linear(64,64)
+        self.layer3=nn.Linear(64,1)
+        
+    def forward(self,x):
+        x=torch.relu(self.layer1(x))
+        x=torch.relu(self.layer2(x))
+        x=self.layer3(x)
+        return x
+	\end{minted}
+	模型借助PyTorch框架, 使用`nn.Module'基类来定义神经网络结构.
+\end{frame}
+
+\begin{frame}[fragile]{模型初始化}
+	\only<1>{\begin{block}{第一层}
+			全连接层, 输入特征为13, 对应Boston Housing dataset中的13个特征, 输出特征数量为64.
+		\end{block}}
+	\only<1>{\begin{block}{第二层}
+			全连接层, 输入特征数量为64, 输出特征数量为64.
+		\end{block}}
+	\only<1>{\begin{block}{第三层}
+			全连接层, 输入特征数量为64, 输出特征数量为1, 即表示预测房价结果.
+		\end{block}}
+\end{frame}
+
+\begin{frame}[fragile]{前向传播}
+	前向传播方法描述了输入数据是如何流过模型的.
+	\begin{itemize}
+		\item \textbf{第一步 }将输入`x'通过`layer1', 应用ReLU(Rectified Linear Unit)激活
+		      函数. ReLu函数引入非线性, 允许模型从错误中学习和调整, 对于学习复杂的特征至关重
+		      要;
+		\item \textbf{第二步 }将前一步的输出传入`layer2', 再次使用ReLU激活函数;
+		\item \textbf{最后一步 }将结果传过`layer3'. 在这一层没有激活函数, 因为这是一个回
+		      归问题, 模型被设计为直接输出连续值.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{模型训练}
+	\begin{itemize}
+		\item \textbf{损失函数 } 使用`nn.MSELoss()'作为损失函数. 平均平方差损失计算了预
+		      测和实际值的平均平方差, 对于房价预测问题是合适的选择.
+		\item \textbf{优化器选择 } 选择Adam优化器来调节模型参数. 学习率为`0.001'.
+		\item \textbf{训练轮数 } 训练500轮, 并记录日志.
+	\end{itemize}
+\end{frame}
+
+\subsection{改进模型}
+
+\begin{frame}[fragile]{改进模型}
+	在前面基础模型的基础上, 使用Dropout进行改进. 在训练策略上, 使用学习率规划下降和提前停止来优化训练.
+	\begin{minted}[breaklines,tabsize=4]{python}
+class OptiBostonHousingModel(nn.Module):
+    def __init__(self):
+        super(OptiBostonHousingModel,self).__init__()
+        self.layer1=nn.Linear(13,128)
+        self.layer2=nn.Linear(128,64)
+        self.dropout=nn.Dropout(0.5)
+        self.layer3=nn.Linear(64,1)
+        
+    def forward(self,x):
+        x=torch.relu(self.layer1(x))
+        x=self.dropout(x)
+        x=torch.relu(self.layer2(x))
+        x=self.dropout(x)
+        x=self.layer3(x)
+        return x
+	\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{模型结构}
+	仍旧是三层全连接层, 但是第二层和第三层之间使用了Dropout率为0.5的dropout层, 随机
+	丢弃一半输入数据来帮助避免过拟合.
+
+	\begin{block}{学习率规划器}
+		使用`StepLR'规划器来在训练过程中调节学习率. 特别的, 学习率每100轮被乘以一个参数
+		`gamma'(此处为0.1). 随时间降低学习率可以帮助细化模型的权重, 使其更加贴近最优方案.
+	\end{block}
+\end{frame}
+
+\section{MNIST手写数字识别}
+\begin{frame}[fragile]{CNN进行MNIST手写数字识别}
+	借助PyTorch框架, 定义一个CNN进行MNIST手写数字识别.
+\end{frame}
+
+\begin{frame}[fragile]{模型结构}
+	\begin{minted}[breaklines,tabsize=4]{python}
+class CNN(nn.Module):
+    def __init__(self):
+        super(CNN, self).__init__()
+
+        self.conv_layers = nn.Sequential(
+            # (n, 1, 28, 28) -> (n,32,28,28)
+            nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            # (n,32,28,28)->(n,32,14,14)
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            # (n,32,14,14)->(n,64,14,14)
+            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(),
+            # (n,64,14,14)->(n,64,7,7)
+            nn.MaxPool2d(kernel_size=2, stride=2),
+        )
+	\end{minted}
+
+\end{frame}
+\begin{frame}[fragile]
+	\frametitle{模型结构}
+
+	\begin{minted}[breaklines,tabsize=4]{python}
+        self.fc_layers = nn.Sequential(
+            # (n,64*7*7)->(n,128)
+            nn.Linear(64 * 7 * 7, 128),
+            nn.ReLU(),
+            # (n,128)->(n,10)
+            nn.Linear(128, 10),
+        )
+
+    def forward(self, x):
+        x = self.conv_layers(x)
+        x = x.view(x.size(0), -1)  # flatten the tensor
+        x = self.fc_layers(x)
+        return x
+	\end{minted}
+
+\end{frame}
+
+\begin{frame}[fragile]{模型结构}
+	\begin{enumerate}
+		\item<only@1> \textbf{卷积层(`conv\_layers')}
+			这些层用来处理输入图像的空间信息, 检测局部图案, 边缘, 纹理等. 通过级联卷积和池化操作以分层方式转换图像.
+			\begin{enumerate}
+				\item \textbf{第一卷积层}
+				      \begin{itemize}
+					      \item \textbf{卷积 } 这一层使用单个通道(因为MNIST图片为灰度图片), 将其转化为32个通道, 借助$3\times 3$卷积核. 大小为1的填充确保了输出和输入的宽和高相同, 因此输出形状为$(n,32,28,28)$.
+					      \item \textbf{激活函数 } `ReLU'激活函数引入了非线性.
+					      \item \textbf{池化 } 之后的`MaxPool2d'操作使用了步长为2的池化核大小为$2\times 2$
+					            的池化操作来降低空间维度大小到原来的一半, 使得输出形状为$(n,32,14,14)$.
+				      \end{itemize}
+				\item \textbf{第二卷积层}
+				      \begin{itemize}
+					      \item 卷积: 将前一层的32个通道借助$3\times 3$的卷积核转化为64通道, 由于填充为1, 保留了原本的维度.
+					      \item 激活函数: ReLU.
+					      \item 池化: 另一个`MaxPool2d'操作将其维度降低到原来的一半, 输出形状为$(n,64,7,7)$.
+				      \end{itemize}
+			\end{enumerate}
+		\item<only@2> \textbf{全连接层(`fc\_layers')}
+			\begin{itemize}
+				\item 这些层分析卷积层提取和学到的特征, 将其分类到10个可能的数字类中.
+			\end{itemize}
+			\begin{enumerate}
+				\item \textbf{第一个全连接层 }
+				      \begin{itemize}
+					      \item \textbf{扁平化} 在将其从卷积层传入全连接层之前, 将3D张量$(64,7,7)$扁平化到1D的3136个元素的张量.
+					      \item \textbf{线性变形 } 将3136个节点降低到128个节点.
+					      \item \textbf{激活函数 } 再次使用`ReLU'函数来引入非线性.
+				      \end{itemize}
+				\item \textbf{第二个全连接层 }
+				      \begin{itemize}
+					      \item 使用了128个来自前一层的节点, 将其减少到10个节点, 对应10个MNIST中可能的数字类(0到9).
+				      \end{itemize}
+			\end{enumerate}
+	\end{enumerate}
+\end{frame}
 \end{document}
