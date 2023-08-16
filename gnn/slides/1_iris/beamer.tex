@@ -56,7 +56,7 @@
 	脸表情识别实验, 贷款预测, 房价预测, MNIST手写数字识别, 股票价格预测, 泰坦尼克号
 	生还预测, 红酒质量预测和假新闻预测.
 
-	使用的模型有机器学习方法如决策树, 线性回归, XGBoost等; 以及深度学习方法如全连接
+	使用的模型有机器学习方法如决策树, 逻辑回归, XGBoost等; 以及深度学习方法如全连接
 	网络, CNN等.
 \end{frame}
 
@@ -379,5 +379,69 @@ emotion_model.add(Dense(7, activation="softmax"))
 	\end{enumerate}
 
 \end{frame}
+
+\section{贷款预测}
+\begin{frame}
+	\frametitle{使用逻辑回归模型的贷款预测}
+
+	借助scikit-learn的逻辑回归模型对是否可以给用户贷款进行预测. 该实验主要内容在于数
+	据预处理.
+
+\end{frame}
+
+\subsection{模型训练和预测}
+\begin{frame}[fragile]{模型训练和预测}
+	\begin{minted}[breaklines,tabsize=4]{python}
+LR=LogisticRegression()
+LR.fit(X_train,y_train)
+y_hat=LR.predict(X_test)
+
+# prediction summary by species
+print(classification_report(y_test,y_hat))
+
+# accuracy score
+LR_SC=accuracy_score(y_hat,y_test)
+print('accuracy is',accuracy_score(y_hat,y_test))
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{逻辑回归}
+	`Logistic Regression'是一个用来进行二元分类问题的统计方法, 一个分类问题指预测一
+	个特定数据属于两个中的哪一个类. 被叫做``logistic'' 回归因为是基于逻辑函数的, 这
+	被用于建模将一个给定的输入点划入两个分类之一的概率.
+\end{frame}
+
+\begin{frame}[fragile]{训练模型}
+	\begin{minted}[breaklines,tabsize=4]{python}
+LR=LogisticRegression()
+LR.fit(X_train,y_train)
+\end{minted}
+	\begin{itemize}
+		\item 首先, 借助`LogisticRegression()'来获取一个逻辑回归模型.
+		\item 下一步, `fit'方法将模型在训练数据上进行训练. 这里, `X\_train'是具有特征的
+		      训练数据, `y\_train'是训练数据对应的标签.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{进行预测}
+	\begin{minted}[breaklines,tabsize=4]{python}
+	y_hat=LR.predict(X_test)
+	\end{minted}
+	在将模型在训练数据上训练后, 下一步就是在新的没有见过的模型上进行预测. `predict'
+	方法将测试数据`X\_test'作为参数, 返回预测标签`y\_hat'.
+\end{frame}
+
+\begin{frame}[fragile]{分类报告}
+	\begin{minted}[breaklines,tabsize=4]{python}
+	print(classification_report(y_test,y_hat))
+	\end{minted}
+	`classification\_report'提供了模型表现的准确度, 召回度和F1-score.
+	\begin{description}
+		\item[Precision准确度] 在所有预测为某个特定类的例子中, 多少是真阳性;
+		\item[Recall召回率] 在所有属于一个特定类的实例中, 哪些被正确预测了, 即真阳性与真阴性的和;
+		\item[F1-score] 准确度和召回率的调和平均值, 提供了两个之间的平衡指标.
+	\end{description}
+\end{frame}
+
 
 \end{document}
