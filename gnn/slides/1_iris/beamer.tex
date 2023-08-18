@@ -1040,16 +1040,33 @@ MLA = [
 			\end{itemize}
 		\end{block}
 	}
+	\only<4>{
+		\begin{block}{决策树}
+			\begin{itemize}
+				\item DecisionTreeClassifier: 构造一棵树, 其中每个节点都根据特征阈值作出决策. 分
+				      割是根据熵或者基尼杂质(Gini impurity)等依据做出的;
+				\item ExtraTreeClassifier: 类似决策树, 但是划分的更加随机.
+			\end{itemize}
+		\end{block}
+		\begin{block}{判别分析: 用于分类和降维}
+			\begin{itemize}
+				\item LinearDiscriminantAnalysis, 线性判别分析(LDA): 假设每个类具有高斯分布, 并共享相同的协方差矩阵;
+				\item QuadraticDiscriminantAnalysis, 二次判别分析(QDA): 与LDA类似, 但是允许每个类都有其协方差矩阵;
+			\end{itemize}
+		\end{block}
+		\begin{block}{XGBoost}
+			\begin{itemize}
+				\item XGBClassifier:优化的梯度增强库. 代表eXtreme Gradient Boosting.以其速度和性能闻名.
+			\end{itemize}
+		\end{block}
+	}
 \end{frame}
 
 \begin{frame}[fragile]{使用的机器学习模型介绍}
 	\begin{minted}[breaklines,tabsize=4]{python}
-# split dataset in cross-validation
-# this is a alternative to train_test_split
 cv_split = model_selection.ShuffleSplit(
     n_splits=10, test_size=0.3, train_size=0.6, random_state=0
 )
-
 # create table to compare MLA metrics
 MLA_columns = [
     "MLA Name",
@@ -1060,70 +1077,13 @@ MLA_columns = [
     "MLA Time",
 ]
 MLA_compare = pd.DataFrame(columns=MLA_columns)
-
 # create table to compare MLA predictions
 MLA_predict = data1[Target]
-
 	\end{minted}
 \end{frame}
 
 \begin{frame}[fragile]{训练并进行预测}
 	\begin{minted}[breaklines,tabsize=4]{python}
-	# machine learning algorithms (MLA) selection and Initialization
-MLA = [
-    # ensemble methods
-    ensemble.AdaBoostClassifier(),
-    ensemble.BaggingClassifier(),
-    ensemble.ExtraTreesClassifier(),
-    ensemble.GradientBoostingClassifier(),
-    ensemble.RandomForestClassifier(),
-    # Gaussian Processes
-    gaussian_process.GaussianProcessClassifier(),
-    # GLM
-    linear_model.LogisticRegressionCV(),
-    linear_model.PassiveAggressiveClassifier(),
-    linear_model.RidgeClassifierCV(),
-    linear_model.SGDClassifier(),
-    linear_model.Perceptron(),
-    # Naive Bayes
-    naive_bayes.BernoulliNB(),
-    naive_bayes.GaussianNB(),
-    # Nearest Neighbor
-    neighbors.KNeighborsClassifier(),
-    # SVM
-    svm.SVC(probability=True),
-    svm.NuSVC(probability=True),
-    svm.LinearSVC(),
-    # Trees
-    tree.DecisionTreeClassifier(),
-    tree.ExtraTreeClassifier(),
-    # Discriminant Analysis
-    discriminant_analysis.LinearDiscriminantAnalysis(),
-    discriminant_analysis.QuadraticDiscriminantAnalysis(),
-    # XGBoost
-    XGBClassifier(),
-]
-
-# split dataset in cross-validation
-# this is a alternative to train_test_split
-cv_split = model_selection.ShuffleSplit(
-    n_splits=10, test_size=0.3, train_size=0.6, random_state=0
-)
-
-# create table to compare MLA metrics
-MLA_columns = [
-    "MLA Name",
-    "MLA Paramaters",
-    "MLA Train Accuracy Mean",
-    "MLA Test Accuracy Mean",
-    "MLA Test Accuracy 3*STD",
-    "MLA Time",
-]
-MLA_compare = pd.DataFrame(columns=MLA_columns)
-
-# create table to compare MLA predictions
-MLA_predict = data1[Target]
-
 # index through MLA and save performance to table
 row_index = 0
 for alg in MLA:
@@ -1140,7 +1100,11 @@ for alg in MLA:
         cv=cv_split,
         return_train_score=True,
     )
+	\end{minted}
+\end{frame}
 
+\begin{frame}[fragile]{训练并进行预测}
+	\begin{minted}[breaklines,tabsize=4]{python}
     MLA_compare.loc[row_index, "MLA Time"] = cv_results["fit_time"].mean()
     MLA_compare.loc[row_index, "MLA Train Accuracy Mean"] = cv_results[
         "train_score"
@@ -1166,7 +1130,31 @@ MLA_compare.sort_values(
 )
 MLA_compare
 # MLA_predict
-	\end{minted}
+		\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{训练并进行预测}
+	\only<1>{
+		\begin{block}{交叉验证划分}
+			借助`ShuffleSplit'方法订一个`cv\_split'这个交叉验证策略. 策略创建10个划分, 将数
+			据中的60\%用于训练, 30\%用于测试. 该方法不是用整个数据集, 因为每个划分中有10\%的数据没有被使用.
+		\end{block}
+		\begin{block}{比较表}
+			两个Pandas DataFrames(`MLA\_conpare'和`MLA\_predict')被初始化来存储每个算法的性能指标和预测.
+		\end{block}
+		\begin{block}{算法循环}
+			在`MLA'列表中的每个算法都被循环经过, 不同的任务被执行:
+			\begin{itemize}
+				\item 算法名字和参数被保存;
+				\item 算法在数据集上使用前面提到的划分策略进行交叉验证. 计算并存储训练准确度,测
+				      试准确度, 拟合时间等指标.
+				\item 算法在数据的一个子集上进行训练, 在同一个子集上进行预测. 这些预测会被保存, 在之后可视化训练结果的时候使用.
+			\end{itemize}
+		\end{block}
+		\begin{block}{结果}
+			`MLA\_compare'DataFrame保存了性能指标, 基于测试准确度降序进行排序. 这使得找出表现最好的算法十分简单.
+		\end{block}
+	}
 \end{frame}
 
 \end{document}
