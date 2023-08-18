@@ -82,67 +82,51 @@
 	\end{block}
 \end{frame}
 
-\subsection{问题定义和特点}
-\begin{frame}[fragile]{问题定义和特点}
-	\only<1>{
-		\begin{block}{问题描述}
-			根据船上人员的各种特征，如性别、年龄、船票等级（Pclass）、上船地点（Embarked）、家庭成员数量、船票费用（Fare）以及其他相关信息，设计一种算法来预测泰坦尼克号上的乘客的生存概率。
-		\end{block}
-	}
-	\only<2->{
-		\begin{block}{问题的特点}
-			对泰坦尼克生存预测任务中, 其问题的关键特点分析如下:
+\subsection{任务亮点}
+\begin{frame}[fragile]{任务亮点}
+	入门级任务:
 
-			\begin{enumerate}
-				\item<only@2> \textbf{数据的复杂性与不完整性}
-					- 数据集中存在大量缺失值，尤其是在'Age'和'Cabin'特征中。处理这些缺失值需要深思熟虑，因为简单的删除或填充可能会导致信息损失或引入偏见。
-
-					- 存在一些杂乱的数据，例如在'Ticket'和'Name'特征中，这要求进行精细的数据清洗和特征工程。
-
-				\item<only@2> \textbf{数据的不均衡性}
-					- 大部分乘客在事故中未能生存。因此，我们面临的是一个不平衡分类问题，这可能会影响模型的评估指标和其对于生存和非生存类别的敏感性。
-
-				\item<only@2> \textbf{特征的多样性}
-					- 数据集中有数值、分类和文本特征。这意味着我们可能需要使用多种预处理技术来准备数据供模型使用。
-
-					- 某些特征，如'Pclass'和'Sex'，与生存率高度相关。但是，其他特征可能需要更深入的探索和工程化才能发挥其潜在价值。
-
-				\item<only@3> \textbf{社会经济背景的影响}
-					- 泰坦尼克号的生存率与社会阶层、性别和年龄等因素密切相关。例如，女性和儿童的生存率较高，而一等舱的乘客也有更高的生存机会。
-
-					- 这提示我们，在特征工程和模型建立时，应考虑这些社会和经济背景。
-
-				\item<only@3> \textbf{关于家庭的信息}
-					- 'SibSp'和'Parch'两个特征提供了关于乘客家庭成员的信息。考虑到家庭成员可能一同行动（如逃生），这些特征可能与生存率有关。
-
-					- 通过这些特征，可以派生出新的特征，如家庭大小或是否独自一人。
-				\item<only@3> \textbf{隐藏信息的挖掘}
-					- 例如，通过'Name'特征，我们可以提取出乘客的头衔，这可能与其社会地位、年龄和职业等相关，并间接影响其生存率。
-
-			\end{enumerate}
-		\end{block}
-	}
+	\begin{enumerate}
+		\item Iris数据集简单、维度低，同时提供了一个实际的分类问题，便于初学者学习分类问题;
+		\item 多类分类: 数据集包含三种不同的鸢尾花，目标是根据花的各种特征将其正确分类。
+		\item 简单的特征维度: Iris数据集只有四个特征，即萼片和花瓣的长度与宽度，使得数据可视化和理解都相对容易。
+		\item 明确的类别边界: 在Iris数据集中，某些类别之间的特征边界非常清晰，便于初学者进行分类.
+	\end{enumerate}
 \end{frame}
 
-\subsection{数据特点}
-\begin{frame}[fragile]{数据介绍}
-	\begin{block}{数据介绍}
-		数据中每个乘客有8个属性, 分别如下:
-		\begin{enumerate}
-			\item<only@1> `Survived`代表乘客是否存活
-			\item<only@1> `PassengerID`和`Ticket`被假设为随机独立标识符, 对输出没有影响, 因此会被从分析中移除
-			\item<only@1> `Pclass`代表票型, 并映射社会经济状态, 表示1 = 上层阶级, 2 = 中层阶级, 3 = 下层阶级;
-			\item<only@1> `Name`是名字数据类型, 可能可以在特征工程中根据title判断性别, 从surname中家庭大小.
+\subsection{数据信息}
+\begin{frame}[fragile]{数据的基本信息}
+	Iris数据集由英国生物学和统计学家Ronald A. Fisher在1936年提出. 数据集有150个样本, 每类花有50个样本.
 
-			\item<only@2> `Sex`和`Embarked`变量是命名数据类型. 会被转为dummy变量来进行数学计算.
-			\item<only@2> `Age`和`Fare`变量是连续量化数据类型;
-			\item<only@2> `SibSp`表示同在船上的兄弟姐妹的数量, `Parch`表示同在船上的父母孩子. 都是离散
-				量化数据类型. 可以在特征工程中建立一个家庭大小, 是孤立的变量;
-			\item `Cabin`变量是命名数据类型, 可以在特征工程中大致定位事故发生时在船上的位置, 以及根据等级判断接机. 然而, 由于有许多Null值, 该变量用处不大, 被排除在分析之外;
-		\end{enumerate}
+	\begin{block}<only@1>{鸢尾花种类}
+		鸢尾花种类有三种, 分别是:
+		\begin{itemize}
+			\item Iris-setosa;
+			\item Iris-versicolor;
+			\item Iris-virginica;
+		\end{itemize}
+	\end{block}
+	\begin{block}{鸢尾花特征}<only@2>
+		每个样本有4个特征, 单位为厘米.
+		\begin{itemize}
+			\item \textbf{萼片长度(sepal length)}
+			\item \textbf{萼片宽度(sepal width)}
+			\item \textbf{花瓣长度{petal length}}
+			\item \textbf{花瓣宽度(petal width)}
+		\end{itemize}
+	\end{block}
+	\begin{block}{目标变量}<only@2>
+		目标变量是花的种类, 即前面提到的三种之一.
+	\end{block}
+	\begin{block}{数据分布}<only@3>
+		数据集是平衡的, 意味着每个种类都有相同数量的样本(每个种类50个样本);
+	\end{block}
+	\begin{block}{数据清洁度}<only@3>
+		鸢尾花数据集是清洁的, 没有任何的缺失值或者显著的离群值, 因此需要很少的预处理.
 	\end{block}
 \end{frame}
 
+\subsection{模型介绍}
 \begin{frame}[fragile]
 	\frametitle{模型信息}
 	模型搭建代码如下.
@@ -258,6 +242,43 @@ for i in range(epochs):
 
 	此处使用Tensorflow是为了将Pytorch和Tensorflow两个常用框架都进行学习.
 
+\end{frame}
+
+\subsection{任务亮点}
+\begin{frame}[fragile]{任务亮点}
+	\begin{enumerate}
+		\item \textbf{实时应用场景} 借助Tensorflow训练完成后, 导出的权重文件可以实时对摄像头画面进行标签识别.
+		\item \textbf{深度学习应用} 借助卷积神经网络(CNN)为面部表情分类这一图像任务提供了强有力的帮助, 这是因为CNN特别擅长捕捉图像数据中的层次结构和模式.
+		\item \textbf{多分类问题} 面部情感识别通常包括多个类别, 例如快乐, 悲伤, 惊讶, 愤怒等, 增加了任务的复杂型.
+	\end{enumerate}
+\end{frame}
+\subsection{数据基本信息}
+\begin{frame}[fragile]{数据基本信息}
+	使用FER2013数据集.
+	\begin{enumerate}
+		\item<only@1> \textbf{数据来源} FER2013是为了2013年ICML举办的情感识别挑战而创建的. 该数据集在Kaggle上发布, 旨在为面部情感识别任务提供一个标准化的挑战.
+		\item<only@1> \textbf{样本数量} 数据集包含35,887张图像.
+		\item<only@1> \textbf{数据类型} 灰度图像. 相比于彩色图像, 灰度图像可以减少计算复杂型, 且足够进行表情识别;
+		\item<only@1> \textbf{图像大小} 图像大小为$48\times 48$像素.
+		\item<only@2> \textbf{类别/标签} 数据集包括七个面部表情标签:
+			\begin{itemize}
+				\item 0=Angry(愤怒)
+				\item 1=Disgust(厌恶)
+				\item 2=Fear(恐惧)
+				\item 3=Happy(高兴)
+				\item 4=Sad(悲伤)
+				\item 5=Surprise(惊讶)
+				\item 6=Neutral(中性)
+			\end{itemize}
+		\item<only@2> \textbf{数据分割} 在本次实验中, FER2013被分为三个子集:
+			\begin{itemize}
+				\item \textbf{训练集 } 有28,709个样本;
+				\item \textbf{验证集 } 有3,589个样本, 用于训练过程中验证;
+				\item \textbf{测试集 } 有35,89个样本, 用于最终的测试评估;
+			\end{itemize}
+		\item<only@3> \textbf{数据不均衡问题 } 数据集中某些情感的样本数量比其他情感多. 例如, ``Happy''表情的样本数量远多于``Disgust''.
+		\item<only@3> \textbf{挑战性 } 由于图像是灰度的, 并且分辨率较低($48\times 48$), 因此识别模型需要能够从较少的信息中捕获细微的面部特征.
+	\end{enumerate}
 \end{frame}
 
 \subsection{模型介绍}
@@ -1001,6 +1022,67 @@ lstm_model.fit(X_train, y_train, epochs=100, batch_size=1, verbose=2, validation
 	根据穿上人员的性别, 年龄, 职业等信息, 设计一种算法来预测泰坦尼克号上乘客的生存概
 	率. 借助该问题, 学习使用`scikit-learn'库和xgboost等库的各种机器学习方法, 例如SVM
 	支持向量机, 决策树, 线性模型, 朴素贝叶斯, 高斯过程和决策树等.
+\end{frame}
+
+\subsection{问题定义和特点}
+\begin{frame}[fragile]{问题定义和特点}
+	\only<1>{
+		\begin{block}{问题描述}
+			根据船上人员的各种特征，如性别、年龄、船票等级（Pclass）、上船地点（Embarked）、家庭成员数量、船票费用（Fare）以及其他相关信息，设计一种算法来预测泰坦尼克号上的乘客的生存概率。
+		\end{block}
+	}
+	\only<2->{
+		\begin{block}{问题的特点}
+			对泰坦尼克生存预测任务中, 其问题的关键特点分析如下:
+
+			\begin{enumerate}
+				\item<only@2> \textbf{数据的复杂性与不完整性}
+					- 数据集中存在大量缺失值，尤其是在'Age'和'Cabin'特征中。处理这些缺失值需要深思熟虑，因为简单的删除或填充可能会导致信息损失或引入偏见。
+
+					- 存在一些杂乱的数据，例如在'Ticket'和'Name'特征中，这要求进行精细的数据清洗和特征工程。
+
+				\item<only@2> \textbf{数据的不均衡性}
+					- 大部分乘客在事故中未能生存。因此，我们面临的是一个不平衡分类问题，这可能会影响模型的评估指标和其对于生存和非生存类别的敏感性。
+
+				\item<only@2> \textbf{特征的多样性}
+					- 数据集中有数值、分类和文本特征。这意味着我们可能需要使用多种预处理技术来准备数据供模型使用。
+
+					- 某些特征，如'Pclass'和'Sex'，与生存率高度相关。但是，其他特征可能需要更深入的探索和工程化才能发挥其潜在价值。
+
+				\item<only@3> \textbf{社会经济背景的影响}
+					- 泰坦尼克号的生存率与社会阶层、性别和年龄等因素密切相关。例如，女性和儿童的生存率较高，而一等舱的乘客也有更高的生存机会。
+
+					- 这提示我们，在特征工程和模型建立时，应考虑这些社会和经济背景。
+
+				\item<only@3> \textbf{关于家庭的信息}
+					- 'SibSp'和'Parch'两个特征提供了关于乘客家庭成员的信息。考虑到家庭成员可能一同行动（如逃生），这些特征可能与生存率有关。
+
+					- 通过这些特征，可以派生出新的特征，如家庭大小或是否独自一人。
+				\item<only@3> \textbf{隐藏信息的挖掘}
+					- 例如，通过'Name'特征，可以提取出乘客的头衔，如`Mr', `Dr`等. 这与其社会地位、年龄和职业等相关，并间接影响其生存率。
+
+			\end{enumerate}
+		\end{block}
+	}
+\end{frame}
+
+\subsection{数据特点}
+\begin{frame}[fragile]{数据介绍}
+	\begin{block}{数据介绍}
+		数据中每个乘客有8个属性, 分别如下:
+		\begin{enumerate}
+			\item<only@1> `Survived`代表乘客是否存活
+			\item<only@1> `PassengerID`和`Ticket`被假设为随机独立标识符, 对输出没有影响, 因此会被从分析中移除
+			\item<only@1> `Pclass`代表票型, 并映射社会经济状态, 表示1 = 上层阶级, 2 = 中层阶级, 3 = 下层阶级;
+			\item<only@1> `Name`是名字数据类型, 可能可以在特征工程中根据title判断性别, 从surname中家庭大小.
+
+			\item<only@2> `Sex`和`Embarked`变量是命名数据类型. 会被转为dummy变量来进行数学计算.
+			\item<only@2> `Age`和`Fare`变量是连续量化数据类型;
+			\item<only@2> `SibSp`表示同在船上的兄弟姐妹的数量, `Parch`表示同在船上的父母孩子. 都是离散
+				量化数据类型. 可以在特征工程中建立一个家庭大小, 是孤立的变量;
+			\item `Cabin`变量是命名数据类型, 可以在特征工程中大致定位事故发生时在船上的位置, 以及根据等级判断接机. 然而, 由于有许多Null值, 该变量用处不大, 被排除在分析之外;
+		\end{enumerate}
+	\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{使用的机器学习模型介绍}
