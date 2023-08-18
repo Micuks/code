@@ -911,6 +911,7 @@ lstm_model.fit(X_train, y_train, epochs=100, batch_size=1, verbose=2, validation
 		\end{block}}
 \end{frame}
 
+\subsection{训练方法}
 \begin{frame}[fragile]{模型编译和训练}
 	\begin{block}{编译}
 		\begin{itemize}
@@ -932,6 +933,240 @@ lstm_model.fit(X_train, y_train, epochs=100, batch_size=1, verbose=2, validation
 		\end{itemize}
 
 	\end{block}
+\end{frame}
+
+\section{使用机器学习方法预测从泰坦尼克灾难中生存的可能}
+\begin{frame}[fragile]{泰坦尼克}
+	根据穿上人员的性别, 年龄, 职业等信息, 设计一种算法来预测泰坦尼克号上乘客的生存概
+	率. 借助该问题, 学习使用`scikit-learn'库和xgboost等库的各种机器学习方法, 例如SVM
+	支持向量机, 决策树, 线性模型, 朴素贝叶斯, 高斯过程和决策树等.
+\end{frame}
+
+\begin{frame}[fragile]{使用的机器学习模型介绍}
+	\begin{minted}[breaklines,tabsize=4]{python}
+	# machine learning algorithms (MLA) selection and Initialization
+MLA = [
+    # ensemble methods
+    ensemble.AdaBoostClassifier(),
+    ensemble.BaggingClassifier(),
+    ensemble.ExtraTreesClassifier(),
+    ensemble.GradientBoostingClassifier(),
+    ensemble.RandomForestClassifier(),
+    # Gaussian Processes
+    gaussian_process.GaussianProcessClassifier(),
+    # GLM
+    linear_model.LogisticRegressionCV(),
+    linear_model.PassiveAggressiveClassifier(),
+    linear_model.RidgeClassifierCV(),
+    linear_model.SGDClassifier(),
+    linear_model.Perceptron(),
+	\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{使用的机器学习模型介绍}
+	\begin{minted}[breaklines,tabsize=4]{python}
+    # Naive Bayes
+    naive_bayes.BernoulliNB(),
+    naive_bayes.GaussianNB(),
+    # Nearest Neighbor
+    neighbors.KNeighborsClassifier(),
+    # SVM
+    svm.SVC(probability=True),
+    svm.NuSVC(probability=True),
+    svm.LinearSVC(),
+    # Trees
+    tree.DecisionTreeClassifier(),
+    tree.ExtraTreeClassifier(),
+    # Discriminant Analysis
+    discriminant_analysis.LinearDiscriminantAnalysis(),
+    discriminant_analysis.QuadraticDiscriminantAnalysis(),
+    # XGBoost
+    XGBClassifier(),
+]
+	\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{使用的机器学习模型介绍}
+	\only<1>{\begin{block}{集成方法(Ensmble methods): 这些方法通常集合了多个模型(常常称为``基础学习者'')来提升泛化能力和鲁棒性}
+			\begin{itemize}
+				\item AdaBoostClassifier: 一个拟合一系列的弱学习者(通常是决策树)的自适应增强算法
+				      . 每棵决策树都会纠正其前辈的错误.
+				\item BaggingClassifier: 使用bagging
+				      (Bootstrap Aggregating)来在数据集的随机子集上拟合一个分类器的多个实例. 子集是通
+				      过替换获取的.
+				\item ExtraTreesClassifier: 代表``Extremely Randomized Trees''. 像一个更加随机版
+				      本的随机森林, 其中最好的划分从一个随机的子集和阈值中选取;
+				\item GradientBoostingClassifier: 顺序添加预测器来纠正由前面的预测器做出的错误.
+				      和AdaBoost不同, 该分类器专注于直接减少残差.
+				\item RandomForestClassifier: 在训练中建立一个决策树`森林'. 每棵树都在数据和特征
+				      的一个随机子集上训练. 预测被整合(对于回归任务取平均, 对于分类任务取多数投票).
+			\end{itemize}
+		\end{block}}
+	\only<2>{\begin{block}{高斯过程}
+			\begin{itemize}
+				\item GaussianProcessClassifier: 一个用于回归和概率分类的非参数贝叶斯方法. 他在
+				      函数上定义一个分布, 借助核技巧在高维空间中进行操作.
+			\end{itemize}
+		\end{block}
+		\begin{block}{泛化线性模型}
+			\begin{itemize}
+				\item LogisticRegressionCV:具有用于自动参数调整的集成交叉验证的逻辑回归(用于二元分类).
+				\item PassiveAggressiveClassifier: 一种适合大规模学习的在线学习算法, 被称为``被
+				      动攻击'', 因为在正确分类时保持被动, 并在发生错误时变得攻击.
+				\item RidgeClassifierCV: 使用L2正则化的线性分类器(对系数的平方幅度添加惩罚). 该版本包含集成的交叉验证.
+				\item SGDClassifier: 线性分类器(像SVM和逻辑回归), 具有随机梯度下降(SGD)训练的线性分类器.
+				\item Perceptron: 线性分类器的一种, 是一种监督二元分类算法.
+			\end{itemize}
+		\end{block}
+	}
+	\only<3>{\begin{block}{朴素贝叶斯}
+			基于应用贝叶斯理论以及特征之间的强独立性假设.
+			\begin{itemize}
+				\item BernoulliNB: 二元数据使用. 假设特征是二元的.
+				\item GaussianNB: 假设特征有高斯分布.
+			\end{itemize}
+		\end{block}
+		\begin{block}{最近邻居}
+			\begin{itemize}
+				\item KNeighborsClassifier: 基于训练集中他的`k'个最近的邻居来分类一个样本.
+			\end{itemize}
+		\end{block}
+		\begin{block}{支持向量机(SVM)}
+			旨在找到最能将数据集划分为类别的超平面;
+			\begin{itemize}
+				\item SVC: 使用核技巧来变形输入数据, 然后识别最优的超平面;
+				\item NuSVC: 和SVC类似, 但是使用一个参数`nu'来控制支持向量的数量.
+				\item LinearSVC: 不是用核技巧的线性SVM.
+			\end{itemize}
+		\end{block}
+	}
+\end{frame}
+
+\begin{frame}[fragile]{使用的机器学习模型介绍}
+	\begin{minted}[breaklines,tabsize=4]{python}
+# split dataset in cross-validation
+# this is a alternative to train_test_split
+cv_split = model_selection.ShuffleSplit(
+    n_splits=10, test_size=0.3, train_size=0.6, random_state=0
+)
+
+# create table to compare MLA metrics
+MLA_columns = [
+    "MLA Name",
+    "MLA Paramaters",
+    "MLA Train Accuracy Mean",
+    "MLA Test Accuracy Mean",
+    "MLA Test Accuracy 3*STD",
+    "MLA Time",
+]
+MLA_compare = pd.DataFrame(columns=MLA_columns)
+
+# create table to compare MLA predictions
+MLA_predict = data1[Target]
+
+	\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{训练并进行预测}
+	\begin{minted}[breaklines,tabsize=4]{python}
+	# machine learning algorithms (MLA) selection and Initialization
+MLA = [
+    # ensemble methods
+    ensemble.AdaBoostClassifier(),
+    ensemble.BaggingClassifier(),
+    ensemble.ExtraTreesClassifier(),
+    ensemble.GradientBoostingClassifier(),
+    ensemble.RandomForestClassifier(),
+    # Gaussian Processes
+    gaussian_process.GaussianProcessClassifier(),
+    # GLM
+    linear_model.LogisticRegressionCV(),
+    linear_model.PassiveAggressiveClassifier(),
+    linear_model.RidgeClassifierCV(),
+    linear_model.SGDClassifier(),
+    linear_model.Perceptron(),
+    # Naive Bayes
+    naive_bayes.BernoulliNB(),
+    naive_bayes.GaussianNB(),
+    # Nearest Neighbor
+    neighbors.KNeighborsClassifier(),
+    # SVM
+    svm.SVC(probability=True),
+    svm.NuSVC(probability=True),
+    svm.LinearSVC(),
+    # Trees
+    tree.DecisionTreeClassifier(),
+    tree.ExtraTreeClassifier(),
+    # Discriminant Analysis
+    discriminant_analysis.LinearDiscriminantAnalysis(),
+    discriminant_analysis.QuadraticDiscriminantAnalysis(),
+    # XGBoost
+    XGBClassifier(),
+]
+
+# split dataset in cross-validation
+# this is a alternative to train_test_split
+cv_split = model_selection.ShuffleSplit(
+    n_splits=10, test_size=0.3, train_size=0.6, random_state=0
+)
+
+# create table to compare MLA metrics
+MLA_columns = [
+    "MLA Name",
+    "MLA Paramaters",
+    "MLA Train Accuracy Mean",
+    "MLA Test Accuracy Mean",
+    "MLA Test Accuracy 3*STD",
+    "MLA Time",
+]
+MLA_compare = pd.DataFrame(columns=MLA_columns)
+
+# create table to compare MLA predictions
+MLA_predict = data1[Target]
+
+# index through MLA and save performance to table
+row_index = 0
+for alg in MLA:
+    # set name and parameters
+    MLA_name = alg.__class__.__name__
+    MLA_compare.loc[row_index, "MLA Name"] = MLA_name
+    MLA_compare.loc[row_index, "MLA Parameters"] = str(alg.get_params())
+
+    # score model with cross validation
+    cv_results = model_selection.cross_validate(
+        alg,
+        data1[data1_x_bin],
+        data1[Target],
+        cv=cv_split,
+        return_train_score=True,
+    )
+
+    MLA_compare.loc[row_index, "MLA Time"] = cv_results["fit_time"].mean()
+    MLA_compare.loc[row_index, "MLA Train Accuracy Mean"] = cv_results[
+        "train_score"
+    ].mean()
+    MLA_compare.loc[row_index, "MLA Test Accuracy Mean"] = cv_results[
+        "test_score"
+    ].mean()
+    # if this is a non-bias random sample, then +/-3 standard deviations(std)
+    # from the mean, should statistically capture 99.7% of the subsets
+    MLA_compare.loc[row_index, "MLA Test Accuracy 3*STD"] = (
+        cv_results["test_score"].std() * 3
+    )  # the worst that can happen
+
+    # save MLA predictions
+    alg.fit(data1[data1_x_bin], data1[Target])
+    MLA_predict[MLA_name] = alg.predict(data1[data1_x_bin])
+
+    row_index += 1
+
+# print and sort table
+MLA_compare.sort_values(
+    by=["MLA Test Accuracy Mean"], ascending=False, inplace=True
+)
+MLA_compare
+# MLA_predict
+	\end{minted}
 \end{frame}
 
 \end{document}
