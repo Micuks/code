@@ -64,7 +64,7 @@
 \end{frame}
 
 \section{鸢尾花分类实验}
-\begin{frame}
+\begin{frame}[fragile]
 	\frametitle{鸢尾花分类实验}
 	\begin{block}{代码和数据集}
 		该论文的复现代码在\href{这里}{https://github.com/Micuks/code/blob/master/gnn/1\_iris/iris-classification/train.ipynb}
@@ -593,6 +593,7 @@ class OptiBostonHousingModel(nn.Module):
 	借助PyTorch框架, 定义一个CNN进行MNIST手写数字识别.
 \end{frame}
 
+\subsection{模型结构}
 \begin{frame}[fragile]{模型结构}
 	\begin{minted}[breaklines,tabsize=4]{python}
 class CNN(nn.Module):
@@ -673,6 +674,7 @@ class CNN(nn.Module):
 	\end{enumerate}
 \end{frame}
 
+\subsection{模型训练}
 \begin{frame}[fragile]{模型训练}
 	接下来介绍对模型的训练. 首先将模型和数据移动到CUDA GPU上, 然后对模型进行训练.
 	\begin{minted}[breaklines,tabsize=4]{python}
@@ -770,4 +772,166 @@ for epoch in range(num_epochs):  # loop over the dataset multiple times
 		\item 在所有的批次被处理完之后, 平均的验证损失和准确率都被打印;
 	\end{itemize}
 \end{frame}
+
+\section{股票价格预测}
+\begin{frame}[fragile]{股票价格预测}
+	使用LSTM借助历史收盘股价进行股票价格预测. 实际上如果想要作为投资参考, 对股票的收益率或者涨跌进行预测是更好的方式, 对股票价格进行预测仅仅用来学习.
+	\only<1>{
+		\begin{figure}[htbp]
+			\centering
+			\caption{如图, 仅仅使用昨天的数据作为今天测预测值也可以获得看起来良好的预测结果, 但是实际上是没有用的}
+			\label{fig:如图, 仅仅使用昨天的数据作为今天测预测值也可以获得看起来良好的预测结果, 但是实际上是没有用的用}
+			\includegraphics[width=0.95\textwidth]{figures/stock-prediction.png}
+		\end{figure}
+	}
+	\only<2>{
+		\begin{figure}[htbp]
+			\centering
+			\caption{如图为LSTM的预测结果}
+			\label{fig:如图为LSTM的预测结果}
+			\includegraphics[width=0.95\textwidth]{figures/stock-prediction-lstm.png}
+		\end{figure}
+	}
+\end{frame}
+
+\subsection{模型结构}
+\begin{frame}[fragile]{模型结构}
+	\begin{minted}[breaklines,tabsize=4]{python}
+lstm_model = Sequential()
+lstm_model.add(
+    LSTM(units=50, return_sequences=True, input_shape=(X_train.shape[1], 1))
+)
+lstm_model.add(Dropout(0.2))
+lstm_model.add(LSTM(units=50))
+lstm_model.add(Dropout(0.2))
+lstm_model.add(Dense(1))
+
+inputs = new_dataset[len(new_dataset) - len(valid_data) - 60 :].values
+inputs = inputs.reshape(-1, 1)
+inputs = scaler.transform(inputs)
+print(inputs.shape)
+	\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{模型结构}
+	\begin{minted}[breaklines,tabsize=4]{python}
+lstm_model.compile(loss="mean_squared_error", optimizer="adam")
+
+# patience is the number of epochs to check for improvement
+early_stop=EarlyStopping(monitor='val_loss', patience=10, verbose=1)
+
+lstm_model.fit(X_train, y_train, epochs=100, batch_size=1, verbose=2, validation_split=0.2, callbacks=[early_stop])
+	\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{模型结构}
+	在本实验vs, 借助Keras搭建了一个LSTM神经网络. LSTM是为顺序数据特别设计的, 对于时
+	序数据有良好预测性能, 且相比于RNN有效解决了长期记忆衰退问题的模型. 对其结构介绍如下.
+
+	\begin{block}{输入层}
+		模型期望输入数据有形状\mintinline[breaklines=true]{bash}|(X_train.shape[1], 1)|.
+		这意味着每个训练样本应该是一个具有
+		\mintinline[breaklines=true]{bash}|X_train.shape[1]|步的序列, 且在每一步只有一个特征.
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{模型结构}
+	\only<1>{
+		\begin{block}{第一个LSTM层}
+			\begin{itemize}
+				\item 有50个神经元;
+				\item 在tensorflow中, 设置
+				      \mintinline[breaklines=true]{bash}|return_sequences=True|意味着这个LSTM层会将整
+				      个序列传递给下一层, 对于堆栈的LSTM层是必要的.
+			\end{itemize}
+		\end{block}
+	}
+	\only<2>{
+		\begin{block}{关于\mintinline[breaklines=true]{bash}|return_sequences|}
+			LSTM层中的\mintinline[breaklines=true]{bash}|return_sequences|控制了LSTM输出的是序列还是整个序列的最后一个输出.
+
+			设置\mintinline[breaklines=true]{bash}|return_sequences|为`True'或者`False'有特
+			定的使用场景:
+
+			\begin{enumerate}
+				\item \mintinline[breaklines=true]{bash}|return_sequences=True|
+				      \begin{itemize}
+					      \item LSTM层会为输入序列中的每个时间步都产生一个输出, 意味着输出会和输入有相同的长度;
+					      \item 将LSTM层堆叠的场景下这是必须的. 因为下一层需要和上一层期望相同长度的序列作为输入.
+					      \item 如果进行的是seq2seq的预测, 则也应该使用这种方式.
+				      \end{itemize}
+				\item \mintinline[breaklines=true]{bash}|return_sequences=False|
+				      \begin{itemize}
+					      \item LSTM层会对整个输入序列产生一个单独的输出值. 这个只对应了最后一个时间步;
+					      \item 当仅仅对于最后的预测结果感兴趣的时候, 这是合适的. 在许多seq2val的预测中采用这种方式.
+					      \item 在一个全连接层之前, 通常也这样使用, 尤其是在分类或回归任务的模型中.
+				      \end{itemize}
+			\end{enumerate}
+		\end{block}
+	}
+	\only<3>{
+		\begin{block}{第一个Dropout层}
+			该层随机设置20\%的输入单元为0, 这可以帮助避免过拟合.
+		\end{block}
+		\begin{block}{为什么在LSTM层之间使用Dropout层}
+			\begin{itemize}
+				\item Dropout层放在LSTM层之间的时候, 即对LSTM层的输出进行了dropout, 在训练时对其中的部
+				      分值随机设置为0.
+				\item Dropout可以有效避免过拟合, 尤其是在较小的数据集情况下(如本实验的数据集).
+				\item 如果模型本身没有过拟合, 添加dropout不仅可能不会提供帮助, 反而可能降低模型
+				      的表现. 因此, 需要监控验证表现并进行及时的调整.
+			\end{itemize}
+		\end{block}
+	}
+	\only<4>{\begin{block}{使用Dropout可能的缺点}
+			\begin{itemize}
+				\item 在RNN中使用dropout, 尤其是通过
+				      \mintinline[breaklines=true]{bash}|recurrent_dropout|, 会延长训练时间, 因为在
+				      Keras中对于\mintinline[breaklines=true]{bash}|recurrent_dropout|的实现关闭了对于
+				      LSTM层的一些性能优化方法;
+				\item 可能引入了过多的dropout, 这可能降低模型的学习能力. 在规范化模型和允许他从数据中学习之间应该取得一个平衡.
+			\end{itemize}
+		\end{block}}
+
+	\only<5>{
+		\begin{block}{第二个LSTM层}
+			\begin{itemize}
+				\item 具有50个单元;
+				\item 因为后面没有后继的LSTM层, 因此
+				      \mintinline[breaklines]{python3}|return_sequences|没有设置, 默认为False. 这意味着该层只会输出最后一个时间步的值.
+			\end{itemize}
+		\end{block}
+	}
+	\only<5>{\begin{block}{第二个Dropout层}
+			仍旧20\%dropout率的Dropout层, 用来避免过拟合;
+		\end{block}}
+
+	\only<5>{\begin{block}{输出层}
+			全连接层, 仅有一个神经元. 因为这里没有设置激活函数, 默认是线性激活函数, 使其适合回归任务.
+		\end{block}}
+\end{frame}
+
+\begin{frame}[fragile]{模型编译和训练}
+	\begin{block}{编译}
+		\begin{itemize}
+			\item 模型使用平均平方差loss进行编译, 这对于回归任务是常用的选择. 使用的优化器是
+			      `Adam', 对于许多深度学习任务这都是一个流行且高效的优化器.
+		\end{itemize}
+	\end{block}
+	\begin{block}{提前停止回调}
+		该回调函数监控了验证损失(\mintinline[breaklines]{python3}|val_loss|). 如果在10轮
+		训练中验证loss没有提升(\mintinline[breaklines=true]{bash}|patience=10|), 训练会
+		停止. 这可以帮助避免过拟合, 并且如果模型已经收敛, 可以帮助减少训练时间;
+	\end{block}
+	\begin{block}{模型训练}
+		\begin{itemize}
+			\item 模型训练了最多100轮, 批次大小为1. 意味着模型在每个样本之后都会更新参数.
+			\item 20\%的数据用作验证数据.
+			      (\mintinline[breaklines]{python3}|validation_split=0.2|).
+			\item 使用了提前停止回调函数.
+		\end{itemize}
+
+	\end{block}
+\end{frame}
+
 \end{document}
