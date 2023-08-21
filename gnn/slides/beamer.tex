@@ -640,6 +640,56 @@ print('accuracy is',accuracy_score(y_hat,y_test))
 	借助PyTorch搭建全连接模型对Boston Hosting数据集进行房价预测.
 \end{frame}
 
+\begin{frame}[fragile]{任务介绍}
+	波士顿房价预测是机器学习领域的经典问题, 经常用于回归分析的入门实践.
+
+	\begin{itemize}
+		\item \textbf{经典的回归问题} 波士顿房价预测是经典的监督学习中的回归问题, 目标是预测波士顿地区的房屋中位数价格;
+		\item \textbf{多元特征} 数据集包含了多种可能影响房价的因素, 例如犯罪率, 居住年代, 教师比例等, 需要选取合适的因素用于预测, 使得特征工程和特征选择变得很重要;
+		\item \textbf{理解特征关系} 由于特征之间可能存在相关性, 例如某个地区的犯罪率可能会影响该地区的居住率, 因此探索和理解这些特征之间的关系可以帮助更好地理解数据;
+		\item \textbf{模型选择} 回归分析可以使用的模型有许多. 例如线性回归, 决策树回归, 随机森林回归, 支持向量机等. 本实验中使用全链接神经网络作为用于回归的模型;
+		\item \textbf{评估指标} 为了评估模型的性能, 需要选取合适的评估指标. 对于回归问题, 常用的有均方误差(MSE), 均方根误差(RMSE)等. 本次实验使用MSE.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{数据基本信息}
+	\only<1>{
+		波士顿房价数据集(Boston Housing Dataset)是机器学习中非常经典的数据集, 来自1970年的美国人口普查数据, 主要用于研究房屋价格和各种因素之间的关系. 其详细信息如下.
+	}
+
+
+	\begin{block}{特征}<only@2>
+		\begin{itemize}
+			\item \textbf{CRIM} 城镇的人均犯罪率;
+			\item \textbf{ZN} 大于25,000平方英尺的住宅用地比例;
+			\item \textbf{INDUS} 非零售商业用地的比例(亩);
+			\item \textbf{CHAS} 查尔斯河虚拟变量(如果地块与河流接壤为1, 否则为0);
+			\item \textbf{NOX} 一氧化氮浓度(每千万分之一);
+			\item \textbf{RM} 每个住宅的平均房间数;
+			\item \textbf{AGE} 1940年以前建造的自住单位的比例;
+			\item \textbf{DIS} 到波士顿五个就业中心的加权距离;
+			\item \textbf{RAD} 高速公路通达性的指数;
+			\item \textbf{TAX} 每10,000美元的全额物业税率;
+			\item \textbf{PTRATIO} 城镇的学生与教师比例;
+			\item \textbf{B} $1000(B_k-0.63)^2$, 其中$B_k$是城镇中黑人的比例;
+			\item \textbf{LSTAT} 人口中地位较低的人的百分比;
+		\end{itemize}
+	\end{block}
+	\begin{block}{目标变量}<only@3>
+		\begin{itemize}
+			\item \textbf{MEDV} 自住房的中位数价格(单位: \$1000美元). 即希望预测的房屋价格.
+		\end{itemize}
+	\end{block}
+	\begin{block}{数据集特点和挑战}<only@3>
+		\begin{itemize}
+			\item \textbf{数据规模 }数据集通常包含506个观测点, 其中每个观测点都有13个特征和1个目标变量;
+			\item \textbf{缺失值 } 波士顿房价数据集没有缺失值, 因此处理起来会相对方便;
+			\item \textbf{异常值 } 需要检查数据中的异常值或者离群值, 因为他们会影响模型的性能;
+			\item \textbf{特征工程 } 虽然数据集已经提供了13个特征, 但是可能需要进行特征选择或者特征工程来提供模型的性能.
+		\end{itemize}
+	\end{block}
+\end{frame}
+
 \subsection{模型结构}
 \begin{frame}[fragile]{模型结构}
 	\begin{minted}[breaklines,tabsize=4]{python}
