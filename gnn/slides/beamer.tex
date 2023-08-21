@@ -781,6 +781,47 @@ class OptiBostonHousingModel(nn.Module):
 	借助PyTorch框架, 定义一个CNN进行MNIST手写数字识别.
 \end{frame}
 
+\subsection{任务亮点}
+\begin{frame}[fragile]{任务亮点}
+	\begin{itemize}
+		\item \textbf{手写数字识别 }MNIST数据集包括了从0到9的手写数字, 是机器学习和计算机视觉领域的一个经典的数据集. 这个任务的目标是将每一个手写数字图像正确分类;
+		\item \textbf{图片数据处理 }数据是图像形式的, 因此这一任务为初学者提供了处理图片数据的经验, 例如归一化, 数据增强等;
+		\item \textbf{学习CNN }在本实验中, 将使用卷积神经网络(CNN)来处理这个任务, 对CNN进行了解和学习;
+		\item \textbf{模型评估 }了解和使用正确的评估指标(例如准确度, 召回率, F1-Score等)对模型进行评估, 并使用验证集进行调参;
+		\item \textbf{模型优化 }了解和实践如何通过各种方法优化模型, 例如更深的网络, Dropout正则化, 数据增强等;
+	\end{itemize}
+\end{frame}
+\subsection{数据集基本信息}
+\begin{frame}[fragile]{数据集基本信息}
+	\begin{itemize}
+		\item<only@1> \textbf{图像信息 }
+			\begin{itemize}
+				\item 每张图像都是一个手写数字, 从0到9;
+				\item 图像是单通道的灰度图, 相比于彩色图, 少了许多的混淆信息, 降低了处理难度;
+			\end{itemize}
+		\item<only@1> \textbf{图像尺寸 }每张图像的尺寸是$28\times 28$像素;
+		\item<only@1> \textbf{数据规模 }
+			\begin{itemize}
+				\item 数据集包含70,00张图像和对应的标签;
+				\item 通常被分为60,000张训练图像和10,000张测试图像;
+			\end{itemize}
+		\item<only@2> \textbf{标签 }
+			\begin{itemize}
+				\item 对每张图像, 有一个对应的标签;
+				\item 每个标签都是0到9之间的整数, 对应了图像中的手写数字;
+			\end{itemize}
+		\item<only@2> \textbf{数据来源 } 图像来自美国高中生和人口普查局的雇员手写并收集;
+		\item<only@2> \textbf{数据格式 }
+			\begin{itemize}
+				\item 图像数据的像素值在0到255之间, 但是训练神经网络的时候, 会归一化到0到1范围;
+				\item 标签是单个数字, 对应图像中的手写数字;
+			\end{itemize}
+		\item<only@2> \textbf{数据挑战性 }MNIST虽然是一个相对简单的数据集, 然是仍然包含了各种手写风格, 有的数字相比于其他的数字更加模糊或者更加难以识别;
+	\end{itemize}
+
+
+\end{frame}
+
 \subsection{模型结构}
 \begin{frame}[fragile]{模型结构}
 	\begin{minted}[breaklines,tabsize=4]{python}
