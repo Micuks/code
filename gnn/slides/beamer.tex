@@ -474,6 +474,62 @@ emotion_model.add(Dense(7, activation="softmax"))
 
 \end{frame}
 
+\subsection{任务介绍}
+\begin{frame}[fragile]{贷款预测任务介绍}
+	金融机构放贷需要评估借款人违约的风险, 从而降低坏账损失, 确保资金安全. 该任务通过逻辑回归来预测是否可以放贷.
+
+	\begin{block}{二分类问题}
+		借贷问题是一个二分类问题, 目标是预测借款人是否会还款. 输出通常是`yes'或`no'.
+	\end{block}
+
+	对该问题, 在数据预处理上要使用特征工程来判断哪些信息结合可以作为比较良好的放贷参照. 例如, 将收入和负债比进行组合等.
+
+	对该问题使用逻辑回归, 是因为逻辑回归不仅可以提供预测结果, 还可以为每个预测提供概率评分. 这有助于评估违约的风险程度.
+\end{frame}
+
+\begin{frame}[fragile]{贷款预测任务介绍}
+	\begin{block}{可解释性}
+		与深度学习模型相比, 逻辑回归的一个主要优势是其可解释性. 在信贷审批过程中, 理解为什么某个请求被拒绝或者批准是重要的, 逻辑回归的系数可以提供有关哪些特征最影响预测的见解.
+	\end{block}
+	\begin{block}{应对不平衡数据}
+		信贷数据通常是不平衡的, 因为违约的案例可能远远少于正常偿还的案例. 因此需要使用特定的方法, 例如过采样, 欠采样等方法来解决.
+	\end{block}
+\end{frame}
+
+\subsection{数据介绍}
+\begin{frame}[fragile]{数据集基本信息}
+	\begin{block}{数据来源}<only@1>
+		来源于kaggle社区的公开数据集``Loan Prediction Problem''.
+	\end{block}
+	\begin{block}{特征}<only@1>
+		数据集包含多个特征, 例如申请人的性别, 婚姻情况, 教育程度, 受雇状态, 收入, 贷款金额和信贷历史.
+	\end{block}
+	\begin{block}{目标变量}<only@1>
+		`Loan\_Status'是目标变量, 是二元变量. 其中`Y'表示贷款获得批准, `N'表示贷款没有获得批准.
+	\end{block}
+	\begin{block}{数据规模}<only@1>
+		训练集大小为$614\times 13$, 测试集大小为$367\times 12$. 其中测试集少了`Loan\_Status'一栏.
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{数据集特征}
+	数据集有如下特征:
+	\begin{itemize}
+		\item Loan\_ID: 一个单独的标识数字, 每个申请人独有;
+		\item Gender: 性别(男/女);
+		\item Married: 申请人是否结婚(Yes/No);
+		\item Dependents: 申请人的家人数量, 0/1/2/3+.
+		\item Education: 教育等级(已毕业/未毕业);
+		\item Self\_Employed: 是否申请人是自雇人士(是/否);
+		\item ApplicantIncome: 申请人收入;
+		\item CoapplicantIncome: 共同申请人收入(如果没有共同申请人则为0);
+		\item LoanAmount: 申请的贷款金额(千为单位);
+		\item Loan\_Amount\_Term: 贷款期限(月为单位);
+		\item Credit\_History:借款人负责偿还债务的记录, 为0或1, 表示申请人是否有过贷款偿还历史;
+		\item Property\_Area:申请贷款的房产所在的区域类型(城市/半城市/农村);
+	\end{itemize}
+\end{frame}
+
 \subsection{模型训练和预测}
 \begin{frame}[fragile]{模型训练和预测}
 	\begin{minted}[breaklines,tabsize=4]{python}
