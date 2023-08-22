@@ -1023,6 +1023,33 @@ for epoch in range(num_epochs):  # loop over the dataset multiple times
 	}
 \end{frame}
 
+\subsection{任务介绍}
+\begin{frame}[fragile]{任务亮点介绍}
+	\begin{itemize}
+		\item \textbf{时间序列预测 }股价预测是时间序列分析的一个典型应用, 旨在基于过去的预测数据预测未来的价格走势;
+		\item \textbf{利用LSTM的长期记忆 }LSTM是一种特殊的循环神经网络(RNN), 可以捕捉长期的依赖关系. 这对于捕捉和记忆股票市场中的长期趋势和周期性非常有用;
+		\item \textbf{复杂市场动态 }股票价格受到多种因素影响, 包括全球事件, 公司新闻和其他宏观经济指标. 使用LSTM可以帮助模型捕捉这些复杂的关系;
+	\end{itemize}
+\end{frame}
+
+\subsection{数据介绍}
+\begin{frame}[fragile]{数据介绍}
+	该任务使用印度的TATAGLOBAL股价数据集. 该数据集专门针对印度的Tata Global Beverages Ltd. 公司, 包含了公司过去的股价数据. 其特点如下.
+\end{frame}
+
+\begin{frame}[fragile]{数据集介绍}
+	数据集有如下的信息, 借助这些信息来预测未来的股价走势;
+	\begin{itemize}
+		\item \textbf{日期(Date)} 每个条目都有一个对应的日期, 标记了那一天的股票交易情况;
+		\item \textbf{开盘价(Open)} 是股票在特定交易日开始时的价格;
+		\item \textbf{最高价(High)和最低价(Low)} 提供了股票在交易日中的最高和最低价格;
+		\item \textbf{收盘价(Close)} 是股票在交易日结束的时候的价格, 可认为是股票当天的最终或``官方''股价;
+		\item \textbf{最后交易价格(Last)} 表示交易日的最后一笔交易的价格. 大多数情况下和收盘价接近;
+		\item \textbf{总交易量(Total Trade Quantity)} 表示在特定交易日内交易的股票总数量. 高交易量意味着股票有较大的价格变动, 低的交易量表示股票价格稳定;
+		\item \textbf{换手率(Turnover in Lacs)} 是当天的总交易额, 表示以卢比计价的总价值.
+	\end{itemize}
+\end{frame}
+
 \subsection{模型结构}
 \begin{frame}[fragile]{模型结构}
 	\begin{minted}[breaklines,tabsize=4]{python}
