@@ -1475,4 +1475,166 @@ MLA_compare
 	}
 \end{frame}
 
+\section{红酒质量预测}
+\begin{frame}[fragile]{红酒质量预测任务}
+	酒质量预测任务旨在基于物理化学测试的结果来预测红酒和白酒的质量。在该任务中, 使用一系列机器学习模型进行预测，模型通过分析红酒或白酒的一系列化学属性来预测其质量。预测的结果通常为0-10的得分，代表酒的整体质量。
+\end{frame}
+\subsection{任务介绍}
+\begin{frame}[fragile]{任务介绍}
+	对该任务, 着重于如下方面.
+	\begin{itemize}
+		\item \textbf{模型的比较 } 由于数据集具有多个特征, 因此使用多种机器学习算法(例如决策树, 支持向量机, 神经网络等) 进行对比, 找出表现最好的模型;
+		\item \textbf{特征工程 }
+		      \begin{itemize}
+			      \item \textbf{特征选择的重要性 }葡萄酒的质量可能只与某些关键特征密切相关。通过特征选择，可以将不太相关的特征排除，使模型更加集中地学习关键特征，从而提高预测的准确性。
+			      \item \textbf{特征转换与洞察 }某些原始特征可能需要经过转换或组合才能更好地用于模型训练，例如，某两种化学成分的比例可能比它们各自的数值更有预测价值。此外，通过特征工程，还可以深入挖掘和理解这些化学成分如何共同影响葡萄酒的质量。
+		      \end{itemize}
+	\end{itemize}
+\end{frame}
+\subsection{数据介绍}
+\begin{frame}[fragile]{数据集介绍}
+	任务使用kaggle上的Wine Quality数据集, 其每个样本具有如下特征.
+	\begin{itemize}
+		\item \textbf{固定酸度(Fixed acidity)} 主要是葡萄酒中的有机酸, 如柠檬酸, 苹果酸等;
+		\item \textbf{挥发性酸度 (Volatile acidity)} 主要是酸和乙醇的量。高的挥发性酸度可能会导致醋酸味。
+		\item \textbf{柠檬酸 (Citric acid)} 可以为酒增加新鲜感和风味。
+		\item \textbf{残糖 (Residual sugar)} 酒发酵后所剩余的糖分。
+		\item \textbf{氯化物 (Chlorides)} 酒中的盐含量。
+		\item \textbf{游离二氧化硫 (Free sulfur dioxide)} 游离形式的SO2。预防微生物生长和葡萄酒氧化的剂量过高可能导致不良的味道。
+		\item \textbf{总二氧化硫 (Total sulfur dioxide)} 总的SO2量，是游离和结合状态的SO2的总和。
+		\item \textbf{密度 (Density)} 可以用来估计酒精含量。
+		\item \textbf{pH} 表示葡萄酒的酸度或碱度。大多数葡萄酒的pH值在3-4之间。
+		\item \textbf{硫酸盐 (Sulphates)} 一个增加游离二氧化硫的酒添加剂，可能会影响葡萄酒的微生物生长和酒的味道。
+		\item \textbf{酒精度 (Alcohol)} 酒的酒精含量。
+	\end{itemize}
+\end{frame}
+\subsection{模型介绍}
+\begin{frame}[fragile]{模型介绍}
+	对该任务, 分别使用了多种传统机器学习模型, Optuna超参数优化的XGBoost和神经网络进行预测. 下面首先介绍使用的传统机器学习模型.
+\end{frame}
+\begin{frame}[fragile]{传统机器学习模型介绍}
+	\begin{block}{传统机器学习模型}
+		首先是传统的机器学习模型. 在这一部分, 使用了如下的机器学习模型进行预测:
+		\begin{itemize}
+			\item<only@1> \textbf{逻辑回归(Logistic Regression)}逻辑回归是一种统计方法，主要用于预测某个事件发生的概率。虽然它的名称中包含“回归”，但逻辑回归通常用于分类问题，如二分类。它使用了Sigmoid函数来预测概率，该函数输出的值位于0到1之间。
+			\item<only@1> \textbf{K最近邻(K Nearest neighbors, KNN)} KNN是一个基于实例的学习方法。对于一个新的输入数据，KNN会在训练数据中查找最接近的k个数据点（邻居），并基于这些邻居的分类来预测新数据的分类。
+			\item<only@1> \textbf{支持向量机(Support Vector Machines, SVM)}SVM是一种分类和回归方法，它试图找到一个超平面来正确分类数据。对于非线性数据，SVM使用核函数如径向基函数来转换数据，然后找到一个在新的空间中的超平面来分类数据。
+			\item<only@1> \textbf{决策树(Decision Trees)}决策树是一个流程图式结构，其中每个内部节点代表一个属性上的判断，每个分支代表一个判断结果，最终的每个叶节点代表一个决策结果。决策树能够进行可视化，直观地显示决策过程。
+			\item<only@2> \textbf{随机森林(Random Forest)}随机森林是一个集成学习方法，它创建多个决策树并进行组合，以提高整体的性能和准确性。每棵树在略微不同的数据子集上进行训练。
+			\item<only@2> \textbf{梯度提升树(Gradient Boosting Trees)}这是一个迭代的决策树算法，其中每一次的迭代都试图纠正前一次迭代的错误。每一步都在增加一个新的树，以减少整体的误差。
+			\item<only@2> \textbf{AdaBoost(Adaptive Boosting)}Adaboost是一个自适应的提升方法，它结合了多个弱学习者来创建一个强学习者。每一个学习者都是在修正前一个学习者的错误上进行训练的。
+			\item<only@3> \textbf{CatBoost}CatBoost是一种梯度提升算法，特别适用于分类问题。它特别优化了类别特征的处理，可以自动处理类别特征，而无需手动进行独热编码。
+			\item<only@3> \textbf{XGBoost}XGBoost是“Extreme Gradient Boosting”的缩写，是一个高效的梯度提升树算法，旨在提供计算速度和模型性能方面的优势。
+			\item<only@3> \textbf{LightGBM}LightGBM是微软提供的一个开源的梯度提升框架，与XGBoost相似，但更为轻量并且训练速度更快。
+		\end{itemize}
+	\end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]{使用Optuna优化XGBoost的超参数选择}
+	\begin{block}{Optuna}<only@1>
+		Optuna是一个用于机器学习的超参数优化框架。超参数优化对于机器学习模型来说是至关重要的，因为它可以显著提高模型的性能和准确性。Optuna 提供了一个简洁而高效的界面，用于自动搜索超参数的最优值。
+	\end{block}
+	\begin{block}{在XGBoost上的优化}<only@2>
+		使用 Optuna 对 XGBoost(一种梯度提升树算法)的参数进行优化。具体涉及的参数如下：
+
+		\begin{itemize}
+			\item tree\_method: 你选择了 "gpu\_hist"，意味着算法将使用 GPU 来构建直方图，从而加速训练过程。
+			\item
+			\item colsample\_bytree: 这个参数决定了每次树构建时使用的特征的比例。
+			\item subsample: 它决定了每次树的构建所使用的数据样本的比例。
+			\item learning\_rate: 这是一个步长，它决定了每一步中梯度下降的大小。
+			\item
+			\item min\_child\_weight: 它决定了子节点的最小权重，有助于正则化和防止过拟合。
+		\end{itemize}
+
+	\end{block}
+	\begin{block}{在XGBoost上的优化}<only@3>
+		一旦定义了这些参数范围和空间，Optuna 会进行多次试验，每次都使用不同的参数值，尝试找到可以使 XGBoost 的准确性最大化的最佳参数组合。
+
+		本次实验中选择了最多 300 次试验(``trials'')，这意味着 Optuna 会尝试 300 组不同的参数来找到最佳组合。
+	\end{block}
+	\only<4>{
+		\begin{figure}[htbp]
+			\centering
+			\caption{Optuna的优化参数选择效果}
+			\label{fig:Optuna的优化参数选择效果}
+			\includegraphics[width=0.95\textwidth]{figures/optuna.png}
+		\end{figure}
+	}
+\end{frame}
+
+\begin{frame}[fragile]{神经网络介绍}
+	\begin{block}{模型代码}<only@1>
+		\begin{minted}[breaklines,tabsize=4]{python}
+    model = Sequential(
+    [
+        Input(shape=(2, 5, 1)),
+        Conv2D(32, 3, padding="same", activation="relu"),
+        Conv2D(32, 3, padding="same", activation="relu"),
+        Conv2D(32, 3, padding="same", activation="relu"),
+        MaxPooling2D(),
+		\end{minted}
+	\end{block}
+	\begin{block}{模型代码}<only@2>
+		\begin{minted}[breaklines,tabsize=4]{python}
+		Conv2D(64, 3, padding="same", activation="relu"),
+		Conv2D(64, 3, padding="same", activation="relu"),
+		Conv2D(64, 3, padding="same", activation="relu"),
+		Conv2D(64, 3, padding="same", activation="relu"),
+		Flatten(),
+		Dropout(0.2),
+		\end{minted}
+	\end{block}
+	\begin{block}{模型代码}<only@3>
+		\begin{minted}[breaklines,tabsize=4]{python}
+        Dense(256, input_shape=(2, 5, 1), activation="relu"),
+        Dense(128, activation="relu"),
+        Dense(32, activation="relu"),
+        Dense(1, activation="sigmoid"),
+    ]
+)
+		\end{minted}
+	\end{block}
+
+	\begin{block}<only@4>{模型结构}
+		模型借助Tensorflow框架搭建.
+		\begin{itemize}
+			\item \textbf{Input Layer }是神经网络的输入层, 接受形状为(2,5,1)的数据;
+			\item \textbf{Conv2D Layers }是卷积层, 用于检测图像或者数据中的局部模式. 模型中共有3个这样的层, 前三个有32个滤波器, 后面四层有64个滤波器, 所有这些层都是用大小为3的卷积核, 使用``same''填充以及ReLU激活函数;
+			\item \textbf{MaxPooling2D Layer }该层用于空间降采样, 帮助减少模型的参数数量, 并防止过拟合;
+			\item \textbf{Flatten Layer }将特征展平, 使其可以被全连接层处理;
+			\item \textbf{Dropout Layer }是一个正则化层, 通过在训练过程中随机丢弃部分节点来放置过拟合. 使用0.2的Dropout Rate, 每次前向传播的时候, 有20\%的节点被随机关闭.
+			\item \textbf{Dense Layers }是全连接层, 模型中有三个, 分别有256, 128和32个节点, 使用ReLU激活函数. 输出层有1个节点, 使用Sigmoid激活函数以适应二分类任务.
+		\end{itemize}
+	\end{block}
+\end{frame}
+\subsection{训练介绍}
+\begin{frame}[fragile]{训练介绍}
+	\begin{block}{模型编译}<only@1>
+		\begin{itemize}
+			\item Loss Function: 使用了``binary\_crossentropy''这一二分类问题常用的损失函数;
+			\item Optimizer: 使用了Adam优化器. Adam是常用的, 自适应学习率的优化方法;
+			\item Metrics: 使用精确度(`scc')作为评估指标;
+		\end{itemize}
+	\end{block}
+	\begin{block}{学习率规划器}<only@2>
+		\mintinline[breaklines=true]{bash}|ReduceLROnPlateau|是一个学习率调度策略, 当模型的精确度停滞不前的时候, 会自动降低学习率:
+		\begin{itemize}
+			\item \textbf{monitor} 它检测模型的精确度;
+			\item \textbf{patience} 如果经过3个epoch, 精确度没有提高, 则学习率将被减少;
+			\item \textbf{factor} 学习率将被乘以0.5;
+			\item \textbf{min\_lr} 学习率的最小值为0.00001;
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\section{假新闻检测任务}
+\begin{frame}[fragile]{假新闻检测任务}
+	在本节中, 将借助Sklearn在假新闻数据集上建立一个TfIdfVectorizer, 然后初始化一个PassiveAggressiveClassifier并将其拟合. 在最后, 使用准确度分数和相关性矩阵来评估模型效果.
+\end{frame}
+\subsection{任务简介}
+\subsection{数据集简介}
+\subsection{模型介绍}
+\subsection{训练介绍}
 \end{document}
