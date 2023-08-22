@@ -47,7 +47,7 @@
 \maketitle
 
 % Table of contents
-\begin{frame}
+\begin{frame}[allowframebreaks]
 	\frametitle{Table of Contentes}
 	\tableofcontents
 \end{frame}
@@ -1631,10 +1631,70 @@ MLA_compare
 
 \section{假新闻检测任务}
 \begin{frame}[fragile]{假新闻检测任务}
-	在本节中, 将借助Sklearn在假新闻数据集上建立一个TfIdfVectorizer, 然后初始化一个PassiveAggressiveClassifier并将其拟合. 在最后, 使用准确度分数和相关性矩阵来评估模型效果.
+	在本实验中, 将借助新闻标题和新闻内容来预测新闻的真实性. 考虑到这是一个二分类任务, 为了完成该目标, 借助Sklearn库进行TfIdf向量化, 并使用Passive Aggressive Classifier线性分类模型进行假新闻分类.
 \end{frame}
 \subsection{任务简介}
+\begin{frame}[fragile]{任务简介}
+	\begin{block}{数据处理: TfIdfVectorizer}<only@1>
+		为了将新闻文章转化为计算机可以理解的形式, 使用`TfIdfVectorizer'. Tf-Idf指``Term Frequency-Inverse Document Frequency'', 是一种统计方法, 用于评估一个字词对于一个文件集或者一个语料库中其中一份文件的重要程度. 其目的是将文本内容转化为向量形式, 同时尽量捕捉文本中的关键信息.
+		\begin{itemize}
+			\item \textbf{Term Frequency(TF)}指某一个给定的词语在该文件中出现的频率;
+			\item \textbf{Inverse Document Frequency(IDF)}是一个词语普遍重要性的度量. 减少那些经常出现在语料库中的词语的权重;
+		\end{itemize}
+	\end{block}
+	\begin{block}{模型: PassiveAggressiveClassifier}<only@2>
+		`PassiveAggressiveClassifier'是一种线性分类模型, 特点是对于错误分类的样本会进行很大幅度的参数更新，对于正确分类的样本则基本上不更新参数。这种方法非常适合大数据流场景，因为它不需要存储以前的数据，可以实时地更新模型。它在文本分类任务中，特别是像假新闻检测这样的任务中，效果很好。
+	\end{block}
+	\begin{block}{评估方式}<only@3>
+		为了评估模型的性能, 使用了如下的方法:
+		\begin{itemize}
+			\item 准确度分数 (Accuracy Score): 它表示模型正确预测的新闻（无论真实还是假）与总新闻的比例。一个高的准确度通常意味着模型在测试数据上的效果好，但也需要注意其他评估指标，确保没有过拟合。
+			\item 相关性矩阵 (Confusion Matrix): 它显示真正、真负、假正和假负的数量，提供了模型性能的更完整视图。这对于了解模型在哪些类别上出现了困难尤其有价值。
+		\end{itemize}
+	\end{block}
+\end{frame}
 \subsection{数据集简介}
+\begin{frame}[fragile]{数据集简介}
+	\begin{block}{数据集描述}<only@1>
+		该数据集主要包含了新闻标题和新闻内容, 用于判断新闻是真实还是假的. 数据集包含了以下特征:
+		\begin{itemize}
+			\item \textbf{Identifier }是每篇新闻的唯一标识符;
+			\item \textbf{title }新闻的标题;
+			\item \textbf{text }新闻的完整内容;
+			\item \textbf{label }新闻的标签, 标记了新闻是真实(REAL)还是假的(FAKE);
+		\end{itemize}
+	\end{block}
+	\begin{block}{数据集的困难}<only@2>
+		对于该数据集, 需要解决如下的困难:
+		\begin{itemize}
+			\item \textbf{不平衡的数据 }假新闻的数量与真实新闻的数量不平衡, 需要考虑分类模型可能的偏见;
+			\item \textbf{文本长度 }文章的长度可能有很大的变化, 这可能会影响模型的效果.
+			\item \textbf{文本质量 } 由于新闻来源不保证, 因此文本的质量可能有所不同. 低质量文本对文本处理技术和模型选择都带来了挑战.
+		\end{itemize}
+	\end{block}
+\end{frame}
 \subsection{模型介绍}
+\begin{frame}[fragile]{模型介绍}
+	\begin{block}{特征提取: TfIdfVectorizer}<only@1>
+		使用TfIdf方法来评估词在文档中的重要性. 对其设置参数来避免常用词的影响:
+		\begin{itemize}
+			\item \mintinline[breaklines=true]{bash}|stop_words='english'| 意味着在向量化过程中会排除英语中的常用停用词;
+			\item \mintinline[breaklines=true]{bash}|max_df=0.7| 意味着当一个词出现在超过70\%的文档中的时候会被忽略, 这有助于排除太过常见的词汇, 例如``is'', ``the'', ``and''等. 虽然IDF已经为罕见词语提供较高值, 这样的整个数据集每个文档都出现的词语提供较低值, 直接去除也会更加方便;
+		\end{itemize}
+	\end{block}
+	\begin{block}{分类模型: PassiveAggressiveClassifier}<only@2>
+		由于数据集较大, 7796条样本的总大小为\textbf{29.2MB}, 故使用适用于大型数据集的Passive Aggressive Classifier. 因为它可以每次处理一个训练样本，而不是批量处理。这也使得它非常适合于文本分类问题，尤其是当面对大量的文本数据时。
+
+		其参数\mintinline[breaklines=true]{bash}|max_iter=50| 表示模型的最大迭代次数为50.
+	\end{block}
+\end{frame}
 \subsection{训练介绍}
+\begin{frame}[fragile]{性能评估}
+	在数据集上将模型训练后, 使用测试集来评估其性能. 两个主要的评估指标为:
+	\begin{itemize}
+		\item \textbf{Accuracy}衡量分类器对于预测正确类别的能力。在这里，准确度达到了 score * 100 的百分比。
+
+		\item \textbf{Confusion Matrix} 它提供了一个关于分类器性能的更全面的视图，显示真实类别与预测类别之间的对应关系。对于这个二分类问题，混淆矩阵会显示四个值：真阳性、假阳性、真阴性和假阴性。
+	\end{itemize}
+\end{frame}
 \end{document}
