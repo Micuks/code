@@ -23,16 +23,7 @@ public:
     }
     void addBack(int num) {
         if(num >= thres) {return;}
-        auto it = s.begin();
-        for(;it!=s.end();++it) {
-            if(*it > num) {
-                s.insert(--it, num);
-                break;
-            }
-        }
-        if(it==s.end()) {
-            s.insert(it, num);
-        }
+        s.insert(num);
     }
     int thres=1;
     std::set<int> s;
