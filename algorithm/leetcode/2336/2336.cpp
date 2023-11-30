@@ -3,36 +3,39 @@
 //
 #include <vector>
 #include <iostream>
+#include <set>
 
 class SmallestInfiniteSet {
 public:
     SmallestInfiniteSet() {
-        removedNums.clear();
     }
     int popSmallest() {
-        sort(removedNums.begin(),removedNums.end());
-        int max = 1;
-        if(removedNums.size()) {
-            max = removedNums.back()+1;
+        int ans;
+        if(s.empty()) {
+            ans=thres;
+            thres++;
+        } else {
+            ans = *s.begin();
+            s.erase(s.begin());
         }
-        for(int i=1;i<=max;i++) {
-            auto pCurr = std::find(removedNums.begin(), removedNums.end(), i);
-            if(pCurr != removedNums.end()) {
-                continue;
-            }else {
-                removedNums.push_back(i);
-                return i;
-            }
-        }
-        return -1;
+
+        return ans;
     }
     void addBack(int num) {
-        auto ptr = find(removedNums.begin(), removedNums.end(), num);
-        if(ptr != removedNums.end()) {
-            removedNums.erase(ptr);
+        if(num >= thres) {return;}
+        auto it = s.begin();
+        for(;it!=s.end();++it) {
+            if(*it > num) {
+                s.insert(--it, num);
+                break;
+            }
+        }
+        if(it==s.end()) {
+            s.insert(it, num);
         }
     }
-    std::vector<int> removedNums;
+    int thres=1;
+    std::set<int> s;
 };
 
 int main() {
