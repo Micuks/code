@@ -1,0 +1,57 @@
+[2022-12-16T23:29:30] Child[28006]:
+Total write time: 28.465319 seconds; average write time: 5.693064 seconds.
+Total read time: 15.706213; average read time: 3.141243
+Total time: 44.171532, total average time: 4.417153
+
+[2022-12-16T23:29:31] Child[27998]:
+Total write time: 17.108905 seconds; average write time: 2.851484 seconds.
+Total read time: 33.126707; average read time: 8.281677
+Total time: 50.235612, total average time: 5.023561
+
+[2022-12-16T23:29:32] Child[28004]:
+Total write time: 19.908579 seconds; average write time: 3.981716 seconds.
+Total read time: 26.116047; average read time: 5.223209
+Total time: 46.024626, total average time: 4.602463
+
+[2022-12-16T23:29:36] Child[28002]:
+Total write time: 5.876220 seconds; average write time: 0.979370 seconds.
+Total read time: 44.501974; average read time: 11.125493
+Total time: 50.378194, total average time: 5.037819
+
+[2022-12-16T23:29:36] Child[27997]:
+Total write time: 12.134283 seconds; average write time: 2.022381 seconds.
+Total read time: 40.801703; average read time: 10.200426
+Total time: 52.935986, total average time: 5.293599
+
+[2022-12-16T23:29:43] Child[28000]:
+Total write time: 14.028103 seconds; average write time: 2.805621 seconds.
+Total read time: 45.246773; average read time: 9.049355
+Total time: 59.274876, total average time: 5.927488
+
+[2022-12-16T23:29:44] Child[28005]:
+Total write time: 14.963077 seconds; average write time: 2.992615 seconds.
+Total read time: 41.711010; average read time: 8.342202
+Total time: 56.674087, total average time: 5.667409
+
+[2022-12-16T23:29:45] Child[28001]:
+Total write time: 9.800063 seconds; average write time: 2.450016 seconds.
+Total read time: 51.657451; average read time: 8.609575
+Total time: 61.457514, total average time: 6.145751
+
+[2022-12-16T23:29:48] Child[27999]:
+Total write time: 9.088189 seconds; average write time: 2.272047 seconds.
+Total read time: 54.293972; average read time: 9.048995
+Total time: 63.382161, total average time: 6.338216
+
+[2022-12-16T23:29:51] Child[28003]:
+Total write time: 10.447970 seconds; average write time: 3.482657 seconds.
+Total read time: 53.339964; average read time: 7.619995
+Total time: 63.787934, total average time: 6.378793
+
+
+---------VALIDATING RESULTS---------
+shared[0]: readers[51], writers[49]
+--------------------
+total: readers[51], writers[49]
+Total should be equal to (peers * LOOPS)[100]
+Result is right!
