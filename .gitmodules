@@ -1,0 +1,3 @@
+[submodule "systems/miniob/my_miniob"]
+	path = systems/miniob/my_miniob
+	url = https://github.com/Q-ModifiedJ/my_miniob.git
